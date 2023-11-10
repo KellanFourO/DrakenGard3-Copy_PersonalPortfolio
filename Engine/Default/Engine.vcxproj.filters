@@ -64,6 +64,12 @@
     <Filter Include="01.Utility\02. GameObjects\00. Layer">
       <UniqueIdentifier>{011c11ea-c003-40e5-9051-8e93b908a184}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03. Components\01. Transform">
+      <UniqueIdentifier>{2b938682-393e-41ad-8d11-c9a067770e48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03. Components\02. Texture">
+      <UniqueIdentifier>{f7b2330b-238a-49ae-b36a-7d5a38741941}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -126,6 +132,9 @@
     <ClInclude Include="..\Public\Camera.h">
       <Filter>01.Utility\02. GameObjects\01. Camera</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Transform.h">
+      <Filter>01.Utility\03. Components\01. Transform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -172,6 +181,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Camera.cpp">
       <Filter>01.Utility\02. GameObjects\01. Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Transform.cpp">
+      <Filter>01.Utility\03. Components\01. Transform</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

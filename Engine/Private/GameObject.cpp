@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "GameInstance.h"
+#include "Transform.h"
 
 CGameObject::CGameObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -30,6 +31,8 @@ HRESULT CGameObject::Initialize_Prototype()
 
 HRESULT CGameObject::Initialize(void* pArg)
 {
+	//m_pTransform
+	
 	return S_OK;
 }
 

@@ -30,7 +30,6 @@ public: /* For.Graphic_Device */
 	HRESULT Clear_DepthStencil_View();	
 	HRESULT Present();
 	
-
 public: /* For.Timer_Manager */
 	HRESULT	Add_Timer(const wstring& strTimeTag);
 	_float Compute_TimeDelta(const wstring& strTimeTag);

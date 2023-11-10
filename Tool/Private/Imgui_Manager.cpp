@@ -1,13 +1,10 @@
 #include "../Default/stdafx.h"
 
-
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
 
 #include "Imgui_Manager.h"
-
-
 
 ImGuiIO* m_pIo = { nullptr };
 
@@ -39,6 +36,7 @@ HRESULT CImgui_Manager::SetUp_Imgui()
 	m_pIo->BackendFlags |= ImGuiBackendFlags_RendererHasViewports;
 	m_pIo->BackendRendererUserData = nullptr;
 	m_pIo->ConfigViewportsNoAutoMerge = true;
+	
 	//const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
 	
 	//ID3D11RenderTargetView* g_mainRenderTargetView = CGameInstance::GetInstance()->Get_Graphic_Dev()->Get_RTV();
@@ -171,6 +169,15 @@ void CImgui_Manager::ShowMapTool()
 			ImGui::EndTabItem();
 		}
 		//! 환경 탭 종료
+		
+		//! 높이 탭 시작
+		if (ImGui::BeginTabItem(u8"높이"))
+		{
+			ImGui::Text(u8"높이");
+			ImGui::EndTabItem();
+		}
+		//! 높이 탭 종료
+		
 		ImGui::EndTabBar();
 	}
 	ImGui::End();

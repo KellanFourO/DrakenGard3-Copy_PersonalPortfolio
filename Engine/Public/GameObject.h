@@ -14,9 +14,9 @@ protected:
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
-	virtual void Priority_Tick(_float fTimeDelta);
-	virtual void Tick(_float fTimeDelta);
-	virtual void Late_Tick(_float fTimeDelta);
+	virtual void	Priority_Tick(_float fTimeDelta);
+	virtual void	Tick(_float fTimeDelta);
+	virtual void	Late_Tick(_float fTimeDelta);
 
 	virtual HRESULT Render() const;
 
@@ -26,7 +26,7 @@ protected:
 
 protected:
 	class CGameInstance*		m_pGameInstance = { nullptr };
-
+	class CTransform*			m_pTransform = { nullptr };
 protected:
 	_bool						m_isCloned = { false };
 
