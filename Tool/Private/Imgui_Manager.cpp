@@ -1,4 +1,5 @@
-#include "stdafx.h"
+#include "../Default/stdafx.h"
+
 
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -6,14 +7,7 @@
 
 #include "Imgui_Manager.h"
 
-typedef struct ImGui_ImplDX11_ViewportData
-{
-	IDXGISwapChain* SwapChain;
-	ID3D11RenderTargetView* RTView;
 
-	ImGui_ImplDX11_ViewportData() { SwapChain = nullptr; RTView = nullptr; }
-	~ImGui_ImplDX11_ViewportData() { IM_ASSERT(SwapChain == nullptr && RTView == nullptr); }
-}USERDATA;
 
 ImGuiIO* m_pIo = { nullptr };
 
@@ -27,15 +21,13 @@ CImgui_Manager::CImgui_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 
 HRESULT CImgui_Manager::SetUp_Imgui()
 {
-	USERDATA Test;
+
 
 	DXGI_SWAP_CHAIN_DESC		SwapChain;
 	ZeroMemory(&SwapChain, sizeof(DXGI_SWAP_CHAIN_DESC));
 
 	//! 텍스쳐(백버퍼)를 생성하는 행위
-	
-	
-	
+
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

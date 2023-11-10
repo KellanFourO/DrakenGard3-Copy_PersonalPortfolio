@@ -10,9 +10,6 @@
     <Filter Include="99.Defines">
       <UniqueIdentifier>{d0e54a09-198b-4260-ade5-c39ff5b26346}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\00.GameInstance">
-      <UniqueIdentifier>{c0ebda6b-598f-4148-ada3-a52766431af3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="00.System\00. Device">
       <UniqueIdentifier>{c07587fb-53fc-43c6-aa64-fa335183d65e}</UniqueIdentifier>
     </Filter>
@@ -40,12 +37,6 @@
     <Filter Include="01.Utility\02. GameObjects">
       <UniqueIdentifier>{43e5d70b-86fa-40c9-b39f-9f2eff934aa0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\02. GameObjects\Manager">
-      <UniqueIdentifier>{b0093708-fcff-453f-a7af-31c2ec871513}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\02. GameObjects\Layer">
-      <UniqueIdentifier>{011c11ea-c003-40e5-9051-8e93b908a184}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\99. SuperClass">
       <UniqueIdentifier>{44a8a7cb-d2da-403d-87ee-1a2874baef33}</UniqueIdentifier>
     </Filter>
@@ -60,6 +51,18 @@
     </Filter>
     <Filter Include="01.Utility\03. Components\00. VIBuffer\Rect">
       <UniqueIdentifier>{1c3282f8-0db7-4d7a-ba72-b0fe57aa2314}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\00. GameInstance">
+      <UniqueIdentifier>{c0ebda6b-598f-4148-ada3-a52766431af3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02. GameObjects\99. Manager">
+      <UniqueIdentifier>{b0093708-fcff-453f-a7af-31c2ec871513}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02. GameObjects\01. Camera">
+      <UniqueIdentifier>{94686ab7-21b7-49fa-a356-ccb201511af8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02. GameObjects\00. Layer">
+      <UniqueIdentifier>{011c11ea-c003-40e5-9051-8e93b908a184}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -79,7 +82,7 @@
       <Filter>99.Defines</Filter>
     </ClInclude>
     <ClInclude Include="..\public\GameInstance.h">
-      <Filter>01.Utility\00.GameInstance</Filter>
+      <Filter>01.Utility\00. GameInstance</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Engine_Struct.h">
       <Filter>99.Defines</Filter>
@@ -103,10 +106,10 @@
       <Filter>01.Utility\02. GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Layer.h">
-      <Filter>01.Utility\02. GameObjects\Layer</Filter>
+      <Filter>01.Utility\02. GameObjects\00. Layer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Object_Manager.h">
-      <Filter>01.Utility\02. GameObjects\Manager</Filter>
+      <Filter>01.Utility\02. GameObjects\99. Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Renderer.h">
       <Filter>01.Utility\98. Renderer</Filter>
@@ -120,13 +123,16 @@
     <ClInclude Include="..\public\VIBuffer_Rect.h">
       <Filter>01.Utility\03. Components\00. VIBuffer\Rect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Camera.h">
+      <Filter>01.Utility\02. GameObjects\01. Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
       <Filter>01.Utility\99. SuperClass</Filter>
     </ClCompile>
     <ClCompile Include="..\private\GameInstance.cpp">
-      <Filter>01.Utility\00.GameInstance</Filter>
+      <Filter>01.Utility\00. GameInstance</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
       <Filter>00.System\00. Device\00. Graphic</Filter>
@@ -147,10 +153,10 @@
       <Filter>01.Utility\02. GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Layer.cpp">
-      <Filter>01.Utility\02. GameObjects\Layer</Filter>
+      <Filter>01.Utility\02. GameObjects\00. Layer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Object_Manager.cpp">
-      <Filter>01.Utility\02. GameObjects\Manager</Filter>
+      <Filter>01.Utility\02. GameObjects\99. Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Renderer.cpp">
       <Filter>01.Utility\98. Renderer</Filter>
@@ -163,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="..\private\VIBuffer_Rect.cpp">
       <Filter>01.Utility\03. Components\00. VIBuffer\Rect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera.cpp">
+      <Filter>01.Utility\02. GameObjects\01. Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

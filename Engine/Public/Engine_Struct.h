@@ -14,6 +14,13 @@ namespace Engine
 
 	}GRAPHIC_DESC;
 
+	typedef struct tagCameraDesc
+	{
+		_float4 vEye, vAt, vUp;
+		_float fFovY, fAspect, fNear, fFar;
+
+	}CAMERA_DESC;
+
 	typedef struct tagVertex_Position_Texcoord
 	{
 		XMFLOAT3		vPosition;

@@ -5,6 +5,7 @@
 CBackGround::CBackGround(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CGameObject(pDevice,pContext)
 {
+	
 }
 
 CBackGround::CBackGround(const CBackGround& rhs)

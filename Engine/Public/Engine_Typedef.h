@@ -30,6 +30,7 @@ namespace Engine
 
 	/* 연산용 데이터 타입. */
 	typedef		XMVECTOR					_vector;
+	typedef		XMFLOAT4X4					_matrix;
 }
 
 #endif // Engine_Typedef_h__
