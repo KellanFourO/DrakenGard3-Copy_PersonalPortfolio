@@ -93,6 +93,7 @@ HRESULT CGameInstance::Clear_DepthStencil_View()
 {
 	if (nullptr == m_pGraphic_Device)
 		return E_FAIL;
+
 	return m_pGraphic_Device->Clear_DepthStencil_View();
 }
 
@@ -101,6 +102,14 @@ HRESULT CGameInstance::Present()
 	if (nullptr == m_pGraphic_Device)
 		return E_FAIL;
 	return m_pGraphic_Device->Present();
+}
+
+HRESULT CGameInstance::Resize(UINT iWidth, UINT iHeight)
+{
+	if (nullptr == m_pGraphic_Device)
+		return E_FAIL;
+
+	return m_pGraphic_Device->Resize(iWidth,iHeight);
 }
 
 HRESULT CGameInstance::Add_Timer(const wstring& strTimeTag)

@@ -1,4 +1,3 @@
-
 // dear imgui: Renderer Backend for DirectX11
 // This needs to be used along with a Platform Backend (e.g. Win32)
 
@@ -16,7 +15,6 @@
 // - Introduction, links and more at the top of imgui.cpp
 
 #pragma once
-
 #include "imgui.h"      // IMGUI_IMPL_API
 #ifndef IMGUI_DISABLE
 

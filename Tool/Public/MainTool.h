@@ -19,6 +19,7 @@ private:
 public:
 	HRESULT Initialize();
 	void Tick(_float fTimeDelta); //! 기존 프레임워크에서 사용하던 Update 함수의 개념이다. 정쌤 프레임워크에서는 Tick으로 명명해서 사용.
+	
 	HRESULT Render();
 
 private:

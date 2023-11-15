@@ -21,6 +21,13 @@ namespace Engine
 
 	}CAMERA_DESC;
 
+	typedef struct tagPassDesc
+	{
+		ID3D11VertexShader* VertexShader = { nullptr };
+		ID3D11PixelShader* PixelShader = { nullptr };
+		ID3D11InputLayout* layout = { nullptr };
+	}PASS_DESC;
+
 	typedef struct tagVertex_Position_Texcoord
 	{
 		XMFLOAT3		vPosition;

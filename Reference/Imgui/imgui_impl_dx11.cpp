@@ -1,4 +1,3 @@
-#include "../Default/stdafx.h"
 // dear imgui: Renderer Backend for DirectX11
 // This needs to be used along with a Platform Backend (e.g. Win32)
 
@@ -644,12 +643,11 @@ static void ImGui_ImplDX11_CreateWindow(ImGuiViewport* viewport)
     ZeroMemory(&sd, sizeof(sd));
     sd.BufferDesc.Width = (UINT)viewport->Size.x;
     sd.BufferDesc.Height = (UINT)viewport->Size.y;
-    sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     sd.SampleDesc.Count = 1;
     sd.SampleDesc.Quality = 0;
     sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     sd.BufferCount = 1;
-    
     sd.OutputWindow = hwnd;
     sd.Windowed = TRUE;
     sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;

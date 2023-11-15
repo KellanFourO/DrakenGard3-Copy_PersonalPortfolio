@@ -15,6 +15,7 @@ HINSTANCE g_hInst;                                // 현재 인스턴스입니�
 HWND	  g_hWnd;
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+CMainTool* pMainTool = nullptr;
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -35,7 +36,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: 여기에 코드를 입력합니다.
-    CMainTool*      pMainTool = nullptr;
+
 
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -149,13 +150,13 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
-
-   RECT	rcWindow = { 0, 0, g_iWinSizeX, g_iWinSizeY };
-
-   AdjustWindowRect(&rcWindow, WS_OVERLAPPEDWINDOW, TRUE);
+   
+   //RECT	rcWindow = { 0, 0, g_iWinSizeX, g_iWinSizeY };
+   //
+   //AdjustWindowRect(&rcWindow, WS_OVERLAPPEDWINDOW, TRUE);
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, GetDesktopWindow(), nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -212,6 +213,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             EndPaint(hWnd, &ps);
         }
         break;
+
+    case WM_SIZE:
+        {
+            //pMainTool->Resize_ImGui(LOWORD(lParam), HIWORD(lParam));
+            CGameInstance::GetInstance()->Resize(LOWORD(lParam), HIWORD(lParam));
+            break;
+        }
 
     case WM_DESTROY:
         PostQuitMessage(0);

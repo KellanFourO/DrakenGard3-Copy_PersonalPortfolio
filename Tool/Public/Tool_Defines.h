@@ -1,9 +1,10 @@
 #pragma once
+#include <d3dcompiler.h>
 
 namespace Tool
 {
-	static const unsigned int	g_iWinSizeX = 1280;	//! 윈도우 창 가로 사이즈 전역
-	static const unsigned int	g_iWinSizeY = 720;	//! 윈도우 창 세로 사이즈 전역
+	static const unsigned int	g_iWinSizeX = 2560;	//! 윈도우 창 가로 사이즈 전역
+	static const unsigned int	g_iWinSizeY = 1440;	//! 윈도우 창 세로 사이즈 전역
 
 	enum TOOL { TOOL_STATIC, TOOL_EFFECT, TOOL_UI, TOOL_LOADING, TOOL_END }; //! 툴 열거체
 }

@@ -28,6 +28,9 @@
     <Filter Include="99. Defines">
       <UniqueIdentifier>{256bc7ed-2d60-4917-8de6-df2f9e1003c8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="97. ShaderFiles">
+      <UniqueIdentifier>{24e0b56f-5d1f-4909-aca5-64574300bb2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -107,5 +110,10 @@
     <Text Include="ReadMe.txt">
       <Filter>98. Default</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsl">
+      <Filter>97. ShaderFiles</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

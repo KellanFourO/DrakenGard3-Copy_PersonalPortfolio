@@ -3141,7 +3141,7 @@ static void stbtt__fill_active_edges_new(float *scanline, float *scanline_fill, 
                height = (sy1 - sy0) * e->direction;
                STBTT_assert(x >= 0 && x < len);
                scanline[x]      += stbtt__position_trapezoid_area(height, x_top, x+1.0f, x_bottom, x+1.0f);
-               scanline_fill[x] += height; // GAMELOGIC right of this pixel is filled
+               scanline_fill[x] += height; // everything right of this pixel is filled
             } else {
                int x,x1,x2;
                float y_crossing, y_final, step, sign, area;

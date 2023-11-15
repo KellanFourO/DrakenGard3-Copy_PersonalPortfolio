@@ -12,6 +12,7 @@ CVIBuffer_Rect::CVIBuffer_Rect(const CVIBuffer_Rect& rhs)
 
 HRESULT CVIBuffer_Rect::Initialize_Prototype()
 {
+	m_iNumVertexBuffers = 1; //! 나중에는 여러개의 버퍼를 사용할수 있어서. 현재는 1개만 사용
 	m_iNumVertices = 4; //! 사각형이니까 정점의 개수는 4개
 	m_iStride = sizeof(VTXPOSTEX); //! 정점 한개의 크기는 한 정점이 가지고 있어야할 정보의 사이즈(구조체)
 
@@ -23,6 +24,10 @@ HRESULT CVIBuffer_Rect::Initialize_Prototype()
 	//! 즉, 정점의 개수가 unsigned short가 가질 수 있는 최대 값인 65535를 넘는다면 사이즈를 4로 줘야하고, 아니라면 2로 준다는 얘기
 	
 	m_iIndexStride = 2; //! 여기서는 정점의 개수가 65535를 넘지 않을 것이니 2를 준 것이다.
+
+	m_eIndexFormat = m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+	m_eTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+
 
 #pragma region VERTEX_BUFFER 
 //TODO 정점 버퍼의 대한 정보를 넣어주는 행위

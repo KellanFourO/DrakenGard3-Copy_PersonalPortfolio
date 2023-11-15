@@ -6,6 +6,10 @@
 #define			MSG_BOX(_message)		MessageBox(nullptr, TEXT(_message), L"System Message", MB_OK)
 #endif
 
+#ifndef			MSG_BOX_INPUT
+#define			MSG_BOX_INPUT(_INPUT)		MessageBox(nullptr, _INPUT.c_str(), L"System Message", MB_OK)
+#endif
+
 #define			BEGIN(NAMESPACE)		namespace NAMESPACE {
 #define			END						}
 

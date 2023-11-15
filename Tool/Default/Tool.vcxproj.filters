@@ -57,17 +57,11 @@
     <ClInclude Include="stdafx.h">
       <Filter>98. Default</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Reference\Imgui\imconfig.h">
-      <Filter>97. Imgui\Default</Filter>
+    <ClInclude Include="..\Public\T_BackGround.h">
+      <Filter>02. GameObjects\00. BackGround</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Reference\Imgui\imgui.h">
-      <Filter>97. Imgui\Default</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Reference\Imgui\imgui_impl_dx11.h">
-      <Filter>97. Imgui\Default</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Reference\Imgui\imgui_impl_win32.h">
-      <Filter>97. Imgui\Default</Filter>
+    <ClInclude Include="..\Public\Imgui_Manager.h">
+      <Filter>97. Imgui\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Reference\Imgui\imgui_internal.h">
       <Filter>97. Imgui\Default</Filter>
@@ -81,11 +75,17 @@
     <ClInclude Include="..\..\Reference\Imgui\imstb_truetype.h">
       <Filter>97. Imgui\Default</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\T_BackGround.h">
-      <Filter>02. GameObjects\00. BackGround</Filter>
+    <ClInclude Include="..\..\Reference\Imgui\imconfig.h">
+      <Filter>97. Imgui\Default</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Imgui_Manager.h">
-      <Filter>97. Imgui\Manager</Filter>
+    <ClInclude Include="..\..\Reference\Imgui\imgui.h">
+      <Filter>97. Imgui\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\imgui_impl_dx11.h">
+      <Filter>97. Imgui\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\imgui_impl_win32.h">
+      <Filter>97. Imgui\Default</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +111,18 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>98. Default</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\T_BackGround.cpp">
+      <Filter>02. GameObjects\00. BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imgui_Manager.cpp">
+      <Filter>97. Imgui\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Reference\Imgui\imgui_tables.cpp">
+      <Filter>97. Imgui\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Reference\Imgui\imgui_widgets.cpp">
+      <Filter>97. Imgui\Default</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Reference\Imgui\imgui.cpp">
       <Filter>97. Imgui\Default</Filter>
     </ClCompile>
@@ -125,18 +137,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Reference\Imgui\imgui_impl_win32.cpp">
       <Filter>97. Imgui\Default</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Reference\Imgui\imgui_tables.cpp">
-      <Filter>97. Imgui\Default</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Reference\Imgui\imgui_widgets.cpp">
-      <Filter>97. Imgui\Default</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\T_BackGround.cpp">
-      <Filter>02. GameObjects\00. BackGround</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Imgui_Manager.cpp">
-      <Filter>97. Imgui\Manager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -39,11 +39,13 @@ void CMainTool::Tick(_float fTimeDelta)
 	m_pImguiManager->Tick(fTimeDelta);
 }
 
+
+
 HRESULT CMainTool::Render()
 {
 	m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 0.f, 1.f, 1.f));
 	m_pGameInstance->Clear_DepthStencil_View();
-
+	
 	//TODO 추후, 그려야할 모델들을 그린다.
 
 	m_pGameInstance->Render_Engine();
@@ -86,9 +88,9 @@ CMainTool* CMainTool::Create()
 
 void CMainTool::Free()
 {
+	Safe_Release(m_pImguiManager);
 	Safe_Release(m_pContext);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pGameInstance);
-	Safe_Release(m_pImguiManager);
 	CGameInstance::Release_Engine();
 }

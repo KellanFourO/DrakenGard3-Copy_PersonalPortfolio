@@ -2,6 +2,7 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include "Effects11/d3dx11effect.h"
 using namespace DirectX; //! XMFLOAT등등의 자료형을 사용하기위함.
 
 #include <unordered_map>

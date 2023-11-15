@@ -6,8 +6,6 @@
 
 #include "Imgui_Manager.h"
 
-ImGuiIO* m_pIo = { nullptr };
-
 CImgui_Manager::CImgui_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
 	, m_pContext(pContext)
@@ -18,45 +16,30 @@ CImgui_Manager::CImgui_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 
 HRESULT CImgui_Manager::SetUp_Imgui()
 {
-
-
-	DXGI_SWAP_CHAIN_DESC		SwapChain;
-	ZeroMemory(&SwapChain, sizeof(DXGI_SWAP_CHAIN_DESC));
-
-	//! 텍스쳐(백버퍼)를 생성하는 행위
-
-
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
-	m_pIo = &ImGui::GetIO(); (void)m_pIo;
-	m_pIo->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	m_pIo->ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	m_pIo->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-	m_pIo->BackendFlags |= ImGuiBackendFlags_RendererHasViewports;
-	m_pIo->BackendRendererUserData = nullptr;
-	m_pIo->ConfigViewportsNoAutoMerge = true;
-	
-	//const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-	
-	//ID3D11RenderTargetView* g_mainRenderTargetView = CGameInstance::GetInstance()->Get_Graphic_Dev()->Get_RTV();
-	//m_pContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
 
-	ImGui::StyleColorsDark();
-	m_pIo->Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\malgun.ttf", 18.0f, NULL, m_pIo->Fonts->GetGlyphRangesKorean());
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	io.ConfigViewportsNoAutoMerge = true;
 
 	ImGui_ImplWin32_Init(g_hWnd);
 	ImGui_ImplDX11_Init(m_pDevice, m_pContext);
+
+	ImGui::StyleColorsDark();
+	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\malgun.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesKorean());
+	
+	
+	
 
 	return S_OK;
 }
 
 void CImgui_Manager::Tick(_float fTimeDelta)
 {
-	//bool show_demo_window = true;
-	//bool show_another_window = false;
-	//ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-	
 
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -72,14 +55,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	colors[ImGuiCol_WindowBg] = bgColor;
 	colors[ImGuiCol_ChildBg] = bgColor;
 	colors[ImGuiCol_TitleBg] = bgColor;
-
-	ImGui::SetNextWindowSize(ImVec2(g_iWinSizeX, g_iWinSizeY), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
-	
-	//	ImGui::SetNextWindowBgAlpha(0.1f); 
 	
 	ImGui::Begin(u8"메인 툴", &m_bMainTool, ImGuiWindowFlags_AlwaysAutoResize);
-
 
 	if (ImGui::BeginMenu(u8"툴"))
 	{
@@ -107,20 +84,14 @@ void CImgui_Manager::Render()
 	ImGui::EndFrame();
 	ImGui::Render();
 
-	
-	//ID3D11RenderTargetView* g_mainRenderTargetView = CGameInstance::GetInstance()->Get_Graphic_Dev()->Get_RTV();
-	//m_pContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
-
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-	
-	if (m_pIo->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 	}
 }
-
-
 
 CImgui_Manager* CImgui_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
@@ -138,13 +109,39 @@ void CImgui_Manager::Free()
 {
 	__super::Free();
 
-	
+
 	Safe_Release(m_pContext);
 	Safe_Release(m_pDevice);
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+}
+
+char* CImgui_Manager::ConvertWCtoC(const wchar_t* str)
+{
+	//반환할 char* 변수 선언
+	char* pStr;
+	//입력받은 wchar_t 변수의 길이를 구함
+	int strSize = WideCharToMultiByte(CP_ACP, 0, str, -1, NULL, 0, NULL, NULL);
+	//char* 메모리 할당
+	pStr = new char[strSize];
+	//형 변환
+	WideCharToMultiByte(CP_ACP, 0, str, -1, pStr, strSize, 0, 0);
+	return pStr;
+}
+
+wchar_t* CImgui_Manager::ConvertCtoWC(const char* str)
+{
+	//wchar_t형 변수 선언
+	wchar_t* pStr;
+	//멀티 바이트 크기 계산 길이 반환
+	int strSize = MultiByteToWideChar(CP_ACP, 0, str, -1, NULL, NULL);
+	//wchar_t 메모리 할당
+	pStr = new WCHAR[strSize];
+	//형 변환
+	MultiByteToWideChar(CP_ACP, 0, str, (int)strlen(str) + 1, pStr, strSize);
+	return pStr;
 }
 
 
@@ -169,7 +166,7 @@ void CImgui_Manager::ShowMapTool()
 			ImGui::EndTabItem();
 		}
 		//! 환경 탭 종료
-		
+
 		//! 높이 탭 시작
 		if (ImGui::BeginTabItem(u8"높이"))
 		{
@@ -177,7 +174,7 @@ void CImgui_Manager::ShowMapTool()
 			ImGui::EndTabItem();
 		}
 		//! 높이 탭 종료
-		
+
 		ImGui::EndTabBar();
 	}
 	ImGui::End();

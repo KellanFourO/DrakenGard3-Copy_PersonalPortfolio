@@ -21,14 +21,15 @@ public:
 	static CImgui_Manager* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;
 
+
+private:
+	char*	ConvertWCtoC(const wchar_t* str);
+	wchar_t* ConvertCtoWC(const char* str);
+
 private:
 	ID3D11Device*		 m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pContext = { nullptr };
-	
-
-	//ImGuiIO*			 m_pIo = { nullptr };
 	_bool				 m_bMainTool = { true };
-
 	_bool				 m_bMapTool, m_bEffectTool, m_bObjectTool, m_bCameraTool = { false };
 
 private:

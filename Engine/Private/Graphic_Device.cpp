@@ -11,7 +11,7 @@ HRESULT CGraphic_Device::Initialize(const GRAPHIC_DESC& GraphicDesc, ID3D11Devic
 	
 	_uint iFlag = 0;
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	iFlag = D3D11_CREATE_DEVICE_DEBUG;
 #endif
 	
@@ -91,6 +91,13 @@ HRESULT CGraphic_Device::Clear_DepthStencil_View()
 	return S_OK;
 }
 
+HRESULT CGraphic_Device::Resize(UINT iWidth, UINT iHeight)
+{
+	m_pSwapChain->ResizeBuffers(0, iWidth, iHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+
+	return S_OK;
+}
+
 HRESULT CGraphic_Device::Present()
 {
 	if (nullptr == m_pSwapChain)
@@ -123,7 +130,7 @@ HRESULT CGraphic_Device::Ready_SwapChain(HWND hWnd, GRAPHIC_DESC::WINMODE eWinMo
 	SwapChain.BufferDesc.Width = iWinCX;
 	SwapChain.BufferDesc.Height = iWinCY;
 
-
+	SwapChain.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	SwapChain.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	SwapChain.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	SwapChain.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
