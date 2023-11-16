@@ -36,7 +36,7 @@ void CCamera::Late_Tick(_float fTimeDelta)
 {
 }
 
-HRESULT CCamera::Render() const
+HRESULT CCamera::Render()
 {
 	return S_OK;
 }

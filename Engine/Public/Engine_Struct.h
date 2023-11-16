@@ -1,5 +1,3 @@
-#ifndef Engine_Struct_h__
-#define Engine_Struct_h__
 
 namespace Engine
 {
@@ -14,12 +12,7 @@ namespace Engine
 
 	}GRAPHIC_DESC;
 
-	typedef struct tagCameraDesc
-	{
-		_float4 vEye, vAt, vUp;
-		_float fFovY, fAspect, fNear, fFar;
 
-	}CAMERA_DESC;
 
 	typedef struct tagPassDesc
 	{
@@ -28,13 +21,24 @@ namespace Engine
 		ID3D11InputLayout* layout = { nullptr };
 	}PASS_DESC;
 
-	typedef struct tagVertex_Position_Texcoord
+	typedef struct ENGINE_DLL tagVertex_Position_Texcoord
 	{
 		XMFLOAT3		vPosition;
 		XMFLOAT2		vTexcoord;
+
+		static const unsigned int				iNumElements = 2;
+		static const D3D11_INPUT_ELEMENT_DESC   Elements[iNumElements];
 	}VTXPOSTEX;
+
+	typedef struct ENGINE_DLL tagVertex_Position_Normal_Texcoord
+	{
+		XMFLOAT3		vPosition;
+		XMFLOAT3		vNormal;
+		XMFLOAT2		vTexcoord;
+
+		static const unsigned int					iNumElements = 3;
+		static const D3D11_INPUT_ELEMENT_DESC		Elements[iNumElements];
+	}VTXNORTEX;
 }
 
 
-
-#endif // Engine_Struct_h__

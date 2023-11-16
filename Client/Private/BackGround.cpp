@@ -43,7 +43,7 @@ void CBackGround::Late_Tick(_float fTimeDelta)
 		return;
 }
 
-HRESULT CBackGround::Render() const
+HRESULT CBackGround::Render()
 {
 	return S_OK;
 }

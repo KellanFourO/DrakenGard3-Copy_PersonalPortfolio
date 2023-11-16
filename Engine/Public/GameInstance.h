@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Renderer.h"
+#include "Component_Manager.h"
 
 /* 클라이언트에서 엔진의 기능을 사용하기위해 반드시 거쳐야하는 객체. */
 
@@ -42,6 +43,10 @@ public: /* For.Object_Manager */
 	HRESULT Add_Prototype(const wstring& strPrototypeTag, class CGameObject* pPrototype);
 	HRESULT Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr);
 
+public: /* For.Component_Manager */
+	HRESULT Add_Prototype(_uint iLevelIndex, const wstring & strPrototypeTag, class CComponent* pPrototype);
+	class CComponent* Clone_Component(_uint iLevelIndex, const wstring & strPrototypeTag, void* pArg);
+
 public: /* For.Renderer */
 	HRESULT Add_RenderGroup(CRenderer::RENDERGROUP eGroupID, class CGameObject* pGameObject);
 	
@@ -51,6 +56,7 @@ private:
 	class CTimer_Manager*			m_pTimer_Manager = { nullptr };
 	class CLevel_Manager*			m_pLevel_Manager = { nullptr };
 	class CObject_Manager*			m_pObject_Manager = { nullptr };
+	class CComponent_Manager*		m_pComponent_Manager = { nullptr };
 	class CRenderer*				m_pRenderer = { nullptr };
 
 public:

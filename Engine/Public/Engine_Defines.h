@@ -1,8 +1,11 @@
 #pragma once
 
+#pragma warning(disable : 4251)
+
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "Effects11/d3dx11effect.h"
+#include <d3dcompiler.h>
 using namespace DirectX; //! XMFLOAT등등의 자료형을 사용하기위함.
 
 #include <unordered_map>
@@ -12,10 +15,11 @@ using namespace DirectX; //! XMFLOAT등등의 자료형을 사용하기위함.
 #include <map>
 using namespace std;
 
-#include "Engine_Function.h"
 #include "Engine_Macro.h"
-#include "Engine_Typedef.h"
 #include "Engine_Struct.h"
+#include "Engine_Function.h"
+
+#include "Engine_Typedef.h"
 
 
 using namespace Engine;

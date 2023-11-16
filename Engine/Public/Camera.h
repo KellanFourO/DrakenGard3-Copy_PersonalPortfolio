@@ -6,6 +6,13 @@ BEGIN(Engine)
 
 class ENGINE_DLL CCamera abstract : public CGameObject
 {
+	typedef struct tagCameraDesc
+	{
+		_float4 vEye, vAt, vUp;
+		_float fFovY, fAspect, fNear, fFar;
+
+	}CAMERA_DESC;
+
 protected:
 	CCamera(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CCamera(const CCamera& rhs);
@@ -17,7 +24,7 @@ public:
 	virtual void	Priority_Tick(_float fTimeDelta) override;
 	virtual void	Tick(_float fTimeDelta) override;
 	virtual void	Late_Tick(_float fTimeDelta) override;
-	virtual HRESULT Render() const override;
+	virtual HRESULT Render() override;
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

@@ -70,43 +70,8 @@ HRESULT CVIBuffer::Bind_VIBuffers()
 	///* DX9기준, 정점의 변환을 장치가 알아서 수행한다(고정기능렌더링파이프라인)(.*/
 	//m_pContext->SetFVF(D3DFVF_XYZ | D3DFVF_TEX1);
 
-	/* InputLayout : 내가 그리기위해 사용하는 정점의 입력정보.  */
-	/* dx11에서는 고정기능 렌더링파이프라인에 대한 기능이 삭제되었다. */
-	/* 우리가 직접 렌더링 파이프라인을 수행해야한다.(사용자정의 렌더링파이프라인) -> Shader */
-	/* 그래서 우리에겐 반드시 셰이더가 필요하다. */
-	/* 우리가 이 정점들을 그리기위해서는 셰이더가 필요하고, 이 셰이더는 반드시 내가 그릴려고하는 정점을 받아줄 수 있어야한다. */
-	/* 내가 그리려고하는 정점이 사용하려고하는 셰이더에 입력이 가능한지?에 대한 체크를 사전에 미리 처리하고.
-	가능하다면 dx11이 InputLayout이란 객체를 만들어준다. */
-	D3D11_INPUT_ELEMENT_DESC		Elements[] = {
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	};
-
-// 	Elements[0].SemanticName = "POSITION";
-// 	Elements[0].SemanticIndex = 0;
-// 	Elements[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-// 	Elements[0].InputSlot = 0;
-// 	Elements[0].AlignedByteOffset = 0;
-// 	Elements[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-// 	Elements[0].InstanceDataStepRate = 0;
-
-
-	_uint NumElements = { 0 };
-	NumElements = sizeof(Elements) / sizeof(Elements[0]);
-		
-	ID3D10Blob* errorBlob = nullptr;
-	DWORD ShaderFlags = D3D10_SHADER_ENABLE_STRICTNESS;
 	
-	#ifndef _DEBUG
-	ShaderFlags = D3DCOMPILE_DEBUG;
-	#endif
 
-
-
-	//D3DX11CompileEffectFromFile(L"../Bin/ShaderFiles/VertexShader.hlsl", nullptr,);
-
-	/*m_pDevice->CreateInputLayout(Elements, );
-	m_pContext->IASetInputLayout();*/
 
 
 	return S_OK;

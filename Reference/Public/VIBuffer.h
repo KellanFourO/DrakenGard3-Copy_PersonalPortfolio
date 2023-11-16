@@ -24,8 +24,8 @@ public:
 	virtual HRESULT Render();
 
 public:
-	HRESULT Bind_VIBuffers();
 	//TODO 정점, 인덱스, 인스턴스 버퍼들을 생성한다.
+	HRESULT Bind_VIBuffers();
 	HRESULT Create_Buffer(_Inout_ ID3D11Buffer * *ppBuffer);
 	//! 아래 주석에서 설명하듯 버퍼타입이 동일하기에 Create_Buffer 함수 하나로 한번에 처리가 가능해진다.
 
@@ -53,11 +53,16 @@ protected:
 	D3D11_SUBRESOURCE_DATA		m_SubResourceData;
 
 protected:
-	_uint				m_iNumVertices = { 0 }; //! 정점 개수
-	_uint				m_iStride = { 0 }; //! 정점 하나의 크기
+	_uint						m_iNumVertices = { 0 }; //! 정점 개수
+	_uint						m_iStride = { 0 }; //! 정점 하나의 크기
+	_uint						m_iNumVertexBuffers = { 0 };
 
-	_uint				m_iNumIndices = { 0 }; //! 인덱스 개수
-	_uint				m_iIndexStride = { 0 }; //! 인덱스 하나의 크기
+	_uint						m_iNumIndices = { 0 }; //! 인덱스 개수
+	_uint						m_iIndexStride = { 0 }; //! 인덱스 하나의 크기
+	DXGI_FORMAT					m_eIndexFormat = {  };
+	D3D11_PRIMITIVE_TOPOLOGY	m_eTopology = { };
+
+	
 
 public:
 	virtual CComponent* Clone(void* pArg) = 0; //! 복사를 강제한다

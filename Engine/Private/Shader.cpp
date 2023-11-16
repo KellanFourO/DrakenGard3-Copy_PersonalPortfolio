@@ -8,13 +8,58 @@ CShader::CShader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 CShader::CShader(const CShader& rhs)
 	: CComponent(rhs)
 	, m_pEffect(rhs.m_pEffect)
+	, m_InputLayouts(rhs.m_InputLayouts)
+	, m_TechniqueDesc(rhs.m_TechniqueDesc)
 {
+	for (auto& pInputLayout : m_InputLayouts)
+	{
+		Safe_AddRef(pInputLayout); //! vector(m_InputLayouts)안의 InputLayout 컴객체를 포인터로 참조하고있다. 루프 돌면서 레퍼런스 올리자
+	}
+
 	Safe_AddRef(m_pEffect);
 }
 
-HRESULT CShader::Initialize_Prototype(const wstring& strShaderFilePath)
+HRESULT CShader::Initialize_Prototype(const wstring& strShaderFilePath, const D3D11_INPUT_ELEMENT_DESC* pElements, _uint iNumElements)
 {
+	_uint	iHlslFlag = 0;
+
+	#ifdef _DEBUG
+		iHlslFlag = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+	#else
+		iHlslFlag = D3DCOMPILE_OPTIMIZATION_LEVEL1; //! 가장 최소한의 최적화를 사용하겠다.
+	#endif
+
 	//!strShaderFilePath 경로에 작성되어 있는 hlsl언어 번역 빌드하여 ID3DX11Effect라는 녀석을 만들자
+	if(FAILED(D3DX11CompileEffectFromFile(strShaderFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,iHlslFlag,0, m_pDevice,&m_pEffect, nullptr)))
+		return E_FAIL;
+
+	ID3DX11EffectTechnique*	pTechnique = m_pEffect->GetTechniqueByIndex(0); //! 우리는 테크니크 한개니까 0으로하자
+	if(nullptr == pTechnique)
+		return E_FAIL;
+
+	pTechnique->GetDesc(&m_TechniqueDesc);
+
+	for (size_t i = 0; i < m_TechniqueDesc.Passes; i++)
+	{
+		ID3DX11EffectPass*	pPass = pTechnique->GetPassByIndex(i);
+		
+		D3DX11_PASS_DESC	PassDesc;
+		pPass->GetDesc(&PassDesc);
+
+		/* InputLayout : 내가 그리기위해 사용하는 정점의 입력정보.  */
+	    /* dx11에서는 고정기능 렌더링파이프라인에 대한 기능이 삭제되었다. */
+	    /* 우리가 직접 렌더링 파이프라인을 수행해야한다.(사용자정의 렌더링파이프라인) -> Shader */
+	    /* 그래서 우리에겐 반드시 셰이더가 필요하다. */
+	    /* 우리가 이 정점들을 그리기위해서는 셰이더가 필요하고, 이 셰이더는 반드시 내가 그릴려고하는 정점을 받아줄 수 있어야한다. */
+	    /* 내가 그리려고하는 정점이 사용하려고하는 셰이더에 입력이 가능한지?에 대한 체크를 사전에 미리 처리하고.
+	    가능하다면 dx11이 InputLayout이란 객체를 만들어준다. */
+		ID3D11InputLayout*	pInputLayout = nullptr;
+
+		if(FAILED(m_pDevice->CreateInputLayout(pElements,iNumElements,PassDesc.pIAInputSignature,PassDesc.IAInputSignatureSize,&pInputLayout)))
+			return E_FAIL;
+
+		m_InputLayouts.push_back(pInputLayout);
+	}
 
 	return S_OK;
 }
@@ -24,12 +69,30 @@ HRESULT CShader::Initialize(void* pArg)
 	return S_OK;
 }
 
-CShader* CShader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strShaderFilePath)
+HRESULT CShader::Begin(_uint iPassIndex)
+{
+	if(iPassIndex >= m_TechniqueDesc.Passes)
+		return E_FAIL;
+
+	ID3DX11EffectTechnique* pTechnique = m_pEffect->GetTechniqueByIndex(0); //! 테크니크 한개잖아.
+	if(nullptr == pTechnique)
+		return E_FAIL;
+
+	ID3DX11EffectPass*	pPass = pTechnique->GetPassByIndex(iPassIndex);
+
+	pPass->Apply(0, m_pContext); //! 패스는 0으로 고정
+
+	m_pContext->IASetInputLayout(m_InputLayouts[iPassIndex]);
+	
+	return S_OK;
+}
+
+CShader* CShader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strShaderFilePath, const D3D11_INPUT_ELEMENT_DESC* pElements, _uint iNumElements)
 {
 	CShader* pInstance = new CShader(pDevice, pContext);
 
 	/* 원형객체를 초기화한다.  */
-	if (FAILED(pInstance->Initialize_Prototype(strShaderFilePath)))
+	if (FAILED(pInstance->Initialize_Prototype(strShaderFilePath, pElements, iNumElements)))
 	{
 		MSG_BOX("Failed to Created : CShader");
 		Safe_Release(pInstance);
@@ -39,12 +102,25 @@ CShader* CShader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, c
 
 CComponent* CShader::Clone(void* pArg)
 {
-	return nullptr;
+	CShader* pInstance = new CShader(*this);
+
+	/* 원형객체를 초기화한다.  */
+	if (FAILED(pInstance->Initialize(pArg)))
+	{
+		MSG_BOX("Failed to Cloned : CShader");
+		Safe_Release(pInstance);
+	}
+	return pInstance;
 }
 
 void CShader::Free()
 {
 	__super::Free();
+
+	for (auto& pInputLayout : m_InputLayouts)
+	{
+		Safe_Release(pInputLayout);
+	}
 
 	Safe_Release(m_pEffect);
 }

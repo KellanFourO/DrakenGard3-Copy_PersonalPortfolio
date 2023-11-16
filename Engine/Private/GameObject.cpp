@@ -48,7 +48,7 @@ void CGameObject::Late_Tick(_float fTimeDelta)
 {
 }
 
-HRESULT CGameObject::Render() const
+HRESULT CGameObject::Render()
 {
 	return S_OK;
 }
