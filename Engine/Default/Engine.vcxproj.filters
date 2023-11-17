@@ -76,6 +76,12 @@
     <Filter Include="01. Utility\03. Components\99. Manager">
       <UniqueIdentifier>{cb9b957b-07cb-40f3-8bd3-fe69fdcaff14}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\50. BrainTree">
+      <UniqueIdentifier>{8f3173b8-df10-4f93-8844-c94e272f96a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\50. BrainTree\Nodes">
+      <UniqueIdentifier>{f119efed-a87b-4677-b335-35e4aaacfc96}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -147,6 +153,9 @@
     <ClInclude Include="..\public\Component_Manager.h">
       <Filter>01. Utility\03. Components\99. Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BehaviorTree.h">
+      <Filter>01. Utility\50. BrainTree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -205,6 +214,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Component_Manager.cpp">
       <Filter>01. Utility\03. Components\99. Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BehaviorTree.cpp">
+      <Filter>01. Utility\50. BrainTree</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

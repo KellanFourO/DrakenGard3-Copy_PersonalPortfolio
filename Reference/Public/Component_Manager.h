@@ -18,6 +18,7 @@ public:
 	HRESULT Initialize(_uint iNumLevels);
 	HRESULT Add_Prototype(_uint iLevelIndex, const wstring& strPrototypeTag, class CComponent* pPrototype);
 	class CComponent* Clone_Component(_uint iLevelIndex, const wstring& strPrototypeTag, void* pArg);
+	void	Clear(_uint iLevelIndex);
 
 private:
 	_uint		m_iNumLevels = { 0 };

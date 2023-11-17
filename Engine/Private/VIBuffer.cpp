@@ -9,6 +9,15 @@ CVIBuffer::CVIBuffer(const CVIBuffer& rhs)
 	: CComponent(rhs)
 	, m_pVB(rhs.m_pVB)
 	, m_pIB(rhs.m_pIB)
+	, m_BufferDesc(rhs.m_BufferDesc)
+	, m_SubResourceData(rhs.m_SubResourceData)
+	, m_iNumVertices(rhs.m_iNumVertices)
+	, m_iStride(rhs.m_iStride)
+	, m_iNumVertexBuffers(rhs.m_iNumVertexBuffers)
+	, m_iNumIndices(rhs.m_iNumIndices)
+	, m_iIndexStride(rhs.m_iIndexStride)
+	, m_eIndexFormat(rhs.m_eIndexFormat)
+	, m_eTopology(rhs.m_eTopology)
 {
 	Safe_AddRef(m_pVB);
 	Safe_AddRef(m_pIB);

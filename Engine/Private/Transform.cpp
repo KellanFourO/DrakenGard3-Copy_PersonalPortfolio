@@ -13,12 +13,27 @@ CTransform::CTransform(const CTransform& rhs)
 
 HRESULT CTransform::Initialize_Prototype()
 {
+	
+
 	return S_OK;
 }
 
 HRESULT CTransform::Initialize(void* pArg)
 {
 	return S_OK;
+}
+
+CTransform* CTransform::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+{
+	CTransform* pInstance = new CTransform(pDevice, pContext);
+
+	/* 원형객체를 초기화한다.  */
+	if (FAILED(pInstance->Initialize_Prototype()))
+	{
+		MSG_BOX("Failed to Created : CTransform");
+		Safe_Release(pInstance);
+	}
+	return pInstance;
 }
 
 CComponent* CTransform::Clone(void* pArg)

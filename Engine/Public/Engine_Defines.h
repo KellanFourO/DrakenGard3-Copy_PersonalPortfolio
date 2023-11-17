@@ -8,11 +8,24 @@
 #include <d3dcompiler.h>
 using namespace DirectX; //! XMFLOAT등등의 자료형을 사용하기위함.
 
+#define  RAPIDJSON_HAS_STDSTRING 1
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
+using namespace rapidjson;
+
+#include "BrainTree/BrainTree.h"
+
+namespace BT = BrainTree;
+
+using namespace BT;
+
 #include <unordered_map>
 #include <algorithm>
 #include <vector>
 #include <list>
 #include <map>
+#include <typeinfo>
 using namespace std;
 
 #include "Engine_Macro.h"
@@ -21,6 +34,10 @@ using namespace std;
 
 #include "Engine_Typedef.h"
 
+namespace Engine
+{
+	static const wchar_t*	g_pTransformTag = TEXT("Com_Transform");
+}
 
 using namespace Engine;
 

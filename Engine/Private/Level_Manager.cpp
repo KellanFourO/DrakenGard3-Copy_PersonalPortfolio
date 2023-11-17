@@ -34,12 +34,12 @@ HRESULT CLevel_Manager::Open_Level(_uint iCurrentLevelIndex, CLevel* pNewLevel)
 	if (nullptr == pNewLevel)
 		return E_FAIL;
 
+	//! 맨 처음을 제외한 기존레벨의 자원들을 정리하기위한 예외조건
+	if(nullptr != m_pCurrentLevel)
+		m_pGameInstance->Clear(m_iCurrentLevelIndex);
+
 	if (0 != Safe_Release(m_pCurrentLevel))
 		return E_FAIL;
-
-	/* 자원들을 정리한다. */
-	
-	m_pGameInstance->Clear(m_iCurrentLevelIndex); //! 이전 레벨 자원 삭제
 	
 	m_pCurrentLevel = pNewLevel;
 

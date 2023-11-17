@@ -75,13 +75,15 @@ HRESULT CGameInstance::Render_Engine()
 
 void CGameInstance::Clear(_uint iLevelIndex)
 {
-	if(nullptr == m_pObject_Manager)
+	if(nullptr == m_pObject_Manager
+	 || nullptr == m_pComponent_Manager)
 		return;
 
 	//! 오브젝트 매니져에 레벨별로 구분 해 놓은 객체들 중 특정된 객체들을 지운다.
 	m_pObject_Manager->Clear(iLevelIndex);
 
 	//! 컴포넌트 매니져에 레벨별로 구분 해 놓은 컴포넌트들 중 특정된 객체들을 지운다.
+	m_pComponent_Manager->Clear(iLevelIndex);
 }
 
 

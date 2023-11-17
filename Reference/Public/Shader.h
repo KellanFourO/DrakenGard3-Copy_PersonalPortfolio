@@ -17,6 +17,7 @@ public:
 
 public:
 	HRESULT Begin(_uint iPassIndex);
+	HRESULT	Bind_Matrix(const _char* pConstantName, const _float4x4* pMatrix);
 
 private:
 	//!내가 빌드하여 컴파일한 셰이더 파일 하나를 대표하는 컴객체

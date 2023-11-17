@@ -14,6 +14,9 @@ protected:
 public:
 	virtual HRESULT Initialize_Prototype(); //! 프로토타입 패턴을 사용한다는 것을 알 수 있다
 	virtual HRESULT Initialize(void* pArg);
+	virtual void	Priority_Tick(_float fTimeDelta) {};
+	virtual void	Tick(_float fTimeDelta) {};
+	virtual void	Late_Tick(_float fTimeDelta) {};
 
 protected:
 	//TODO 컴포넌트가 장치를 들고있어야하는 이유

@@ -22,6 +22,9 @@ HRESULT CMainApp::Initialize()
 	if(FAILED(m_pGameInstance->Initialize_Engine(LEVEL_END, GraphicDesc, &m_pDevice, &m_pContext)))
 		return E_FAIL;
 
+	if (FAILED(Ready_Prototype_Component_ForStaticLevel()))
+		return E_FAIL;
+
 	if(FAILED(Open_Level(LEVEL_LOGO)))
 		return E_FAIL;
 
@@ -45,6 +48,8 @@ HRESULT CMainApp::Render()
 	m_pGameInstance->Present();
 
 	return S_OK;
+
+
 }
 
 HRESULT CMainApp::Open_Level(LEVEL eStartLevelID)

@@ -24,13 +24,19 @@ namespace Engine
 	typedef		double						_double;	
 
 	/* 저장용 데이터 타입. */
+	typedef		XMFLOAT4X4					_float4x4;
+
+	/* 연산용 데이터 타입. */
+	typedef		XMMATRIX					_matrix;
+
+	/* 저장용 데이터 타입. */
 	typedef		XMFLOAT4					_float4;
 	typedef		XMFLOAT3					_float3;
 	typedef		XMFLOAT2					_float2;
 
 	/* 연산용 데이터 타입. */
 	typedef		XMVECTOR					_vector;
-	typedef		XMFLOAT4X4					_matrix;
+	
 }
 
 #endif // Engine_Typedef_h__

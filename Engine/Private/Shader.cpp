@@ -80,11 +80,31 @@ HRESULT CShader::Begin(_uint iPassIndex)
 
 	ID3DX11EffectPass*	pPass = pTechnique->GetPassByIndex(iPassIndex);
 
-	pPass->Apply(0, m_pContext); //! 패스는 0으로 고정
+	pPass->Apply(0, m_pContext); //! 패스는 0으로 고정, Apply는 장치에게 이 패스를 사용해서 그릴 것이라고 알림.
 
 	m_pContext->IASetInputLayout(m_InputLayouts[iPassIndex]);
 	
 	return S_OK;
+}
+
+HRESULT CShader::Bind_Matrix(const _char* pConstantName, const _float4x4* pMatrix)
+{
+	//! 이 셰이더에 선언되어 있는 전역변수(인자값으로 들어온 이름과 같은)의 핸들을 얻어온다.
+	ID3DX11EffectVariable*	pVariable = m_pEffect->GetVariableByName(pConstantName);
+
+	//! 만약, 셰이더파일내의 이름이 일치하는 전역변수가 없다면 리턴
+	if(nullptr == pVariable)
+		return E_FAIL;
+
+	//! 행렬 타입 전역변수핸들의 행렬 가져오기
+	ID3DX11EffectMatrixVariable*	pMatrixVariable = pVariable->AsMatrix();
+	if(nullptr == pMatrixVariable)
+		return E_FAIL;
+	
+	//! 행렬 타입 전역변수의 값을 인자값으로 들어온 행렬로 채워준다.
+	//! 이로 인해, 우리는 클라이언트에서 셰이더 파일에게 행렬을 던져준 것.
+	return pMatrixVariable->SetMatrix((_float*)pMatrix);
+
 }
 
 CShader* CShader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strShaderFilePath, const D3D11_INPUT_ELEMENT_DESC* pElements, _uint iNumElements)

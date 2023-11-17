@@ -39,6 +39,17 @@ CComponent* CComponent_Manager::Clone_Component(_uint iLevelIndex, const wstring
 	return pComponent;
 }
 
+void CComponent_Manager::Clear(_uint iLevelIndex)
+{
+	if(iLevelIndex >= m_iNumLevels) //! 레벨 개수보다 들어온 인자값이 클때의 예외처리
+		return;
+
+	for(auto& Pair : m_pPrototypes[iLevelIndex]) //! 해당레벨의 원형객체를 지워준다.
+		Safe_Release(Pair.second);
+
+	m_pPrototypes[iLevelIndex].clear();
+}
+
 CComponent* CComponent_Manager::Find_Prototype(_uint iLevelIndex, const wstring& strPrototypeTag)
 {
 	auto iter = m_pPrototypes[iLevelIndex].find(strPrototypeTag);
