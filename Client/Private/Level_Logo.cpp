@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\Public\Level_Logo.h"
 #include "GameInstance.h"
+#include "BackGround.h"
 
 #include "Level_Loading.h"
 
@@ -37,7 +38,16 @@ HRESULT CLevel_Logo::Render()
 
 HRESULT CLevel_Logo::Ready_Layer_BackGround(const wstring& strLayerTag)
 {
-	if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_BackGround"))))
+	CBackGround::BACKGROUND_DESC	BackGroundDesc = {};
+
+	BackGroundDesc.fX = g_iWinSizeX >> 1;
+	BackGroundDesc.fY = g_iWinSizeY >> 1;
+	BackGroundDesc.fSizeX = g_iWinSizeX;
+	BackGroundDesc.fSizeY = g_iWinSizeY;
+	BackGroundDesc.fRotationPerSec = XMConvertToRadians(90.f);
+	BackGroundDesc.fSpeedPerSec = 10.0f;
+
+	if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_BackGround"), &BackGroundDesc)))
 		return E_FAIL;
 
 	return S_OK;

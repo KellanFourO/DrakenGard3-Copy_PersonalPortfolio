@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Shader.h"
+#include "Transform.h"
 #include "VIBuffer_Rect.h"
 
 //! 원형 컴포넌트들을 레벨별로 보관할 것이다.

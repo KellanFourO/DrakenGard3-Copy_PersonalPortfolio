@@ -24,6 +24,13 @@ HRESULT CBackGround::Initialize_Prototype()
 
 HRESULT CBackGround::Initialize(void* pArg)
 {
+	BACKGROUND_DESC*	pDesc = (BACKGROUND_DESC*)pArg;
+
+	m_fX = pDesc->fX;
+	m_fY = pDesc->fY;
+	m_fSizeX = pDesc->fSizeX;
+	m_fSizeY = pDesc->fSizeY;
+
 	//TODO TransformCom 객체는 월드상에서 보여줄 게임 객체들은 전부 가지고있어야한다. 거의 대다수의 경우가 필요하기에
 	//TODO 부모객체인 GameObject에서 만들어 줄 것이다. 그래서 부모객체의 Initialize 함수를 호출한다
 	if(FAILED(__super::Initialize(pArg))) 
@@ -31,6 +38,17 @@ HRESULT CBackGround::Initialize(void* pArg)
 
 	if(FAILED(Ready_Components()))
 		return E_FAIL;
+
+	m_pTransformCom->Set_Scaling(m_fSizeX, m_fSizeY, 1.f);
+	
+	m_pTransformCom->Set_State
+	(
+		CTransform::STATE_POSITION, XMVectorSet(m_fX - g_iWinSizeX * 0.5f, -m_fY + g_iWinSizeY * 0.5f, 0.f, 1.f)
+	);
+	
+	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
+	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(g_iWinSizeX, g_iWinSizeY, 0.f, 1.f));
+
 
 	return S_OK;
 }
@@ -43,6 +61,16 @@ void CBackGround::Priority_Tick(_float fTimeDelta)
 void CBackGround::Tick(_float fTimeDelta)
 {
 	int i = 0;
+
+	//if (GetKeyState(VK_LEFT) & 0x8000)
+	//	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
+	//if (GetKeyState(VK_RIGHT) & 0x8000)
+	//	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+
+	//if (GetKeyState(VK_UP) & 0x8000)
+	//	m_pTransformCom->Go_Straight(fTimeDelta);
+	//if (GetKeyState(VK_DOWN) & 0x8000)
+	//	m_pTransformCom->Go_Backward(fTimeDelta);
 }
 
 void CBackGround::Late_Tick(_float fTimeDelta)
@@ -89,17 +117,11 @@ HRESULT CBackGround::Ready_Components()
 
 HRESULT CBackGround::Bind_ShaderResources()
 {
-	//!저장용 행렬 데이터타입
-	_float4x4	Matrix;
-
-	//!항등행렬로 저장시키겠다. 
-	XMStoreFloat4x4(&Matrix, XMMatrixIdentity()); 
-
-	if(FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &Matrix)))
+	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &Matrix)))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &Matrix)))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 	
 	return S_OK;
@@ -134,4 +156,7 @@ CGameObject* CBackGround::Clone(void* pArg)
 void CBackGround::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pVIBufferCom);
+	Safe_Release(m_pShaderCom);
 }

@@ -11,6 +11,12 @@ BEGIN(Client)
 
 class CBackGround final : public CGameObject
 {
+public:
+	typedef struct tagBackGroundDesc : public CGameObject::GAMEOBJECT_DESC
+	{
+		_float		fX, fY, fSizeX, fSizeY;
+	}BACKGROUND_DESC;
+
 private:
 	CBackGround(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CBackGround(const CBackGround& rhs);
@@ -23,6 +29,10 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+
+private:
+	_float			m_fX, m_fY, m_fSizeX, m_fSizeY;
+	_float4x4		m_ViewMatrix, m_ProjMatrix;
 
 private:
 	CShader*		m_pShaderCom = { nullptr };

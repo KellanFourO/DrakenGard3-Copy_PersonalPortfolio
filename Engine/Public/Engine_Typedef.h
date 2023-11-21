@@ -28,6 +28,8 @@ namespace Engine
 
 	/* 연산용 데이터 타입. */
 	typedef		XMMATRIX					_matrix;
+	typedef		FXMMATRIX					_fmatrix;
+	typedef		CXMMATRIX					_cmatrix;
 
 	/* 저장용 데이터 타입. */
 	typedef		XMFLOAT4					_float4;
@@ -36,6 +38,10 @@ namespace Engine
 
 	/* 연산용 데이터 타입. */
 	typedef		XMVECTOR					_vector;
+	typedef		FXMVECTOR					_fvector;
+	typedef		GXMVECTOR					_gvector;
+	typedef		HXMVECTOR					_hvector;
+	typedef		CXMVECTOR					_cvector;
 	
 }
 

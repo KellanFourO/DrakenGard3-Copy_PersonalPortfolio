@@ -5,7 +5,11 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "Effects11/d3dx11effect.h"
+#include "DirectXTK/DDSTextureLoader.h" //TODO DDS 텍스처 로드전용
+#include "DirectXTK/WICTextureLoader.h" //TODO 윈도우 텍스처 로드전용 ( bmp, jpg, png 등등 )
+
 #include <d3dcompiler.h>
+
 using namespace DirectX; //! XMFLOAT등등의 자료형을 사용하기위함.
 
 #define  RAPIDJSON_HAS_STDSTRING 1

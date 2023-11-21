@@ -31,12 +31,19 @@ HRESULT CGameObject::Initialize_Prototype()
 
 HRESULT CGameObject::Initialize(void* pArg)
 {
-	m_pTransformCom = CTransform::Create(m_pDevice, m_pContext);
+	GAMEOBJECT_DESC Desc = {};
+
+	if(nullptr != pArg)
+		Desc = *(GAMEOBJECT_DESC*)pArg;
+
+	m_pTransformCom = CTransform::Create(m_pDevice, m_pContext, Desc.fSpeedPerSec, Desc.fRotationPerSec);
 	if(nullptr == m_pTransformCom)
 		return E_FAIL;
 
 	if(nullptr != Find_Component(g_pTransformTag))
 		return E_FAIL;
+
+	m_Components.emplace(g_pTransformTag, m_pTransformCom);
 
 	return S_OK;
 }

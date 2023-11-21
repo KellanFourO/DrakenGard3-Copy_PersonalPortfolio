@@ -6,6 +6,17 @@ BEGIN(Engine)
 
 class ENGINE_DLL CGameObject abstract : public CBase
 {
+public:
+	typedef struct tagGameObjectDesc
+	{
+		tagGameObjectDesc() {}
+		tagGameObjectDesc(_float fSpeed, _float fRotation)
+			: fSpeedPerSec(fSpeed), fRotationPerSec(fRotation) {}
+
+		_float fSpeedPerSec		= 0.f;
+		_float fRotationPerSec	= 0.f;
+
+	}GAMEOBJECT_DESC;
 
 protected:
 	CGameObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
