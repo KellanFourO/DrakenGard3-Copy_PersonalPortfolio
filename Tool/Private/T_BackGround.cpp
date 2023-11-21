@@ -42,7 +42,7 @@ void CT_BackGround::Late_Tick(_float fTimeDelta)
 		return;
 }
 
-HRESULT CT_BackGround::Render() const
+HRESULT CT_BackGround::Render()
 {
 	return S_OK;
 }

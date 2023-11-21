@@ -62,15 +62,15 @@ void CBackGround::Tick(_float fTimeDelta)
 {
 	int i = 0;
 
-	//if (GetKeyState(VK_LEFT) & 0x8000)
-	//	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
-	//if (GetKeyState(VK_RIGHT) & 0x8000)
-	//	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+	if (GetKeyState(VK_LEFT) & 0x8000)
+		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
+	if (GetKeyState(VK_RIGHT) & 0x8000)
+		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 
-	//if (GetKeyState(VK_UP) & 0x8000)
-	//	m_pTransformCom->Go_Straight(fTimeDelta);
-	//if (GetKeyState(VK_DOWN) & 0x8000)
-	//	m_pTransformCom->Go_Backward(fTimeDelta);
+	if (GetKeyState(VK_UP) & 0x8000)
+		m_pTransformCom->Go_Straight(fTimeDelta);
+	if (GetKeyState(VK_DOWN) & 0x8000)
+		m_pTransformCom->Go_Backward(fTimeDelta);
 }
 
 void CBackGround::Late_Tick(_float fTimeDelta)
@@ -112,6 +112,11 @@ HRESULT CBackGround::Ready_Components()
 		TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
 		return E_FAIL;
 
+	//! For.Com_Texture
+	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_Logo"),
+		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -122,6 +127,8 @@ HRESULT CBackGround::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+		return E_FAIL;
+	if(FAILED(m_pTextureCom->Bind_ShaderResourceArray(m_pShaderCom, "g_Texture")))
 		return E_FAIL;
 	
 	return S_OK;
@@ -159,4 +166,5 @@ void CBackGround::Free()
 
 	Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pShaderCom);
+	
 }

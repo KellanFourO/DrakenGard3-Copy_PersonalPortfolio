@@ -19,7 +19,12 @@ CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 _uint APIENTRY LoadingThread(void* pArg)
 {
-
+	//! 쓰레드가 다른 임계메모리영역을 침범해서 생기는 에러를 막기위해 컴객체를 초기화해준다.
+	//! 디바이스 컴객체들은 간혹가다 다른 스레드에서 사용중인 컴객체를 사용하는 경우가 있어 알수없는 버그를 일으킨다.
+	//! 그래서 특정 스레드가 시작될시 DX에서 셋팅해놨던 컴객체들을 이 스레드에서 사용할 수 있도록 다른 스레드에서 사용 중 이었다면 전부 꺼내서 초기화 해주는 함수이다.
+	
+	//! 대표적으로 여기서 많은 에러를 일으켰다., 텍스처를 불러올때 첫번째 이후 텍스처를 로드할 때 터지는 현상이 많이 발생했었다.
+	CoInitializeEx(nullptr, 0);
 
 	CLoader* pLoader = (CLoader*)pArg;
 
@@ -80,6 +85,11 @@ HRESULT CLoader::Loading_For_Logo_Level()
 {
 	/* 로고 레벨에 필요한 자원을 로드하자. */
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로드하는 중입니다."));
+
+	//! For.Prototype_Component_Texture_Logo
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_LOGO, TEXT("Prototype_Component_Texture_Logo"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Default%d.jpg"), 2))))
+		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델를(을) 로드하는 중입니다."));
 

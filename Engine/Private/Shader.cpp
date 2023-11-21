@@ -28,7 +28,8 @@ HRESULT CShader::Initialize_Prototype(const wstring& strShaderFilePath, const D3
 	#else
 		iHlslFlag = D3DCOMPILE_OPTIMIZATION_LEVEL1; //! 가장 최소한의 최적화를 사용하겠다.
 	#endif
-
+	
+	
 	//!strShaderFilePath 경로에 작성되어 있는 hlsl언어 번역 빌드하여 ID3DX11Effect라는 녀석을 만들자
 	if(FAILED(D3DX11CompileEffectFromFile(strShaderFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,iHlslFlag,0, m_pDevice,&m_pEffect, nullptr)))
 		return E_FAIL;
@@ -105,6 +106,63 @@ HRESULT CShader::Bind_Matrix(const _char* pConstantName, const _float4x4* pMatri
 	//! 이로 인해, 우리는 클라이언트에서 셰이더 파일에게 행렬을 던져준 것.
 	return pMatrixVariable->SetMatrix((_float*)pMatrix);
 
+}
+
+HRESULT CShader::Bind_Matrices(const _char* pConstantName, const _float4x4* pMatrix, _uint iNumMatrices)
+{
+	//! 이 셰이더에 선언되어 있는 전역변수(인자값으로 들어온 이름과 같은)의 핸들을 얻어온다.
+	ID3DX11EffectVariable* pVariable = m_pEffect->GetVariableByName(pConstantName);
+
+	//! 만약, 셰이더파일내의 이름이 일치하는 전역변수가 없다면 리턴
+	if (nullptr == pVariable)
+		return E_FAIL;
+
+	//! 행렬 타입 전역변수핸들의 행렬 가져오기
+	ID3DX11EffectMatrixVariable* pMatrixVariable = pVariable->AsMatrix();
+	if (nullptr == pMatrixVariable)
+		return E_FAIL;
+
+	//! 행렬 타입 전역변수의 값을 인자값으로 들어온 행렬로 채워준다.
+	//! 이로 인해, 우리는 클라이언트에서 셰이더 파일에게 행렬을 던져준 것.
+	return pMatrixVariable->SetMatrixArray((_float*)pMatrix,0,iNumMatrices);
+}
+
+HRESULT CShader::Bind_SRV(const _char* pConstantName, ID3D11ShaderResourceView* pSRV)
+{
+	//! 이 셰이더에 선언되어 있는 전역변수(인자값으로 들어온 이름과 같은)의 핸들을 얻어온다.
+	ID3DX11EffectVariable* pVariable = m_pEffect->GetVariableByName(pConstantName);
+
+	//! 만약, 셰이더파일내의 이름이 일치하는 전역변수가 없다면 리턴
+	if (nullptr == pVariable)
+		return E_FAIL;
+
+	//! 셰이더리소스 타입 전역변수핸들의 셰이더리소스 가져오기
+	ID3DX11EffectShaderResourceVariable* pSRVariable = pVariable->AsShaderResource();
+	if (nullptr == pSRVariable)
+		return E_FAIL;
+
+	//! 셰이더 리소스뷰 타입 전역변수의 값을 인자값으로 들어온 셰이더 리소스뷰로 채워준다.
+	//! 이로 인해, 우리는 클라이언트에서 셰이더 파일에게 셰이더 리소스뷰를 던져준 것.
+	return pSRVariable->SetResource(pSRV);
+}
+
+HRESULT CShader::Bind_SRVs(const _char* pConstantName, ID3D11ShaderResourceView** ppSRV, _uint iNumTextures)
+{
+	//! 이 셰이더에 선언되어 있는 전역변수(인자값으로 들어온 이름과 같은)의 핸들을 얻어온다.
+	ID3DX11EffectVariable* pVariable = m_pEffect->GetVariableByName(pConstantName);
+
+	//! 만약, 셰이더파일내의 이름이 일치하는 전역변수가 없다면 리턴
+	if (nullptr == pVariable)
+		return E_FAIL;
+
+	//! 셰이더리소스 타입 전역변수핸들의 셰이더리소스 가져오기
+	ID3DX11EffectShaderResourceVariable* pSRVariable = pVariable->AsShaderResource();
+	if (nullptr == pSRVariable)
+		return E_FAIL;
+
+	//! 셰이더 리소스뷰 타입 전역변수의 값을 인자값으로 들어온 셰이더 리소스뷰로 채워준다.
+	//! 이로 인해, 우리는 클라이언트에서 셰이더 파일에게 셰이더 리소스뷰를 던져준 것.
+	return pSRVariable->SetResourceArray(ppSRV,0, iNumTextures);
 }
 
 CShader* CShader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strShaderFilePath, const D3D11_INPUT_ELEMENT_DESC* pElements, _uint iNumElements)

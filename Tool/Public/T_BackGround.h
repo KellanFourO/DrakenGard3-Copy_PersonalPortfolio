@@ -17,7 +17,7 @@ public:
 	virtual void Priority_Tick(_float fTimeDelta) override;
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
-	virtual HRESULT Render() const override;
+	virtual HRESULT Render() override;
 
 public:
 	static CT_BackGround*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext); //! 원형객체 생성
