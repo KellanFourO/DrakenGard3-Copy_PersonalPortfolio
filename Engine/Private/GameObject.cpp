@@ -45,6 +45,8 @@ HRESULT CGameObject::Initialize(void* pArg)
 
 	m_Components.emplace(g_pTransformTag, m_pTransformCom);
 
+	Safe_AddRef(m_pTransformCom);
+
 	return S_OK;
 }
 
@@ -118,12 +120,12 @@ void CGameObject::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pTransformCom);
+
 	for(auto& Pair : m_Components)
 		Safe_Release(Pair.second);
 
 	m_Components.clear();
-
-	//Safe_Release(m_pTransformCom);
 
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);

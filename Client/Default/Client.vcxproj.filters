@@ -31,6 +31,12 @@
     <Filter Include="97. ShaderFiles">
       <UniqueIdentifier>{24e0b56f-5d1f-4909-aca5-64574300bb2a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\00. BackGround">
+      <UniqueIdentifier>{b50cc984-2aa1-4b9e-a9a7-9fa009b3ce81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\01. Terrain">
+      <UniqueIdentifier>{cbed23a2-648e-4a7e-bf6c-2307327cd5b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -64,7 +70,10 @@
       <Filter>01. Levels\99. Loading\00. Loader</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BackGround.h">
-      <Filter>02. GameObjects</Filter>
+      <Filter>02. GameObjects\00. BackGround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Terrain.h">
+      <Filter>02. GameObjects\01. Terrain</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -90,7 +99,10 @@
       <Filter>01. Levels\99. Loading\00. Loader</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BackGround.cpp">
-      <Filter>02. GameObjects</Filter>
+      <Filter>02. GameObjects\00. BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Terrain.cpp">
+      <Filter>02. GameObjects\01. Terrain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -112,8 +124,11 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsl">
+    <None Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsli">
       <Filter>97. ShaderFiles</Filter>
-    </FxCompile>
+    </None>
+    <None Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsli">
+      <Filter>97. ShaderFiles</Filter>
+    </None>
   </ItemGroup>
 </Project>

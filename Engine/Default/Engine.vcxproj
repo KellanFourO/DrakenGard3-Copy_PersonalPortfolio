@@ -76,7 +76,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\Bin\</OutDir>
+    <OutDir>..\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <IntDir>..\Bin\Intermediate\$(Configuration)\$(PlatformTarget)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -84,7 +84,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\Bin\</OutDir>
+    <OutDir>..\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <IntDir>..\Bin\Intermediate\$(Configuration)\$(PlatformTarget)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -127,8 +127,8 @@
 xcopy "$(SolutionDir)Engine\Public\*.*"    "$(SolutionDir)Reference\Public\" /y /e
 attrib +r "$(SolutionDir)Reference\Public\*.*" /s
 xcopy "$(OutDir)$(ProjectName).lib" "$(SolutionDir)Reference\Librarys\" /y
-xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Client\Bin\\" /y
-xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Tool\Bin\\" /y</Command>
+xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Client\Bin\\$(Configuration)\$(PlatformTarget)\" /y
+xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Tool\Bin\\$(Configuration)\$(PlatformTarget)\" /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -174,8 +174,8 @@ xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Tool\Bin\\" /y</Command>
 xcopy "$(SolutionDir)Engine\Public\*.*"    "$(SolutionDir)Reference\Public\" /y /e
 attrib +r "$(SolutionDir)Reference\Public\*.*" /s
 xcopy "$(OutDir)$(ProjectName).lib" "$(SolutionDir)Reference\Librarys\" /y
-xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Client\Bin\\" /y
-xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Tool\Bin\\" /y</Command>
+xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Client\Bin\\$(Configuration)\$(PlatformTarget)\" /y
+xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Tool\Bin\\$(Configuration)\$(PlatformTarget)\" /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -204,6 +204,7 @@ xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Tool\Bin\\" /y</Command>
     <ClInclude Include="..\public\Transform.h" />
     <ClInclude Include="..\public\VIBuffer.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
+    <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp" />
@@ -227,6 +228,7 @@ xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Tool\Bin\\" /y</Command>
     <ClCompile Include="..\private\Transform.cpp" />
     <ClCompile Include="..\private\VIBuffer.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

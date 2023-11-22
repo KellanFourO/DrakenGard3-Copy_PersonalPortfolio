@@ -37,6 +37,9 @@
     <Filter Include="97. Imgui\Manager">
       <UniqueIdentifier>{0bb03379-8f16-407f-a176-85f2abb9a3ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\01. test">
+      <UniqueIdentifier>{4d4af688-ee30-4ada-8d1a-786e61785e11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -86,6 +89,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Reference\Imgui\imgui_impl_win32.h">
       <Filter>97. Imgui\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BackGround.h">
+      <Filter>02. GameObjects\01. test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +143,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Reference\Imgui\imgui_impl_win32.cpp">
       <Filter>97. Imgui\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BackGround.cpp">
+      <Filter>02. GameObjects\01. test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

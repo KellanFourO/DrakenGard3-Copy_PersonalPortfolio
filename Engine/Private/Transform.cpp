@@ -219,5 +219,6 @@ CComponent* CTransform::Clone(void* pArg)
 
 void CTransform::Free()
 {
+	int i = 0;
 	__super::Free();
 }
