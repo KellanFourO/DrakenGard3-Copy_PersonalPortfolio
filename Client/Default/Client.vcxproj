@@ -117,9 +117,8 @@
       <AdditionalDependencies>Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>attrib -r "$(SolutionDir)Tool\Bin\ShaderFiles\*.*" /s
-xcopy "$(SolutionDir)Client\Bin\ShaderFiles\*.*"    "$(SolutionDir)Tool\Bin\ShaderFiles\" /y /e
-attrib +r "$(SolutionDir)Tool\Bin\ShaderFiles\*.*" /s</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <FxCompile>
       <ShaderType>Effect</ShaderType>
@@ -171,20 +170,29 @@ attrib +r "$(SolutionDir)Tool\Bin\ShaderFiles\*.*" /s</Command>
       <ShaderModel>5.0</ShaderModel>
     </FxCompile>
     <PostBuildEvent>
-      <Command>attrib -r "$(SolutionDir)Tool\Bin\ShaderFiles\*.*" /s
-xcopy "$(SolutionDir)Client\Bin\ShaderFiles\*.*"    "$(SolutionDir)Tool\Bin\ShaderFiles\" /y /e
-attrib +r "$(SolutionDir)Tool\Bin\ShaderFiles\*.*" /s</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Reference\Imgui\imconfig.h" />
+    <ClInclude Include="..\..\Reference\Imgui\imgui.h" />
+    <ClInclude Include="..\..\Reference\Imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="..\..\Reference\Imgui\imgui_impl_win32.h" />
+    <ClInclude Include="..\..\Reference\Imgui\imgui_internal.h" />
+    <ClInclude Include="..\..\Reference\Imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\..\Reference\Imgui\imstb_textedit.h" />
+    <ClInclude Include="..\..\Reference\Imgui\imstb_truetype.h" />
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
+    <ClInclude Include="..\Public\Imgui_Manager.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
     <ClInclude Include="..\Public\Level_Logo.h" />
+    <ClInclude Include="..\Public\Level_Tool.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\public\MainApp.h" />
     <ClInclude Include="..\Public\Terrain.h" />
@@ -194,10 +202,19 @@ attrib +r "$(SolutionDir)Tool\Bin\ShaderFiles\*.*" /s</Command>
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Reference\Imgui\imgui.cpp" />
+    <ClCompile Include="..\..\Reference\Imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\..\Reference\Imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\Reference\Imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\..\Reference\Imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\..\Reference\Imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\..\Reference\Imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\Imgui_Manager.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
     <ClCompile Include="..\Private\Level_Logo.cpp" />
+    <ClCompile Include="..\Private\Level_Tool.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\private\MainApp.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />

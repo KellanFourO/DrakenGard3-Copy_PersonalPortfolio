@@ -37,6 +37,15 @@
     <Filter Include="02. GameObjects\01. Terrain">
       <UniqueIdentifier>{cbed23a2-648e-4a7e-bf6c-2307327cd5b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="96. Tool">
+      <UniqueIdentifier>{5f62bc42-1dca-4fb9-8ec9-a2dc5b6fdc72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96. Tool\99. Default">
+      <UniqueIdentifier>{e9548e12-89e2-4a29-9a73-08d5a35909a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Levels\98. Tool">
+      <UniqueIdentifier>{4775b4c8-e272-432a-88a4-c672de29dbbf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -75,6 +84,36 @@
     <ClInclude Include="..\Public\Terrain.h">
       <Filter>02. GameObjects\01. Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Imgui_Manager.h">
+      <Filter>96. Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\imgui_impl_dx11.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\imgui_impl_win32.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\imgui_internal.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\imstb_rectpack.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\imstb_textedit.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\imstb_truetype.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\imconfig.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\imgui.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Tool.h">
+      <Filter>01. Levels\98. Tool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -103,6 +142,33 @@
     </ClCompile>
     <ClCompile Include="..\Private\Terrain.cpp">
       <Filter>02. GameObjects\01. Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imgui_Manager.cpp">
+      <Filter>96. Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Reference\Imgui\imgui_draw.cpp">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Reference\Imgui\imgui_impl_dx11.cpp">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Reference\Imgui\imgui_impl_win32.cpp">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Reference\Imgui\imgui_tables.cpp">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Reference\Imgui\imgui_widgets.cpp">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Reference\Imgui\imgui.cpp">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Reference\Imgui\imgui_demo.cpp">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Tool.cpp">
+      <Filter>01. Levels\98. Tool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

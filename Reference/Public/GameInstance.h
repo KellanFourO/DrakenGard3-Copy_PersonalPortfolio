@@ -58,6 +58,7 @@ private:
 	class CObject_Manager*			m_pObject_Manager = { nullptr };
 	class CComponent_Manager*		m_pComponent_Manager = { nullptr };
 	class CRenderer*				m_pRenderer = { nullptr };
+	
 
 public:
 	void Release_Manager();

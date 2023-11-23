@@ -127,8 +127,7 @@
 xcopy "$(SolutionDir)Engine\Public\*.*"    "$(SolutionDir)Reference\Public\" /y /e
 attrib +r "$(SolutionDir)Reference\Public\*.*" /s
 xcopy "$(OutDir)$(ProjectName).lib" "$(SolutionDir)Reference\Librarys\" /y
-xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Client\Bin\\$(Configuration)\$(PlatformTarget)\" /y
-xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Tool\Bin\\$(Configuration)\$(PlatformTarget)\" /y</Command>
+xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Client\Bin\\$(Configuration)\$(PlatformTarget)\" /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -174,8 +173,7 @@ xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Tool\Bin\\$(Configuration)\$(
 xcopy "$(SolutionDir)Engine\Public\*.*"    "$(SolutionDir)Reference\Public\" /y /e
 attrib +r "$(SolutionDir)Reference\Public\*.*" /s
 xcopy "$(OutDir)$(ProjectName).lib" "$(SolutionDir)Reference\Librarys\" /y
-xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Client\Bin\\$(Configuration)\$(PlatformTarget)\" /y
-xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Tool\Bin\\$(Configuration)\$(PlatformTarget)\" /y</Command>
+xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Client\Bin\\$(Configuration)\$(PlatformTarget)\" /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
