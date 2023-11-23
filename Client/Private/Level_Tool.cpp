@@ -57,4 +57,5 @@ CLevel_Tool* CLevel_Tool::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 void CLevel_Tool::Free()
 {
 	__super::Free();
+	//CImgui_Manager::GetInstance()->DestroyInstance();
 }

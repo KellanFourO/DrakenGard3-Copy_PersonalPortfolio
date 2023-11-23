@@ -1,12 +1,9 @@
 #include "stdafx.h"
 #include "..\Public\MainApp.h"
 
-#include "../Imgui/imgui.h"
-#include "../Imgui/imgui_impl_win32.h"
-#include "../Imgui/imgui_impl_dx11.h"
 #include "GameInstance.h"
-#include "Imgui_Manager.h"
 #include "Level_Loading.h"
+#include "Imgui_Manager.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::GetInstance())
@@ -36,9 +33,6 @@ HRESULT CMainApp::Initialize()
 
 	if (FAILED(Initialize_Imgui()))
 		return E_FAIL;
-	
-
-
 
 	return S_OK;
 }
@@ -105,8 +99,6 @@ HRESULT CMainApp::Ready_Prototype_Component_ForStaticLevel()
 
 HRESULT CMainApp::Initialize_Imgui()
 {
-	m_pImguiMgr = CImgui_Manager::GetInstance();
-	m_pImguiMgr->AddRef();
 
 	if (nullptr == m_pImguiMgr)
 	{
@@ -114,7 +106,7 @@ HRESULT CMainApp::Initialize_Imgui()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pImguiMgr->Initialize(m_pDevice, m_pContext)))
+	if (FAILED(m_pImguiMgr->Initialize(g_hWnd,m_pDevice, m_pContext)))
 	{
 		MSG_BOX("Imgui Initialize Failed");
 		return E_FAIL;
@@ -143,6 +135,7 @@ void CMainApp::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pImguiMgr);
+	
 
 	CImgui_Manager::GetInstance()->DestroyInstance();
 	CGameInstance::Release_Engine();

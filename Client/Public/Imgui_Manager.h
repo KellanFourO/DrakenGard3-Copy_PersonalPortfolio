@@ -9,10 +9,10 @@ class CImgui_Manager final : public CBase
 
 private:
 	CImgui_Manager();
-	~CImgui_Manager();
+	virtual ~CImgui_Manager();
 
 public:
-	HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	HRESULT Initialize(const HWND hWND, ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void	Tick(_float fTimeDelta);
 	void	Render();
 
@@ -35,7 +35,6 @@ private:
 	LEVEL			     m_eLevelID = { LEVEL_END };
 	ID3D11Device* m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pContext = { nullptr };
-
 
 private:
 	void	HelpMarker(const char* desc);

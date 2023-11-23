@@ -22,7 +22,7 @@ CImgui_Manager::~CImgui_Manager()
 	ImGui::DestroyContext();
 }
 
-HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+HRESULT CImgui_Manager::Initialize(const HWND hWND, ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	m_pDevice = pDevice;
 	m_pContext = pContext;
@@ -39,7 +39,7 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	io.ConfigViewportsNoAutoMerge = true;
 
-	ImGui_ImplWin32_Init(g_hWnd);
+	ImGui_ImplWin32_Init(hWND);
 	ImGui_ImplDX11_Init(m_pDevice, m_pContext);
 
 	ImGui::StyleColorsDark();
@@ -238,7 +238,6 @@ void CImgui_Manager::ShowCameraTool()
 	}
 	ImGui::End();
 }
-
 
 void CImgui_Manager::HelpMarker(const char* desc)
 {
