@@ -187,6 +187,7 @@
     <ClInclude Include="..\..\Reference\Imgui\imstb_textedit.h" />
     <ClInclude Include="..\..\Reference\Imgui\imstb_truetype.h" />
     <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\public\Camera_Dynamic.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\Imgui_Manager.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
@@ -210,6 +211,7 @@
     <ClCompile Include="..\..\Reference\Imgui\imgui_tables.cpp" />
     <ClCompile Include="..\..\Reference\Imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\Camera_Dynamic.cpp" />
     <ClCompile Include="..\Private\Imgui_Manager.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />

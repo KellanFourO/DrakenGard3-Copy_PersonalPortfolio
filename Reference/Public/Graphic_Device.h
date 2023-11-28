@@ -13,7 +13,8 @@ public:
 	HRESULT Initialize(const GRAPHIC_DESC& GraphicDesc, _Inout_ ID3D11Device** ppDevice, _Inout_ ID3D11DeviceContext** ppContext); //! 그래픽 디바이스 초기화
 	HRESULT Clear_BackBuffer_View(_float4 vClearColor);//! 백버퍼를 지우기 위한 함수 _float4는 새롭게 typedef 한 자료형으로 XMFLOAT4 자료형을 의미한다.
 	HRESULT Clear_DepthStencil_View();//! 깊이버퍼와 스텐실 버퍼를 지우기 위한 함수
-	HRESULT Resize(UINT iWidth, UINT iHeight);
+	HRESULT Resize(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	HRESULT UseFullScreen(_bool bMode);
 	HRESULT Present(); //! 후면 버퍼를 전면버퍼로 교체하는 함수( 미리 그려놓은 백 버퍼를 화면에 직접 보여준다. ) 
 	
 

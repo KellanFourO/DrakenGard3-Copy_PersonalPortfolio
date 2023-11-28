@@ -91,10 +91,84 @@ HRESULT CGraphic_Device::Clear_DepthStencil_View()
 	return S_OK;
 }
 
-HRESULT CGraphic_Device::Resize(UINT iWidth, UINT iHeight)
+HRESULT CGraphic_Device::Resize(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	m_pSwapChain->ResizeBuffers(0, iWidth, iHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+//
+	ID3D11RenderTargetView* pNullRTV = nullptr;
 
+	m_pContext->OMSetRenderTargets(1, &pNullRTV, nullptr);
+
+	ID3D11ShaderResourceView* pNullSRV = nullptr;
+	
+	m_pContext->PSSetShaderResources(0,1, &pNullSRV);
+
+	m_pContext->VSSetShaderResources(0,1, &pNullSRV);
+
+	m_pBackBufferRTV->Release();
+	m_pDepthStencilView->Release();
+	
+
+	RECT ClientRect{};
+	GetWindowRect(hWnd, &ClientRect);
+
+	_uint iWinCX = static_cast<UINT>(ClientRect.right - ClientRect.left);
+	_uint iWinCY = static_cast<UINT>(ClientRect.bottom - ClientRect.top);
+	
+	DXGI_SWAP_CHAIN_DESC desc{};
+	m_pSwapChain->GetDesc(&desc);
+
+	m_pSwapChain->ResizeBuffers(desc.BufferCount,iWinCX,iWinCY, desc.BufferDesc.Format, desc.Flags);
+
+	//TODO 뷰 포트 셋팅
+	D3D11_VIEWPORT			ViewPortDesc;
+	ZeroMemory(&ViewPortDesc, sizeof(D3D11_VIEWPORT));
+	ViewPortDesc.TopLeftX = 0; //! 화면에 왼쪽상단부터 그리겠다.
+	ViewPortDesc.TopLeftY = 0;
+	ViewPortDesc.Width = (_float)iWinCX;
+	ViewPortDesc.Height = (_float)iWinCY;
+	ViewPortDesc.MinDepth = 0.f; //! 깊이버퍼는 0 부터 1까지 저장 가능하다. 이 값은 고정.
+	ViewPortDesc.MaxDepth = 1.f;
+
+	m_pContext->RSSetViewports(1, &ViewPortDesc);
+
+
+	Ready_BackBufferRenderTargetView();
+	Ready_DepthStencilRenderTargetView(iWinCX,iWinCY);
+
+	
+
+	return S_OK;
+}
+
+HRESULT CGraphic_Device::UseFullScreen(_bool bMode)
+{
+	if (bMode)
+ 	{
+ 		DXGI_MODE_DESC modeDesc = {};
+ 		modeDesc.Width = 2560; // 새로운 너비
+ 		modeDesc.Height = 1440; // 새로운 높이
+		modeDesc.RefreshRate.Numerator = 60; // 주사율
+		modeDesc.RefreshRate.Denominator = 1;
+ 		modeDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // 픽셀 형식
+ 		modeDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+ 		modeDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+ 
+ 		m_pSwapChain->ResizeTarget(&modeDesc);
+ 	}
+ 	else
+ 	{
+ 		DXGI_MODE_DESC modeDesc = {};
+ 		modeDesc.Width = 1280; // 새로운 너비
+ 		modeDesc.Height = 720; // 새로운 높이
+ 		modeDesc.RefreshRate.Numerator = 60; // 주사율
+ 		modeDesc.RefreshRate.Denominator = 1;
+ 		modeDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // 픽셀 형식
+ 		modeDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+ 		modeDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+ 
+ 		m_pSwapChain->ResizeTarget(&modeDesc);
+ 	}
+	
 	return S_OK;
 }
 
@@ -165,8 +239,6 @@ HRESULT CGraphic_Device::Ready_BackBufferRenderTargetView()
 	if (nullptr == m_pDevice)
 		return E_FAIL;
 
-
-
 	/* 내가 앞으로 사용하기위한 용도의 텍스쳐를 생성하기위한 베이스 데이터를 가지고 있는 객체이다. */
 	/* 내가 앞으로 사용하기위한 용도의 텍스쳐 : ID3D11RenderTargetView, ID3D11ShaderResoureView, ID3D11DepthStencilView */
 	ID3D11Texture2D* pBackBufferTexture = nullptr;
@@ -177,8 +249,6 @@ HRESULT CGraphic_Device::Ready_BackBufferRenderTargetView()
 
 	if (FAILED(m_pDevice->CreateRenderTargetView(pBackBufferTexture, nullptr, &m_pBackBufferRTV)))
 		return E_FAIL;
-
-
 
 	Safe_Release(pBackBufferTexture);
 

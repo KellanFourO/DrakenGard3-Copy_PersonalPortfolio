@@ -85,6 +85,9 @@
     <Filter Include="01. Utility\03. Components\00. VIBuffer\Terrain">
       <UniqueIdentifier>{5acc8d6c-cdac-4363-81f8-072aaa4cc652}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. PipeLine">
+      <UniqueIdentifier>{2d6c8f69-9ac5-4f15-9af2-c0d1de87cf63}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -165,6 +168,12 @@
     <ClInclude Include="..\Public\VIBuffer_Terrain.h">
       <Filter>01. Utility\03. Components\00. VIBuffer\Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\PipeLine.h">
+      <Filter>01. Utility\04. PipeLine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Input_Device.h">
+      <Filter>00. System\00. Device\01. Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -232,6 +241,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp">
       <Filter>01. Utility\03. Components\00. VIBuffer\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PipeLine.cpp">
+      <Filter>01. Utility\04. PipeLine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Input_Device.cpp">
+      <Filter>00. System\00. Device\01. Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

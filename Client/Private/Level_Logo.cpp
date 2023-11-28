@@ -21,13 +21,13 @@ HRESULT CLevel_Logo::Initialize()
 
 void CLevel_Logo::Tick(_float fTimeDelta)
 {
-	if (GetKeyState(VK_SPACE) & 0x8000)
+	if (m_pGameInstance->Get_DIKeyState(DIK_SPACE) & 0x8000)
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_GAMEPLAY))))
 			return;
 	}
 
-	if (GetKeyState(VK_F1) & 0x8000)
+	if (m_pGameInstance->Get_DIKeyState(DIK_F1) & 0x8000)
 	{
 		if(FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice,m_pContext, LEVEL_TOOL))))
 			return;

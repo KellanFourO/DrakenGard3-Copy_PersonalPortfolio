@@ -8,7 +8,10 @@
 #include "DirectXTK/DDSTextureLoader.h" //TODO DDS 텍스처 로드전용
 #include "DirectXTK/WICTextureLoader.h" //TODO 윈도우 텍스처 로드전용 ( bmp, jpg, png 등등 )
 
-#include <d3dcompiler.h>
+#define DIRECTINPUT_VERSION 0x0800
+#include <dinput.h>
+
+#include <d3dcompiler.h> //TODO 셰이더 컴파일용
 
 using namespace DirectX; //! XMFLOAT등등의 자료형을 사용하기위함.
 
@@ -50,6 +53,7 @@ using namespace Engine;
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
+#include "dxgidebug.h"
 
 #ifndef DBG_NEW 
 

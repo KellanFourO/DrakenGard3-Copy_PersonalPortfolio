@@ -12,8 +12,8 @@ private:
 	virtual ~CImgui_Manager();
 
 public:
-	HRESULT Initialize(const HWND hWND, ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	void	Tick(_float fTimeDelta);
+	HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	void	Tick();
 	void	Render();
 
 	_bool   Get_Ready() { return m_bReady;}

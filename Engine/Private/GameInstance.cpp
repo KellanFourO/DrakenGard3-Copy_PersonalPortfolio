@@ -23,21 +23,34 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, const GRAPHIC_DESC& G
 	if (nullptr == m_pTimer_Manager)
 		return E_FAIL;
 
+	//TODO 인풋디바이스 셋팅
+	m_pInput_Device = CInput_Device::Create(m_hInst, m_hWnd);
+	if (nullptr == m_pInput_Device)
+		return E_FAIL;
+
 	//TODO 레벨 셋팅
 	m_pLevel_Manager = CLevel_Manager::Create();
 	if (nullptr == m_pLevel_Manager)
 		return E_FAIL;
-
+	
+	//TODO 오브젝트 매니저
 	m_pObject_Manager = CObject_Manager::Create(iNumLevels);
 	if (nullptr == m_pObject_Manager)
 		return E_FAIL;
 
+	//TODO 컴포넌트 매니저
 	m_pComponent_Manager = CComponent_Manager::Create(iNumLevels);
 	if (nullptr == m_pComponent_Manager)
 		return E_FAIL;
 
+	//TODO 렌더러
 	m_pRenderer = CRenderer::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pRenderer)
+		return E_FAIL;
+
+	//TODO 파이프라인
+	m_pPipeLine = CPipeLine::Create();
+	if (nullptr == m_pPipeLine)
 		return E_FAIL;
 
 	return S_OK;
@@ -45,16 +58,28 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, const GRAPHIC_DESC& G
 
 void CGameInstance::Tick_Engine(_float fTimeDelta)
 {
-	if(nullptr == m_pLevel_Manager)
+	if(nullptr == m_pLevel_Manager ||
+	   nullptr == m_pObject_Manager ||
+	   nullptr == m_pPipeLine ||
+	   nullptr == m_pInput_Device)
 		return;
 
 	m_pObject_Manager->Priority_Tick(fTimeDelta);
-
+	
 	m_pObject_Manager->Tick(fTimeDelta);
+
+	//TODO 파이프라인 틱 호출순서에 관하여
+	//! 카메라는 오브젝트 매니저에 들어갈것이다. 카메라의 Tick함수에서 카메라의 뷰, 투영 행렬을 생성해주기 때문에
+	//! 카메라의 뷰, 투영행렬을 가지고있을 파이프라인의 Tick함수는 카메라의 Tick함수 이후에 해주어야 한다.
+	m_pPipeLine->Tick();
+	//! 객체들의 Late_Tick에서 파이프라인에게 접근해서 작업할 수 있기에 Tick과 Late_Tick 사이에 넣은 것이다.
 
 	m_pObject_Manager->Late_Tick(fTimeDelta);
 
 	m_pLevel_Manager->Tick(fTimeDelta);
+
+	m_pInput_Device->Tick();
+	m_pInput_Device->LateTick();
 }
 
 
@@ -111,12 +136,21 @@ HRESULT CGameInstance::Present()
 	return m_pGraphic_Device->Present();
 }
 
-HRESULT CGameInstance::Resize(UINT iWidth, UINT iHeight)
+HRESULT CGameInstance::UseFullScreen(_bool bMode)
 {
 	if (nullptr == m_pGraphic_Device)
 		return E_FAIL;
 
-	return m_pGraphic_Device->Resize(iWidth,iHeight);
+	return m_pGraphic_Device->UseFullScreen(bMode);
+}
+
+HRESULT CGameInstance::Resize(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+
+	if(nullptr == m_pGraphic_Device)
+		return E_FAIL;
+
+	return m_pGraphic_Device->Resize(hWnd, message, wParam, lParam);
 }
 
 HRESULT CGameInstance::Add_Timer(const wstring& strTimeTag)
@@ -183,13 +217,155 @@ HRESULT CGameInstance::Add_RenderGroup(CRenderer::RENDERGROUP eGroupID, CGameObj
 	return m_pRenderer->Add_RenderGroup(eGroupID, pGameObject);
 }
 
+void CGameInstance::Set_Transform(CPipeLine::D3DTRANSFORMSTATE eState, _fmatrix TransformMatrix)
+{
+	if (nullptr == m_pPipeLine)
+		return;
+
+	m_pPipeLine->Set_Transform(eState,TransformMatrix);
+}
+
+void CGameInstance::Set_Transform(CPipeLine::D3DTRANSFORMSTATE eState, _float4x4 TransformMatrix)
+{
+	if (nullptr == m_pPipeLine)
+		return;
+
+	m_pPipeLine->Set_Transform(eState, TransformMatrix);
+}
+
+_matrix CGameInstance::Get_TransformMatrix(CPipeLine::D3DTRANSFORMSTATE eState)
+{
+	if (nullptr == m_pPipeLine)
+		return XMMatrixIdentity();
+
+	return m_pPipeLine->Get_TransformMatrix(eState);
+}
+
+_float4x4 CGameInstance::Get_TransformFloat4x4(CPipeLine::D3DTRANSFORMSTATE eState)
+{
+	if (nullptr == m_pPipeLine)
+		return _float4x4();
+
+	return m_pPipeLine->Get_TransformFloat4x4(eState);
+}
+
+_matrix CGameInstance::Get_TransformMatrixInverse(CPipeLine::D3DTRANSFORMSTATE eState)
+{
+	if (nullptr == m_pPipeLine)
+		return XMMatrixIdentity();
+
+	return m_pPipeLine->Get_TransformMatrixInverse(eState);
+}
+
+_float4x4 CGameInstance::Get_TransformFloat4x4Inverse(CPipeLine::D3DTRANSFORMSTATE eState)
+{
+	if (nullptr == m_pPipeLine)
+		return _float4x4();
+
+	return m_pPipeLine->Get_TransformFloat4x4Inverse(eState);
+}
+
+_float4 CGameInstance::Get_CamPosition()
+{
+	if (nullptr == m_pPipeLine)
+		return _float4();
+
+	return m_pPipeLine->Get_CamPosition();
+}
+
+void CGameInstance::Set_hWnd_hInst(HINSTANCE hInst, HWND hWnd)
+{
+	m_hInst = hInst;
+	m_hWnd = hWnd;
+}
+
+_byte CGameInstance::Get_DIKeyState(_ubyte byKeyID)
+{
+	if (nullptr == m_pInput_Device)
+		return _byte();
+
+	return m_pInput_Device->Get_DIKeyState(byKeyID);
+
+
+
+}
+
+_byte CGameInstance::Get_DIMouseState(CInput_Device::MOUSEKEYSTATE eMouse)
+{
+	if (nullptr == m_pInput_Device)
+		return _byte();
+
+	return m_pInput_Device->Get_DIMouseState(eMouse);
+
+}
+
+_long CGameInstance::Get_DIMouseMove(CInput_Device::MOUSEMOVESTATE eMouseState)
+{
+	if (nullptr == m_pInput_Device)
+		return _long();
+
+	return m_pInput_Device->Get_DIMouseMove(eMouseState);
+
+}
+
+_bool CGameInstance::Key_Pressing(_ubyte byKeyID)
+{
+	if (nullptr == m_pInput_Device)
+		return false;
+
+	return m_pInput_Device->Key_Pressing(byKeyID);
+}
+
+_bool CGameInstance::Key_Down(_ubyte byKeyID)
+{
+	if (nullptr == m_pInput_Device)
+		return false;
+
+	return m_pInput_Device->Key_Down(byKeyID);
+}
+
+_bool CGameInstance::Key_Up(_ubyte byKeyID)
+{
+	if (nullptr == m_pInput_Device)
+		return false;
+
+	return m_pInput_Device->Key_Up(byKeyID);
+}
+
+_bool CGameInstance::Mouse_Pressing(CInput_Device::MOUSEKEYSTATE eMouse)
+{
+	if (nullptr == m_pInput_Device)
+		return false;
+
+	return m_pInput_Device->Mouse_Pressing(eMouse);
+}
+
+_bool CGameInstance::Mouse_Down(CInput_Device::MOUSEKEYSTATE eMouse)
+{
+	if (nullptr == m_pInput_Device)
+		return false;
+
+	return m_pInput_Device->Mouse_Down(eMouse);
+}
+
+_bool CGameInstance::Mouse_Up(CInput_Device::MOUSEKEYSTATE eMouse)
+{
+	if (nullptr == m_pInput_Device)
+		return false;
+
+	return m_pInput_Device->Mouse_Up(eMouse);
+}
+
 void CGameInstance::Release_Manager()
 {
+	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pComponent_Manager);
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pRenderer);
+
+	Safe_Release(m_pInput_Device);
 	Safe_Release(m_pGraphic_Device);
 }
 

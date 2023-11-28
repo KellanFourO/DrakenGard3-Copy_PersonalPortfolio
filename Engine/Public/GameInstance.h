@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Renderer.h"
+#include "PipeLine.h"
+#include "Input_Device.h"
 #include "Component_Manager.h"
 
 /* 클라이언트에서 엔진의 기능을 사용하기위해 반드시 거쳐야하는 객체. */
@@ -30,7 +32,8 @@ public: /* For.Graphic_Device */
 	HRESULT Clear_BackBuffer_View(_float4 vClearColor);
 	HRESULT Clear_DepthStencil_View();	
 	HRESULT Present();
-	HRESULT Resize(UINT iWidth, UINT iHeight);
+	HRESULT UseFullScreen(_bool bMode);
+	HRESULT Resize(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	
 public: /* For.Timer_Manager */
 	HRESULT	Add_Timer(const wstring& strTimeTag);
@@ -50,6 +53,31 @@ public: /* For.Component_Manager */
 public: /* For.Renderer */
 	HRESULT Add_RenderGroup(CRenderer::RENDERGROUP eGroupID, class CGameObject* pGameObject);
 	
+public: /* For.PipeLine */
+	void		Set_Transform(CPipeLine::D3DTRANSFORMSTATE eState, _fmatrix TransformMatrix);
+	void		Set_Transform(CPipeLine::D3DTRANSFORMSTATE eState, _float4x4 TransformMatrix);
+
+	_matrix		Get_TransformMatrix(CPipeLine::D3DTRANSFORMSTATE eState);
+	_float4x4	Get_TransformFloat4x4(CPipeLine::D3DTRANSFORMSTATE eState);
+
+	_matrix		Get_TransformMatrixInverse(CPipeLine::D3DTRANSFORMSTATE eState);
+	_float4x4	Get_TransformFloat4x4Inverse(CPipeLine::D3DTRANSFORMSTATE eState);
+
+	_float4		Get_CamPosition();
+
+public: /* For.Input_Device */
+	void	Set_hWnd_hInst(HINSTANCE hInst, HWND hWnd);
+	_byte   Get_DIKeyState(_ubyte byKeyID);
+	_byte   Get_DIMouseState(CInput_Device::MOUSEKEYSTATE eMouse);
+	_long   Get_DIMouseMove(CInput_Device::MOUSEMOVESTATE eMouseState);
+	_bool	Key_Pressing(_ubyte byKeyID);
+	_bool	Key_Down(_ubyte byKeyID);
+	_bool	Key_Up(_ubyte byKeyID);
+	_bool	Mouse_Pressing(CInput_Device::MOUSEKEYSTATE eMouse);
+	_bool	Mouse_Down(CInput_Device::MOUSEKEYSTATE eMouse);
+	_bool	Mouse_Up(CInput_Device::MOUSEKEYSTATE eMouse);
+
+
 
 private:
 	class CGraphic_Device*			m_pGraphic_Device = { nullptr };
@@ -58,7 +86,14 @@ private:
 	class CObject_Manager*			m_pObject_Manager = { nullptr };
 	class CComponent_Manager*		m_pComponent_Manager = { nullptr };
 	class CRenderer*				m_pRenderer = { nullptr };
-	
+	class CPipeLine*				m_pPipeLine = { nullptr };
+	class CInput_Device*			m_pInput_Device = { nullptr };
+
+private:
+	//#게임인스턴스핸들
+	HWND	  m_hWnd = { nullptr };
+	HINSTANCE m_hInst = { nullptr };
+
 
 public:
 	void Release_Manager();

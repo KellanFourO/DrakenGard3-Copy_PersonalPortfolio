@@ -35,12 +35,10 @@ private:
 	ID3D11Device*					m_pDevice = { nullptr };
 	ID3D11DeviceContext*			m_pContext = { nullptr };
 	CGameInstance*					m_pGameInstance = { nullptr };
-	CImgui_Manager*					m_pImguiMgr = { nullptr };
 
 private:
 	HRESULT Open_Level(LEVEL eStartLevelID);
 	HRESULT Ready_Prototype_Component_ForStaticLevel();
-	HRESULT Initialize_Imgui();
 
 public:
 	static CMainApp* Create(); //! Create 함수는 보통 자식 객체에서 소유하고 있는 함수이다. 최상위 부모함수(Abstract)는 직접 객체화 될 수 없기에 가지고 있지 않다.

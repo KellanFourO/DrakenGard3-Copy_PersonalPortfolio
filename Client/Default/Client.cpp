@@ -24,6 +24,24 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
+#ifdef _DEBUG
+void D3DMemoryLeakCheck()
+{
+    HMODULE dxgidebugdll = GetModuleHandleW(L"dxgidebug.dll");
+    decltype(&DXGIGetDebugInterface) GetDebugInterface = reinterpret_cast<decltype(&DXGIGetDebugInterface)>(GetProcAddress(dxgidebugdll, "DXGIGetDebugInterface"));
+
+    IDXGIDebug* debug;
+
+    GetDebugInterface(IID_PPV_ARGS(&debug));
+
+    OutputDebugStringW(L">>>>>>>>>>>>>>>>>>>> Direct3D Object ref count 메모리 누수 체크 <<<<<<<<<<<<<<<<<<<<\r\n");
+    debug->ReportLiveObjects(DXGI_DEBUG_D3D11, DXGI_DEBUG_RLO_DETAIL);
+    OutputDebugStringW(L">>>>>>>>>>>>>>>>>>>> 반환되지 않은 IUnknown 객체가 있을경우 위에 나타납니다. <<<<<<<<<<<<<<<<<<<<\r\n");
+
+    debug->Release();
+}
+#endif
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
@@ -36,6 +54,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
+
+
+#ifdef _DEBUG
+    FILE* ConsoleStream;
+
+    AllocConsole();
+    AttachConsole(GetCurrentProcessId());
+    freopen_s(&ConsoleStream, "CON", "w", stdout);
+
+    printf("Debug Console\n");
+#endif // _DEBUG
 
     // TODO: 여기에 코드를 입력합니다.
 	CMainApp*		pMainApp = nullptr;
@@ -106,6 +135,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	if (0 != Safe_Release(pMainApp))
 		MSG_BOX("Memory Leak Detected");
+
+
+#ifdef  _DEBUG
+    //system("pause");
+    fclose(ConsoleStream);
+    D3DMemoryLeakCheck();
+    //_CrtDumpMemoryLeaks()6;
+#endif //  _DEBUG
 
     return (int) msg.wParam;
 }
@@ -214,9 +251,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             EndPaint(hWnd, &ps);
         }
         break;
+
+    case WM_SIZE:
+        CGameInstance::GetInstance()->Resize(hWnd,message,wParam,lParam);
+        break;
+
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
+
+    case WM_KEYDOWN:
+        if (wParam == VK_ESCAPE)
+            ::DestroyWindow(hWnd);
+        break;
+
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }

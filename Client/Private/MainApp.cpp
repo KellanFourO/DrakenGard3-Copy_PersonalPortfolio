@@ -3,14 +3,11 @@
 
 #include "GameInstance.h"
 #include "Level_Loading.h"
-#include "Imgui_Manager.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::GetInstance())
-	, m_pImguiMgr(CImgui_Manager::GetInstance())
 {
 	Safe_AddRef(m_pGameInstance);
-	Safe_AddRef(m_pImguiMgr);
 }
 
 HRESULT CMainApp::Initialize()
@@ -22,6 +19,9 @@ HRESULT CMainApp::Initialize()
 	GraphicDesc.iBackBufferSizeX = g_iWinSizeX;
 	GraphicDesc.iBackBufferSizeY = g_iWinSizeY;
 
+	// #게임인스턴스핸들
+	m_pGameInstance->Set_hWnd_hInst(g_hInst, g_hWnd);
+
 	if(FAILED(m_pGameInstance->Initialize_Engine(LEVEL_END, GraphicDesc, &m_pDevice, &m_pContext)))
 		return E_FAIL;
 
@@ -31,18 +31,12 @@ HRESULT CMainApp::Initialize()
 	if(FAILED(Open_Level(LEVEL_LOGO)))
 		return E_FAIL;
 
-	if (FAILED(Initialize_Imgui()))
-		return E_FAIL;
-
 	return S_OK;
 }
 
 void CMainApp::Tick(_float fTimeDelta)
 {
 	m_pGameInstance->Tick_Engine(fTimeDelta);
-
-	if (m_pImguiMgr->Get_Ready())
-		m_pImguiMgr->Tick(fTimeDelta);
 
 }
 
@@ -55,16 +49,10 @@ HRESULT CMainApp::Render()
 	//TODO 추후, 그려야할 모델들을 그린다.
 	
 	m_pGameInstance->Render_Engine();
-
-	if (m_pImguiMgr->Get_Ready())
-		m_pImguiMgr->Render();
 	
 	m_pGameInstance->Present();
-	
 
 	return S_OK;
-
-
 }
 
 HRESULT CMainApp::Open_Level(LEVEL eStartLevelID)
@@ -97,25 +85,6 @@ HRESULT CMainApp::Ready_Prototype_Component_ForStaticLevel()
 	return S_OK;
 }
 
-HRESULT CMainApp::Initialize_Imgui()
-{
-
-	if (nullptr == m_pImguiMgr)
-	{
-		MSG_BOX("Imgui GetInstance Failed");
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pImguiMgr->Initialize(g_hWnd,m_pDevice, m_pContext)))
-	{
-		MSG_BOX("Imgui Initialize Failed");
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-
 CMainApp * CMainApp::Create()
 {
 	CMainApp*		pInstance = new CMainApp();
@@ -134,10 +103,7 @@ void CMainApp::Free()
 	Safe_Release(m_pContext);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pGameInstance);
-	Safe_Release(m_pImguiMgr);
 	
-
-	CImgui_Manager::GetInstance()->DestroyInstance();
 	CGameInstance::Release_Engine();
 }
 

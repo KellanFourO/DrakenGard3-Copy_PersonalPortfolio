@@ -21,30 +21,59 @@
 #define ENGINE_DLL		_declspec(dllimport)
 #endif
 
-#define NULL_CHECK( _ptr)	\
-	{if( _ptr == 0){__asm { int 3 };return;}}
 
-#define NULL_CHECK_RETURN( _ptr, _return)	\
-	{if( _ptr == 0){__asm { int 3 };return _return;}}
+/*  Debug Break */
+#ifdef _DEBUG
+#define DEBUG_BREAK  DebugBreak()
+#else
+#define DEBUG_BREAK
+#endif
 
-#define NULL_CHECK_MSG( _ptr, _message )		\
-	{if( _ptr == 0){MessageBox(nullptr, _message, L"System Message",MB_OK);__asm { int 3 };}}
+/* ================== NULL CHECK ================== */
+#define NULL_CHECK( _ptr)   \
+   {if( (_ptr) == 0){ DEBUG_BREAK;return;}}
 
-#define NULL_CHECK_RETURN_MSG( _ptr, _return, _message )	\
-	{if( _ptr == 0){MessageBox(nullptr, _message, L"System Message",MB_OK);__asm { int 3 };return _return;}}
+#define NULL_CHECK_RETURN( _ptr, _return)   \
+   {if( 0 == (_ptr) ){ DEBUG_BREAK;return _return;}}
 
+#define NULL_CHECK_MSG( _ptr, _message )      \
+   {if( (_ptr) == 0){MessageBox(NULL, _message, L"System Message",MB_OK); DEBUG_BREAK;}}
 
-#define FAILED_CHECK(_hr)	if( ((HRESULT)(_hr)) < 0 )	\
-	{ MessageBoxW(nullptr, L"Failed", L"System Error",MB_OK); __asm { int 3 }; return E_FAIL;}
+#define NULL_CHECK_RETURN_MSG( _ptr, _return, _message )   \
+   {if( (_ptr) == 0){MessageBox(NULL, _message, L"System Message",MB_OK); DEBUG_BREAK;return _return;}}
 
-#define FAILED_CHECK_RETURN(_hr, _return)	if( ((HRESULT)(_hr)) < 0 )		\
-	{ MessageBoxW(nullptr, L"Failed", L"System Error",MB_OK); __asm { int 3 }; return _return;}
+/* ================== FAILED CHECK8 ================== */
+#define FAILED_CHECK(_hr)   if( ((HRESULT)(_hr)) < 0 )   \
+   { MessageBoxW(NULL, L"Failed", L"System Error",MB_OK); DEBUG_BREAK; return E_FAIL;}
 
-#define FAILED_CHECK_MSG( _hr, _message)	if( ((HRESULT)(_hr)) < 0 )	\
-	{ MessageBoxW(nullptr, _message, L"System Message",MB_OK); __asm { int 3 };return E_FAIL;}
+#define FAILED_CHECK_RETURN(_hr, _return)   if( ((HRESULT)(_hr)) < 0 )      \
+   { MessageBoxW(NULL, L"Failed", L"System Error",MB_OK); DEBUG_BREAK; return _return;}
 
-#define FAILED_CHECK_RETURN_MSG( _hr, _return, _message)	if( ((HRESULT)(_hr)) < 0 )	\
-	{ MessageBoxW(nullptr, _message, L"System Message",MB_OK); __asm { int 3 };return _return;}
+#define FAILED_CHECK_MSG( _hr, _message)   if( ((HRESULT)(_hr)) < 0 )   \
+   { MessageBoxW(NULL, _message, L"System Message",MB_OK); DEBUG_BREAK;}
+
+#define FAILED_CHECK_RETURN_MSG( _hr, _return, _message)   if( ((HRESULT)(_hr)) < 0 )   \
+   { MessageBoxW(NULL, _message, L"System Message",MB_OK); DEBUG_BREAK;return _return;}
+
+/* ================== COMPARE CHECK ================== */
+#define COMPARE_SAME_RETURN(_check1, _check2, _return)\
+   {if ((_check1) == (_check2)) { DEBUG_BREAK; return _return; }}
+
+#define COMPARE_DIFF_RETURN(_check1, _check2, _return)\
+   {if ((_check1) != (_check2)) { DEBUG_BREAK; return _return; }}
+
+/* ================== FALSE CHECK ================== */
+#define FALSE_CHECK( _false)   \
+   NULL_CHECK( _false)
+
+#define FALSE_CHECK_RETURN( _false, _return)   \
+   NULL_CHECK_RETURN( _false, _return)
+
+#define FALSE_CHECK_MSG( _false, _message )   \
+   NULL_CHECK_MSG( _false, _message )
+
+#define FALSE_CHECK_RETURN_MSG( _false, _return, _message )   \
+   NULL_CHECK_RETURN_MSG( _false, _return, _message )
 
 
 

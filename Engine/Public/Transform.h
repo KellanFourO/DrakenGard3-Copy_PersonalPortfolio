@@ -53,6 +53,29 @@ public:
 		);
 	}
 
+	_matrix Get_WorldMatrix()
+	{
+		return XMLoadFloat4x4(&m_WorldMatrix);
+	}
+
+	_float4x4 Get_WorldFloat4x4()
+	{
+		return m_WorldMatrix;
+	}
+
+	_matrix Get_WorldMatrixInverse()
+	{
+		return XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_WorldMatrix));
+	}
+
+	_float4x4 Get_WorldFloat4x4Inverse()
+	{
+		_float4x4 InverseMatrix;
+		XMStoreFloat4x4(&InverseMatrix, XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_WorldMatrix)));
+
+		return InverseMatrix;
+	}
+
 	void Set_Scaling(_float fScaleX, _float fScaleY, _float fScaleZ);
 
 public:

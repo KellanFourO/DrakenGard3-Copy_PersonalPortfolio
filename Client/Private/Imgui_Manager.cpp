@@ -6,7 +6,7 @@
 
 #include "Imgui_Manager.h"
 
-IMPLEMENT_SINGLETON(CImgui_Manager);
+IMPLEMENT_SINGLETON(CImgui_Manager)
 
 CImgui_Manager::CImgui_Manager()
 {
@@ -22,7 +22,7 @@ CImgui_Manager::~CImgui_Manager()
 	ImGui::DestroyContext();
 }
 
-HRESULT CImgui_Manager::Initialize(const HWND hWND, ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	m_pDevice = pDevice;
 	m_pContext = pContext;
@@ -36,11 +36,19 @@ HRESULT CImgui_Manager::Initialize(const HWND hWND, ID3D11Device* pDevice, ID3D1
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-	io.ConfigViewportsNoAutoMerge = true;
+	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	//io.ConfigViewportsNoAutoMerge = true;
 
-	ImGui_ImplWin32_Init(hWND);
-	ImGui_ImplDX11_Init(m_pDevice, m_pContext);
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+	ImGui::SetNextWindowViewport(viewport->ID);
+
+	if(!ImGui_ImplWin32_Init(g_hWnd))
+		return E_FAIL;
+
+	if(!ImGui_ImplDX11_Init(m_pDevice, m_pContext))
+		return E_FAIL;
 
 	ImGui::StyleColorsDark();
 	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\malgun.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesKorean());
@@ -48,7 +56,7 @@ HRESULT CImgui_Manager::Initialize(const HWND hWND, ID3D11Device* pDevice, ID3D1
 	return S_OK;
 }
 
-void CImgui_Manager::Tick(_float fTimeDelta)
+void CImgui_Manager::Tick()
 {
 	
 	ImGui_ImplDX11_NewFrame();

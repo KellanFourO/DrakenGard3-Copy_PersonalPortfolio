@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "..\Public\Loader.h"
 #include "GameInstance.h"
+
+//TODO GameObject
+#include "Camera_Dynamic.h"
 #include "BackGround.h"
 #include "Terrain.h"
 #include "Imgui_Manager.h"
@@ -145,6 +148,11 @@ HRESULT CLoader::Loading_For_GamePlay_Level()
 		CTerrain::Create(m_pDevice, m_pContext,LEVEL_GAMEPLAY))))
 		return E_FAIL;
 
+	//! For.Prototype_GameObject_Camera_Dynamic
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Dynamic"),
+		CCamera_Dynamic::Create(m_pDevice, m_pContext, LEVEL_GAMEPLAY))))
+		return E_FAIL;
+
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
 	m_isFinished = true;
@@ -181,6 +189,11 @@ HRESULT CLoader::Loading_For_Tool_Level()
 	//! For.Prototype_GameObject_Terrain
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext, LEVEL_TOOL))))
+		return E_FAIL;
+
+	//! For.Prototype_GameObject_Camera_Dynamic
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Dynamic"),
+		CCamera_Dynamic::Create(m_pDevice, m_pContext, LEVEL_TOOL))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
