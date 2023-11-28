@@ -11,7 +11,7 @@ CGameInstance::CGameInstance()
 {
 }
 
-HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, const GRAPHIC_DESC& GraphicDesc, ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
+HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInstance, const GRAPHIC_DESC& GraphicDesc, ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
 {
 	//TODO 그래픽 디바이스 초기화
 	m_pGraphic_Device = CGraphic_Device::Create(GraphicDesc, ppDevice, ppContext);
@@ -24,7 +24,7 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, const GRAPHIC_DESC& G
 		return E_FAIL;
 
 	//TODO 인풋디바이스 셋팅
-	m_pInput_Device = CInput_Device::Create(m_hInst, m_hWnd);
+	m_pInput_Device = CInput_Device::Create(hInstance, GraphicDesc.hWnd);
 	if (nullptr == m_pInput_Device)
 		return E_FAIL;
 
@@ -64,6 +64,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	   nullptr == m_pInput_Device)
 		return;
 
+	m_pInput_Device->Tick();
+	
 	m_pObject_Manager->Priority_Tick(fTimeDelta);
 	
 	m_pObject_Manager->Tick(fTimeDelta);
@@ -78,7 +80,6 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pLevel_Manager->Tick(fTimeDelta);
 
-	m_pInput_Device->Tick();
 	m_pInput_Device->LateTick();
 }
 
@@ -273,11 +274,6 @@ _float4 CGameInstance::Get_CamPosition()
 	return m_pPipeLine->Get_CamPosition();
 }
 
-void CGameInstance::Set_hWnd_hInst(HINSTANCE hInst, HWND hWnd)
-{
-	m_hInst = hInst;
-	m_hWnd = hWnd;
-}
 
 _byte CGameInstance::Get_DIKeyState(_ubyte byKeyID)
 {
@@ -287,10 +283,9 @@ _byte CGameInstance::Get_DIKeyState(_ubyte byKeyID)
 	return m_pInput_Device->Get_DIKeyState(byKeyID);
 
 
-
 }
 
-_byte CGameInstance::Get_DIMouseState(CInput_Device::MOUSEKEYSTATE eMouse)
+_byte CGameInstance::Get_DIMouseState(MOUSEKEYSTATE eMouse)
 {
 	if (nullptr == m_pInput_Device)
 		return _byte();
@@ -299,7 +294,7 @@ _byte CGameInstance::Get_DIMouseState(CInput_Device::MOUSEKEYSTATE eMouse)
 
 }
 
-_long CGameInstance::Get_DIMouseMove(CInput_Device::MOUSEMOVESTATE eMouseState)
+_long CGameInstance::Get_DIMouseMove(MOUSEMOVESTATE eMouseState)
 {
 	if (nullptr == m_pInput_Device)
 		return _long();
@@ -332,7 +327,7 @@ _bool CGameInstance::Key_Up(_ubyte byKeyID)
 	return m_pInput_Device->Key_Up(byKeyID);
 }
 
-_bool CGameInstance::Mouse_Pressing(CInput_Device::MOUSEKEYSTATE eMouse)
+_bool CGameInstance::Mouse_Pressing(MOUSEKEYSTATE eMouse)
 {
 	if (nullptr == m_pInput_Device)
 		return false;
@@ -340,7 +335,7 @@ _bool CGameInstance::Mouse_Pressing(CInput_Device::MOUSEKEYSTATE eMouse)
 	return m_pInput_Device->Mouse_Pressing(eMouse);
 }
 
-_bool CGameInstance::Mouse_Down(CInput_Device::MOUSEKEYSTATE eMouse)
+_bool CGameInstance::Mouse_Down(MOUSEKEYSTATE eMouse)
 {
 	if (nullptr == m_pInput_Device)
 		return false;
@@ -348,7 +343,7 @@ _bool CGameInstance::Mouse_Down(CInput_Device::MOUSEKEYSTATE eMouse)
 	return m_pInput_Device->Mouse_Down(eMouse);
 }
 
-_bool CGameInstance::Mouse_Up(CInput_Device::MOUSEKEYSTATE eMouse)
+_bool CGameInstance::Mouse_Up(MOUSEKEYSTATE eMouse)
 {
 	if (nullptr == m_pInput_Device)
 		return false;

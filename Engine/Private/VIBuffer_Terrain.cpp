@@ -137,13 +137,13 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const wstring& strHeightMapFileP
 			//! 만약, 길이가 틀렸다면 직접 나누는 작업을 했어야 했을거야.
 			
 			vNormal = XMLoadFloat3(&pVertices[iIndices[0]].vNormal) + vNormal;
-			XMStoreFloat3(&pVertices[iIndices[0]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[0]].vNormal)));
+			XMStoreFloat3(&pVertices[iIndices[0]].vNormal, XMVector3Normalize(vNormal));
 
 			vNormal = XMLoadFloat3(&pVertices[iIndices[1]].vNormal) + vNormal;
-			XMStoreFloat3(&pVertices[iIndices[1]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[1]].vNormal)));
+			XMStoreFloat3(&pVertices[iIndices[1]].vNormal, XMVector3Normalize(vNormal));
 
 			vNormal = XMLoadFloat3(&pVertices[iIndices[2]].vNormal) + vNormal;
-			XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[2]].vNormal)));
+			XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(vNormal));
 
 			//TODO 사각형은 삼각형 두개로 구성되있잖아 두번째 삼각형도 해줘야지
 			pIndices[iNumIndices++] = iIndices[0];
@@ -155,13 +155,13 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const wstring& strHeightMapFileP
 			vNormal = XMVector3Cross(vSourDir, vDestDir);
 
 			vNormal = XMLoadFloat3(&pVertices[iIndices[0]].vNormal) + vNormal;
-			XMStoreFloat3(&pVertices[iIndices[0]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[0]].vNormal)));
+			XMStoreFloat3(&pVertices[iIndices[0]].vNormal, XMVector3Normalize(vNormal));
 
 			vNormal = XMLoadFloat3(&pVertices[iIndices[2]].vNormal) + vNormal;
-			XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[2]].vNormal)));
+			XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(vNormal));
 
 			vNormal = XMLoadFloat3(&pVertices[iIndices[3]].vNormal) + vNormal;
-			XMStoreFloat3(&pVertices[iIndices[3]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[3]].vNormal)));
+			XMStoreFloat3(&pVertices[iIndices[3]].vNormal, XMVector3Normalize(vNormal));
 		}
 	}
 #pragma endregion

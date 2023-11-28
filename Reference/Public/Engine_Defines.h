@@ -2,6 +2,12 @@
 
 #pragma warning(disable : 4251)
 
+namespace Engine
+{
+	enum MOUSEKEYSTATE { DIM_LB, DIM_RB, DIM_MB, DIM_END };
+	enum MOUSEMOVESTATE { DIMS_X, DIMS_Y, DIMS_Z, DIMS_END };
+}
+
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "Effects11/d3dx11effect.h"

@@ -124,7 +124,7 @@ HRESULT CLoader::Loading_For_GamePlay_Level()
 
 	//! For.Prototype_Component_Texture_Terrain
 	if(FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY,TEXT("Prototype_Component_Texture_Terrain"),
-	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Tile0.jpg")))))
+	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Tile%d.dds"), 2))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델를(을) 로드하는 중입니다."));
@@ -167,7 +167,7 @@ HRESULT CLoader::Loading_For_Tool_Level()
 
 	//! For.Prototype_Component_Texture_Terrain
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_TOOL, TEXT("Prototype_Component_Texture_Terrain"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Tile0.jpg")))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Tile%d.dds"), 2))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델를(을) 로드하는 중입니다."));

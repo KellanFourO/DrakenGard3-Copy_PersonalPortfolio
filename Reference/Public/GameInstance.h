@@ -23,7 +23,7 @@ private:
 
 public: /* For.Engine */
 	/* 엔진라이브러리를 사용하기위한 준비를 모두 거친다. */
-	HRESULT Initialize_Engine(_uint iNumLevels, const GRAPHIC_DESC& GraphicDesc, _Inout_ ID3D11Device** ppDevice, _Inout_ ID3D11DeviceContext** ppContext);
+	HRESULT Initialize_Engine(_uint iNumLevels, HINSTANCE hInstance, const GRAPHIC_DESC& GraphicDesc, _Inout_ ID3D11Device** ppDevice, _Inout_ ID3D11DeviceContext** ppContext);
 	void Tick_Engine(_float fTimeDelta);
 	HRESULT  Render_Engine();
 	void Clear(_uint iLevelIndex);
@@ -66,16 +66,15 @@ public: /* For.PipeLine */
 	_float4		Get_CamPosition();
 
 public: /* For.Input_Device */
-	void	Set_hWnd_hInst(HINSTANCE hInst, HWND hWnd);
 	_byte   Get_DIKeyState(_ubyte byKeyID);
-	_byte   Get_DIMouseState(CInput_Device::MOUSEKEYSTATE eMouse);
-	_long   Get_DIMouseMove(CInput_Device::MOUSEMOVESTATE eMouseState);
+	_byte   Get_DIMouseState(MOUSEKEYSTATE eMouse);
+	_long   Get_DIMouseMove(MOUSEMOVESTATE eMouseState);
 	_bool	Key_Pressing(_ubyte byKeyID);
 	_bool	Key_Down(_ubyte byKeyID);
 	_bool	Key_Up(_ubyte byKeyID);
-	_bool	Mouse_Pressing(CInput_Device::MOUSEKEYSTATE eMouse);
-	_bool	Mouse_Down(CInput_Device::MOUSEKEYSTATE eMouse);
-	_bool	Mouse_Up(CInput_Device::MOUSEKEYSTATE eMouse);
+	_bool	Mouse_Pressing(MOUSEKEYSTATE eMouse);
+	_bool	Mouse_Down(MOUSEKEYSTATE eMouse);
+	_bool	Mouse_Up(MOUSEKEYSTATE eMouse);
 
 
 
@@ -88,12 +87,6 @@ private:
 	class CRenderer*				m_pRenderer = { nullptr };
 	class CPipeLine*				m_pPipeLine = { nullptr };
 	class CInput_Device*			m_pInput_Device = { nullptr };
-
-private:
-	//#게임인스턴스핸들
-	HWND	  m_hWnd = { nullptr };
-	HINSTANCE m_hInst = { nullptr };
-
 
 public:
 	void Release_Manager();

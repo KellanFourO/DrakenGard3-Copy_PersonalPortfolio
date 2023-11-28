@@ -4,11 +4,9 @@
 
 BEGIN(Engine)
 
-class ENGINE_DLL CInput_Device final : public CBase
+class CInput_Device final : public CBase
 {
 public:
-    enum MOUSEKEYSTATE { DIM_LB, DIM_RB, DIM_MB, DIM_END };
-    enum MOUSEMOVESTATE { DIMS_X, DIMS_Y, DIMS_Z, DIMS_END };
 
     typedef struct tagMouseState
     {

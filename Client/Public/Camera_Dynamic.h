@@ -25,6 +25,10 @@ public:
 	virtual void	Late_Tick(_float fTimeDelta) override;
 
 private:
+	void	KeyInput(_float fTimeDelta);
+	void	MouseInput(_float fTimeDelta);
+
+private:
 	_float			m_fMouseSensitivity = { 0.0f };
 	LEVEL			m_eCurrentLevelID = { LEVEL_END };
 
