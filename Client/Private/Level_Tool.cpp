@@ -22,7 +22,6 @@ HRESULT CLevel_Tool::Initialize()
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
-	
 
 	if (FAILED(Ready_Imgui()))
 	{
@@ -119,7 +118,7 @@ HRESULT CLevel_Tool::Ready_Layer_Camera(const wstring& strLayerTag)
 	Desc.fSpeedPerSec = 20.f;
 	Desc.fRotationPerSec = XMConvertToRadians(180.0f);
 
-	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, strLayerTag, TEXT("Prototype_GameObject_Camera_Dynamic"), &Desc)))
+	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, strLayerTag, TEXT("Prototype_GameObject_Camera_MapTool"), &Desc)))
 		return E_FAIL;
 
 	return S_OK;

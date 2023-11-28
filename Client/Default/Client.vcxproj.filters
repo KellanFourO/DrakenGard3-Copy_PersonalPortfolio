@@ -49,6 +49,9 @@
     <Filter Include="02. GameObjects\02. Camera">
       <UniqueIdentifier>{c8faaff6-acda-4629-a9ac-515ae831dc7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="96. Tool\00. Camera">
+      <UniqueIdentifier>{136c76e3-85ab-4107-b8a6-79d1101a825f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -120,6 +123,9 @@
     <ClInclude Include="..\public\Camera_Dynamic.h">
       <Filter>02. GameObjects\02. Camera</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Camera_MapTool.h">
+      <Filter>96. Tool\00. Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -178,6 +184,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Dynamic.cpp">
       <Filter>02. GameObjects\02. Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_MapTool.cpp">
+      <Filter>96. Tool\00. Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

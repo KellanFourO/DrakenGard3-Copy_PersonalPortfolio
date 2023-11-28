@@ -28,13 +28,20 @@ private:
 	wchar_t* ConvertCtoWC(const char* str);
 
 private:
-	_bool				 m_bReady = false;
+	ID3D11Device* m_pDevice = { nullptr };
+	ID3D11DeviceContext* m_pContext = { nullptr };
+	
+private:
+	class CGameInstance*	m_pGameInstance = { nullptr };
 
+private:
+
+	_bool				 m_bReady = false;
 	_bool				 m_bMainTool = { true };
 	_bool				 m_bMapTool, m_bEffectTool, m_bObjectTool, m_bCameraTool = { false };
 	LEVEL			     m_eLevelID = { LEVEL_END };
-	ID3D11Device* m_pDevice = { nullptr };
-	ID3D11DeviceContext* m_pContext = { nullptr };
+	
+	
 
 private:
 	void	HelpMarker(const char* desc);

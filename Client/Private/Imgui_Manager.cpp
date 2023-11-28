@@ -5,6 +5,7 @@
 #include "../Imgui/imgui_impl_dx11.h"
 
 #include "Imgui_Manager.h"
+#include "GameInstance.h"
 
 IMPLEMENT_SINGLETON(CImgui_Manager)
 
@@ -16,6 +17,7 @@ CImgui_Manager::~CImgui_Manager()
 {
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
+	Safe_Release(m_pGameInstance);
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -26,9 +28,11 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 {
 	m_pDevice = pDevice;
 	m_pContext = pContext;
+	m_pGameInstance = CGameInstance::GetInstance();
 
-	m_pDevice->AddRef();
-	m_pContext->AddRef();
+	Safe_AddRef(m_pDevice);
+	Safe_AddRef(m_pContext);
+	Safe_AddRef(m_pGameInstance);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -76,6 +80,8 @@ void CImgui_Manager::Tick()
 	
 	ImGui::Begin(u8"메인 툴", &m_bMainTool, ImGuiWindowFlags_AlwaysAutoResize);
 
+// 	_bool bDemo;
+// 	ImGui::ShowDemoWindow(&bDemo);
 	if (ImGui::BeginMenu(u8"툴"))
 	{
 		ImGui::MenuItem(u8"맵툴", NULL, &m_bMapTool);
@@ -98,6 +104,8 @@ void CImgui_Manager::Render()
 {
 	ImGui::EndFrame();
 	ImGui::Render();
+
+	//m_pContext->OMSetRenderTargets(1, m_pGameInstance->)
 
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	ImGuiIO& io = ImGui::GetIO(); (void)io;

@@ -10,6 +10,11 @@ private:
 	virtual ~CGraphic_Device() = default;
 
 public:
+	IDXGISwapChain*				Get_SwapChain() { return m_pSwapChain;}
+	ID3D11RenderTargetView*		Get_BackRTV() { return m_pBackBufferRTV; }
+	ID3D11DepthStencilView*		Get_DSV() { return m_pDepthStencilView; }
+
+public:
 	HRESULT Initialize(const GRAPHIC_DESC& GraphicDesc, _Inout_ ID3D11Device** ppDevice, _Inout_ ID3D11DeviceContext** ppContext); //! 그래픽 디바이스 초기화
 	HRESULT Clear_BackBuffer_View(_float4 vClearColor);//! 백버퍼를 지우기 위한 함수 _float4는 새롭게 typedef 한 자료형으로 XMFLOAT4 자료형을 의미한다.
 	HRESULT Clear_DepthStencil_View();//! 깊이버퍼와 스텐실 버퍼를 지우기 위한 함수

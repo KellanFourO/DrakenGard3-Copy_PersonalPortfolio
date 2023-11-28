@@ -6,6 +6,9 @@
 #include "Camera_Dynamic.h"
 #include "BackGround.h"
 #include "Terrain.h"
+
+//TODO Tool
+#include "Camera_MapTool.h"
 #include "Imgui_Manager.h"
 
 #include <process.h>
@@ -191,9 +194,9 @@ HRESULT CLoader::Loading_For_Tool_Level()
 		CTerrain::Create(m_pDevice, m_pContext, LEVEL_TOOL))))
 		return E_FAIL;
 
-	//! For.Prototype_GameObject_Camera_Dynamic
-	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Dynamic"),
-		CCamera_Dynamic::Create(m_pDevice, m_pContext, LEVEL_TOOL))))
+	//! For.Prototype_GameObject_Camera_MapTool
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_MapTool"),
+		CCamera_MapTool::Create(m_pDevice, m_pContext, LEVEL_TOOL))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));

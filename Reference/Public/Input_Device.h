@@ -7,7 +7,6 @@ BEGIN(Engine)
 class CInput_Device final : public CBase
 {
 public:
-
     typedef struct tagMouseState
     {
         _long   lX;
