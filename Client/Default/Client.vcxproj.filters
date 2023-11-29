@@ -208,11 +208,11 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsli">
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
       <Filter>97. ShaderFiles</Filter>
-    </None>
-    <None Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsli">
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsl">
       <Filter>97. ShaderFiles</Filter>
-    </None>
+    </FxCompile>
   </ItemGroup>
 </Project>

@@ -165,6 +165,17 @@ HRESULT CShader::Bind_SRVs(const _char* pConstantName, ID3D11ShaderResourceView*
 	return pSRVariable->SetResourceArray(ppSRV,0, iNumTextures);
 }
 
+HRESULT CShader::Bind_RawValue(const _char* pConstantName, const void* pData, _uint iSize)
+{
+	ID3DX11EffectVariable* pVariable = m_pEffect->GetVariableByName(pConstantName);
+	if (nullptr == pVariable)
+		return E_FAIL;
+
+	//! void*니까 따로 As 함수를 호출하지않는다.
+
+	return pVariable->SetRawValue(pData, 0, iSize);
+}
+
 CShader* CShader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strShaderFilePath, const D3D11_INPUT_ELEMENT_DESC* pElements, _uint iNumElements)
 {
 	CShader* pInstance = new CShader(pDevice, pContext);
