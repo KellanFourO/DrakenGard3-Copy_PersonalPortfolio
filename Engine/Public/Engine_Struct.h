@@ -21,6 +21,13 @@ namespace Engine
 		ID3D11InputLayout* layout = { nullptr };
 	}PASS_DESC;
 
+	typedef struct tagRayDesc
+	{
+		XMFLOAT4 vOrigin;
+		XMFLOAT3 vDirection;
+		float	fLength;
+	}RAY;
+
 	typedef struct ENGINE_DLL tagVertex_Position_Texcoord
 	{
 		XMFLOAT3		vPosition;
@@ -39,6 +46,20 @@ namespace Engine
 		static const unsigned int					iNumElements = 3;
 		static const D3D11_INPUT_ELEMENT_DESC		Elements[iNumElements];
 	}VTXNORTEX;
+
+	typedef struct tagVertex_Ground_Texture
+	{
+		XMFLOAT3		vPosition;
+		XMFLOAT3		vNormal;
+		XMFLOAT2		vTexUV;
+		XMFLOAT3		vTangent;
+	}VTXGROUND;
+
+	typedef struct ENGINE_DLL tagVertex_Ground_Texture_Declaration
+	{
+		static const unsigned int				iNumElements = 4;
+		static const D3D11_INPUT_ELEMENT_DESC	Element[iNumElements];
+	}VTXGROUND_DECLARATION;
 }
 
 

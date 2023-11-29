@@ -16,6 +16,7 @@ namespace Engine
 
 	typedef		signed int					_int;
 	typedef		unsigned int				_uint;
+	typedef		XMINT2						_int2;
 
 	typedef		signed long					_long;
 	typedef		unsigned long				_ulong;
@@ -43,6 +44,20 @@ namespace Engine
 	typedef		HXMVECTOR					_hvector;
 	typedef		CXMVECTOR					_cvector;
 	
+	typedef struct tagInt32
+	{
+		tagInt32(unsigned int _ix, unsigned int _iy, unsigned int _iz)
+			: ix(_ix)
+			, iy(_iy)
+			, iz(_iz) {	}
+
+		tagInt32()
+			: ix(0)
+			, iy(0)
+			, iz(0) {	}
+
+		unsigned int ix, iy, iz;
+	} _uint3;
 }
 
 #endif // Engine_Typedef_h__

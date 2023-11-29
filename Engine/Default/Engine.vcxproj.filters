@@ -88,6 +88,9 @@
     <Filter Include="01. Utility\04. PipeLine">
       <UniqueIdentifier>{2d6c8f69-9ac5-4f15-9af2-c0d1de87cf63}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\03. Components\00. VIBuffer\Ground">
+      <UniqueIdentifier>{29d62c91-757b-4fae-b8a0-5c58b44b18ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -174,6 +177,9 @@
     <ClInclude Include="..\public\Input_Device.h">
       <Filter>00. System\00. Device\01. Input</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Ground.h">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Ground</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -247,6 +253,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Input_Device.cpp">
       <Filter>00. System\00. Device\01. Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Ground.cpp">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Ground</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -57,6 +57,7 @@ protected:
 	_uint						m_iStride = { 0 }; //! 정점 하나의 크기
 	_uint						m_iNumVertexBuffers = { 0 };
 
+	_uint						m_iNumPrimitive = { 0 } ;
 	_uint						m_iNumIndices = { 0 }; //! 인덱스 개수
 	_uint						m_iIndexStride = { 0 }; //! 인덱스 하나의 크기
 	DXGI_FORMAT					m_eIndexFormat = {  };

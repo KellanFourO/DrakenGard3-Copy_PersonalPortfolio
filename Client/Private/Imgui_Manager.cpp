@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../Default/stdafx.h"
+
 
 #include "../Imgui/imgui.h"
 #include "../Imgui/imgui_impl_win32.h"
