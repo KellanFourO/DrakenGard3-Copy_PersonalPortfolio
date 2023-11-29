@@ -93,47 +93,27 @@ HRESULT CGraphic_Device::Clear_DepthStencil_View()
 
 HRESULT CGraphic_Device::Resize(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-//
-	ID3D11RenderTargetView* pNullRTV = nullptr;
+	m_pContext->OMSetRenderTargets(0,NULL,NULL);
+	m_pContext->Flush();
 
-	m_pContext->OMSetRenderTargets(1, &pNullRTV, nullptr);
+	Safe_Release(m_pBackBufferRTV);
+	Safe_Release(m_pDepthStencilView);
 
-	ID3D11ShaderResourceView* pNullSRV = nullptr;
-	
-	m_pContext->PSSetShaderResources(0,1, &pNullSRV);
+	// 가로, 세로, 화면비 계산
+	RECT clientRect{};
+	GetWindowRect(hWnd, &clientRect);
+	_int iWinCX = static_cast<UINT>(clientRect.right - clientRect.left);
+	_int iWinCY = static_cast<UINT>(clientRect.bottom - clientRect.top);
 
-	m_pContext->VSSetShaderResources(0,1, &pNullSRV);
-
-	m_pBackBufferRTV->Release();
-	m_pDepthStencilView->Release();
-	
-
-	RECT ClientRect{};
-	GetWindowRect(hWnd, &ClientRect);
-
-	_uint iWinCX = static_cast<UINT>(ClientRect.right - ClientRect.left);
-	_uint iWinCY = static_cast<UINT>(ClientRect.bottom - ClientRect.top);
-	
 	DXGI_SWAP_CHAIN_DESC desc{};
 	m_pSwapChain->GetDesc(&desc);
 
-	m_pSwapChain->ResizeBuffers(desc.BufferCount,iWinCX,iWinCY, desc.BufferDesc.Format, desc.Flags);
-
-	//TODO 뷰 포트 셋팅
-	D3D11_VIEWPORT			ViewPortDesc;
-	ZeroMemory(&ViewPortDesc, sizeof(D3D11_VIEWPORT));
-	ViewPortDesc.TopLeftX = 0; //! 화면에 왼쪽상단부터 그리겠다.
-	ViewPortDesc.TopLeftY = 0;
-	ViewPortDesc.Width = (_float)iWinCX;
-	ViewPortDesc.Height = (_float)iWinCY;
-	ViewPortDesc.MinDepth = 0.f; //! 깊이버퍼는 0 부터 1까지 저장 가능하다. 이 값은 고정.
-	ViewPortDesc.MaxDepth = 1.f;
-
-	m_pContext->RSSetViewports(1, &ViewPortDesc);
-
+	m_pSwapChain->ResizeBuffers(0, iWinCX, iWinCY, desc.BufferDesc.Format, desc.Flags);
 
 	Ready_BackBufferRenderTargetView();
 	Ready_DepthStencilRenderTargetView(iWinCX,iWinCY);
+	
+	//D3D11_VIEWPORT VIEWPORT = { 0.0f, 0.0f, static_cast<float>(iWinCX), static_cast<float>(iWinCY), 0.0f, 1.0f };
 
 	
 

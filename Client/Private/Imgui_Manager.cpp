@@ -1,11 +1,13 @@
+#include "stdafx.h"
 #include "../Default/stdafx.h"
 
 #include "../Imgui/imgui.h"
 #include "../Imgui/imgui_impl_win32.h"
 #include "../Imgui/imgui_impl_dx11.h"
 
-#include "Imgui_Manager.h"
 #include "GameInstance.h"
+#include "Imgui_Manager.h"
+
 
 IMPLEMENT_SINGLETON(CImgui_Manager)
 
@@ -15,24 +17,23 @@ CImgui_Manager::CImgui_Manager()
 
 CImgui_Manager::~CImgui_Manager()
 {
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
 	Safe_Release(m_pGameInstance);
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+
+	CleanupDeviceD3D();
 }
 
-HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+HRESULT CImgui_Manager::Initialize()
 {
-	m_pDevice = pDevice;
-	m_pContext = pContext;
 	m_pGameInstance = CGameInstance::GetInstance();
-
-	Safe_AddRef(m_pDevice);
-	Safe_AddRef(m_pContext);
+	
 	Safe_AddRef(m_pGameInstance);
+
+	if (!CreateDeviceD3D())
+		return E_FAIL;
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -40,8 +41,8 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-	//io.ConfigViewportsNoAutoMerge = true;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	io.ConfigViewportsNoAutoMerge = true;
 
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(viewport->Pos);
@@ -57,10 +58,12 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 	ImGui::StyleColorsDark();
 	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\malgun.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesKorean());
 
+	m_eLevelID = LEVEL_TOOL;
+
 	return S_OK;
 }
 
-void CImgui_Manager::Tick()
+void CImgui_Manager::Tick(_float fTimeDelta)
 {
 	
 	ImGui_ImplDX11_NewFrame();
@@ -102,10 +105,20 @@ void CImgui_Manager::Tick()
 
 void CImgui_Manager::Render()
 {
-	ImGui::EndFrame();
+	if (m_bReady)
+	{
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+		m_bReady = false;
+	}
+
 	ImGui::Render();
 
-	//m_pContext->OMSetRenderTargets(1, m_pGameInstance->)
+	const float clear_color[4] = { 1.f, 1.f, 1.f, 1.f};
+
+	m_pContext->OMSetRenderTargets(1, &m_pMainRenderTargetView, NULL);
+	m_pContext->ClearRenderTargetView(m_pMainRenderTargetView, clear_color);
 
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -114,6 +127,140 @@ void CImgui_Manager::Render()
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 	}
+
+	//m_pSwapChain->Present(1, 0);
+}
+
+HRESULT CImgui_Manager::Save_EditTexture()
+{
+	/* 텍스쳐를 생성해보자. */
+	
+
+	D3D11_TEXTURE2D_DESC	TextureDesc = {};
+
+	TextureDesc.Width = 1024;
+	TextureDesc.Height = 1024;
+	TextureDesc.MipLevels = 1;
+	TextureDesc.ArraySize = 1;
+	TextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	TextureDesc.SampleDesc.Quality = 0;
+	TextureDesc.SampleDesc.Count = 1;
+
+	TextureDesc.Usage = D3D11_USAGE_DYNAMIC;
+	TextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	TextureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	TextureDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA		InitialData = {};
+
+	_uint* pPixels = new _uint[TextureDesc.Width * TextureDesc.Height];
+
+	for (size_t i = 0; i < TextureDesc.Height; i++)
+	{
+		for (size_t j = 0; j < TextureDesc.Width; j++)
+		{
+			_uint		iIndex = i * TextureDesc.Width + j;
+
+			pPixels[iIndex] = D3DCOLOR_ARGB(255, 0, 0, 0);
+		}
+	}
+
+
+	InitialData.pSysMem = pPixels;
+	InitialData.SysMemPitch = TextureDesc.Width * 4;
+
+
+	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, &InitialData, &m_pTexture2D)))
+		return E_FAIL;
+
+	/*pPixels[0] = D3DCOLOR_ARGB(255, 255, 0, 0);*/
+
+	for (size_t i = 0; i < TextureDesc.Height; i++)
+	{
+		for (size_t j = 0; j < TextureDesc.Width; j++)
+		{
+			_uint		iIndex = i * TextureDesc.Width + j;
+
+			if (j < TextureDesc.Width * 0.5f)
+				pPixels[iIndex] = D3DCOLOR_ARGB(255, 0, 0, 0);
+			else
+				pPixels[iIndex] = D3DCOLOR_ARGB(255, 255, 255, 255);
+		}
+	}
+
+	/* 텍스쳐의 픽셀정보를 내 마음대로 조절해서 */
+	D3D11_MAPPED_SUBRESOURCE		MappedSubResource = {};
+
+	m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedSubResource);
+
+	memcpy(MappedSubResource.pData, pPixels, sizeof(_uint) * TextureDesc.Width * TextureDesc.Height);
+
+	m_pContext->Unmap(m_pTexture2D, 0);
+
+
+	/* 다시 파일로 저장하기위해서. */
+	if (FAILED(SaveDDSTextureToFile(m_pContext, m_pTexture2D, TEXT("../Bin/Resources/Textures/Terrain/MyMask.dds"))))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+_bool CImgui_Manager::CreateDeviceD3D()
+{
+	// Setup swap chain
+	DXGI_SWAP_CHAIN_DESC sd;
+	ZeroMemory(&sd, sizeof(sd));
+	sd.BufferCount = 2;
+	sd.BufferDesc.Width = 0;
+	sd.BufferDesc.Height = 0;
+	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	sd.BufferDesc.RefreshRate.Numerator = 60;
+	sd.BufferDesc.RefreshRate.Denominator = 1;
+	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	sd.OutputWindow = g_hWnd;
+	sd.SampleDesc.Count = 1;
+	sd.SampleDesc.Quality = 0;
+	sd.Windowed = TRUE;
+	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	
+	UINT createDeviceFlags = 0;
+	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+	D3D_FEATURE_LEVEL featureLevel;
+	const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
+	if (D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &m_pSwapChain, &m_pDevice, &featureLevel, &m_pContext) != S_OK)
+		return false;
+	
+	CreateRenderTarget();
+
+	return true;
+}
+
+void CImgui_Manager::CleanupDeviceD3D()
+{
+	CleanUpRenderTarget();
+	if (m_pSwapChain) { m_pSwapChain->Release(); m_pSwapChain = NULL; }
+	if (m_pContext) { m_pContext->Release(); m_pContext = NULL; }
+	if (m_pDevice) { m_pDevice->Release(); m_pDevice = NULL; }
+}
+
+void CImgui_Manager::ResizeImGui(WPARAM wParam, LPARAM lParam)
+{
+	m_pSwapChain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
+}
+
+void CImgui_Manager::CreateRenderTarget()
+{
+	ID3D11Texture2D* pBackBuffer;
+	m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
+	m_pDevice->CreateRenderTargetView(pBackBuffer, NULL, &m_pMainRenderTargetView);
+	pBackBuffer->Release();
+}
+
+void CImgui_Manager::CleanUpRenderTarget()
+{
+	if (m_pMainRenderTargetView) { m_pMainRenderTargetView->Release(); m_pMainRenderTargetView = NULL; }
 }
 
 char* CImgui_Manager::ConvertWCtoC(const wchar_t* str)

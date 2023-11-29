@@ -7,6 +7,7 @@
 
 #include "MainApp.h"
 #include "GameInstance.h"
+#include "Imgui_Manager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -253,7 +254,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_SIZE:
-        CGameInstance::GetInstance()->Resize(hWnd,message,wParam,lParam);
+        //CGameInstance::GetInstance()->Resize(hWnd, message, wParam, lParam);
+        if (CImgui_Manager::GetInstance()->Get_Level_ID() == LEVEL_TOOL && CImgui_Manager::GetInstance()->GetDevice())
+        {
+           CImgui_Manager::GetInstance()->CleanUpRenderTarget();
+           CImgui_Manager::GetInstance()->ResizeImGui(wParam,lParam);
+           CImgui_Manager::GetInstance()->CreateRenderTarget();
+        }
+        
         break;
 
     case WM_DESTROY:

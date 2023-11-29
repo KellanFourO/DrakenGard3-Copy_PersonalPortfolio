@@ -113,6 +113,29 @@ void CGameInstance::Clear(_uint iLevelIndex)
 	m_pComponent_Manager->Clear(iLevelIndex);
 }
 
+IDXGISwapChain* CGameInstance::Get_SwapChain()
+{
+	if (nullptr == m_pGraphic_Device)
+		return nullptr;
+	
+	return m_pGraphic_Device->Get_SwapChain();
+}
+
+ID3D11RenderTargetView* CGameInstance::Get_BackRTV()
+{
+	if (nullptr == m_pGraphic_Device)
+		return nullptr;
+
+	return m_pGraphic_Device->Get_BackRTV();
+}
+
+ID3D11DepthStencilView* CGameInstance::Get_DSV()
+{
+	if (nullptr == m_pGraphic_Device)
+		return nullptr;
+
+	return m_pGraphic_Device->Get_DSV();
+}
 
 
 HRESULT CGameInstance::Clear_BackBuffer_View(_float4 vClearColor)
@@ -137,21 +160,19 @@ HRESULT CGameInstance::Present()
 	return m_pGraphic_Device->Present();
 }
 
+HRESULT CGameInstance::Resize(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if (nullptr == m_pGraphic_Device)
+		return E_FAIL;
+	return m_pGraphic_Device->Resize(hWnd, message, wParam, lParam);
+}
+
 HRESULT CGameInstance::UseFullScreen(_bool bMode)
 {
 	if (nullptr == m_pGraphic_Device)
 		return E_FAIL;
 
 	return m_pGraphic_Device->UseFullScreen(bMode);
-}
-
-HRESULT CGameInstance::Resize(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-
-	if(nullptr == m_pGraphic_Device)
-		return E_FAIL;
-
-	return m_pGraphic_Device->Resize(hWnd, message, wParam, lParam);
 }
 
 HRESULT CGameInstance::Add_Timer(const wstring& strTimeTag)

@@ -13,6 +13,7 @@ namespace Engine
 #include "Effects11/d3dx11effect.h"
 #include "DirectXTK/DDSTextureLoader.h" //TODO DDS 텍스처 로드전용
 #include "DirectXTK/WICTextureLoader.h" //TODO 윈도우 텍스처 로드전용 ( bmp, jpg, png 등등 )
+#include "DirectXTK/ScreenGrab.h"
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>

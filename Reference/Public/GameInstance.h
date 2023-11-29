@@ -29,11 +29,16 @@ public: /* For.Engine */
 	void Clear(_uint iLevelIndex);
 
 public: /* For.Graphic_Device */		
+
+	IDXGISwapChain*			Get_SwapChain();
+	ID3D11RenderTargetView* Get_BackRTV();
+	ID3D11DepthStencilView* Get_DSV();
+
 	HRESULT Clear_BackBuffer_View(_float4 vClearColor);
 	HRESULT Clear_DepthStencil_View();	
 	HRESULT Present();
-	HRESULT UseFullScreen(_bool bMode);
 	HRESULT Resize(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	HRESULT UseFullScreen(_bool bMode);
 	
 public: /* For.Timer_Manager */
 	HRESULT	Add_Timer(const wstring& strTimeTag);

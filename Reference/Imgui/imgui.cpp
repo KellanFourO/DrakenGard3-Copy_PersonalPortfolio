@@ -1,4 +1,5 @@
 // dear imgui, v1.90 WIP
+#include "stdafx.h"
 // (main code and documentation)
 
 // Help:

@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "Level_Tool.h"
 
-#include "../Imgui/imgui.h"
-#include "../Imgui/imgui_impl_win32.h"
-#include "../Imgui/imgui_impl_dx11.h"
 #include "Imgui_Manager.h"
 
 #include "GameInstance.h"
@@ -52,6 +49,8 @@ void CLevel_Tool::Tick(_float fTimeDelta)
 			m_bModeChange = !m_bModeChange;
 	}
 	
+	m_pImguiManager->Tick(fTimeDelta);
+
 		/*if (GetAsyncKeyState(VK_MENU) & 0x8000)
 		{
 			if (GetAsyncKeyState(VK_RETURN) & 0x8000)
@@ -77,13 +76,9 @@ HRESULT CLevel_Tool::Render()
 {
 	SetWindowText(g_hWnd, TEXT("툴 레벨입니다."));
 
-	if (m_pImguiManager->Get_Ready())
-	{
-		m_pImguiManager->Tick();
-		m_pImguiManager->Render();
-	}
-
 	
+		
+		m_pImguiManager->Render();
 
 	return S_OK;
 }
@@ -96,11 +91,10 @@ HRESULT CLevel_Tool::Ready_Imgui()
 	if(nullptr == m_pImguiManager)
 		return E_FAIL;
 
-	if(FAILED(m_pImguiManager->Initialize(m_pDevice,m_pContext)))
+	if(FAILED(m_pImguiManager->Initialize()))
 		return E_FAIL;
 
-	m_pImguiManager->Set_Ready(true);
-
+	
 	return S_OK;
 }
 
