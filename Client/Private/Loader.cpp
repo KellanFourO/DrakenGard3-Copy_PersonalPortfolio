@@ -137,7 +137,7 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		break;
 	case Client::LEVEL_TOOL:
 		if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_MapTool"),
-			CCamera_Dynamic::Create(m_pDevice, m_pContext, eLevel))))
+			CCamera_MapTool::Create(m_pDevice, m_pContext, eLevel))))
 			return E_FAIL;
 		break;
 	}

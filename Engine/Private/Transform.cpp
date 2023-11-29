@@ -103,6 +103,26 @@ void CTransform::Go_Backward(_float fTimeDelta)
 	Set_State(STATE_POSITION, vPostion);
 }
 
+void CTransform::Go_Up(_float fTimeDelta)
+{
+	_vector vPosition = Get_State(STATE_POSITION);
+	_vector vUp = Get_State(CTransform::STATE_UP);
+
+	vPosition += XMVector3Normalize(vUp) * m_fSpeedPerSec * fTimeDelta;
+
+	Set_State(STATE_POSITION, vPosition);
+}
+
+void CTransform::Go_Down(_float fTimeDelta)
+{
+	_vector vPosition = Get_State(STATE_POSITION);
+	_vector vUp = Get_State(CTransform::STATE_UP);
+
+	vPosition -= XMVector3Normalize(vUp) * m_fSpeedPerSec * fTimeDelta;
+
+	Set_State(STATE_POSITION, vPosition);
+}
+
 void CTransform::Turn(_fvector vAxis, _float fTimeDelta)
 {
 	//TODO 임의의축으로 회전하게 하는 함수이다.

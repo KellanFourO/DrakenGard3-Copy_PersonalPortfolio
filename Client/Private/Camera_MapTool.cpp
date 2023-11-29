@@ -40,7 +40,11 @@ void CCamera_MapTool::Priority_Tick(_float fTimeDelta)
 void CCamera_MapTool::Tick(_float fTimeDelta)
 {
 	KeyInput(fTimeDelta);
-	MouseInput(fTimeDelta);
+	
+	if (m_pGameInstance->Mouse_Pressing(DIM_RB))
+	{
+		MouseInput(fTimeDelta);
+	}
 
 	//TODO 부모의 Tick함수를 호출해줘야 뷰투영행렬을 파이프라인 객체에게 던져준다.
 	__super::Tick(fTimeDelta);
@@ -57,7 +61,6 @@ void CCamera_MapTool::KeyInput(_float fTimeDelta)
 		m_pTransformCom->Go_Left(fTimeDelta);
 	}
 
-
 	if (m_pGameInstance->Key_Pressing(DIK_D))
 	{
 		m_pTransformCom->Go_Right(fTimeDelta);
@@ -71,6 +74,16 @@ void CCamera_MapTool::KeyInput(_float fTimeDelta)
 	if (m_pGameInstance->Key_Pressing(DIK_S))
 	{
 		m_pTransformCom->Go_Backward(fTimeDelta);
+	}
+
+	if (m_pGameInstance->Key_Pressing(DIK_Q))
+	{
+		m_pTransformCom->Go_Up(fTimeDelta);
+	}
+
+	if (m_pGameInstance->Key_Pressing(DIK_E))
+	{
+		m_pTransformCom->Go_Down(fTimeDelta);
 	}
 
 }
