@@ -94,6 +94,12 @@
     <Filter Include="01. Utility\03. Components\00. VIBuffer\DynamicCube">
       <UniqueIdentifier>{a6634997-bef0-4cbf-b5a0-19efbc165425}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\03. Components\04. Model">
+      <UniqueIdentifier>{3086ff2a-d50c-42e3-979c-a702ebd959b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\04. Model\00. Mesh">
+      <UniqueIdentifier>{bfbf55c2-608c-49b4-b67f-0aa9b847eb63}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -183,6 +189,12 @@
     <ClInclude Include="..\Public\VIBuffer_Ground.h">
       <Filter>01. Utility\03. Components\00. VIBuffer\Ground</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Model.h">
+      <Filter>01. Utility\03. Components\04. Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Mesh.h">
+      <Filter>01. Utility\03. Components\04. Model\00. Mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -259,6 +271,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Ground.cpp">
       <Filter>01. Utility\03. Components\00. VIBuffer\Ground</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Model.cpp">
+      <Filter>01. Utility\03. Components\04. Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Mesh.cpp">
+      <Filter>01. Utility\03. Components\04. Model\00. Mesh</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

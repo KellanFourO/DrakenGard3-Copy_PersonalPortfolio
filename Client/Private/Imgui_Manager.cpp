@@ -6,8 +6,8 @@
 #include "../Imgui/imgui_impl_dx11.h"
 
 #include "GameInstance.h"
+#include "Terrain.h"
 #include "Imgui_Manager.h"
-
 
 IMPLEMENT_SINGLETON(CImgui_Manager)
 
@@ -59,6 +59,8 @@ HRESULT CImgui_Manager::Initialize()
 	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\malgun.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesKorean());
 
 	m_eLevelID = LEVEL_TOOL;
+
+	
 
 	return S_OK;
 }
@@ -296,6 +298,8 @@ wchar_t* CImgui_Manager::ConvertCtoWC(const char* str)
 
 void CImgui_Manager::ShowMapTool()
 {
+	//!Com_VIBuffer
+	//! 
 	ImGui::Begin(u8"맵툴");
 	if (ImGui::BeginTabBar("##MapTabBar"))
 	{
@@ -303,6 +307,11 @@ void CImgui_Manager::ShowMapTool()
 		if (ImGui::BeginTabItem(u8"타일"))
 		{
 			ImGui::Text(u8"타일");
+
+			if (ImGui::Button("Create"))
+			{
+				
+			}
 			ImGui::EndTabItem();
 		}
 		//TODO 타일 탭 종료

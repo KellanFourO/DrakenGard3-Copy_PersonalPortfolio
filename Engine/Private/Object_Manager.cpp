@@ -28,7 +28,7 @@ HRESULT CObject_Manager::Add_Prototype(const wstring& strPrototypeTag, CGameObje
 	return S_OK;
 }
 
-HRESULT CObject_Manager::Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg)
+HRESULT CObject_Manager::Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg, _Inout_ class CGameObject** ppOut)
 {
 	CGameObject*		pPrototype = Find_Prototype(strPrototypeTag); //! 원형객체 탐색
 
@@ -39,6 +39,8 @@ HRESULT CObject_Manager::Add_CloneObject(_uint iLevelIndex, const wstring& strLa
 
 	if(nullptr == pGameObject)
 		return E_FAIL;
+	
+		*ppOut = pGameObject;
 
 	CLayer*			pLayer = Find_Layer(iLevelIndex,strLayerTag);
 
@@ -55,6 +57,13 @@ HRESULT CObject_Manager::Add_CloneObject(_uint iLevelIndex, const wstring& strLa
 	else //! 이미 이름을 가진 레이어가 있었다.
 		pLayer->Add_GameObject(pGameObject);
 
+
+	return S_OK;
+}
+
+HRESULT CObject_Manager::Remove_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg)
+{
+	//Find_Layer(iLevelIndex,strLayerTag)->
 
 	return S_OK;
 }

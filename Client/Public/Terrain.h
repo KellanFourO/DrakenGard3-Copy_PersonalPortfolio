@@ -6,7 +6,7 @@ BEGIN(Engine)
 class CShader;
 class CTexture;
 class CVIBuffer_Terrain;
-class CVIBuffer_DynamicCube;
+class CVIBuffer_Ground;
 END
 
 BEGIN(Client)
@@ -23,16 +23,16 @@ private:
 public:
 	virtual HRESULT Initialize_Prototype(LEVEL eLevel); //! 원형객체의 초기화를 위한 함수.
 	virtual HRESULT Initialize(void* pArg) override; //! 사본객체의 초기화를 위한 함수. ( void*를 매개인자로 받아 특수한 사본객체 처리가 가능하다. )
-	virtual void Priority_Tick(_float fTimeDelta) override;
-	virtual void Tick(_float fTimeDelta) override;
-	virtual void Late_Tick(_float fTimeDelta) override;
+	virtual void	Priority_Tick(_float fTimeDelta) override;
+	virtual void	Tick(_float fTimeDelta) override;
+	virtual void	Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
 private:
 	CShader*				m_pShaderCom = { nullptr };
 	CTexture*				m_pTextureCom[TYPE_END] = { nullptr };
 	CVIBuffer_Terrain*		m_pVIBufferCom = { nullptr };
-	CVIBuffer_DynamicCube*	m_pVIBufferComTool = { nullptr };
+	CVIBuffer_Ground*	m_pVIBufferComTool = { nullptr };
 
 private:
 	LEVEL				m_eCurrentLevelID = { LEVEL_END };

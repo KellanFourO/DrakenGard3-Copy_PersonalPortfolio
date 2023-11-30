@@ -11,8 +11,9 @@ CVIBuffer_Ground::CVIBuffer_Ground(const CVIBuffer_Ground& rhs)
 {
 }
 
-HRESULT CVIBuffer_Ground::Initialize_Prototype(const wstring& strHeightMapFilePath)
+HRESULT CVIBuffer_Ground::Initialize_Prototype()
 {
+	
 	return S_OK;
 }
 
@@ -356,12 +357,12 @@ HRESULT CVIBuffer_Ground::Init_Mesh(_float4 _vInfo)
 }
 
 
-CVIBuffer_Ground* CVIBuffer_Ground::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strHeightMapFilePath)
+CVIBuffer_Ground* CVIBuffer_Ground::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CVIBuffer_Ground* pInstance = new CVIBuffer_Ground(pDevice, pContext);
 
 	/* 원형객체를 초기화한다.  */
-	if (FAILED(pInstance->Initialize_Prototype(strHeightMapFilePath)))
+	if (FAILED(pInstance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CVIBuffer_Ground");
 		Safe_Release(pInstance);

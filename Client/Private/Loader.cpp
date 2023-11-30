@@ -109,7 +109,7 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		return E_FAIL;
 
 	/* For.Prototype_Component_Texture_Terrain_Brush */
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain_Brush"),
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Terrain_Brush"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Brush.png"), 1))))
 		return E_FAIL;
 
@@ -119,10 +119,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Terrain"),
 				CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Height1.bmp")))))
 				return E_FAIL;
-		/* For.Prototype_Component_VIBuffer_DynamicCube */
-		//if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_DynamicCube"),
-		//		CVIBuffer_DynamicCube::Create(m_pDevice, m_pContext))))
-		//		return E_FAIL;
+		/* For.Prototype_Component_VIBuffer_Ground */
+		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Ground"),
+			CVIBuffer_Ground::Create(m_pDevice, m_pContext))))
+			return E_FAIL;
+		
 
 	lstrcpy(m_szLoadingText, TEXT("셰이더를(을) 로드하는 중입니다."));
 	/* For.Prototype_Component_Shader_VtxNorTex */

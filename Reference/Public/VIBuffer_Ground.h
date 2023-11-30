@@ -11,7 +11,7 @@ private:
 	virtual ~CVIBuffer_Ground() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const wstring& strHeightMapFilePath);
+	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg) override;
 
 public:
@@ -37,7 +37,7 @@ private:
 	vector<VTXGROUND>		m_VertexInfo;
 
 public:
-	static	CVIBuffer_Ground* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strHeightMapFilePath);
+	static	CVIBuffer_Ground* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

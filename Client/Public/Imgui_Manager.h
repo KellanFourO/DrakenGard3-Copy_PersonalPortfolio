@@ -8,7 +8,7 @@ class CImgui_Manager final : public CBase
 	DECLARE_SINGLETON(CImgui_Manager);
 
 private:
-	CImgui_Manager();
+			 CImgui_Manager();
 	virtual ~CImgui_Manager();
 
 public:
@@ -27,6 +27,7 @@ public:
 //TODO For.MapTool Start
 public:
 	HRESULT	Save_EditTexture();
+	
 
 private:
 	ID3D11Texture2D*	m_pTexture2D = { nullptr };
@@ -35,27 +36,28 @@ private:
 
 
 private:	
-	_bool	CreateDeviceD3D();
-	void	CleanupDeviceD3D();
+	_bool		CreateDeviceD3D();
+	void		CleanupDeviceD3D();
 
-	char*	ConvertWCtoC(const wchar_t* str);
-	wchar_t* ConvertCtoWC(const char* str);
+	char*		ConvertWCtoC(const wchar_t* str);
+	wchar_t*	ConvertCtoWC(const char* str);
 
 private:
-	ID3D11Device* m_pDevice = { nullptr };
-	ID3D11DeviceContext* m_pContext = { nullptr };
-	IDXGISwapChain*	m_pSwapChain = { nullptr };
+	ID3D11Device*			m_pDevice = { nullptr };
+	ID3D11DeviceContext*	m_pContext = { nullptr };
+	IDXGISwapChain*			m_pSwapChain = { nullptr };
 	ID3D11RenderTargetView* m_pMainRenderTargetView = { nullptr };
 	
 private:
 	class CGameInstance*	m_pGameInstance = { nullptr };
-
+	class CTerrain*			m_pTerrain = { nullptr };
+	
 private:
 
-	_bool				 m_bReady = true;
-	_bool				 m_bMainTool = { true };
-	_bool				 m_bMapTool, m_bEffectTool, m_bObjectTool, m_bCameraTool = { false };
-	LEVEL			     m_eLevelID = { LEVEL_END };
+	_bool					m_bReady = true;
+	_bool					m_bMainTool = { true };
+	_bool					m_bMapTool, m_bEffectTool, m_bObjectTool, m_bCameraTool = { false };
+	LEVEL					m_eLevelID = { LEVEL_END };
 	
 	
 
