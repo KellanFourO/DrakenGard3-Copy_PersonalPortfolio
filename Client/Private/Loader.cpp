@@ -11,6 +11,7 @@
 #include "Camera_MapTool.h"
 #include "Imgui_Manager.h"
 
+
 #include <process.h>
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -107,12 +108,21 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Mask.bmp"), 1))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_Terrain_Brush */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain_Brush"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Brush.png"), 1))))
+		return E_FAIL;
+
 	lstrcpy(m_szLoadingText, TEXT("모델를(을) 로드하는 중입니다."));
 
-	/* For.Prototype_Component_VIBuffer_Terrain */
-	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Height1.bmp")))))
-		return E_FAIL;
+		/* For.Prototype_Component_VIBuffer_Terrain */
+		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Terrain"),
+				CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Height1.bmp")))))
+				return E_FAIL;
+		/* For.Prototype_Component_VIBuffer_DynamicCube */
+		//if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_DynamicCube"),
+		//		CVIBuffer_DynamicCube::Create(m_pDevice, m_pContext))))
+		//		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("셰이더를(을) 로드하는 중입니다."));
 	/* For.Prototype_Component_Shader_VtxNorTex */
@@ -127,22 +137,22 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CTerrain::Create(m_pDevice, m_pContext,eLevel))))
 		return E_FAIL;
 
-	/* For.Prototype_GameObject_Camera_Dynamic */
+	
 	switch (eLevel)
 	{
+	/* For.Prototype_GameObject_Camera_Dynamic */
 	case Client::LEVEL_GAMEPLAY:
 		if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Dynamic"),
 			CCamera_Dynamic::Create(m_pDevice, m_pContext, eLevel))))
 			return E_FAIL;
 		break;
+	/* For.Prototype_GameObject_Camera_MapTool */
 	case Client::LEVEL_TOOL:
 		if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_MapTool"),
 			CCamera_MapTool::Create(m_pDevice, m_pContext, eLevel))))
 			return E_FAIL;
 		break;
 	}
-
-	
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

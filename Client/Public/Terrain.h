@@ -6,13 +6,14 @@ BEGIN(Engine)
 class CShader;
 class CTexture;
 class CVIBuffer_Terrain;
+class CVIBuffer_DynamicCube;
 END
 
 BEGIN(Client)
 
 class CTerrain final : public CGameObject
 {
-	enum TEXTURE { TYPE_DIFFUSE, TYPE_MASK, TYPE_END };
+	enum TEXTURE { TYPE_DIFFUSE, TYPE_MASK, TYPE_BRUSH, TYPE_END };
 
 private:
 	CTerrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -28,9 +29,10 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	CShader*			m_pShaderCom = { nullptr };
-	CTexture*			m_pTextureCom[2] = { nullptr };
-	CVIBuffer_Terrain*	m_pVIBufferCom = { nullptr };
+	CShader*				m_pShaderCom = { nullptr };
+	CTexture*				m_pTextureCom[TYPE_END] = { nullptr };
+	CVIBuffer_Terrain*		m_pVIBufferCom = { nullptr };
+	CVIBuffer_DynamicCube*	m_pVIBufferComTool = { nullptr };
 
 private:
 	LEVEL				m_eCurrentLevelID = { LEVEL_END };

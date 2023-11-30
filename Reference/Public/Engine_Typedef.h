@@ -58,6 +58,16 @@ namespace Engine
 
 		unsigned int ix, iy, iz;
 	} _uint3;
+
+	typedef struct tagFaceIndices32
+	{
+		_ulong _1, _2, _3;
+	}FACEINDICES32;
+
+	typedef struct tagFaceIndices16
+	{
+		_ulong _1, _2, _3;
+	}FACEINDICES16;
 }
 
 #endif // Engine_Typedef_h__

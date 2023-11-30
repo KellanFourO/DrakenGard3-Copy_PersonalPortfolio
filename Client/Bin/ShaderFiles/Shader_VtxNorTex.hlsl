@@ -30,8 +30,12 @@ vector			g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f);
 //! 아래에서부터 배열로 텍스처를 받는 이유는 마스크 텍스처를 이용해서 두장의 지형텍스처를 섞어서 그릴것이기 때문에.
 texture2D		g_DiffuseTexture[2];
 texture2D		g_MaskTexture;
+texture2D		g_BrushTexture;
 
 vector			g_vCamPosition; //! 반사벡터를 만들기위해 필요한 시선벡터를 구할때 필요한 카메라의 월드위치
+vector			g_vBrushPos = vector(50.f, 0.f, 20.f, 1.f);
+float			g_fBrushRange = 10.0f;
+
 
 sampler DefaultSampler = sampler_state
 {
@@ -122,14 +126,40 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	vector		vSourDiffuse = g_DiffuseTexture[0].Sample(DefaultSampler, In.vTexCoord * 100.0f);
 	vector		vDestDiffuse = g_DiffuseTexture[1].Sample(DefaultSampler, In.vTexCoord * 100.0f);
-
 	vector		vMask = g_MaskTexture.Sample(DefaultSampler, In.vTexCoord); //! 마스크는 타일링시키지 않을것이기에 uv좌표에 100을 곱해주지 않는다.
+
+	//TODO Brush의 색상을 바로 얻지 않는 이유
+	//! 얻어온 색깔을 디퓨즈 색상에 더해줘야하는데, 내가 지정한 위치에 내가 지정한 사이즈로 그려주길 바란다.
+	//! 하지만 지금 색상을 얻어서 바로 더해주면 내가 지정한 위치와 사이즈에 픽셀들이 아닌 모든 픽셀들이 브러시 텍스처로부터 
+	//! 색을 얻어오는 상황이다.
+	//! 그래서 if문으로 픽셀의 월드위치와 브러시의 위치,범위를 이용해서 영역안의 픽셀을 잡아주자
+	vector		vBrush = vector(0.f, 0.f, 0.f, 0.f);
 	
+	if (g_vBrushPos.x - g_fBrushRange < In.vWorldPos.x && In.vWorldPos.x <= g_vBrushPos.x + g_fBrushRange &&
+		g_vBrushPos.z - g_fBrushRange < In.vWorldPos.z && In.vWorldPos.z <= g_vBrushPos.z + g_fBrushRange)
+	{
+		//! uv좌표를 새로 잡는 이유는 : 지금은 픽셸의 전체 uv좌표로 잡혀있다 
+		//! 우리는 지금 영역안에서 브러시 전체를 그리고싶은거니 새로 잡아야한다
+		float2 vUV;
+		
+		//! 영역안의 들어왔다는 조건을 통과한 픽셀의 월드위치의 x가 356이라고 해보자
+		//! 브러시의 위치.x는 400, 브러시의 범위는 50이라고 해보자
+		//! 356 - 350 = 6 / 100 = 0.06
+		//! 픽셀의 월드위치.x가 450이라고 해보자
+		//! 450 - 350 = 100 / 100 = 1
+		//! 즉 0 ~ 1 사이의 좌표가 잡히는 산술식
+		vUV.x = (In.vWorldPos.x - (g_vBrushPos.x - g_fBrushRange)) / (2.f * g_fBrushRange);
+		vUV.y = ((g_vBrushPos.z + g_fBrushRange) - In.vWorldPos.z) / (2.f * g_fBrushRange);
+
+		vBrush = g_BrushTexture.Sample(DefaultSampler, vUV);
+	}
+
 	//!마스크 텍스처로 읽어들인 색이 하얀색, 검정색이냐에 따라 어떤텍스처의 색으로 그릴것인지 구분하기위한 산술식이다
 	//! 만약 마스크의 색상이 vector(1.f, 1.f, 1.f, 1.f) 이었다면 1과 0을 곱하니 사라지고 마스크는 0이다. 1에서 0을 빼면 SourDiffuse 그대로의 색상이나오고
 	//! 반대의경우에는 1 + 0 * SourDiffuse가 되니 DestDiffuse 색만 나오는 것이다.
 
-	vector		vMtrlDiffuse = vMask * vDestDiffuse + (1.f - vMask) * vSourDiffuse;
+	//TODO 만약 브러쉬 범위조건안의 들어왔다면 vBrush가 텍스처로부터 색상을 가져와서 텍스처색상을 더해준거고 아니라면 0초기화한 vBrush값이 들어가니 그대로 진행
+	vector		vMtrlDiffuse = vMask * vDestDiffuse + (1.f - vMask) * vSourDiffuse + vBrush;
 
 	float		fShade = max(dot(normalize(g_vLightDir) * -1.f, normalize(In.vNormal)), 0.f);
 	
