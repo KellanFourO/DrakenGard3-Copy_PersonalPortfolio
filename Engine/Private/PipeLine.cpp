@@ -1,7 +1,10 @@
 #include "PipeLine.h"
+#include "GameInstance.h"
 
 CPipeLine::CPipeLine()
+	: m_pGameInstace(CGameInstance::GetInstance())
 {
+	Safe_AddRef(m_pGameInstace);
 }
 
 void CPipeLine::Set_Transform(D3DTRANSFORMSTATE eState, _fmatrix TransformMatrix)
@@ -34,11 +37,14 @@ _float4x4 CPipeLine::Get_TransformFloat4x4Inverse(D3DTRANSFORMSTATE eState)
 	return m_Transform_Inverse[eState];
 }
 
-RAY CPipeLine::Get_Ray(HWND hwnd, _uint& In_ViewPortWidth, const _uint& In_ViewPortHeight)
+RAY CPipeLine::Get_Ray(_uint& In_ViewPortWidth, const _uint& In_ViewPortHeight)
 {
+	HWND hWnd = m_pGameInstace->Get_GraphicDesc().hWnd;
+
+
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
-	ScreenToClient(hwnd, &ptMouse);
+	ScreenToClient(hWnd, &ptMouse);
 
 	_vector vProjPos(XMVectorSet(ptMouse.x / (In_ViewPortWidth * 0.5f) - 1.f, ptMouse.y / -(In_ViewPortHeight * 0.5f) + 1.f, 0.f, 0.f));
 	
@@ -104,4 +110,5 @@ CPipeLine* CPipeLine::Create()
 
 void CPipeLine::Free()
 {
+	Safe_Release(m_pGameInstace);
 }

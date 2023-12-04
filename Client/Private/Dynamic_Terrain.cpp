@@ -108,7 +108,7 @@ void CDynamic_Terrain::Picking_Terrain(EDIT_MODE eMode)
 	_uint WinCX, WinCY;
 	WinCX = g_iWinSizeX; WinCY = g_iWinSizeY;
 
-	RAY WorldRay = m_pGameInstance->Get_Ray(g_hWnd, WinCX, WinCY);
+	RAY WorldRay = m_pGameInstance->Get_Ray(WinCX, WinCY);
 
 	_float3 Out = _float3(0.f, 0.f, 0.f);
 

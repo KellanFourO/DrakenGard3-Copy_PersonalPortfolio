@@ -137,6 +137,14 @@ ID3D11DepthStencilView* CGameInstance::Get_DSV()
 	return m_pGraphic_Device->Get_DSV();
 }
 
+GRAPHIC_DESC CGameInstance::Get_GraphicDesc()
+{
+	if (nullptr == m_pGraphic_Device)
+		return GRAPHIC_DESC();
+
+	return m_pGraphic_Device->Get_GraphicDesc();
+}
+
 
 HRESULT CGameInstance::Clear_BackBuffer_View(_float4 vClearColor)
 {
@@ -287,12 +295,12 @@ _float4x4 CGameInstance::Get_TransformFloat4x4Inverse(CPipeLine::D3DTRANSFORMSTA
 	return m_pPipeLine->Get_TransformFloat4x4Inverse(eState);
 }
 
-RAY CGameInstance::Get_Ray(HWND hwnd, _uint& In_ViewPortWidth, const _uint& In_ViewPortHeight)
+RAY CGameInstance::Get_Ray(_uint& In_ViewPortWidth, const _uint& In_ViewPortHeight)
 {
 	if (nullptr == m_pPipeLine)
 		return RAY();
 
-	return m_pPipeLine->Get_Ray(hwnd,In_ViewPortWidth, In_ViewPortHeight);
+	return m_pPipeLine->Get_Ray(In_ViewPortWidth, In_ViewPortHeight);
 	
 }
 

@@ -33,12 +33,14 @@ public: /* For.Graphic_Device */
 	IDXGISwapChain*			Get_SwapChain();
 	ID3D11RenderTargetView* Get_BackRTV();
 	ID3D11DepthStencilView* Get_DSV();
+	GRAPHIC_DESC			Get_GraphicDesc();
 
 	HRESULT Clear_BackBuffer_View(_float4 vClearColor);
 	HRESULT Clear_DepthStencil_View();	
 	HRESULT Present();
 	HRESULT Resize(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	HRESULT UseFullScreen(_bool bMode);
+	//GRAPHIC_DESC Get_GraphicDesc() const { return m_pGraphic_Device;}
 	
 public: /* For.Timer_Manager */
 	HRESULT	Add_Timer(const wstring& strTimeTag);
@@ -68,7 +70,7 @@ public: /* For.PipeLine */
 	_matrix		Get_TransformMatrixInverse(CPipeLine::D3DTRANSFORMSTATE eState);
 	_float4x4	Get_TransformFloat4x4Inverse(CPipeLine::D3DTRANSFORMSTATE eState);
 
-	RAY			Get_Ray(HWND hwnd, _uint & In_ViewPortWidth, const _uint & In_ViewPortHeight);
+	RAY			Get_Ray(_uint & In_ViewPortWidth, const _uint & In_ViewPortHeight);
 	_float4		Get_CamPosition();
 
 public: /* For.Input_Device */

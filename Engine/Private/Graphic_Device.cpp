@@ -11,6 +11,8 @@ HRESULT CGraphic_Device::Initialize(const GRAPHIC_DESC& GraphicDesc, ID3D11Devic
 	
 	_uint iFlag = 0;
 
+	m_GraphicDesc = GraphicDesc;
+
 #ifdef _DEBUG
 	iFlag = D3D11_CREATE_DEVICE_DEBUG;
 #endif

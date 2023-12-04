@@ -4,6 +4,7 @@
 
 #include "Base.h"
 
+
 BEGIN(Engine)
 
 class CPipeLine final : public CBase
@@ -28,7 +29,7 @@ public:
 	_float4x4 Get_TransformFloat4x4Inverse(D3DTRANSFORMSTATE eState);
 
 
-	RAY		Get_Ray(HWND hwnd, _uint& In_ViewPortWidth, const _uint& In_ViewPortHeight);
+	RAY		Get_Ray(_uint& In_ViewPortWidth, const _uint& In_ViewPortHeight);
 
 	_float4 Get_CamPosition();
 
@@ -37,6 +38,10 @@ public:
 	//TODO 틱함수?
 	//! 게임인스턴스에 틱엔진 함수에서 호출할 것이다. 매 틱마다 카메라가 가지고있는 뷰, 투영행렬을 Set해줄 것.
 	void	Tick();
+
+
+private:
+	class CGameInstance*	m_pGameInstace = { nullptr };
 
 private:
 	//TODO 멤버변수를 배열로 사용한 이유

@@ -13,6 +13,7 @@ public:
 	IDXGISwapChain*				Get_SwapChain() { return m_pSwapChain;}
 	ID3D11RenderTargetView*		Get_BackRTV() { return m_pBackBufferRTV; }
 	ID3D11DepthStencilView*		Get_DSV() { return m_pDepthStencilView; }
+	GRAPHIC_DESC				Get_GraphicDesc() const { return m_GraphicDesc; }
 
 public:
 	HRESULT Initialize(const GRAPHIC_DESC& GraphicDesc, _Inout_ ID3D11Device** ppDevice, _Inout_ ID3D11DeviceContext** ppContext); //! 그래픽 디바이스 초기화
@@ -32,6 +33,7 @@ private:
 	ID3D11RenderTargetView*		m_pBackBufferRTV = { nullptr }; //! 렌더타겟(그려질 대상)용으로 사용될 수 있는  텍스쳐타입..
 	ID3D11DepthStencilView*		m_pDepthStencilView = { nullptr }; //! 깊이스텐실버퍼(임의로 변경할 픽셀값을 저장할?)로서 사용될 수 있는 타입.
 
+	GRAPHIC_DESC				m_GraphicDesc;
 private:
 	HRESULT Ready_SwapChain(HWND hWnd, GRAPHIC_DESC::WINMODE eWinMode, _uint iWinCX, _uint iWinCY);
 	HRESULT Ready_BackBufferRenderTargetView();
