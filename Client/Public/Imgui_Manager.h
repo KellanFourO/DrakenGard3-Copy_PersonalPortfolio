@@ -9,21 +9,16 @@ class CImgui_Manager final : public CBase
 
 private:
 			 CImgui_Manager();
-	virtual ~CImgui_Manager();
+	virtual ~CImgui_Manager() = default;
 
 public:
-	HRESULT Initialize();
+	HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void	Tick(_float fTimeDelta);
 	void	Render();
 
-	LEVEL   Get_Level_ID() { return m_eLevelID; }
-	void	Set_Level_ID(LEVEL eLevel) { m_eLevelID = eLevel; }
-	ID3D11Device* GetDevice() { return m_pDevice;}
-
-
-	void	ResizeImGui(WPARAM wParam, LPARAM lParam);
-	void	CreateRenderTarget();
-	void	CleanUpRenderTarget();
+	LEVEL		  Get_Level_ID() { return m_eLevelID; }
+	void		  Set_Level_ID(LEVEL eLevel) { m_eLevelID = eLevel; }
+	
 //TODO For.MapTool Start
 public:
 	HRESULT	Save_EditTexture();
@@ -31,29 +26,16 @@ public:
 
 private:
 	ID3D11Texture2D*	m_pTexture2D = { nullptr };
-
-//!	   For.MapTool End
-
-
-private:	
-	_bool		CreateDeviceD3D();
-	void		CleanupDeviceD3D();
-
 	char*		ConvertWCtoC(const wchar_t* str);
 	wchar_t*	ConvertCtoWC(const char* str);
 
-private:
-	ID3D11Device*			m_pDevice = { nullptr };
-	ID3D11DeviceContext*	m_pContext = { nullptr };
-	IDXGISwapChain*			m_pSwapChain = { nullptr };
-	ID3D11RenderTargetView* m_pMainRenderTargetView = { nullptr };
-	
 private:
 	class CGameInstance*	m_pGameInstance = { nullptr };
 	class CTerrain*			m_pTerrain = { nullptr };
 	
 private:
-
+	ID3D11Device*			m_pDevice = { nullptr };
+	ID3D11DeviceContext*	m_pContext = { nullptr };
 	_bool					m_bReady = true;
 	_bool					m_bMainTool = { true };
 	_bool					m_bMapTool, m_bEffectTool, m_bObjectTool, m_bCameraTool = { false };
@@ -71,5 +53,8 @@ private:
 	void	ShowObjectTool();
 	void	ShowCameraTool();
 
+
+public:
+	virtual void Free() override;
 };
 END

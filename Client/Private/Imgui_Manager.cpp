@@ -15,39 +15,28 @@ CImgui_Manager::CImgui_Manager()
 {
 }
 
-CImgui_Manager::~CImgui_Manager()
+
+HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	Safe_Release(m_pGameInstance);
+	m_pDevice = pDevice;
+	m_pContext = pContext;
 
-	ImGui_ImplDX11_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
+	Safe_AddRef(m_pDevice);
+	Safe_AddRef(m_pContext);
 
-	CleanupDeviceD3D();
-}
-
-HRESULT CImgui_Manager::Initialize()
-{
 	m_pGameInstance = CGameInstance::GetInstance();
 	
 	Safe_AddRef(m_pGameInstance);
-
-	if (!CreateDeviceD3D())
-		return E_FAIL;
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-	io.ConfigViewportsNoAutoMerge = true;
 
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(viewport->Pos);
 	ImGui::SetNextWindowSize(viewport->Size);
-	ImGui::SetNextWindowViewport(viewport->ID);
 
 	if(!ImGui_ImplWin32_Init(g_hWnd))
 		return E_FAIL;
@@ -119,16 +108,10 @@ void CImgui_Manager::Render()
 
 	const float clear_color[4] = { 1.f, 1.f, 1.f, 1.f};
 
-	m_pContext->OMSetRenderTargets(1, &m_pMainRenderTargetView, NULL);
-	m_pContext->ClearRenderTargetView(m_pMainRenderTargetView, clear_color);
 
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-	}
+	
+	
 
 	//m_pSwapChain->Present(1, 0);
 }
@@ -208,66 +191,6 @@ HRESULT CImgui_Manager::Save_EditTexture()
 	Safe_Delete_Array(pPixels);
 
 	return S_OK;
-}
-
-
-
-
-_bool CImgui_Manager::CreateDeviceD3D()
-{
-	// Setup swap chain
-	DXGI_SWAP_CHAIN_DESC sd;
-	ZeroMemory(&sd, sizeof(sd));
-	sd.BufferCount = 2;
-	sd.BufferDesc.Width = 0;
-	sd.BufferDesc.Height = 0;
-	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.BufferDesc.RefreshRate.Numerator = 60;
-	sd.BufferDesc.RefreshRate.Denominator = 1;
-	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.OutputWindow = g_hWnd;
-	sd.SampleDesc.Count = 1;
-	sd.SampleDesc.Quality = 0;
-	sd.Windowed = TRUE;
-	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	
-	UINT createDeviceFlags = 0;
-	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-	D3D_FEATURE_LEVEL featureLevel;
-	const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
-	if (D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &m_pSwapChain, &m_pDevice, &featureLevel, &m_pContext) != S_OK)
-		return false;
-	
-	CreateRenderTarget();
-
-	return true;
-}
-
-void CImgui_Manager::CleanupDeviceD3D()
-{
-	CleanUpRenderTarget();
-	if (m_pSwapChain) { m_pSwapChain->Release(); m_pSwapChain = NULL; }
-	if (m_pContext) { m_pContext->Release(); m_pContext = NULL; }
-	if (m_pDevice) { m_pDevice->Release(); m_pDevice = NULL; }
-}
-
-void CImgui_Manager::ResizeImGui(WPARAM wParam, LPARAM lParam)
-{
-	m_pSwapChain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
-}
-
-void CImgui_Manager::CreateRenderTarget()
-{
-	ID3D11Texture2D* pBackBuffer;
-	m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
-	m_pDevice->CreateRenderTargetView(pBackBuffer, NULL, &m_pMainRenderTargetView);
-	pBackBuffer->Release();
-}
-
-void CImgui_Manager::CleanUpRenderTarget()
-{
-	if (m_pMainRenderTargetView) { m_pMainRenderTargetView->Release(); m_pMainRenderTargetView = NULL; }
 }
 
 char* CImgui_Manager::ConvertWCtoC(const wchar_t* str)
@@ -414,6 +337,17 @@ void CImgui_Manager::ShowCameraTool()
 		ImGui::EndTabBar();
 	}
 	ImGui::End();
+}
+
+void CImgui_Manager::Free()
+{
+	Safe_Release(m_pGameInstance);
+	Safe_Release(m_pDevice);
+	Safe_Release(m_pContext);
+
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 }
 
 void CImgui_Manager::HelpMarker(const char* desc)

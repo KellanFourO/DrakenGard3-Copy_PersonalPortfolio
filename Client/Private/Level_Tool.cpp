@@ -2,7 +2,6 @@
 #include "Level_Tool.h"
 
 #include "Imgui_Manager.h"
-
 #include "GameInstance.h"
 #include "Camera_Dynamic.h"
 
@@ -24,11 +23,9 @@ HRESULT CLevel_Tool::Initialize()
 	{
 		Safe_Release(m_pDevice);
 		Safe_Release(m_pContext);
-
+	
 		return E_FAIL;
 	}
- 	
-
 	
 }
 
@@ -51,34 +48,13 @@ void CLevel_Tool::Tick(_float fTimeDelta)
 	
 	m_pImguiManager->Tick(fTimeDelta);
 
-		/*if (GetAsyncKeyState(VK_MENU) & 0x8000)
-		{
-			if (GetAsyncKeyState(VK_RETURN) & 0x8000)
-			{
-				if (!m_bModeChange)
-				{
-					m_pGameInstance->UseFullScreen(true);
-				}
-				else
-				{
-					m_pGameInstance->UseFullScreen(false);
-				}
-
-				m_bModeChange = !m_bModeChange;
-				
-			}
-		}*/
-
-
 }
 
 HRESULT CLevel_Tool::Render()
 {
 	SetWindowText(g_hWnd, TEXT("툴 레벨입니다."));
-
-	
 		
-		m_pImguiManager->Render();
+	m_pImguiManager->Render();
 
 	return S_OK;
 }
@@ -91,7 +67,7 @@ HRESULT CLevel_Tool::Ready_Imgui()
 	if(nullptr == m_pImguiManager)
 		return E_FAIL;
 
-	if(FAILED(m_pImguiManager->Initialize()))
+	if(FAILED(m_pImguiManager->Initialize(m_pDevice,m_pContext)))
 		return E_FAIL;
 
 	
