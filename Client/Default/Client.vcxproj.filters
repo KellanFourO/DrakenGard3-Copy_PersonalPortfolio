@@ -58,6 +58,9 @@
     <Filter Include="02. GameObjects\04. ForkLift">
       <UniqueIdentifier>{3886dd1f-d1d8-4c40-aef6-c29591ca3780}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\01. Terrain\00. Dynamic">
+      <UniqueIdentifier>{7161916a-d47f-4bbc-813a-b125f734fb18}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -138,6 +141,9 @@
     <ClInclude Include="..\Public\ForkLift.h">
       <Filter>02. GameObjects\04. ForkLift</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Dynamic_Terrain.h">
+      <Filter>02. GameObjects\01. Terrain\00. Dynamic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -205,6 +211,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\ForkLift.cpp">
       <Filter>02. GameObjects\04. ForkLift</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Dynamic_Terrain.cpp">
+      <Filter>02. GameObjects\01. Terrain\00. Dynamic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

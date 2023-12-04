@@ -27,6 +27,9 @@ public:
 	_matrix Get_TransformMatrixInverse(D3DTRANSFORMSTATE eState);
 	_float4x4 Get_TransformFloat4x4Inverse(D3DTRANSFORMSTATE eState);
 
+
+	RAY		Get_Ray(HWND hwnd, _uint& In_ViewPortWidth, const _uint& In_ViewPortHeight);
+
 	_float4 Get_CamPosition();
 
 public:

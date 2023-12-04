@@ -50,6 +50,8 @@ protected:
 	HRESULT Add_Component(_uint iLevelIndex, const wstring& strPrototypeTag,
 			const wstring& strComTag, _Inout_ CComponent** ppOut, void* pArg = nullptr);
 
+	void	Delete_Component(const wstring& strComTag);
+
 	class CComponent* Find_Component(const wstring& strComTag);
 
 public:

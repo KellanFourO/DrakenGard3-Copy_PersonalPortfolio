@@ -34,6 +34,33 @@ _float4x4 CPipeLine::Get_TransformFloat4x4Inverse(D3DTRANSFORMSTATE eState)
 	return m_Transform_Inverse[eState];
 }
 
+RAY CPipeLine::Get_Ray(HWND hwnd, _uint& In_ViewPortWidth, const _uint& In_ViewPortHeight)
+{
+	POINT ptMouse;
+	GetCursorPos(&ptMouse);
+	ScreenToClient(hwnd, &ptMouse);
+
+	_vector vProjPos(XMVectorSet(ptMouse.x / (In_ViewPortWidth * 0.5f) - 1.f, ptMouse.y / -(In_ViewPortHeight * 0.5f) + 1.f, 0.f, 0.f));
+	
+	_matrix matProjInv(Get_TransformMatrixInverse(CPipeLine::D3DTS_PROJ));
+	
+	_vector vViewPos(XMVector3TransformCoord(vProjPos, matProjInv));
+
+	_vector vRayDir(vViewPos);
+	_vector vRayPos(XMVectorSet(0.f, 0.f, 0.f, 1.f));
+
+	_matrix matViewInv(Get_TransformMatrixInverse(CPipeLine::D3DTS_VIEW));
+	
+	RAY MouseRay = {};
+
+	XMStoreFloat3(&MouseRay.vDirection, XMVector3Normalize(XMVector3TransformNormal(vRayDir, matViewInv)));
+	XMStoreFloat4(&MouseRay.vOrigin, XMVector3TransformCoord(vRayPos, matViewInv));
+
+	MouseRay.fLength = 1000000.0f;
+
+	return MouseRay;
+}
+
 _float4 CPipeLine::Get_CamPosition()
 {
 	return m_vCamPosition;

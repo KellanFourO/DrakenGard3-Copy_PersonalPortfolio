@@ -30,18 +30,26 @@ private:
 	wchar_t*	ConvertCtoWC(const char* str);
 
 private:
-	class CGameInstance*	m_pGameInstance = { nullptr };
-	class CTerrain*			m_pTerrain = { nullptr };
-	
+	class CGameInstance*		m_pGameInstance = { nullptr };
+	class CDynamic_Terrain*		m_pDynamic_Terrain = { nullptr };
+
 private:
 	ID3D11Device*			m_pDevice = { nullptr };
 	ID3D11DeviceContext*	m_pContext = { nullptr };
+
 	_bool					m_bReady = true;
 	_bool					m_bMainTool = { true };
 	_bool					m_bMapTool, m_bEffectTool, m_bObjectTool, m_bCameraTool = { false };
 	LEVEL					m_eLevelID = { LEVEL_END };
 	
+	RAY						m_tRay;
+
+private: //! For. MapTool
+	VTXDYNAMIC	m_tMapInfo;
+	_float		m_fTileX = { 0.0f };
+	_float		m_fTileZ = { 0.0f };
 	
+
 
 private:
 	void	HelpMarker(const char* desc);

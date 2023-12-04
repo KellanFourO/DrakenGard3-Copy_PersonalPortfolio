@@ -6,6 +6,7 @@
 #include "Camera_Dynamic.h"
 #include "BackGround.h"
 #include "Terrain.h"
+#include "Dynamic_Terrain.h"
 #include "Monster.h"
 #include "ForkLift.h"
 
@@ -133,9 +134,9 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Terrain"),
 				CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Height1.bmp")))))
 				return E_FAIL;
-	//!For.Prototype_Component_VIBuffer_Ground #그라운드_Add_ProtoType
-		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Ground"),
-			CVIBuffer_Ground::Create(m_pDevice, m_pContext))))
+	//!For.Prototype_Component_VIBuffer_Dynamic_Terrain #동적터레인_Add_ProtoType
+		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Dynamic_Terrain"),
+			CVIBuffer_Dynamic_Terrain::Create(m_pDevice, m_pContext))))
 			return E_FAIL;
 		
 
@@ -154,6 +155,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	/* For.Prototype_GameObject_Terrain */
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext,eLevel))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_Dynamic_Terrain */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Dynamic_Terrain"),
+		CDynamic_Terrain::Create(m_pDevice, m_pContext, eLevel))))
 		return E_FAIL;
 
 	//! For.Prototype_GameObject_Monster #몬스터_AddPrototype

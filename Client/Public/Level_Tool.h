@@ -27,6 +27,7 @@ public:
 
 private:
 	class CImgui_Manager*	m_pImguiManager = { nullptr };
+	class CDynamic_Terrain*	m_pDynamic_Terrain = { nullptr };
 	_bool					m_bModeChange = false;
 };
 

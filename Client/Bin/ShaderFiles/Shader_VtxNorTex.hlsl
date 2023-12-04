@@ -229,7 +229,75 @@ PS_OUT PS_MAIN_POINT(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_WIRE(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
 
+	//!이것은 다시 정의해야한다. 내보내는 최종 컬러값이 아닌 텍스처로부터 읽어온 반사할 Diffuse 색상을 의미한다.
+	//Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexCoord * 100.0f);
+
+	//! 마스크텍스처로 두장의 지형텍스처를 섞어서 그릴 것이기에 다시 정의되야 된다.
+	//vector		vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexCoord * 100.0f);
+
+	vector		vSourDiffuse = g_DiffuseTexture[0].Sample(DefaultSampler, In.vTexCoord * 100.0f);
+	vector		vDestDiffuse = g_DiffuseTexture[1].Sample(DefaultSampler, In.vTexCoord * 100.0f);
+	vector		vMask = g_MaskTexture.Sample(DefaultSampler, In.vTexCoord); //! 마스크는 타일링시키지 않을것이기에 uv좌표에 100을 곱해주지 않는다.
+
+	//TODO Brush의 색상을 바로 얻지 않는 이유
+	//! 얻어온 색깔을 디퓨즈 색상에 더해줘야하는데, 내가 지정한 위치에 내가 지정한 사이즈로 그려주길 바란다.
+	//! 하지만 지금 색상을 얻어서 바로 더해주면 내가 지정한 위치와 사이즈에 픽셀들이 아닌 모든 픽셀들이 브러시 텍스처로부터 
+	//! 색을 얻어오는 상황이다.
+	//! 그래서 if문으로 픽셀의 월드위치와 브러시의 위치,범위를 이용해서 영역안의 픽셀을 잡아주자
+	vector		vBrush = vector(0.f, 0.f, 0.f, 0.f);
+
+	if (g_vBrushPos.x - g_fBrushRange < In.vWorldPos.x && In.vWorldPos.x <= g_vBrushPos.x + g_fBrushRange &&
+		g_vBrushPos.z - g_fBrushRange < In.vWorldPos.z && In.vWorldPos.z <= g_vBrushPos.z + g_fBrushRange)
+	{
+		//! uv좌표를 새로 잡는 이유는 : 지금은 픽셸의 전체 uv좌표로 잡혀있다 
+		//! 우리는 지금 영역안에서 브러시 전체를 그리고싶은거니 새로 잡아야한다
+		float2 vUV;
+
+		//! 영역안의 들어왔다는 조건을 통과한 픽셀의 월드위치의 x가 356이라고 해보자
+		//! 브러시의 위치.x는 400, 브러시의 범위는 50이라고 해보자
+		//! 356 - 350 = 6 / 100 = 0.06
+		//! 픽셀의 월드위치.x가 450이라고 해보자
+		//! 450 - 350 = 100 / 100 = 1
+		//! 즉 0 ~ 1 사이의 좌표가 잡히는 산술식
+		vUV.x = (In.vWorldPos.x - (g_vBrushPos.x - g_fBrushRange)) / (2.f * g_fBrushRange);
+		vUV.y = ((g_vBrushPos.z + g_fBrushRange) - In.vWorldPos.z) / (2.f * g_fBrushRange);
+
+		vBrush = g_BrushTexture.Sample(DefaultSampler, vUV);
+	}
+
+	//!마스크 텍스처로 읽어들인 색이 하얀색, 검정색이냐에 따라 어떤텍스처의 색으로 그릴것인지 구분하기위한 산술식이다
+	//! 만약 마스크의 색상이 vector(1.f, 1.f, 1.f, 1.f) 이었다면 1과 0을 곱하니 사라지고 마스크는 0이다. 1에서 0을 빼면 SourDiffuse 그대로의 색상이나오고
+	//! 반대의경우에는 1 + 0 * SourDiffuse가 되니 DestDiffuse 색만 나오는 것이다.
+
+	//TODO 만약 브러쉬 범위조건안의 들어왔다면 vBrush가 텍스처로부터 색상을 가져와서 텍스처색상을 더해준거고 아니라면 0초기화한 vBrush값이 들어가니 그대로 진행
+	vector		vMtrlDiffuse = vMask * vDestDiffuse + (1.f - vMask) * vSourDiffuse + vBrush;
+
+	float		fShade = max(dot(normalize(g_vLightDir) * -1.f, normalize(In.vNormal)), 0.f);
+
+	//! 스펙큘러가 보여져야하는 영역에서는 1로, 아닌 영역에서는 0으로 정의되는 스펙큘러의 세기가 필요하다.
+	vector		vLook = In.vWorldPos - g_vCamPosition; //! 시선 벡터
+
+	//TODO 반사벡터를 구해주는 함수의 작동원리
+	//! 픽셀의 법선벡터의 길이는 모두 1로 셋팅해놨었다.
+	//! 빛이 픽셀의 면에 닿으면 빛의 방향벡터를 반대로 뒤집는다. 이 반대로 뒤집은 벡터를 역방향벡터라고 표현하겠다.
+	//! 역방향벡터와 법선벡터를 내적하면 정사영했을때의 길이가 나온다.
+	//! 1의 길이를 가진 법선벡터에게 정사영길이를 곱해주면 법선벡터의 방향벡터와 같고 길이는 정사영길이인 벡터가 만들어지는데 이 벡터를 녹색벡터라 하겠다.
+	//! 녹색 벡터를 역벡터가아닌 기존 원래 빛의 방향벡터에게 더해주면 슬라이딩벡터가 나오고, 한번 더 더해주면 반사벡터가 구해진다.
+	//! 이 원리를 아래 reflect 함수에서 해주고있는 것.
+	//vector		vReflect = reflect(normalize(g_vLightDir), normalize(In.vNormal));
+
+	//TODO 위 반사벡터와 시선벡터를 이용한 최종적으로 나온 결과값인 스펙큘러 세기
+	//! pow(제곱근함수)를 사용한 이유는 스펙큘러 세기 그래프의 평균치가 너무 높게나오기때문에 거듭제곱을해줘서 반사되는 각을 낮춰준 행위
+	//float	fSpecular = pow(max(dot(normalize(vLook) * -1.f, normalize(vReflect)), 0.f), 30.f);
+
+	Out.vColor = g_vLightDiffuse * vMtrlDiffuse * min((fShade), 1.f);
+
+	return Out;
+}
 
 technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우린 다렉11이니 11로 붙여줌
 {
@@ -242,7 +310,6 @@ technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우
 		DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
-
 	/* 위와 다른 형태에 내가 원하는 특정 셰이더들을 그리는 모델에 적용한다. */
 	pass Delete
 	{
@@ -251,5 +318,15 @@ technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우
 		HullShader = NULL;
 		DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_POINT();
+	}
+
+	pass WireTerrain
+	{
+		//! 렌더스테이트가 올수도 있음.
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		HullShader = NULL;
+		DomainShader = NULL;
+		PixelShader = compile ps_5_0 PS_WIRE();
 	}
 };

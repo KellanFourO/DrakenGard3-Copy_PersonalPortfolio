@@ -5,9 +5,10 @@
 #include "../Imgui/imgui_impl_win32.h"
 #include "../Imgui/imgui_impl_dx11.h"
 
-#include "GameInstance.h"
-#include "Terrain.h"
 #include "Imgui_Manager.h"
+
+#include "GameInstance.h"
+#include "Dynamic_Terrain.h"
 
 IMPLEMENT_SINGLETON(CImgui_Manager)
 
@@ -56,7 +57,7 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 
 void CImgui_Manager::Tick(_float fTimeDelta)
 {
-	
+
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -233,9 +234,20 @@ void CImgui_Manager::ShowMapTool()
 		{
 			ImGui::Text(u8"타일");
 
+			ImGui::InputFloat(u8"입력 X : ", &m_fTileX);
+			ImGui::InputFloat(u8"입력 Z : ", &m_fTileZ);
+
+			m_tMapInfo.vPosition.x = m_fTileX;
+			m_tMapInfo.vPosition.y = 1.f;
+			m_tMapInfo.vPosition.z = m_fTileZ;
+
 			if (ImGui::Button("Create"))
 			{
-				
+				if (nullptr != m_pDynamic_Terrain)
+					m_pDynamic_Terrain->Delete_Component(TEXT("COM_VIBuffer"));
+
+				if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
+					return;
 			}
 			ImGui::EndTabItem();
 		}

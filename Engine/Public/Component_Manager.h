@@ -7,7 +7,7 @@
 #include "Model.h"
 #include "VIBuffer_Rect.h"
 #include "VIBuffer_Terrain.h"
-#include "VIBuffer_Ground.h"
+#include "VIBuffer_Dynamic_Terrain.h"
 
 //! 원형 컴포넌트들을 레벨별로 보관할 것이다.
 //! 복제하고자 하는 원형을 찾아 복제하여 리턴할 것이다.

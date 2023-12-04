@@ -24,9 +24,9 @@ private:
 public: /* For.Engine */
 	/* 엔진라이브러리를 사용하기위한 준비를 모두 거친다. */
 	HRESULT Initialize_Engine(_uint iNumLevels, HINSTANCE hInstance, const GRAPHIC_DESC& GraphicDesc, _Inout_ ID3D11Device** ppDevice, _Inout_ ID3D11DeviceContext** ppContext);
-	void Tick_Engine(_float fTimeDelta);
-	HRESULT  Render_Engine();
-	void Clear(_uint iLevelIndex);
+	void	Tick_Engine(_float fTimeDelta);
+	HRESULT Render_Engine();
+	void	Clear(_uint iLevelIndex);
 
 public: /* For.Graphic_Device */		
 
@@ -49,7 +49,7 @@ public: /* For.Level_Manager */
 
 public: /* For.Object_Manager */
 	HRESULT Add_Prototype(const wstring& strPrototypeTag, class CGameObject* pPrototype);
-	HRESULT Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr);
+	HRESULT Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr, CGameObject * *ppOut = nullptr);
 
 public: /* For.Component_Manager */
 	HRESULT Add_Prototype(_uint iLevelIndex, const wstring & strPrototypeTag, class CComponent* pPrototype);
@@ -68,6 +68,7 @@ public: /* For.PipeLine */
 	_matrix		Get_TransformMatrixInverse(CPipeLine::D3DTRANSFORMSTATE eState);
 	_float4x4	Get_TransformFloat4x4Inverse(CPipeLine::D3DTRANSFORMSTATE eState);
 
+	RAY			Get_Ray(HWND hwnd, _uint & In_ViewPortWidth, const _uint & In_ViewPortHeight);
 	_float4		Get_CamPosition();
 
 public: /* For.Input_Device */

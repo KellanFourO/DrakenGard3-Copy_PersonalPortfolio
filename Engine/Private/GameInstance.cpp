@@ -207,12 +207,12 @@ HRESULT CGameInstance::Add_Prototype(const wstring& strPrototypeTag, CGameObject
 	return m_pObject_Manager->Add_Prototype(strPrototypeTag,pPrototype);
 }
 
-HRESULT CGameInstance::Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg)
+HRESULT CGameInstance::Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg, CGameObject** ppOut)
 {
 	if (nullptr == m_pObject_Manager)
 		return E_FAIL;
 
-	return m_pObject_Manager->Add_CloneObject(iLevelIndex,strLayerTag,strPrototypeTag,pArg);
+	return m_pObject_Manager->Add_CloneObject(iLevelIndex,strLayerTag,strPrototypeTag,pArg, ppOut);
 }
 
 HRESULT CGameInstance::Add_Prototype(_uint iLevelIndex, const wstring& strPrototypeTag, CComponent* pPrototype)
@@ -285,6 +285,15 @@ _float4x4 CGameInstance::Get_TransformFloat4x4Inverse(CPipeLine::D3DTRANSFORMSTA
 		return _float4x4();
 
 	return m_pPipeLine->Get_TransformFloat4x4Inverse(eState);
+}
+
+RAY CGameInstance::Get_Ray(HWND hwnd, _uint& In_ViewPortWidth, const _uint& In_ViewPortHeight)
+{
+	if (nullptr == m_pPipeLine)
+		return RAY();
+
+	return m_pPipeLine->Get_Ray(hwnd,In_ViewPortWidth, In_ViewPortHeight);
+	
 }
 
 _float4 CGameInstance::Get_CamPosition()

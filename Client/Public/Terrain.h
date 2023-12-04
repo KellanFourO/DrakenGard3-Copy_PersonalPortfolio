@@ -6,7 +6,7 @@ BEGIN(Engine)
 class CShader;
 class CTexture;
 class CVIBuffer_Terrain;
-class CVIBuffer_Ground;
+class CVIBuffer_Dynamic_Terrain;
 END
 
 BEGIN(Client)
@@ -32,7 +32,6 @@ private:
 	CShader*				m_pShaderCom = { nullptr };
 	CTexture*				m_pTextureCom[TYPE_END] = { nullptr };
 	CVIBuffer_Terrain*		m_pVIBufferCom = { nullptr };
-	CVIBuffer_Ground*	m_pVIBufferComTool = { nullptr };
 
 private:
 	LEVEL				m_eCurrentLevelID = { LEVEL_END };

@@ -31,14 +31,6 @@ namespace Engine
 		float	fLength;
 	}RAY;
 
-	typedef struct tag_MeshVertextPostion
-	{
-		_float3 vMin;
-		_float3 vMax;
-		_float3 vCenter;
-
-	} MESH_VTX_INFO;
-
 	typedef struct ENGINE_DLL tagVertex_Position_Texcoord
 	{
 		XMFLOAT3		vPosition;
@@ -69,33 +61,14 @@ namespace Engine
 		static const D3D11_INPUT_ELEMENT_DESC		Elements[iNumElements];
 	}VTXMESH;
 
-	typedef struct tagVertex_Ground_Texture
+	typedef struct ENGINE_DLL tagVertex_Dynamic_Texture
 	{
 		XMFLOAT3		vPosition;
 		XMFLOAT3		vNormal;
-		XMFLOAT2		vTexUV;
+		XMFLOAT2		vTexcoord;
 		XMFLOAT3		vTangent;
-	}VTXGROUND;
+	}VTXDYNAMIC;
 
-	typedef struct ENGINE_DLL tagVertex_Ground_Texture_Declaration
-	{
-		static const unsigned int				iNumElements = 4;
-		static const D3D11_INPUT_ELEMENT_DESC	Element[iNumElements];
-	}VTXGROUND_DECLARATION;
-
-	typedef struct tagVertex_Cube_Texture
-	{
-		XMFLOAT3		vPosition;
-		XMFLOAT3		vTexUV;
-	}VTXCUBETEX;
-
-	typedef struct ENGINE_DLL tagVertex_Cube_Texture_Declaration
-	{
-		static const unsigned int		iNumElements = 2;
-		static const D3D11_INPUT_ELEMENT_DESC	Element[iNumElements];
-	} VTXCUBETEX_DECLARATION;
-
-	
 }
 
 

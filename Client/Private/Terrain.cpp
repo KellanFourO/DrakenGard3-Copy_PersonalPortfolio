@@ -67,32 +67,16 @@ HRESULT CTerrain::Render()
 	//! 이 셰이더에 0번째 패스로 그릴거야.
 	m_pShaderCom->Begin(0);
 
-	//! 내가 그리려고 하는 정점, 인덱스 버퍼를 장치에 바인딩해
-	if (m_eCurrentLevelID == LEVEL_GAMEPLAY)
-	{
-		if (nullptr == m_pVIBufferCom)
+
+	if (nullptr == m_pVIBufferCom)
 			return E_FAIL;
 
-
-
+	//! 내가 그리려고 하는 정점, 인덱스 버퍼를 장치에 바인딩해
 		m_pVIBufferCom->Bind_VIBuffers();
 
-		//! 바인딩된 정점, 인덱스를 그려
+	//! 바인딩된 정점, 인덱스를 그려
 		m_pVIBufferCom->Render();
-	}
 
-	else
-	{
-		if (nullptr == m_pVIBufferComTool)
-			return E_FAIL;
-
-
-
-		m_pVIBufferComTool->Bind_VIBuffers();
-
-		//! 바인딩된 정점, 인덱스를 그려
-		m_pVIBufferComTool->Render();
-	}
 
 	
 	
@@ -106,20 +90,10 @@ HRESULT CTerrain::Ready_Components()
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		return E_FAIL;
 	
-	if (m_eCurrentLevelID == LEVEL_GAMEPLAY)
-	{
-		//! For.Com_VIBuffer
+	//! For.Com_VIBuffer
 		if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_VIBuffer_Terrain"),
 			TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
 			return E_FAIL;
-	}
-	else if(m_eCurrentLevelID == LEVEL_TOOL)
-	{
-		//! For.Com_VIBuffer
-		if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_VIBuffer_Terrain"),
-			TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferComTool))))
-			return E_FAIL;
-	}
 
 	//! For.Com_Texture
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Texture_Terrain"),

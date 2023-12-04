@@ -91,9 +91,6 @@
     <Filter Include="01. Utility\03. Components\00. VIBuffer\Ground">
       <UniqueIdentifier>{29d62c91-757b-4fae-b8a0-5c58b44b18ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\03. Components\00. VIBuffer\DynamicCube">
-      <UniqueIdentifier>{a6634997-bef0-4cbf-b5a0-19efbc165425}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Utility\03. Components\04. Model">
       <UniqueIdentifier>{3086ff2a-d50c-42e3-979c-a702ebd959b2}</UniqueIdentifier>
     </Filter>
@@ -186,7 +183,7 @@
     <ClInclude Include="..\public\Input_Device.h">
       <Filter>00. System\00. Device\01. Input</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\VIBuffer_Ground.h">
+    <ClInclude Include="..\Public\VIBuffer_Dynamic_Terrain.h">
       <Filter>01. Utility\03. Components\00. VIBuffer\Ground</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Model.h">
@@ -269,7 +266,7 @@
     <ClCompile Include="..\Private\Input_Device.cpp">
       <Filter>00. System\00. Device\01. Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\VIBuffer_Ground.cpp">
+    <ClCompile Include="..\Private\VIBuffer_Dynamic_Terrain.cpp">
       <Filter>01. Utility\03. Components\00. VIBuffer\Ground</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Model.cpp">
