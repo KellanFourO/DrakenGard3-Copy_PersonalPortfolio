@@ -40,6 +40,7 @@ HRESULT CObject_Manager::Add_CloneObject(_uint iLevelIndex, const wstring& strLa
 	if(nullptr == pGameObject)
 		return E_FAIL;
 	
+	if(nullptr != ppOut)
 		*ppOut = pGameObject;
 
 	CLayer*			pLayer = Find_Layer(iLevelIndex,strLayerTag);

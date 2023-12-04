@@ -6,13 +6,16 @@
 #include "Camera_Dynamic.h"
 #include "BackGround.h"
 #include "Terrain.h"
+#include "Monster.h"
+#include "ForkLift.h"
+
 
 //TODO Tool
 #include "Camera_MapTool.h"
 #include "Imgui_Manager.h"
 
 
-#include <process.h>
+#include <process.h> //! 스레드를 사용하기위한 헤더 추가
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -98,38 +101,53 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 {
 	/* 게임플레이 레벨에 필요한 자원을 로드하자. */
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로드하는 중입니다."));
-	/* For.Prototype_Component_Texture_Terrain */
+	//!  For.Prototype_Component_Texture_Terrain_Mask  #터레인텍스처_AddPrototype
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Terrain"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Tile%d.dds"), 2))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Terrain_Mask */
+	//!  For.Prototype_Component_Texture_Terrain_Mask  #터레인마스크텍스처_AddPrototype
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Terrain_Mask"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Mask.bmp"), 1))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Terrain_Brush */
+	//!  For.Prototype_Component_Texture_Terrain_Brush  #터레인브러쉬텍스처_AddPrototype
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Terrain_Brush"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Brush.png"), 1))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델를(을) 로드하는 중입니다."));
 
-		/* For.Prototype_Component_VIBuffer_Terrain */
+	//!For.Prototype_Component_Model_Fiona #피오나_Add_ProtoType
+	_matrix PivotMatrix; //#모델_초기행렬 
+	PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Fiona"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, "../Bin/Resources/Models/Fiona/Fiona.fbx", PivotMatrix)));
+
+	//!For.Prototype_Component_Model_ForkLift #포크리프트_Add_ProtoType
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_ForkLift"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, "../Bin/Resources/Models/ForkLift/ForkLift.fbx", PivotMatrix)));
+
+	//!For.Prototype_Component_VIBuffer_Terrain #터레인_Add_ProtoType
 		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Terrain"),
 				CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Height1.bmp")))))
 				return E_FAIL;
-		/* For.Prototype_Component_VIBuffer_Ground */
+	//!For.Prototype_Component_VIBuffer_Ground #그라운드_Add_ProtoType
 		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Ground"),
 			CVIBuffer_Ground::Create(m_pDevice, m_pContext))))
 			return E_FAIL;
 		
 
 	lstrcpy(m_szLoadingText, TEXT("셰이더를(을) 로드하는 중입니다."));
-	/* For.Prototype_Component_Shader_VtxNorTex */
+	//! For.Prototype_Component_Shader_VtxNorTex  #노말셰이더_AddPrototype
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_VtxNorTex"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
 		return E_FAIL;
+	
+	//! For.Prototype_Component_Shader_Model  #모델셰이더_AddPrototype
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_Model"),
+		CShader::Create(m_pDevice,m_pContext, TEXT("../Bin/ShaderFiles/Shader_Model.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements)));
 
 
 	lstrcpy(m_szLoadingText, TEXT("원형객체를(을) 로드하는 중입니다."));
@@ -137,6 +155,13 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext,eLevel))))
 		return E_FAIL;
+
+	//! For.Prototype_GameObject_Monster #몬스터_AddPrototype
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster"), CMonster::Create(m_pDevice,m_pContext)));
+
+	//! For.Prototype_GameObject_ForkLift #포크리프트_AddPrototype
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ForkLift"), CForkLift::Create(m_pDevice, m_pContext)));
+		
 
 	
 	switch (eLevel)
@@ -192,6 +217,8 @@ HRESULT CLoader::Loading_For_Logo_Level()
 
 HRESULT CLoader::Loading_For_GamePlay_Level()
 {
+	
+
 	return Loading_For_Level(LEVEL_GAMEPLAY);
 }
 

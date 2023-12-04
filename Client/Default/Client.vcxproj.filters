@@ -52,6 +52,12 @@
     <Filter Include="96. Tool\00. Camera">
       <UniqueIdentifier>{136c76e3-85ab-4107-b8a6-79d1101a825f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\03. Monster">
+      <UniqueIdentifier>{fbc59e0b-f0ac-4d8e-aebc-9ddfff558ab6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\04. ForkLift">
+      <UniqueIdentifier>{3886dd1f-d1d8-4c40-aef6-c29591ca3780}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -126,6 +132,12 @@
     <ClInclude Include="..\Public\Camera_MapTool.h">
       <Filter>96. Tool\00. Camera</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Monster.h">
+      <Filter>02. GameObjects\03. Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ForkLift.h">
+      <Filter>02. GameObjects\04. ForkLift</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -188,6 +200,12 @@
     <ClCompile Include="..\Private\Camera_MapTool.cpp">
       <Filter>96. Tool\00. Camera</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Monster.cpp">
+      <Filter>02. GameObjects\03. Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ForkLift.cpp">
+      <Filter>02. GameObjects\04. ForkLift</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -212,6 +230,9 @@
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsl">
+      <Filter>97. ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Model.hlsl">
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

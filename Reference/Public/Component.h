@@ -25,6 +25,9 @@ protected:
 	ID3D11Device*			m_pDevice = { nullptr };
 	ID3D11DeviceContext*	m_pContext = { nullptr };
 
+protected:
+	_bool					m_isCloned = { false };
+
 public:
 	//! 아래의 컴포넌트를 사용하는 이유를 살펴보면 클론을 강제하는 이유를 알 수 있다
 	virtual CComponent* Clone(void* pArg) = 0; 

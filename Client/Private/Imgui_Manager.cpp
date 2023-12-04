@@ -205,6 +205,8 @@ HRESULT CImgui_Manager::Save_EditTexture()
 	if (FAILED(SaveDDSTextureToFile(m_pContext, m_pTexture2D, TEXT("../Bin/Resources/Textures/Terrain/MyMask.dds"))))
 		return E_FAIL;
 
+	Safe_Delete_Array(pPixels);
+
 	return S_OK;
 }
 

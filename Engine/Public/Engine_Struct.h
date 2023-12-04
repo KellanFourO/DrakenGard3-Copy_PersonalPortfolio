@@ -12,7 +12,10 @@ namespace Engine
 
 	}GRAPHIC_DESC;
 
-
+	typedef struct
+	{
+		class CTexture*	pMtrlTextures[AI_TEXTURE_TYPE_MAX]; //! 어심프라이브러리에서 제공하는 재질 텍스처타입 열거체
+	}MATERIAL_DESC;
 
 	typedef struct tagPassDesc
 	{
@@ -55,7 +58,7 @@ namespace Engine
 		static const D3D11_INPUT_ELEMENT_DESC		Elements[iNumElements];
 	}VTXNORTEX;
 
-	typedef struct ENGINE_DLL
+	typedef struct ENGINE_DLL tagVertex_Position_Normal_Texcoord_Tangent
 	{
 		XMFLOAT3		vPosition;
 		XMFLOAT3		vNormal;

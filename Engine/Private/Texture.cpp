@@ -62,6 +62,7 @@ HRESULT CTexture::Initialize_Prototype(const wstring& strTextureFilePath, _uint 
 		if (!lstrcmp(szExt, TEXT(".dds")))
 		{
 			hr = CreateDDSTextureFromFile(m_pDevice, szFullPath, nullptr, &pSRV);
+			
 		}
 		//! 우리가 넣어준 TK(ToolKit)라이브러리는 tga 텍스처를 로드하지 못한다. 사용자에게 알리기 위한 분기
 		else if (!lstrcmp(szExt, TEXT(".tga")))

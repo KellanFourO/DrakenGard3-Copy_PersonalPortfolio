@@ -10,8 +10,12 @@ CMesh::CMesh(const CMesh& rhs)
 {
 }
 
-HRESULT CMesh::Initialize_Prototype(const aiMesh* pAIMesh)
+HRESULT CMesh::Initialize_Prototype(const aiMesh* pAIMesh, _fmatrix PivotMatrix)
 {
+	m_iMaterialIndex = pAIMesh->mMaterialIndex; //! AIMesh가 들고있는 인덱스 받아오자
+
+	strcpy_s(m_szName, pAIMesh->mName.data); //! mName 안의 데이터가 캐릭터 배열이다 이름가져오자
+
 	m_iNumVertexBuffers = 1;
 	m_iNumVertices = pAIMesh->mNumVertices; //! 정점의 개수는 읽어들인 개수다.
 	m_iStride = sizeof(VTXMESH);
@@ -38,22 +42,25 @@ HRESULT CMesh::Initialize_Prototype(const aiMesh* pAIMesh)
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
 		memcpy(&pVertices[i].vPosition, &pAIMesh->mVertices[i], sizeof(_float3));
+		XMStoreFloat3(&pVertices[i].vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), PivotMatrix));
 
+		memcpy(&pVertices[i].vNormal, &pAIMesh->mNormals[i], sizeof(_float3));
+		XMStoreFloat3(&pVertices[i].vNormal, XMVector3TransformNormal(XMLoadFloat3(&pVertices[i].vNormal), PivotMatrix));
+
+		//TODO 텍스쿠드 주석추가 #모델_텍스쿠드_AiMesh
+		//! AiMesh안에 텍스쿠드는 배열로 선언되어있고 16진수 0x8만큼을 할당해놓았다.
+		//! 원래 한 정점이 가질수 있는 컬러와 텍스쿠드는 총 8개까지 선언될 수 있다.
+		//! 즉 , 위 사항을 고려해서 총 8개의 컬러,텍스쿠드를 가져올 수 있도록 미리 벡터의 배열을 8개만큼 선언 해놓은 것.
+		//! 우리는 텍스쿠드를 하나만 사용하고 있기에 0번째에서 i를 넣어주는 상황인 것이다.
+		//! 하지만 만약 모델의 색깔이 이상하게 들어온다면 uv좌표가 잘못된 상태가 아닌지 의심해봐야 한다.
+		//! 상황에 따라 재질을 표현하는 텍스처가 꼭 디퓨즈만 있는 것이 아니다. 엠비언트나 노말등도 있을 수 있다
+		//! 재질을 표현하는 텍스처.png 또는 확장자를 열어보았더니 같은 모양 이미지가 색깔이 다르게 되어있따면 같은 메시
+		//! 아니라면 다양한 UV좌표를 사용한다고 생각하고 작업해야한다.
+		
+		memcpy(&pVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float3));
+		memcpy(&pVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));
 	}
 
-	/*VTXPOSTEX*		pVertices = new VTXPOSTEX[m_iNumVertices];
-	pVertices[0].vPosition = _float3(-0.5f, 0.5f, 0.f);
-	pVertices[0].vTexcoord = _float2(0.0f, 0.f);
-
-	pVertices[1].vPosition = _float3(0.5f, 0.5f, 0.f);
-	pVertices[1].vTexcoord = _float2(1.0f, 0.f);
-
-	pVertices[2].vPosition = _float3(0.5f, -0.5f, 0.f);
-	pVertices[2].vTexcoord = _float2(1.0f, 1.0f);
-
-	pVertices[3].vPosition = _float3(-0.5f, -0.5f, 0.f);
-	pVertices[3].vTexcoord = _float2(0.0f, 1.0f);
-*/
 	m_SubResourceData.pSysMem = pVertices;
 
 	/* pVertices에 할당하여 채워놨던 정점들의 정보를 ID3D11Buffer로 할당한 공간에 복사하여 채워넣는다. */
@@ -75,15 +82,21 @@ HRESULT CMesh::Initialize_Prototype(const aiMesh* pAIMesh)
 
 	ZeroMemory(&m_SubResourceData, sizeof m_SubResourceData);
 
-	_ushort* pIndices = new _ushort[m_iNumIndices];
+	//! 모델의 정점의 개수가 65535는 무조건 넘어갈거니 디폴트로 4로 줫엇다. int로 할당하자
+	_uint* pIndices = new _uint[m_iNumIndices];
 
-	pIndices[0] = 0;
-	pIndices[1] = 1;
-	pIndices[2] = 2;
+	//! mNumFace가 삼각형 개수라고했엇다. 삼각형 개수만큼 루프돌아서 인덱스 정보 채워주자
+	
+	//!인덱스는 계속늘어나고 i를 사용하면 안되는 상황이다 변수 하나 더쓰자
+	_uint iNumIndices = { 0 };
 
-	pIndices[3] = 0;
-	pIndices[4] = 2;
-	pIndices[5] = 3;
+	for (size_t i = 0; i < pAIMesh->mNumFaces; i++)
+	{
+		//!mFaces안의 삼각형(폴리곤) 정보가 정의되어있고 그중에 mIndices는 삼각형 정보를 담고잇는 배열이다 사용하자
+		pIndices[iNumIndices++] = pAIMesh->mFaces[i].mIndices[0];
+		pIndices[iNumIndices++] = pAIMesh->mFaces[i].mIndices[1];
+		pIndices[iNumIndices++] = pAIMesh->mFaces[i].mIndices[2];
+	}
 
 	m_SubResourceData.pSysMem = pIndices;
 
@@ -102,11 +115,11 @@ HRESULT CMesh::Initialize(void* pArg)
 	return S_OK;
 }
 
-CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const aiMesh* pAIMesh)
+CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const aiMesh* pAIMesh, _fmatrix PivotMatrix)
 {
 	CMesh* pInstance = new CMesh(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(pAIMesh)))
+	if (FAILED(pInstance->Initialize_Prototype(pAIMesh, PivotMatrix)))
 	{
 		MSG_BOX("Failed to Created : CMesh");
 		Safe_Release(pInstance);
