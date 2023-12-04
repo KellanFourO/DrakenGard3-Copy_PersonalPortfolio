@@ -42,14 +42,15 @@ private:
 	_bool					m_bMapTool, m_bEffectTool, m_bObjectTool, m_bCameraTool = { false };
 	LEVEL					m_eLevelID = { LEVEL_END };
 	
+
 	RAY						m_tRay;
 
 private: //! For. MapTool
 	VTXDYNAMIC	m_tMapInfo;
 	_float		m_fTileX = { 0.0f };
 	_float		m_fTileZ = { 0.0f };
-	
-
+	_bool		m_bTileing = { false };
+	_uint		m_iMode = { 0 };
 
 private:
 	void	HelpMarker(const char* desc);

@@ -71,7 +71,7 @@ HRESULT CVIBuffer_Dynamic_Terrain::Initialize(void* pArg)
 {
 	VTXDYNAMIC* pInfo = (VTXDYNAMIC*)pArg;
 
-	m_fInterval = pInfo->vPosition.z;
+	m_fInterval = 0.5f;
 	m_iNumVerticesX = (_uint)pInfo->vPosition.x;
 	m_iNumVerticesZ = (_uint)pInfo->vPosition.z;
 
@@ -175,7 +175,7 @@ HRESULT CVIBuffer_Dynamic_Terrain::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CVIBuffer_Dynamic_Terrain::Tick(_vector _vMousePos, _float _fRadious, _float _fPower, _uint _iMode)
+void CVIBuffer_Dynamic_Terrain::Update(_vector _vMousePos, _float _fRadious, _float _fPower, _uint _iMode)
 {
 	D3D11_MAPPED_SUBRESOURCE SubResource;
 
@@ -183,17 +183,132 @@ void CVIBuffer_Dynamic_Terrain::Tick(_vector _vMousePos, _float _fRadious, _floa
 	//! 하위 리소스에 포함된 데이터에 대한 포인터를 가져오고, GPU 액세스를 거부한다.
 	
 	//!인터페이스 포인터 : 바꾸려는 녀석의 주소(2D텍스처,버퍼 등등 ID3D11Resource 상속받는 객체 주소)
-	//! 하위 리소스 인덱스 번호 : 만약, 밉맵이 여러개 일때의 어떤 밉레벨을 바꿀 건지.
-	//! CPU 권한 : DISCARD 또는 NO_OVERWRTE
+	//! 하위 리소스 인덱스 번호 : 만약, 밉맵이 	//! CPU 권한 : DISCARD 또는 NO_OVERWRTE여러개 일때의 어떤 밉레벨을 바꿀 건지.
+
 	//! DISCARD : 기존값 버리고 새로채우기
 	//! NO_OVERWRITE :  기존값 유지하고, 추가적으로 값 채우기
-	//! GPU가 사용중일 때 수행하는 작업 지정 : 0 고정
+	//! GPU가 사용중일 때 수행하는 작업 지정 : 0 고정^
 	//! 출력 값 : D3D11_MAPPED_SUBRESOURCE. MAP을 통해 얻어온 값을 출력해줄 구조체 포인터
-	
+
 	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
 
-	m_iNumVerticesX = LONG(512);
-	m_iNumVerticesZ = LONG(512);
+	_int2	iPickIndex = { _int(_vMousePos.m128_f32[0] / m_fInterval), _int(_vMousePos.m128_f32[2] / m_fInterval) };
+	_int	iRoundIndx = (_int)(_fRadious / m_fInterval);
+
+	_int2	iBeginIndex, iEndIndex;
+
+	iBeginIndex.x = (0 > iPickIndex.x - iRoundIndx) ? (0) : (iPickIndex.x - iRoundIndx);
+	iBeginIndex.y = (0 > iPickIndex.y - iRoundIndx) ? (0) : (iPickIndex.y - iRoundIndx);
+
+	iEndIndex.x = ((_int)m_iNumVerticesX < iPickIndex.x + iRoundIndx) ? (m_iNumVerticesX) : (iPickIndex.x + iRoundIndx);
+	iEndIndex.y = ((_int)m_iNumVerticesZ < iPickIndex.y + iRoundIndx) ? (m_iNumVerticesZ) : (iPickIndex.y + iRoundIndx);
+
+	for (_uint iZ(iBeginIndex.y); iZ < (_uint)iEndIndex.y; ++iZ)
+	{
+		for (_uint iX(iBeginIndex.x); iX < (_uint)iEndIndex.x; ++iX)
+		{
+			_ulong	iIndex = iZ * m_iNumVerticesX + iX;
+
+			_float3 vPos = ((VTXDYNAMIC*)SubResource.pData)[iIndex].vPosition;
+			_float  fLength = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vPos) - _vMousePos));
+
+			switch (_iMode)
+			{
+			case 0:
+			{
+				if (_fRadious < fLength)
+					continue;
+
+				((VTXDYNAMIC*)SubResource.pData)[iIndex].vPosition.y += _fPower;
+				m_VertexInfo[iIndex].vPosition = ((VTXDYNAMIC*)SubResource.pData)[iIndex].vPosition;
+			}
+			break;
+
+			case 1:
+			{
+				if (_fRadious < fLength)
+					continue;
+
+				_float fLerpPower = _fPower * (1.f - pow((fLength / _fRadious), 2.f));
+
+				((VTXDYNAMIC*)SubResource.pData)[iIndex].vPosition.y += fLerpPower;
+				m_VertexInfo[iIndex].vPosition = ((VTXDYNAMIC*)SubResource.pData)[iIndex].vPosition;
+			}
+			break;
+
+			case 2:
+			{
+				((VTXDYNAMIC*)SubResource.pData)[iIndex].vPosition.y = _fPower;
+				m_VertexInfo[iIndex].vPosition = ((VTXDYNAMIC*)SubResource.pData)[iIndex].vPosition;
+			}
+			break;
+			}
+		}
+	}
+
+	for (_uint iZ(iBeginIndex.y); iZ < (_uint)iEndIndex.y; ++iZ)
+	{
+		for (_uint iX(iBeginIndex.x); iX < (_uint)iEndIndex.x; ++iX)
+		{
+			_ulong	iIndex = iZ * m_iNumVerticesX + iX;
+
+			_long  iAdjacency[] =
+			{
+				_long(iIndex + m_iNumVerticesX),	// 위
+				_long(iIndex + 1),					// 오른쪽
+				_long(iIndex - m_iNumVerticesX),	// 아래
+				_long(iIndex - 1)					// 왼쪽
+			};
+
+			if (0 == iX)
+				iAdjacency[3] = -1;
+
+			if (m_iNumVerticesX - 1 == iX)
+				iAdjacency[1] = -1;
+
+			if (0 == iZ)
+				iAdjacency[2] = -1;
+
+			if (m_iNumVerticesZ - 1 == iZ)
+				iAdjacency[0] = -1;
+
+			_float3 vNorm = m_VertexInfo[iIndex].vNormal;
+
+			// 노말 벡터 계산
+			_vector vComputeNorm = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+
+			for (_uint i = 0; i < 4; ++i)
+			{
+				_uint iNext = (3 == i) ? (0) : (i + 1);
+
+				if (0 > iAdjacency[i] || 0 > iAdjacency[iNext])
+					continue;
+
+				_vector vLine_no1 = XMLoadFloat3(&m_VertexInfo[iAdjacency[i]].vPosition) - XMLoadFloat3(&m_VertexInfo[iIndex].vPosition);
+				_vector vLine_no2 = XMLoadFloat3(&m_VertexInfo[iAdjacency[iNext]].vPosition) - XMLoadFloat3(&m_VertexInfo[iIndex].vPosition);
+				_vector vLingNorm = XMVector3Normalize(XMVector3Cross(vLine_no1, vLine_no2));
+
+				vComputeNorm = XMVector3Normalize(vComputeNorm + vLingNorm);
+			}
+
+			XMStoreFloat3(&vNorm, vComputeNorm);
+
+			m_VertexInfo[iIndex].vNormal = vNorm;
+			((VTXDYNAMIC*)SubResource.pData)[iIndex].vNormal = vNorm;
+
+			if (0 > iAdjacency[1])
+				continue;
+
+			// 탄젠트 벡터 계산
+			_float3 vTempTangent;
+			XMStoreFloat3(&vTempTangent, XMVector3Normalize(XMLoadFloat3(&m_VertexInfo[iAdjacency[1]].vPosition) - XMLoadFloat3(&m_VertexInfo[iIndex].vPosition)));
+
+			m_VertexInfo[iIndex].vTangent = vTempTangent;
+			((VTXDYNAMIC*)SubResource.pData)[iIndex].vTangent = vTempTangent;
+		}
+	}
+
+	m_pContext->Unmap(m_pVB, 0);
 
 	
 }

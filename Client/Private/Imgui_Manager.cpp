@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "../Imgui/imgui.h"
 #include "../Imgui/imgui_impl_win32.h"
 #include "../Imgui/imgui_impl_dx11.h"
@@ -248,6 +247,22 @@ void CImgui_Manager::ShowMapTool()
 
 				if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
 					return;
+			}
+
+			static int iMode = 0;
+
+			ImGui::RadioButton(u8"HEIGHT_FLAT", &iMode, 0);
+			ImGui::RadioButton(u8"HEIGHT_LERP", &iMode, 1);
+			ImGui::RadioButton(u8"HEIGHT_SET", &iMode, 2);
+			ImGui::RadioButton(u8"FILLTER", &iMode, 3);
+				
+
+			ImGui::Checkbox(u8"ÇÈÅ·", &m_bTileing);
+			
+			if (m_bTileing)
+			{
+				if(m_pGameInstance->Mouse_Down(DIM_LB))
+				m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)iMode);
 			}
 			ImGui::EndTabItem();
 		}

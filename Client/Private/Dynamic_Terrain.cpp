@@ -59,7 +59,7 @@ void CDynamic_Terrain::Priority_Tick(_float fTimeDelta)
 
 void CDynamic_Terrain::Tick(_float fTimeDelta)
 {
-
+	
 }
 
 void CDynamic_Terrain::Late_Tick(_float fTimeDelta)
@@ -92,7 +92,7 @@ HRESULT CDynamic_Terrain::Render()
 	return S_OK;
 }
 
-void CDynamic_Terrain::Picking_Terrain()
+void CDynamic_Terrain::Picking_Terrain(EDIT_MODE eMode)
 {
 	if (nullptr == m_pVIBufferCom)
 	{
@@ -100,9 +100,6 @@ void CDynamic_Terrain::Picking_Terrain()
 		return;
 	}
 		
-	if(!m_pGameInstance->Mouse_Down(DIM_LB))
-		return;
-
 	//_bool bInputZ = m_pGameInstance->Key_Pressing(DIK_Z);
 	//_bool bInputX = m_pGameInstance->Key_Pressing(DIK_X);
 	//
@@ -117,7 +114,7 @@ void CDynamic_Terrain::Picking_Terrain()
 
 	if (m_pVIBufferCom->Compute_MousePos(WorldRay,m_pTransformCom->Get_WorldMatrix(), &Out))
 	{
-		
+		m_pVIBufferCom->Update(XMLoadFloat3(&Out), m_fDrawRadious, m_fPower, (_uint)eMode);
 	}
 	
 }

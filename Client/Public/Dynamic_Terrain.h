@@ -20,7 +20,18 @@ typedef struct tagVertex_Dynamic_Info
 
 class CDynamic_Terrain final : public CGameObject
 {
+public:
 	enum TEXTURE { TYPE_DIFFUSE, TYPE_MASK, TYPE_BRUSH, TYPE_END }; // 지형, 마스크
+	
+	enum EDIT_MODE
+	{
+		HEIGHT_FLAT,
+		HEIGHT_LERP,
+		HEIGHT_SET,
+		FILLTER,
+		NON,
+		EDIT_END
+	};
 
 private:
 	CDynamic_Terrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -38,14 +49,18 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 	
-private:
-	void	Picking_Terrain();
+public:
+	void	Picking_Terrain(EDIT_MODE eMode);
 
 private:
 	CShader*				   m_pShaderCom = { nullptr };
 	CTexture*				   m_pTextureCom[2] = { nullptr }; // 지형과 마스크를 한곳에 담기위해 배열로 변경 0: 지형 2장, 1: 마스크 1장
 	CVIBuffer_Dynamic_Terrain* m_pVIBufferCom = { nullptr };
 
+	_float					m_fDrawRadious = { 1.f };
+	_float					m_fPower = { 2.f };
+
+	EDIT_MODE				m_eEditMode = { EDIT_MODE::NON };
 private:
 	LEVEL				m_eCurrentLevelID = { LEVEL_END };
 	//VTXDYNAMIC* m_test;

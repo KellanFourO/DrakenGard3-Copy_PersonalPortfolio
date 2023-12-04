@@ -22,12 +22,13 @@ public:
 	virtual HRESULT Initialize(void* pArg) override;
 
 public:
-	void	Tick(_vector _vMousePos, _float _fRadious, _float _fPower, _uint _iMode);
+	void			Update(_vector _vMousePos, _float _fRadious, _float _fPower, _uint _iMode);
 
 private:
 	_uint					m_iNumVerticesX = 0, m_iNumVerticesZ = 0;
 
 	_float					m_fInterval = { 0.f };
+
 
 	vector<_uint3>			m_Indices;
 	vector<VTXDYNAMIC>		m_VertexInfo;

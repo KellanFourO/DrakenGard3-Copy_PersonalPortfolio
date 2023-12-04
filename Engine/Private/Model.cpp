@@ -179,7 +179,10 @@ HRESULT CModel::Ready_Materials(const string& strModelFilePath)
 			strcpy_s(szTemp, szDrive); //! 아까 가져온 드라이브 경로받자.
 			strcat_s(szTemp, szDirectory); //! 폴더 경로 붙여주자
 			strcat_s(szTemp, szFileName); //! 파일명 붙여주자
-			strcat_s(szTemp, szEXT); //! 확장자 붙여주자
+
+			_char szTest[MAX_PATH] = ".dds";
+
+			strcat_s(szTemp, szTest); //! 확장자 붙여주자
 
 			_tchar szFullPath[MAX_PATH] = TEXT("");
 
