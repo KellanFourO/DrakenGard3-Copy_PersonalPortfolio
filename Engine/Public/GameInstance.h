@@ -51,7 +51,7 @@ public: /* For.Level_Manager */
 
 public: /* For.Object_Manager */
 	HRESULT Add_Prototype(const wstring& strPrototypeTag, class CGameObject* pPrototype);
-	HRESULT Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr, CGameObject * *ppOut = nullptr);
+	HRESULT Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr, CGameObject **ppOut = nullptr);
 
 public: /* For.Component_Manager */
 	HRESULT Add_Prototype(_uint iLevelIndex, const wstring & strPrototypeTag, class CComponent* pPrototype);
@@ -95,6 +95,7 @@ private:
 	class CRenderer*				m_pRenderer = { nullptr };
 	class CPipeLine*				m_pPipeLine = { nullptr };
 	class CInput_Device*			m_pInput_Device = { nullptr };
+
 
 public:
 	void Release_Manager();
