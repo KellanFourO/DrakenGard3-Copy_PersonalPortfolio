@@ -231,38 +231,59 @@ void CImgui_Manager::ShowMapTool()
 		//TODO 타일 탭 시작
 		if (ImGui::BeginTabItem(u8"타일"))
 		{
-			ImGui::Text(u8"타일");
+			
+				ImGui::Text(u8"타일");
 
-			ImGui::InputFloat(u8"입력 X : ", &m_fTileX);
-			ImGui::InputFloat(u8"입력 Z : ", &m_fTileZ);
+				ImGui::InputFloat(u8"입력 X : ", &m_fTileX);
+				ImGui::InputFloat(u8"입력 Z : ", &m_fTileZ);
 
-			m_tMapInfo.vPosition.x = m_fTileX;
-			m_tMapInfo.vPosition.y = 1.f;
-			m_tMapInfo.vPosition.z = m_fTileZ;
+				m_tMapInfo.vPosition.x = m_fTileX;
+				m_tMapInfo.vPosition.y = 1.f;
+				m_tMapInfo.vPosition.z = m_fTileZ;
 
-			if (ImGui::Button("Create"))
-			{
-				if (nullptr != m_pDynamic_Terrain)
-					m_pDynamic_Terrain->Delete_Component(TEXT("COM_VIBuffer"));
+				if (ImGui::Button("Create"))
+				{
+					if (nullptr != m_pDynamic_Terrain)
+					{
+						m_pDynamic_Terrain->Delete_Component(TEXT("Com_VIBuffer"));
+					}
 
-				if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
-					return;
-			}
+					
 
-			static int iMode = 0;
+					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
+						return;
 
-			ImGui::RadioButton(u8"HEIGHT_FLAT", &iMode, 0);
-			ImGui::RadioButton(u8"HEIGHT_LERP", &iMode, 1);
-			ImGui::RadioButton(u8"HEIGHT_SET", &iMode, 2);
-			ImGui::RadioButton(u8"FILLTER", &iMode, 3);
+					
+
+					//Safe_AddRef(m_pDynamic_Terrain);
+				}
+			
+				ImGui::Checkbox(u8"픽킹", &m_bTileing);
+
+				if (m_bTileing)
+				{
+					static float begin = 1, end = 10;
+
+					if(ImGui::DragInt(u8"브러쉬 범위",&m_iBrushRange, 1, 1, 10))
+						m_pDynamic_Terrain->SetRadious(m_iBrushRange);
+
+					if (ImGui::DragInt(u8"높이 힘", &m_iBrushPower, 1, 1, 10))
+						m_pDynamic_Terrain->SetPower(m_iBrushPower);
+
+
+
+					static int iMode = 0;
+
+					ImGui::RadioButton(u8"HEIGHT_FLAT", &iMode, 0);
+					ImGui::RadioButton(u8"HEIGHT_LERP", &iMode, 1);
+					ImGui::RadioButton(u8"HEIGHT_SET", &iMode, 2);
+					ImGui::RadioButton(u8"FILLTER", &iMode, 3);
+
+					if (m_pGameInstance->Mouse_Down(DIM_LB))
+						m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)iMode);
 				
 
-			ImGui::Checkbox(u8"픽킹", &m_bTileing);
-			
-			if (m_bTileing)
-			{
-				if(m_pGameInstance->Mouse_Down(DIM_LB))
-				m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)iMode);
+				
 			}
 			ImGui::EndTabItem();
 		}
@@ -371,6 +392,8 @@ void CImgui_Manager::Free()
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
+
+	//Safe_Release(m_pDynamic_Terrain);
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();

@@ -22,6 +22,9 @@ public:
 	virtual HRESULT Render(_uint iMeshIndex); //! virtual은 의미가없다. 자기 자신이 가지고잇는 메시들을 렌더링 시키기위한 함수이다.
 
 public:
+	void	Play_Animation(_float fTimeDelta);
+
+public:
 	HRESULT Bind_ShaderResource(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType);
 
 private:
@@ -44,9 +47,14 @@ private:
 	//! #머터리얼구조체의_텍스처클래스를_사용하는이유 원래는 ShaderResourceView*를 들고있어도 되지만 그렇게하면 텍스처를 로드하는 기능을 다시 작성해줘야 한다. 텍스처로드기능은 이미 텍스쳐클래스에서 구현해놓았으니 텍스처클래스를 배열로 가지고있자.
 	vector<MATERIAL_DESC>	m_Materials; //! 어심프라이브러리에서 제공하는 재질 텍스처 정보열거체의 개수(18)만큼의 텍스처클래스 배열 == MATERIAL_DESC
 
+	vector<class CBone*>	m_Bones;
+public:
+	typedef vector<class CBone*>	BONES;
+
 private:
 	HRESULT	Ready_Meshes(_fmatrix PivotMatrix);
 	HRESULT Ready_Materials(const string& strModelFilePath); //!#모델텍스처로드
+	HRESULT	Ready_Bones(aiNode* pAInode, _int iParentIndex); //! _uint가 아닌 _int를 사용한 이유는 부모가 존재하지 않는 노드일경우에는 -1로 셋팅하기 위해서이다.
 
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, const string& strModelFilePath, _fmatrix PivotMatrix);

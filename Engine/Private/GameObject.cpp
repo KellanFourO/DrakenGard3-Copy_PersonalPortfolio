@@ -114,6 +114,7 @@ void CGameObject::Delete_Component(const wstring& strComTag)
 		return;
 
 	Safe_Release(iter->second); // 잘타고있음
+	m_Components.erase(iter);
 }
 
 CComponent* CGameObject::Find_Component(const wstring& strComTag)

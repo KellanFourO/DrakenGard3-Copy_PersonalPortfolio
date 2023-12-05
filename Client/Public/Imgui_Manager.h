@@ -50,7 +50,10 @@ private: //! For. MapTool
 	_float		m_fTileX = { 0.0f };
 	_float		m_fTileZ = { 0.0f };
 	_bool		m_bTileing = { false };
+	_bool		m_bCreate = { false };
 	_uint		m_iMode = { 0 };
+	_int		m_iBrushRange = 1.f;
+	_int		m_iBrushPower = 1.f;
 
 private:
 	void	HelpMarker(const char* desc);

@@ -1,6 +1,7 @@
 #include "Model.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "Bone.h"
 
 CModel::CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice,pContext)
@@ -68,6 +69,10 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const string& strModelFilePath,
 	if(FAILED(Ready_Materials(strModelFilePath)))
 		return E_FAIL;
 
+	//#모델뼈_Ready_Bones
+	//fif (FAILED(Ready_Bones(m_pAIScene->mRootNode, -1))) //! 최초 노드는 당연히 루트노드일거고, 최상위 부모이기에 부모인덱스는 없으니 -1로 채워주자
+	//f	return E_FAIL;
+
 	return S_OK;
 }
 
@@ -111,6 +116,19 @@ HRESULT CModel::Render(_uint iMeshIndex)
 	return S_OK;
 }
 
+void CModel::Play_Animation(_float fTimeDelta)
+{
+	//! 현재 애니메이션이 사용하고 있는 뼈들의 TransformationMatrix를 갱신해준다.
+	
+	//! 화면의 최종적인 상태로 그려내기위해서는 반드시, 뼈들의 CombindTransformationMatrix가 갱신된 이후여야 한다.
+	//! 모든 뼈들을 다 갱신하며 부모로부터 자식까지 순회하여 CombindTransformationMatrix를 갱신해주자.
+	
+	for (auto& pBone : m_Bones)
+	{
+		pBone->Invalidate_CombinedTransformationMatrix(m_Bones);
+	}
+}
+
 HRESULT CModel::Bind_ShaderResource(CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType)
 {
 	_uint		iMaterialIndex = m_Meshes[iMeshIndex]->Get_MaterialIndex();
@@ -128,7 +146,7 @@ HRESULT CModel::Ready_Meshes(_fmatrix PivotMatrix)
 
 	for (size_t i = 0; i < m_iNumMeshes; i++)
 	{
-		CMesh*	pMesh = CMesh::Create(m_pDevice,m_pContext,m_pAIScene->mMeshes[i], PivotMatrix);
+		CMesh*	pMesh = CMesh::Create(m_pDevice,m_pContext, m_eModelType, m_pAIScene->mMeshes[i], PivotMatrix);
 
 		if(nullptr == pMesh)
 			return E_FAIL;
@@ -213,6 +231,18 @@ CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYP
 	return pInstance;
 }
 
+HRESULT CModel::Ready_Bones(aiNode* pAInode, _int iParentIndex)
+{
+	CBone*	pBone = CBone::Create(pAInode, iParentIndex);
+
+	if(nullptr == pBone)
+		return E_FAIL;
+
+	m_Bones.push_back(pBone);
+	
+	return S_OK;
+}
+
 CComponent* CModel::Clone(void* pArg)
 {
 	CModel* pInstance = new CModel(*this);
@@ -240,6 +270,13 @@ void CModel::Free()
 	for (auto& pMesh : m_Meshes)
 	{
 		Safe_Release(pMesh);
+	}
+
+	m_Meshes.clear();
+
+	for (auto& pBone : m_Bones)
+	{
+		Safe_Release(pBone);
 	}
 
 	m_Meshes.clear();

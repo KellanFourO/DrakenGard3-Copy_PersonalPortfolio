@@ -41,6 +41,7 @@ private:
 public:
 	void	Delete_Component(const wstring& strComTag);
 
+
 public:
 	virtual HRESULT Initialize_Prototype(LEVEL eLevel); //! 원형객체의 초기화를 위한 함수.
 	virtual HRESULT Initialize(void* pArg) override; //! 사본객체의 초기화를 위한 함수. ( void*를 매개인자로 받아 특수한 사본객체 처리가 가능하다. )
@@ -51,6 +52,8 @@ public:
 	
 public:
 	void	Picking_Terrain(EDIT_MODE eMode);
+	void	SetPower(_float fPower) { m_fPower = fPower; }
+	void	SetRadious(_float fRadious) { m_fDrawRadious = fRadious; }
 
 private:
 	CShader*				   m_pShaderCom = { nullptr };

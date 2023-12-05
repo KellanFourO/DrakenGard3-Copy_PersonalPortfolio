@@ -190,7 +190,9 @@ void CDynamic_Terrain::Delete_Component(const wstring& strComTag)
 	// Delete_Component에서는 복사된 녀석을 Safe_Release로 래퍼런스 카운트를 줄이기만 한것이라,
 	// 제대로 타는지 확인하고 여기서 멤버변수도 삭제 시켜줘야한다.
 
+	if(m_pVIBufferCom)
 	Safe_Release(m_pVIBufferCom);
+	
 
 }
 
@@ -224,7 +226,9 @@ void CDynamic_Terrain::Free()
 {
 	__super::Free();
 
+	
 	Safe_Release(m_pVIBufferCom);
+
 	Safe_Release(m_pShaderCom);
 
 	//Safe_Release(m_pTextureCom);

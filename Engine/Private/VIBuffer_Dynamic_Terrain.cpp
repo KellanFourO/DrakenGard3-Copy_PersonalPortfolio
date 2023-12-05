@@ -104,7 +104,7 @@ HRESULT CVIBuffer_Dynamic_Terrain::Initialize(void* pArg)
 	m_iNumPrimitive = (m_iNumVerticesX - 1) * (m_iNumVerticesZ - 1) * 2;
 	m_iNumIndices = m_iNumPrimitive * 3;
 	m_eIndexFormat = DXGI_FORMAT_R32_UINT;
-	m_eTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	m_eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	FACEINDICES32* pIndices = new FACEINDICES32[m_iNumPrimitive];
 	ZeroMemory(pIndices, sizeof(FACEINDICES32) * m_iNumPrimitive);
@@ -342,4 +342,5 @@ CComponent* CVIBuffer_Dynamic_Terrain::Clone(void* pArg)
 
 void CVIBuffer_Dynamic_Terrain::Free()
 {
+	__super::Free();
 }
