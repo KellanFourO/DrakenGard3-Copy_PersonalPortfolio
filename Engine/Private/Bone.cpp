@@ -16,18 +16,21 @@ HRESULT CBone::Initialize(aiNode* pAINode, _int iParentIndex)
 	
 	XMStoreFloat4x4(&m_TransformationMatrix, XMMatrixTranspose(XMLoadFloat4x4(&m_TransformationMatrix)));
 	
-	XMStoreFloat4x4(&m_CombindTransformationMatrix, XMMatrixIdentity()); //! 컴바인은 아직 부모행렬 정보가 없기에 항등.
+	XMStoreFloat4x4(&m_CombinedTransformationMatrix, XMMatrixIdentity()); //! 컴바인은 아직 부모행렬 정보가 없기에 항등.
 
 	return S_OK;
 }
 
-void CBone::Invalidate_CombinedTransformationMatrix(CModel::BONES& Bones)
+void CBone::Invalidate_CombinedTransformationMatrix(CModel::BONES& Bones, _fmatrix PivotMatrix)
 {
 	if (-1 == m_iParentIndex) //!  Unsigned가 아닌 Signed로 줬었던 이유가 부모행렬이 없는 노드의 경우에는 인덱스를 -1로 표현하기위해서였다. 그걸 이용해서 분기쳐주자
-		m_CombindTransformationMatrix = m_TransformationMatrix;
-
+		XMStoreFloat4x4(&m_CombinedTransformationMatrix, XMLoadFloat4x4(&m_TransformationMatrix) * PivotMatrix);
+	
+	else
+	{
 	//! 컴바인 행렬은 내 상태행렬과 부모의 컴바인행렬을 곱해줘야 한다고 했었다. 진행하자.
-	XMStoreFloat4x4(&m_CombindTransformationMatrix, XMLoadFloat4x4(&m_TransformationMatrix) * XMLoadFloat4x4(&Bones[m_iParentIndex]->m_CombindTransformationMatrix));
+		XMStoreFloat4x4(&m_CombinedTransformationMatrix, XMLoadFloat4x4(&m_TransformationMatrix) * XMLoadFloat4x4(&Bones[m_iParentIndex]->m_CombinedTransformationMatrix));
+	}
 
 }
 

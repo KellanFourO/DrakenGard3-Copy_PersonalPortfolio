@@ -25,6 +25,8 @@ public:
 	void	Play_Animation(_float fTimeDelta);
 
 public:
+	//! 셰이더에 던질 뼈행렬은 특정매시에게 영향을 주는 뼈행렬을 던질 거라고했다. 모델에서 던지는것이아닌 매쉬 클래스를 통해 현재 클래스를 거쳐서 던져주는 행위를 하는 것이다.
+	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
 	HRESULT Bind_ShaderResource(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType);
 
 private:
@@ -37,6 +39,9 @@ private:
 	Assimp::Importer		m_Importer;
 
 private:
+	//! 뼈행렬이 곱해진 애님모델을 우리가 원하는 방향 또는 크기로 셋팅해놓고 싶었고 그 곱해줄 행렬을 멤버변수로 둔것.
+	_float4x4				m_PivotMatrix; 
+
 	TYPE					m_eModelType = { TYPE_END };
 
 	_uint					m_iNumMeshes = { 0 };

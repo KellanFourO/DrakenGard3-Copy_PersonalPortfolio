@@ -10,12 +10,17 @@ CModel::CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 CModel::CModel(const CModel& rhs)
 	: CComponent(rhs)
+	, m_PivotMatrix(rhs.m_PivotMatrix)
 	, m_eModelType(rhs.m_eModelType)
 	, m_iNumMeshes(rhs.m_iNumMeshes)
 	, m_Meshes(rhs.m_Meshes)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
 	, m_Materials(rhs.m_Materials)
+	, m_Bones(rhs.m_Bones)
 {
+	for (auto& pBone : m_Bones)
+		Safe_AddRef(pBone);
+
 	for (auto& MaterialDesc : m_Materials) //!  매터리얼디스크립션 구조체를 담고있는 벡터 순회
 	{
 		for(auto& pTexture : MaterialDesc.pMtrlTextures) 
@@ -52,7 +57,7 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const string& strModelFilePath,
 
 	//!  엵애니메이션이 없는모델이면 PreTransformVertices 더 해주자
 	if(TYPE_NONANIM == eType)
-	iFlag |= aiProcess_PreTransformVertices;
+		iFlag |= aiProcess_PreTransformVertices;
 	
 	m_pAIScene = m_Importer.ReadFile(strModelFilePath, iFlag);
 
@@ -62,6 +67,12 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const string& strModelFilePath,
 	//#PivotMatrix
 	//! 피봇매트리스는 디자이너들이 보통 우리의 환경에 맞게 완벽하게 셋팅해주지않는다. 그래서 180도 돌아가있는 상태로 로드시키면 룩과 다르게 모델이 반대를 바라보는 참사가 일어난다.
 	//! 로드 이후는 이미 정점이 끝까지 변환된것과 마찬가지이니 로드할때부터 180도 돌려놓고 시작하기 위해 주는 행렬
+	
+	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
+
+	if (FAILED(Ready_Bones(m_pAIScene->mRootNode, -1))) //! 최초 노드는 당연히 루트노드일거고, 최상위 부모이기에 부모인덱스는 없으니 -1로 채워주자
+		return E_FAIL;
+
 	if(FAILED(Ready_Meshes(PivotMatrix)))
 		return E_FAIL;
 
@@ -69,9 +80,6 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const string& strModelFilePath,
 	if(FAILED(Ready_Materials(strModelFilePath)))
 		return E_FAIL;
 
-	//#모델뼈_Ready_Bones
-	//fif (FAILED(Ready_Bones(m_pAIScene->mRootNode, -1))) //! 최초 노드는 당연히 루트노드일거고, 최상위 부모이기에 부모인덱스는 없으니 -1로 채워주자
-	//f	return E_FAIL;
 
 	return S_OK;
 }
@@ -125,8 +133,14 @@ void CModel::Play_Animation(_float fTimeDelta)
 	
 	for (auto& pBone : m_Bones)
 	{
-		pBone->Invalidate_CombinedTransformationMatrix(m_Bones);
+		pBone->Invalidate_CombinedTransformationMatrix(m_Bones, XMLoadFloat4x4(&m_PivotMatrix));
+
 	}
+}
+
+HRESULT CModel::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, _uint iMeshIndex)
+{
+	return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader,pConstantName, m_Bones);
 }
 
 HRESULT CModel::Bind_ShaderResource(CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType)
@@ -146,7 +160,7 @@ HRESULT CModel::Ready_Meshes(_fmatrix PivotMatrix)
 
 	for (size_t i = 0; i < m_iNumMeshes; i++)
 	{
-		CMesh*	pMesh = CMesh::Create(m_pDevice,m_pContext, m_eModelType, m_pAIScene->mMeshes[i], PivotMatrix);
+		CMesh*	pMesh = CMesh::Create(m_pDevice,m_pContext, m_eModelType, m_pAIScene->mMeshes[i], PivotMatrix, m_Bones);
 
 		if(nullptr == pMesh)
 			return E_FAIL;
@@ -197,10 +211,11 @@ HRESULT CModel::Ready_Materials(const string& strModelFilePath)
 			strcpy_s(szTemp, szDrive); //! 아까 가져온 드라이브 경로받자.
 			strcat_s(szTemp, szDirectory); //! 폴더 경로 붙여주자
 			strcat_s(szTemp, szFileName); //! 파일명 붙여주자
+			strcat_s(szTemp, szEXT); //! 파일명 붙여주자
 
-			_char szTest[MAX_PATH] = ".dds";
-
-			strcat_s(szTemp, szTest); //! 확장자 붙여주자
+			//_char szTest[MAX_PATH] = ".dds";
+			//
+			//strcat_s(szTemp, szTest); //! 확장자 붙여주자
 
 			_tchar szFullPath[MAX_PATH] = TEXT("");
 
@@ -217,7 +232,26 @@ HRESULT CModel::Ready_Materials(const string& strModelFilePath)
 	return S_OK;
 }
 
+HRESULT CModel::Ready_Bones(aiNode* pAInode, _int iParentIndex)
+{
+	CBone*	pBone = CBone::Create(pAInode, iParentIndex);
 
+	if(nullptr == pBone)
+		return E_FAIL;
+
+	m_Bones.push_back(pBone);
+
+
+	//! 루프문 밖에서 부모인덱스를 미리 셋팅해놔야 참사를 막을수있다. dfs 탐색을 사용하고 우리의 부모인덱스는 옆노드가 아닌 상위노드의인덱스이기 때문에 루프문 바깥에서 해줘야한다.
+	_int	iParentIdx = m_Bones.size() - 1;
+
+	for (size_t i = 0; i < pAInode->mNumChildren; i++)
+	{
+		Ready_Bones(pAInode->mChildren[i], iParentIdx);
+	}
+	
+	return S_OK;
+}
 
 CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, const string& strModelFilePath, _fmatrix PivotMatrix)
 {
@@ -230,19 +264,6 @@ CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYP
 	}
 	return pInstance;
 }
-
-HRESULT CModel::Ready_Bones(aiNode* pAInode, _int iParentIndex)
-{
-	CBone*	pBone = CBone::Create(pAInode, iParentIndex);
-
-	if(nullptr == pBone)
-		return E_FAIL;
-
-	m_Bones.push_back(pBone);
-	
-	return S_OK;
-}
-
 CComponent* CModel::Clone(void* pArg)
 {
 	CModel* pInstance = new CModel(*this);
@@ -260,6 +281,13 @@ void CModel::Free()
 {
 	__super::Free();
 
+	for (auto& pBone : m_Bones)
+	{
+		Safe_Release(pBone);
+	}
+
+	m_Bones.clear();
+
 	for (auto& MaterialDesc : m_Materials)
 	{
 		for (auto& pTexture : MaterialDesc.pMtrlTextures) //! 정적배열은 Clear해줄 필요 없다.
@@ -270,13 +298,6 @@ void CModel::Free()
 	for (auto& pMesh : m_Meshes)
 	{
 		Safe_Release(pMesh);
-	}
-
-	m_Meshes.clear();
-
-	for (auto& pBone : m_Bones)
-	{
-		Safe_Release(pBone);
 	}
 
 	m_Meshes.clear();

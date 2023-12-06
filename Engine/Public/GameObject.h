@@ -31,6 +31,8 @@ public:
 	virtual void	Late_Tick(_float fTimeDelta);
 	virtual HRESULT Render();
 
+	
+
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };
 	ID3D11DeviceContext*		m_pContext = { nullptr };
@@ -40,11 +42,12 @@ protected:
 
 protected:
 	class CTransform*			m_pTransformCom = { nullptr };
-
+	
 	map<const wstring, class CComponent*>		m_Components;
 
 protected:
 	_bool						m_isCloned = { false };
+
 
 protected:
 	HRESULT Add_Component(_uint iLevelIndex, const wstring& strPrototypeTag,

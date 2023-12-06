@@ -55,11 +55,17 @@
     <Filter Include="02. GameObjects\03. Monster">
       <UniqueIdentifier>{fbc59e0b-f0ac-4d8e-aebc-9ddfff558ab6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\04. ForkLift">
-      <UniqueIdentifier>{3886dd1f-d1d8-4c40-aef6-c29591ca3780}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\01. Terrain\00. Dynamic">
       <UniqueIdentifier>{7161916a-d47f-4bbc-813a-b125f734fb18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\04. TestTree">
+      <UniqueIdentifier>{3886dd1f-d1d8-4c40-aef6-c29591ca3780}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject">
+      <UniqueIdentifier>{df94b58a-430c-4d3c-b363-7e67629d8787}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject">
+      <UniqueIdentifier>{07b8b8d7-2612-4c0c-bd87-ce9fa43a95f1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -138,11 +144,17 @@
     <ClInclude Include="..\public\Monster.h">
       <Filter>02. GameObjects\03. Monster</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\ForkLift.h">
-      <Filter>02. GameObjects\04. ForkLift</Filter>
+    <ClInclude Include="..\Public\TestTree.h">
+      <Filter>02. GameObjects\04. TestTree</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Dynamic_Terrain.h">
       <Filter>02. GameObjects\01. Terrain\00. Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\NonAnimObject.h">
+      <Filter>02. GameObjects\98. NonAnimObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AnimObject.h">
+      <Filter>02. GameObjects\99. AnimModelObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -209,11 +221,17 @@
     <ClCompile Include="..\Private\Monster.cpp">
       <Filter>02. GameObjects\03. Monster</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\ForkLift.cpp">
-      <Filter>02. GameObjects\04. ForkLift</Filter>
+    <ClCompile Include="..\Private\TestTree.cpp">
+      <Filter>02. GameObjects\04. TestTree</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Dynamic_Terrain.cpp">
       <Filter>02. GameObjects\01. Terrain\00. Dynamic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AnimObject.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NonAnimObject.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -242,6 +260,9 @@
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Model.hlsl">
+      <Filter>97. ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimModel.hlsl">
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

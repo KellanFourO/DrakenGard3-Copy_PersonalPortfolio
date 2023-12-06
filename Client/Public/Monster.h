@@ -1,6 +1,5 @@
 #pragma once
-#include "Client_Defines.h"
-#include "GameObject.h"
+#include "AnimObject.h"
 
 BEGIN(Engine)
 class CShader;
@@ -9,7 +8,7 @@ END
 
 BEGIN(Client)
 
-class CMonster final : public CGameObject
+class CMonster final : public CAnimObject
 {
 private:
 	CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -17,7 +16,7 @@ private:
 	virtual ~CMonster() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype() override;
+	virtual HRESULT Initialize_Prototype(LEVEL eLevel);
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Priority_Tick(_float fTimeDelta) override;
 	virtual void Tick(_float fTimeDelta) override;
@@ -35,7 +34,7 @@ private:
 
 public:
 	/* 원형객체를 생성한다. */
-	static CMonster* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CMonster* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel);
 
 	/* 사본객체를 생성한다. */
 	virtual CGameObject* Clone(void* pArg) override;

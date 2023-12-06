@@ -40,7 +40,7 @@ private:
 
 public:
 	void	Delete_Component(const wstring& strComTag);
-
+	_vector Get_WorldMatrix() { return m_pTransformCom->Get_State(CTransform::STATE_POSITION); }
 
 public:
 	virtual HRESULT Initialize_Prototype(LEVEL eLevel); //! 원형객체의 초기화를 위한 함수.
@@ -52,6 +52,10 @@ public:
 	
 public:
 	void	Picking_Terrain(EDIT_MODE eMode);
+	_float3	GetMousePos() { return m_fPickingPos; }
+
+	_float3 GetTerrainPos();
+
 	void	SetPower(_float fPower) { m_fPower = fPower; }
 	void	SetRadious(_float fRadious) { m_fDrawRadious = fRadious; }
 
@@ -62,6 +66,7 @@ private:
 
 	_float					m_fDrawRadious = { 1.f };
 	_float					m_fPower = { 2.f };
+	_float3					m_fPickingPos = { 0.f, 0.f, 0.f };
 
 	EDIT_MODE				m_eEditMode = { EDIT_MODE::NON };
 private:

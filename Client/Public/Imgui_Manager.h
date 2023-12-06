@@ -7,6 +7,11 @@ class CImgui_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CImgui_Manager);
 
+public:
+	enum TOOLID { TOOL_MAP, TOOL_OBJECT, TOOL_CAMERA, TOOL_EFFECT, TOOL_END };
+	
+	
+
 private:
 			 CImgui_Manager();
 	virtual ~CImgui_Manager() = default;
@@ -18,7 +23,8 @@ public:
 
 	LEVEL		  Get_Level_ID() { return m_eLevelID; }
 	void		  Set_Level_ID(LEVEL eLevel) { m_eLevelID = eLevel; }
-	
+
+
 //TODO For.MapTool Start
 public:
 	HRESULT	Save_EditTexture();
@@ -29,9 +35,12 @@ private:
 	char*		ConvertWCtoC(const wchar_t* str);
 	wchar_t*	ConvertCtoWC(const char* str);
 
+	
+
 private:
 	class CGameInstance*		m_pGameInstance = { nullptr };
 	class CDynamic_Terrain*		m_pDynamic_Terrain = { nullptr };
+	class CTestTree*			m_pTestTree = { nullptr };
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };
@@ -55,16 +64,28 @@ private: //! For. MapTool
 	_int		m_iBrushRange = 1.f;
 	_int		m_iBrushPower = 1.f;
 
+private: //!For.ObjectTool
+	_bool		m_bPicking = { false };
+	_float3		m_fPickingPos = { 0.f, 0.f, 0.f };
+
+
+	TOOLID					m_eToolID = { TOOL_END };
+	vector<CTestTree*>		m_vecObject;
+
 private:
 	void	HelpMarker(const char* desc);
 	char* ConverWStringtoC(const wstring& wstr);
 
 private:
 	void	ShowMapTool();
-	void	ShowEffectTool();
 	void	ShowObjectTool();
 	void	ShowCameraTool();
-
+	void	ShowEffectTool();
+	
+private:
+	void	Picking(TOOLID eToolID, _int iMode);
+	
+	
 
 public:
 	virtual void Free() override;

@@ -4,14 +4,13 @@
 
 
 CTerrain::CTerrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	:CGameObject(pDevice,pContext)
+	:CNonAnimObject(pDevice,pContext)
 {
 	
 }
 
 CTerrain::CTerrain(const CTerrain& rhs)
-	:CGameObject(rhs)
-	, m_eCurrentLevelID(rhs.m_eCurrentLevelID)
+	:CNonAnimObject(rhs)
 {
 }
 

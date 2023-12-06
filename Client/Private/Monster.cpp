@@ -1,20 +1,21 @@
 #include "stdafx.h"
 #include "Monster.h"
-
 #include "GameInstance.h"
 
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CGameObject(pDevice,pContext)
+	: CAnimObject(pDevice,pContext)
 {
 }
 
 CMonster::CMonster(const CMonster& rhs)
-	: CGameObject(rhs)
+	: CAnimObject(rhs)
 {
 }
 
-HRESULT CMonster::Initialize_Prototype()
+HRESULT CMonster::Initialize_Prototype(LEVEL eLevel)
 {
+	m_eCurrentLevelID = eLevel;
+
 	return S_OK;
 }
 
@@ -35,6 +36,7 @@ void CMonster::Priority_Tick(_float fTimeDelta)
 
 void CMonster::Tick(_float fTimeDelta)
 {
+	m_pModelCom->Play_Animation(fTimeDelta);
 }
 
 void CMonster::Late_Tick(_float fTimeDelta)
@@ -56,6 +58,8 @@ HRESULT CMonster::Render()
 
 	for (size_t i = 0; i < iNumMeshes; i++)
 	{
+		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 
 		m_pShaderCom->Begin(0); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
@@ -69,7 +73,8 @@ HRESULT CMonster::Render()
 HRESULT CMonster::Ready_Components()
 {
 	/* For.Com_Shader */ //#모델셰이더는_Prototype_Component_Shader_Model
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"),
+	//Prototype_Component_Shader_AnimModel
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_AnimModel"),
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		return E_FAIL;
 
@@ -95,12 +100,12 @@ HRESULT CMonster::Bind_ShaderResources()
 	return S_OK;
 }
 
-CMonster* CMonster::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CMonster* CMonster::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel)
 {
 	CMonster* pInstance = new CMonster(pDevice, pContext);
 
 	/* 원형객체를 초기화한다.  */
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(pInstance->Initialize_Prototype(eLevel)))
 	{
 		MSG_BOX("Failed to Created : CMonster");
 		Safe_Release(pInstance);

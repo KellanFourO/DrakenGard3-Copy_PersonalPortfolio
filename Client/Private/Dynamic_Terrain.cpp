@@ -110,13 +110,31 @@ void CDynamic_Terrain::Picking_Terrain(EDIT_MODE eMode)
 
 	RAY WorldRay = m_pGameInstance->Get_Ray(WinCX, WinCY);
 
-	_float3 Out = _float3(0.f, 0.f, 0.f);
 
-	if (m_pVIBufferCom->Compute_MousePos(WorldRay,m_pTransformCom->Get_WorldMatrix(), &Out))
+	if (m_pVIBufferCom->Compute_MousePos(WorldRay,m_pTransformCom->Get_WorldMatrix(), &m_fPickingPos))
 	{
-		m_pVIBufferCom->Update(XMLoadFloat3(&Out), m_fDrawRadious, m_fPower, (_uint)eMode);
+		if(m_pGameInstance->Mouse_Down(DIM_LB))
+		m_pVIBufferCom->Update(XMLoadFloat3(&m_fPickingPos), m_fDrawRadious, m_fPower, (_uint)eMode);
 	}
 	
+}
+
+_float3 CDynamic_Terrain::GetTerrainPos()
+{
+	if (nullptr == m_pVIBufferCom)
+	{
+		MSG_BOX("Picking_Terrain Buffer is nullptr");
+		return _float3();
+	}
+
+	_uint WinCX, WinCY;
+	WinCX = g_iWinSizeX; WinCY = g_iWinSizeY;
+
+	RAY WorldRay = m_pGameInstance->Get_Ray(WinCX, WinCY);
+
+	m_pVIBufferCom->Compute_MousePos(WorldRay, m_pTransformCom->Get_WorldMatrix(), &m_fPickingPos);
+
+	return m_fPickingPos;
 }
 
 HRESULT CDynamic_Terrain::Ready_Components()

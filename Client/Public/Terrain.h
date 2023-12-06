@@ -1,6 +1,5 @@
 #pragma once
-#include "Client_Defines.h"
-#include "GameObject.h"
+#include "NonAnimObject.h"
 
 BEGIN(Engine)
 class CShader;
@@ -11,7 +10,7 @@ END
 
 BEGIN(Client)
 
-class CTerrain final : public CGameObject
+class CTerrain final : public CNonAnimObject
 {
 	enum TEXTURE { TYPE_DIFFUSE, TYPE_MASK, TYPE_BRUSH, TYPE_END };
 
@@ -33,8 +32,6 @@ private:
 	CTexture*				m_pTextureCom[TYPE_END] = { nullptr };
 	CVIBuffer_Terrain*		m_pVIBufferCom = { nullptr };
 
-private:
-	LEVEL				m_eCurrentLevelID = { LEVEL_END };
 
 private:
 	HRESULT Ready_Components();

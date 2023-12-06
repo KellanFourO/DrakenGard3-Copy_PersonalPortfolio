@@ -35,7 +35,7 @@ HRESULT CObject_Manager::Add_CloneObject(_uint iLevelIndex, const wstring& strLa
 	if(nullptr == pPrototype)
 		return E_FAIL;
 
-	CGameObject*	pGameObject = pPrototype->Clone(pArg); // 荤夯按眉 积己
+  	CGameObject*	pGameObject = pPrototype->Clone(pArg); // 荤夯按眉 积己
 
 	if(nullptr == pGameObject)
 		return E_FAIL;

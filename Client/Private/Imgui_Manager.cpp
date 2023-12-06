@@ -8,8 +8,11 @@
 
 #include "GameInstance.h"
 #include "Dynamic_Terrain.h"
+#include "TestTree.h"
 
 IMPLEMENT_SINGLETON(CImgui_Manager)
+
+ImGuiIO g_io;
 
 CImgui_Manager::CImgui_Manager()
 {
@@ -31,8 +34,8 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	g_io = ImGui::GetIO(); (void)g_io;
+	g_io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(viewport->Pos);
@@ -45,7 +48,7 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 		return E_FAIL;
 
 	ImGui::StyleColorsDark();
-	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\malgun.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesKorean());
+	g_io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\malgun.ttf", 18.0f, NULL, g_io.Fonts->GetGlyphRangesKorean());
 
 	m_eLevelID = LEVEL_TOOL;
 
@@ -72,10 +75,14 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	colors[ImGuiCol_ChildBg] = bgColor;
 	colors[ImGuiCol_TitleBg] = bgColor;
 	
+	_uint WinCX, WinCY;
+	WinCX = g_iWinSizeX; WinCY = g_iWinSizeY;
+
+	RAY WorldRay = m_pGameInstance->Get_Ray(WinCX, WinCY);
+	
+
 	ImGui::Begin(u8"메인 툴", &m_bMainTool, ImGuiWindowFlags_AlwaysAutoResize);
 
-// 	_bool bDemo;
-// 	ImGui::ShowDemoWindow(&bDemo);
 	if (ImGui::BeginMenu(u8"툴"))
 	{
 		ImGui::MenuItem(u8"맵툴", NULL, &m_bMapTool);
@@ -258,10 +265,16 @@ void CImgui_Manager::ShowMapTool()
 					//Safe_AddRef(m_pDynamic_Terrain);
 				}
 			
+				if(m_pDynamic_Terrain)
 				ImGui::Checkbox(u8"픽킹", &m_bTileing);
 
 				if (m_bTileing)
 				{
+					ImGui::Text(u8"Mouse X : %f", m_pDynamic_Terrain->GetMousePos().x);
+					ImGui::Text(u8"Mouse Y : %f", m_pDynamic_Terrain->GetMousePos().y);
+					ImGui::Text(u8"Mouse Z : %f", m_pDynamic_Terrain->GetMousePos().z);
+					
+
 					static float begin = 1, end = 10;
 
 					if(ImGui::DragInt(u8"브러쉬 범위",&m_iBrushRange, 1, 1, 10))
@@ -279,8 +292,8 @@ void CImgui_Manager::ShowMapTool()
 					ImGui::RadioButton(u8"HEIGHT_SET", &iMode, 2);
 					ImGui::RadioButton(u8"FILLTER", &iMode, 3);
 
-					if (m_pGameInstance->Mouse_Down(DIM_LB))
-						m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)iMode);
+					
+					m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)iMode);
 				
 
 				
@@ -293,6 +306,54 @@ void CImgui_Manager::ShowMapTool()
 		if (ImGui::BeginTabItem(u8"환경"))
 		{
 			ImGui::Text(u8"환경");
+			
+			if(m_pDynamic_Terrain)
+				ImGui::Text(u8"Mouse X : %f", m_pDynamic_Terrain->GetTerrainPos().x);
+				ImGui::Text(u8"Mouse Y : %f", m_pDynamic_Terrain->GetTerrainPos().y);
+				ImGui::Text(u8"Mouse Z : %f", m_pDynamic_Terrain->GetTerrainPos().z);
+
+				//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
+				//	return;
+
+			ImGui::Checkbox(u8"픽킹", &m_bPicking);
+
+			if (m_bPicking)
+			{
+				static int iMode = 0;
+
+				//ImGui::RadioButton(u8"HEIGHT_FLAT", &iMode, 0);
+				//ImGui::RadioButton(u8"HEIGHT_LERP", &iMode, 1);
+				//ImGui::RadioButton(u8"HEIGHT_SET", &iMode, 2);
+				//ImGui::RadioButton(u8"FILLTER", &iMode, 3);
+
+				if (m_pGameInstance->Mouse_Down(DIM_LB))
+				{
+					//typedef struct tagTreeDesc : public CGameObject::GAMEOBJECT_DESC
+					//{
+					//	_float4 vPos = { 0.f, 0.f, 0.f, 0.f };
+					//}TREE_DESC;
+
+					CTestTree::TREE_DESC pDesc = {};
+					m_fPickingPos = m_pDynamic_Terrain->GetTerrainPos();
+
+					_float4 fResultPos = { m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1};
+					pDesc.vPos = fResultPos;
+					
+
+					CTestTree* pTree = nullptr;
+
+					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_ForkLift"), &pDesc, reinterpret_cast<CGameObject**>(&pTree))))
+							return;
+
+					m_vecObject.push_back(pTree);
+
+				}
+					//CTestTree::Clone()
+
+
+
+			}
+
 			ImGui::EndTabItem();
 		}
 		//! 환경 탭 종료
@@ -386,6 +447,31 @@ void CImgui_Manager::ShowCameraTool()
 	}
 	ImGui::End();
 }
+
+void CImgui_Manager::Picking(TOOLID eToolID, _int iMode)
+{
+	
+	_uint WinCX, WinCY;
+	WinCX = g_iWinSizeX; WinCY = g_iWinSizeY;			RAY WorldRay = m_pGameInstance->Get_Ray(WinCX, WinCY);
+
+	m_pDynamic_Terrain->Get_WorldMatrix();
+	
+
+	switch (eToolID)
+	{
+		case Client::CImgui_Manager::TOOL_MAP:
+			m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)iMode);
+			break;
+		case Client::CImgui_Manager::TOOL_OBJECT:
+			break;
+		case Client::CImgui_Manager::TOOL_CAMERA:
+			break;
+		case Client::CImgui_Manager::TOOL_EFFECT:
+			break;
+	}
+}
+
+
 
 void CImgui_Manager::Free()
 {
