@@ -52,16 +52,16 @@ public:
 	
 public:
 	void	Picking_Terrain(EDIT_MODE eMode);
-	_float3	GetMousePos() { return m_fPickingPos; }
+	_float3	GetMousePos();
 
-	_float3 GetTerrainPos();
+	_bool	MouseOnTerrain();
 
 	void	SetPower(_float fPower) { m_fPower = fPower; }
 	void	SetRadious(_float fRadious) { m_fDrawRadious = fRadious; }
 
 private:
 	CShader*				   m_pShaderCom = { nullptr };
-	CTexture*				   m_pTextureCom[2] = { nullptr }; // 지형과 마스크를 한곳에 담기위해 배열로 변경 0: 지형 2장, 1: 마스크 1장
+	CTexture*				   m_pTextureCom[TYPE_END] = { nullptr }; // 지형과 마스크를 한곳에 담기위해 배열로 변경 0: 지형 2장, 1: 마스크 1장
 	CVIBuffer_Dynamic_Terrain* m_pVIBufferCom = { nullptr };
 
 	_float					m_fDrawRadious = { 1.f };

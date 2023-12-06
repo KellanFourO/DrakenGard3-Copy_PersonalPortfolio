@@ -59,7 +59,7 @@ void CDynamic_Terrain::Priority_Tick(_float fTimeDelta)
 
 void CDynamic_Terrain::Tick(_float fTimeDelta)
 {
-	
+	//m_pShaderCom->Bind_RawValue("g_vBrushPos", &m_fPickingPos, sizeof(_float4));
 }
 
 void CDynamic_Terrain::Late_Tick(_float fTimeDelta)
@@ -119,12 +119,33 @@ void CDynamic_Terrain::Picking_Terrain(EDIT_MODE eMode)
 	
 }
 
-_float3 CDynamic_Terrain::GetTerrainPos()
+_float3 CDynamic_Terrain::GetMousePos()
 {
 	if (nullptr == m_pVIBufferCom)
 	{
 		MSG_BOX("Picking_Terrain Buffer is nullptr");
 		return _float3();
+	}
+	_uint WinCX, WinCY;
+	WinCX = g_iWinSizeX; WinCY = g_iWinSizeY;
+
+	RAY WorldRay = m_pGameInstance->Get_Ray(WinCX, WinCY);
+
+
+	if (m_pVIBufferCom->Compute_MousePos(WorldRay, m_pTransformCom->Get_WorldMatrix(), &m_fPickingPos))
+	{
+		return m_fPickingPos;
+	}
+
+	return _float3();
+}
+
+_bool CDynamic_Terrain::MouseOnTerrain()
+{
+	if (nullptr == m_pVIBufferCom)
+	{
+		MSG_BOX("Picking_Terrain Buffer is nullptr");
+		return false;
 	}
 
 	_uint WinCX, WinCY;
@@ -132,9 +153,14 @@ _float3 CDynamic_Terrain::GetTerrainPos()
 
 	RAY WorldRay = m_pGameInstance->Get_Ray(WinCX, WinCY);
 
-	m_pVIBufferCom->Compute_MousePos(WorldRay, m_pTransformCom->Get_WorldMatrix(), &m_fPickingPos);
+	if (m_pVIBufferCom->Compute_MousePos(WorldRay, m_pTransformCom->Get_WorldMatrix(), &m_fPickingPos))
+	{
+		return true;
+	}
 
-	return m_fPickingPos;
+	return false;
+
+	
 }
 
 HRESULT CDynamic_Terrain::Ready_Components()
@@ -158,6 +184,12 @@ HRESULT CDynamic_Terrain::Ready_Components()
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Texture_Terrain_Mask"),
 		TEXT("Com_Mask"), reinterpret_cast<CComponent**>(&m_pTextureCom[TYPE_MASK]))))
 		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Texture_Terrain_Brush"),
+		TEXT("Com_Brush"), reinterpret_cast<CComponent**>(&m_pTextureCom[TYPE_BRUSH]))))
+		return E_FAIL;
+
+	
 
 	return S_OK;
 }
@@ -183,12 +215,17 @@ HRESULT CDynamic_Terrain::Bind_ShaderResources()
 		return E_FAIL;
 
 	//// 브러쉬
-	//if (FAILED(m_pTextureCom[TYPE_BRUSH]->Bind_ShaderResource(m_pShaderCom, "g_BrushTexture", 0))) // error : 
-	//	return E_FAIL;
+	if (FAILED(m_pTextureCom[TYPE_BRUSH]->Bind_ShaderResource(m_pShaderCom, "g_BrushTexture", 0))) // error : 
+		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
 		return E_FAIL;
 
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vBrushPos", &m_fPickingPos, sizeof(_float4))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fBrushRange", &m_fDrawRadious, sizeof(float))))
+		return E_FAIL;
 	//if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))	// 수정
 	//	return E_FAIL;
 

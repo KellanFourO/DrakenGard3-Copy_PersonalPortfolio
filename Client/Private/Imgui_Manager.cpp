@@ -27,6 +27,11 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
 
+	m_bObjectTool = false;
+	m_bCameraTool = false;
+	m_bEffectTool = false;
+	m_bMapTool = false;
+
 	m_pGameInstance = CGameInstance::GetInstance();
 	
 	Safe_AddRef(m_pGameInstance);
@@ -200,6 +205,30 @@ HRESULT CImgui_Manager::Save_EditTexture()
 	return S_OK;
 }
 
+
+
+void CImgui_Manager::KeyInput()
+{
+	switch (m_eToolID)
+	{
+	case Client::CImgui_Manager::TOOL_MAP:
+		MapToolKeyInput();
+		break;
+	case Client::CImgui_Manager::TOOL_OBJECT:
+		break;
+	case Client::CImgui_Manager::TOOL_CAMERA:
+		break;
+	case Client::CImgui_Manager::TOOL_EFFECT:
+		break;
+	
+	}
+
+}
+
+void CImgui_Manager::MapToolKeyInput()
+{
+}
+
 char* CImgui_Manager::ConvertWCtoC(const wchar_t* str)
 {
 	//반환할 char* 변수 선언
@@ -235,10 +264,12 @@ void CImgui_Manager::ShowMapTool()
 	ImGui::Begin(u8"맵툴");
 	if (ImGui::BeginTabBar("##MapTabBar"))
 	{
+		m_eToolID = CImgui_Manager::TOOL_MAP;
+
 		//TODO 타일 탭 시작
 		if (ImGui::BeginTabItem(u8"타일"))
-		{
-			
+		{ 
+				m_eMapTapID = TAP_TILE;
 				ImGui::Text(u8"타일");
 
 				ImGui::InputFloat(u8"입력 X : ", &m_fTileX);
@@ -255,14 +286,8 @@ void CImgui_Manager::ShowMapTool()
 						m_pDynamic_Terrain->Delete_Component(TEXT("Com_VIBuffer"));
 					}
 
-					
-
 					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
 						return;
-
-					
-
-					//Safe_AddRef(m_pDynamic_Terrain);
 				}
 			
 				if(m_pDynamic_Terrain)
@@ -284,18 +309,12 @@ void CImgui_Manager::ShowMapTool()
 						m_pDynamic_Terrain->SetPower(m_iBrushPower);
 
 
-
-					static int iMode = 0;
-
-					ImGui::RadioButton(u8"HEIGHT_FLAT", &iMode, 0);
-					ImGui::RadioButton(u8"HEIGHT_LERP", &iMode, 1);
-					ImGui::RadioButton(u8"HEIGHT_SET", &iMode, 2);
-					ImGui::RadioButton(u8"FILLTER", &iMode, 3);
-
+					ImGui::RadioButton(u8"HEIGHT_FLAT", &m_iTileMode, 0);
+					ImGui::RadioButton(u8"HEIGHT_LERP", &m_iTileMode, 1);
+					ImGui::RadioButton(u8"HEIGHT_SET", &m_iTileMode, 2);
+					ImGui::RadioButton(u8"FILLTER", &m_iTileMode, 3);
 					
-					m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)iMode);
-				
-
+					m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)m_iTileMode);
 				
 			}
 			ImGui::EndTabItem();
@@ -305,13 +324,17 @@ void CImgui_Manager::ShowMapTool()
 		//! 환경 탭 시작
 		if (ImGui::BeginTabItem(u8"환경"))
 		{
+			m_eMapTapID = TAP_ENVIRONMENT;
+
 			ImGui::Text(u8"환경");
 			
 			if(m_pDynamic_Terrain)
-				ImGui::Text(u8"Mouse X : %f", m_pDynamic_Terrain->GetTerrainPos().x);
-				ImGui::Text(u8"Mouse Y : %f", m_pDynamic_Terrain->GetTerrainPos().y);
-				ImGui::Text(u8"Mouse Z : %f", m_pDynamic_Terrain->GetTerrainPos().z);
+			{
 
+				ImGui::Text(u8"Mouse X : %f", m_pDynamic_Terrain->GetMousePos().x);
+				ImGui::Text(u8"Mouse Y : %f", m_pDynamic_Terrain->GetMousePos().y);
+				ImGui::Text(u8"Mouse Z : %f", m_pDynamic_Terrain->GetMousePos().z);
+			}
 				//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
 				//	return;
 
@@ -321,31 +344,46 @@ void CImgui_Manager::ShowMapTool()
 			{
 				static int iMode = 0;
 
-				//ImGui::RadioButton(u8"HEIGHT_FLAT", &iMode, 0);
-				//ImGui::RadioButton(u8"HEIGHT_LERP", &iMode, 1);
+				ImGui::RadioButton(u8"Create", &m_iEnvironmentMode, 0);
+				ImGui::RadioButton(u8"Select", &m_iEnvironmentMode, 1);
 				//ImGui::RadioButton(u8"HEIGHT_SET", &iMode, 2);
 				//ImGui::RadioButton(u8"FILLTER", &iMode, 3);
 
 				if (m_pGameInstance->Mouse_Down(DIM_LB))
 				{
-					//typedef struct tagTreeDesc : public CGameObject::GAMEOBJECT_DESC
-					//{
-					//	_float4 vPos = { 0.f, 0.f, 0.f, 0.f };
-					//}TREE_DESC;
-
-					CTestTree::TREE_DESC pDesc = {};
-					m_fPickingPos = m_pDynamic_Terrain->GetTerrainPos();
-
-					_float4 fResultPos = { m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1};
-					pDesc.vPos = fResultPos;
 					
+					m_fPickingPos = m_pDynamic_Terrain->GetMousePos();
 
-					CTestTree* pTree = nullptr;
+					if (iMode == 0)
+					{
+						CTestTree::TREE_DESC pDesc = {};
 
-					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_ForkLift"), &pDesc, reinterpret_cast<CGameObject**>(&pTree))))
-							return;
+						_float4 fResultPos = { m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f };
+						pDesc.vPos = fResultPos;
 
-					m_vecObject.push_back(pTree);
+						CTestTree* pTree = nullptr;
+
+						
+						if(m_pDynamic_Terrain->MouseOnTerrain())
+						{
+							if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_ForkLift"), &pDesc, reinterpret_cast<CGameObject**>(&pTree))))
+								return;
+
+							m_vecObject.push_back(pTree);
+						}
+						
+					}
+					else if (iMode == 1)
+					{
+						_uint iWinCX = g_iWinSizeX;
+						_uint iWinCY = g_iWinSizeY;
+
+						for (_int i = 0; i < m_vecObject.size(); ++i)
+						{
+							
+							
+						}
+					}
 
 				}
 					//CTestTree::Clone()
@@ -366,6 +404,8 @@ void CImgui_Manager::ShowMapTool()
 		}
 		//! 높이 탭 종료
 
+		m_eMapTapID = TAP_END;
+		m_eToolID = TOOL_END;
 		ImGui::EndTabBar();
 	}
 	ImGui::End();

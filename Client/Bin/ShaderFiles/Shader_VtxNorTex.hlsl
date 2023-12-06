@@ -33,8 +33,8 @@ texture2D		g_MaskTexture;
 texture2D		g_BrushTexture;
 
 vector			g_vCamPosition; //! 반사벡터를 만들기위해 필요한 시선벡터를 구할때 필요한 카메라의 월드위치
-vector			g_vBrushPos = vector(50.f, 0.f, 20.f, 1.f);
-float			g_fBrushRange = 10.0f;
+vector			g_vBrushPos;
+float			g_fBrushRange;
 
 
 sampler DefaultSampler = sampler_state
