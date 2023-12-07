@@ -52,8 +52,8 @@ private:
 
 private:
 	ID3D11Texture2D*	m_pTexture2D = { nullptr };
-	char*		ConvertWCtoC(const wchar_t* str);
-	wchar_t*	ConvertCtoWC(const char* str);
+	string		ConverWstrToStr(const wstring& str);
+	wstring		ConverStrToWstr(const string& str);
 
 	
 
@@ -104,9 +104,9 @@ private: //!For.Object
 
 	CGameObject*				m_PickingObject = nullptr;
 	vector<CGameObject*>		m_vecObjects;
-	vector<const char*>			m_vecObjectProtoTags;
+	vector<string>			m_vecObjectProtoTags;
 	
-	vector<const char*>			m_vecCreateObjectTag;
+	vector<string>			m_vecCreateObjectTag;
 	
 	_float*					    m_arrView = { nullptr };
 	_float*						m_arrProj = { nullptr };

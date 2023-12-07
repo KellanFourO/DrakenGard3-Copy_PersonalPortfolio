@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <regex>
+#include <codecvt>
 
 #include "Tool_Define.h"
 #include "Imgui_Manager.h"
@@ -242,7 +243,7 @@ void CImgui_Manager::MapToolKeyInput()
 
 HRESULT CImgui_Manager::Add_PrototypeTag(const wstring& strPrototypeTag)
 {
-	char* pTag = ConvertWCtoC(strPrototypeTag.c_str());
+	string pTag = ConverWstrToStr(strPrototypeTag);
 
 	m_vecObjectProtoTags.push_back(pTag);
 
@@ -410,30 +411,18 @@ _bool CImgui_Manager::Check_ImGui_Rect()
 	return true;
 }
 
-char* CImgui_Manager::ConvertWCtoC(const wchar_t* str)
+string CImgui_Manager::ConverWstrToStr(const wstring& str)
 {
-	//반환할 char* 변수 선언
-	char* pStr;
-	//입력받은 wchar_t 변수의 길이를 구함
-	int strSize = WideCharToMultiByte(CP_ACP, 0, str, -1, NULL, 0, NULL, NULL);
-	//char* 메모리 할당
-	pStr = new char[strSize];
-	//형 변환
-	WideCharToMultiByte(CP_ACP, 0, str, -1, pStr, strSize, 0, 0);
-	return pStr;
+	wstring_convert<codecvt_utf8<_tchar>> converter;
+	string ChangeStr = converter.to_bytes(str);
+	return ChangeStr;
 }
 
-wchar_t* CImgui_Manager::ConvertCtoWC(const char* str)
+wstring CImgui_Manager::ConverStrToWstr(const string& str)
 {
-	//wchar_t형 변수 선언
-	wchar_t* pStr;
-	//멀티 바이트 크기 계산 길이 반환
-	int strSize = MultiByteToWideChar(CP_ACP, 0, str, -1, NULL, NULL);
-	//wchar_t 메모리 할당
-	pStr = new WCHAR[strSize];
-	//형 변환
-	MultiByteToWideChar(CP_ACP, 0, str, (int)strlen(str) + 1, pStr, strSize);
-	return pStr;
+	wstring_convert<codecvt_utf8<wchar_t>> converter;
+	wstring wideStr = converter.from_bytes(str);
+	return wideStr;
 }
 
 
@@ -584,7 +573,7 @@ void CImgui_Manager::ShowObjectTool()
 							{
 								const _bool isSelected = (m_iSelectTagIndex == n);
 
-								if (ImGui::Selectable(m_vecObjectProtoTags[n], isSelected))
+								if (ImGui::Selectable(m_vecObjectProtoTags[n].c_str(), isSelected))
 								{
 									m_iSelectTagIndex = n;
 
@@ -616,7 +605,7 @@ void CImgui_Manager::ShowObjectTool()
 								{
 									
 
-									wchar_t* wstr = ConvertCtoWC(m_vecObjectProtoTags[m_iSelectTagIndex]);
+									wstring wstr = ConverStrToWstr(m_vecObjectProtoTags[m_iSelectTagIndex]);
 									if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pObject))))
 										return;
 
@@ -624,15 +613,15 @@ void CImgui_Manager::ShowObjectTool()
 									
 
 									_char SliceTag[MAX_PATH];
-									string* strTemp = new string;
+									string strTemp;
 
-									*strTemp = SliceObjectTag(m_vecObjectProtoTags[m_iSelectTagIndex]);
+									strTemp = SliceObjectTag(m_vecObjectProtoTags[m_iSelectTagIndex]);
 									// pushIndex 값을 문자열로 변환하여 연결
 									char pushIndexStr[10];
 									sprintf_s(pushIndexStr, sizeof(pushIndexStr), " %d", m_vecCreateObjectTag.size());
-									*strTemp += pushIndexStr;
+									strTemp += pushIndexStr;
 
-									m_vecCreateObjectTag.push_back(strTemp->c_str());
+									m_vecCreateObjectTag.push_back(strTemp);
 
 									
 // 									strncpy(SliceTag,strTemp.c_str(), sizeof(SliceTag));
@@ -645,7 +634,7 @@ void CImgui_Manager::ShowObjectTool()
 // 
 // 									pushIndex++;
 
-									Safe_Delete(wstr);
+									
 									
 								}
 						}
@@ -667,7 +656,7 @@ void CImgui_Manager::ShowObjectTool()
 							{
 								const _bool isSelected = (m_iPickingObjectIndex == n);
 
-								if (ImGui::Selectable(m_vecCreateObjectTag[n], isSelected))
+								if (ImGui::Selectable(m_vecCreateObjectTag[n].c_str(), isSelected))
 								{
 									m_PickingObject = m_vecObjects[n];
 									m_iPickingObjectIndex = n;
@@ -795,13 +784,8 @@ void CImgui_Manager::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 
-	for(auto& pTag : m_vecObjectProtoTags)
-		Safe_Delete(pTag);
 
 	m_vecObjectProtoTags.clear();
-
-	for(auto& pTag : m_vecCreateObjectTag)
-		Safe_Delete(pTag);
 
 	m_vecCreateObjectTag.clear();
 	//Safe_Release(m_pDynamic_Terrain);
