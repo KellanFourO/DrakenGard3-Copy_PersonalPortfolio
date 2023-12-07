@@ -1,6 +1,7 @@
 #include "Object_Manager.h"
 #include "GameObject.h"
 #include "Layer.h"
+#include "GameInstance.h"
 
 CObject_Manager::CObject_Manager()
 {
@@ -18,10 +19,13 @@ HRESULT CObject_Manager::Initialize(_uint iNumLevels)
 	return S_OK;
 }
 
-HRESULT CObject_Manager::Add_Prototype(const wstring& strPrototypeTag, CGameObject* pPrototype)
+HRESULT CObject_Manager::Add_Prototype(const wstring& strPrototypeTag, CGameObject* pPrototype, _bool bAddData)
 {
 	if (nullptr == pPrototype || nullptr != Find_Prototype(strPrototypeTag)) //todo || 문을 사용할때는 반드시 좀 더 간단한 조건을 앞에 놓아서 효율적으로
 			return E_FAIL;
+
+	if(bAddData)
+	CGameInstance::GetInstance()->Add_PrototypeTag(strPrototypeTag);
 
 	m_Prototypes.emplace(strPrototypeTag, pPrototype); //! 원형객체 추가.
 	
@@ -31,7 +35,7 @@ HRESULT CObject_Manager::Add_Prototype(const wstring& strPrototypeTag, CGameObje
 HRESULT CObject_Manager::Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg, _Inout_ class CGameObject** ppOut)
 {
 	CGameObject*		pPrototype = Find_Prototype(strPrototypeTag); //! 원형객체 탐색
-
+	
 	if(nullptr == pPrototype)
 		return E_FAIL;
 
@@ -70,6 +74,7 @@ HRESULT CObject_Manager::Remove_CloneObject(_uint iLevelIndex, const wstring& st
 
 	return S_OK;
 }
+
 
 //! Tick을 따로 함수로 따로 나눈이유 : 모든 객체들의 Priority_Tick을 순회 후 Tick 순회 후 Late_Tick을 순회하고 싶었다.
 //! 그렇다면 한 함수에서 폴문을 단계별로 돌리면 되지 않았냐 : 다른 셋팅을 해주고 싶었다. 예를들어 Priority_Tick을 수행 후 그래픽디바이스의 셋팅값을 바꾸고 Tick을 하고싶었다 같은 경우에 제어하고싶어서.

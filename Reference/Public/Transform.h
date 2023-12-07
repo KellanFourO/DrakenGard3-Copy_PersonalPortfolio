@@ -32,6 +32,7 @@ public:
 		m_WorldMatrix.m[eState][3] = XMVectorGetW(vState);
 	}
 
+
 	_vector Get_State(STATE eState)
 	{
 		return XMVectorSet
@@ -50,6 +51,16 @@ public:
 			XMVectorGetX(XMVector3Length(XMLoadFloat4x4(&m_WorldMatrix).r[STATE_RIGHT])),
 			XMVectorGetX(XMVector3Length(XMLoadFloat4x4(&m_WorldMatrix).r[STATE_UP])),
 			XMVectorGetX(XMVector3Length(XMLoadFloat4x4(&m_WorldMatrix).r[STATE_LOOK]))
+		);
+	}
+
+	_float3 Get_Pos()
+	{
+		return _float3
+		(
+			m_WorldMatrix.m[STATE_POSITION][0],
+			m_WorldMatrix.m[STATE_POSITION][1],
+			m_WorldMatrix.m[STATE_POSITION][2]
 		);
 	}
 

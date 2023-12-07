@@ -53,6 +53,10 @@ private:
 	vector<MATERIAL_DESC>	m_Materials; //! 어심프라이브러리에서 제공하는 재질 텍스처 정보열거체의 개수(18)만큼의 텍스처클래스 배열 == MATERIAL_DESC
 
 	vector<class CBone*>	m_Bones;
+
+	_uint						m_iNumAnimations = { 0 }; //! AIScene으로 부터 읽어들일 애니메이션 개수
+	_uint						m_iCurrentAnimIndex = { 0 }; //! 현재 애니메이션의 인덱스를 미리 알아놓아야 편해.
+	vector<class CAnimation*>	m_Animations;
 public:
 	typedef vector<class CBone*>	BONES;
 
@@ -60,6 +64,7 @@ private:
 	HRESULT	Ready_Meshes(_fmatrix PivotMatrix);
 	HRESULT Ready_Materials(const string& strModelFilePath); //!#모델텍스처로드
 	HRESULT	Ready_Bones(aiNode* pAInode, _int iParentIndex); //! _uint가 아닌 _int를 사용한 이유는 부모가 존재하지 않는 노드일경우에는 -1로 셋팅하기 위해서이다.
+	HRESULT Ready_Animations();
 
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, const string& strModelFilePath, _fmatrix PivotMatrix);

@@ -24,12 +24,28 @@ public:
 	LEVEL		  Get_Level_ID() { return m_eLevelID; }
 	void		  Set_Level_ID(LEVEL eLevel) { m_eLevelID = eLevel; }
 
-	void		KeyInput();
+	void					KeyInput();
+	CCamera_MapTool**		Get_Cam() { return &m_pCamera; }
+	_bool					Check_ImGui_Rect();
 
-//TODO For.MapTool Start
+//TODO 맵 툴 함수 시작
+
 public:
 	HRESULT	Save_EditTexture();
 	void	MapToolKeyInput();
+
+//TODO 맵 툴 함수 종료
+
+//TODO 오브젝트 툴 함수 시작
+
+private:
+	HRESULT Add_PrototypeTag(const wstring& strPrototypeTag);
+	HRESULT	Ready_ProtoTagList();
+	void	ObjectToolKeyInput();
+	string	SliceObjectTag(string strFullTag);
+
+//TODO 오브젝트 툴 함수 종료
+
 
 private:
 	ID3D11Texture2D*	m_pTexture2D = { nullptr };
@@ -41,7 +57,7 @@ private:
 private:
 	class CGameInstance*		m_pGameInstance = { nullptr };
 	class CDynamic_Terrain*		m_pDynamic_Terrain = { nullptr };
-	class CTestTree*			m_pTestTree = { nullptr };
+	class CCamera_MapTool*		m_pCamera = { nullptr };
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };
@@ -59,25 +75,46 @@ private:
 private:
 	MAPTAPID	m_eMapTapID = { TAP_END };
 
-private: //! For. Tile
-	VTXDYNAMIC	m_tMapInfo;
-	_float		m_fTileX = { 0.0f };
-	_float		m_fTileZ = { 0.0f };
-	_bool		m_bTileing = { false };
-	_bool		m_bCreate = { false };
-	_int		m_iTileMode = { 0 };
-	_int		m_iBrushRange = 1.f;
-	_int		m_iBrushPower = 1.f;
-
-private: //!For.Environment
-	_bool		m_bPicking = { false };
-	_float3		m_fPickingPos = { 0.f, 0.f, 0.f };
-	_int		m_iEnvironmentMode = { 0 };
-	vector<CTestTree*>		m_vecObject;
+private: //! For. Map
+	VTXDYNAMIC					m_tMapInfo;
+	_float						m_fTileX = { 0.0f };
+	_float						m_fTileZ = { 0.0f };
+	_bool						m_bTileing = { false };
+	_bool						m_bCreate = { false };
+	_int						m_iTileMode = { 0 };
+	_int						m_iBrushRange = 1.f;
+	_int						m_iBrushPower = 1.f;
 
 //TODO 맵툴 변수 종료
+// 
+//TODO 오브젝트 툴 변수 시작
+
+private: //!For.Object
+	_bool						m_bPicking = { false };
+	_bool						m_bPressing = { false };
+
+	_float3						m_fPickingPos = { 0.f, 0.f, 0.f };
+	_int						m_iObjectMode = { 0 };
+	_int						m_iSelectTagIndex = { 0 };
+	_int						m_iPickingObjectIndex = 0;
+
+	CGameObject*				m_PickingObject = nullptr;
+	vector<CGameObject*>		m_vecObjects;
+	vector<const char*>			m_vecObjectProtoTags;
+	
+	vector<const char*>			m_vecCreateObjectTag;
+	
+
+//TODO 오브젝트 툴 변수 종료
 
 	
+//TODO 카메라툴 변수 시작
+
+private:
+	map<const char*, _float3> m_MovePoints;
+	_int					  m_iPointIndex = { 0 };
+
+//TODO 카메라툴 변수 종료
 
 private:
 	void	HelpMarker(const char* desc);

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <regex>
 
 #include "../Imgui/imgui.h"
 #include "../Imgui/imgui_impl_win32.h"
@@ -9,6 +10,7 @@
 #include "GameInstance.h"
 #include "Dynamic_Terrain.h"
 #include "TestTree.h"
+
 
 IMPLEMENT_SINGLETON(CImgui_Manager)
 
@@ -31,6 +33,9 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 	m_bCameraTool = false;
 	m_bEffectTool = false;
 	m_bMapTool = false;
+
+	
+	
 
 	m_pGameInstance = CGameInstance::GetInstance();
 	
@@ -58,13 +63,14 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 	m_eLevelID = LEVEL_TOOL;
 
 	
+	Ready_ProtoTagList();
 
 	return S_OK;
 }
 
 void CImgui_Manager::Tick(_float fTimeDelta)
 {
-
+	
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -104,6 +110,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	if (m_bObjectTool) ShowObjectTool();
 
 	ImGui::End();
+
 }
 
 void CImgui_Manager::Render()
@@ -227,6 +234,82 @@ void CImgui_Manager::KeyInput()
 
 void CImgui_Manager::MapToolKeyInput()
 {
+	if (m_pGameInstance->Key_Down(DIK_F1))
+	{
+		m_bPicking = !m_bPicking;
+	}
+}
+
+HRESULT CImgui_Manager::Add_PrototypeTag(const wstring& strPrototypeTag)
+{
+	char* pTag = ConvertWCtoC(strPrototypeTag.c_str());
+
+	m_vecObjectProtoTags.push_back(pTag);
+
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Ready_ProtoTagList()
+{
+	vector<wstring> vecTags = m_pGameInstance->Get_VecTags();
+
+	for (auto& strTag : vecTags)
+	{
+		Add_PrototypeTag(strTag);
+	}
+	
+	return S_OK;
+}
+
+void CImgui_Manager::ObjectToolKeyInput()
+{
+	if (m_pGameInstance->Key_Down(DIK_F1))
+	{
+		m_bPicking = !m_bPicking;
+	}
+
+
+	if (m_PickingObject && m_pGameInstance->Key_Pressing(DIK_T))
+	{
+		m_PickingObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f));
+	}
+
+
+	
+}
+
+string CImgui_Manager::SliceObjectTag(string strFullTag)
+{
+	regex pattern("Prototype_GameObject_(\\w+)");
+	
+	smatch match;
+
+	if(regex_search(strFullTag, match, pattern))
+	{
+		return match[1].str();
+	}
+
+	return string();
+}
+
+_bool CImgui_Manager::Check_ImGui_Rect()
+{
+	POINT tMouse;
+
+	GetCursorPos(&tMouse);
+	ScreenToClient(m_pGameInstance->Get_GraphicDesc().hWnd, &tMouse);
+
+
+	ImVec2 windowPos = ImGui::GetWindowPos(); //왼쪽상단모서리점
+	ImVec2 windowSize = ImGui::GetWindowSize();
+
+	if (tMouse.x >= windowPos.x && tMouse.x <= windowPos.x + windowSize.x &&
+		tMouse.y >= windowPos.y && tMouse.y <= windowPos.y + windowSize.y)
+	{
+		return false; //ImGui 영역 내
+	}
+
+	return true;
 }
 
 char* CImgui_Manager::ConvertWCtoC(const wchar_t* str)
@@ -259,11 +342,12 @@ wchar_t* CImgui_Manager::ConvertCtoWC(const char* str)
 
 void CImgui_Manager::ShowMapTool()
 {
-	//!Com_VIBuffer
-	//! 
+	MapToolKeyInput();
+
 	ImGui::Begin(u8"맵툴");
 	if (ImGui::BeginTabBar("##MapTabBar"))
 	{
+		
 		m_eToolID = CImgui_Manager::TOOL_MAP;
 
 		//TODO 타일 탭 시작
@@ -275,7 +359,7 @@ void CImgui_Manager::ShowMapTool()
 				ImGui::InputFloat(u8"입력 X : ", &m_fTileX);
 				ImGui::InputFloat(u8"입력 Z : ", &m_fTileZ);
 
-				m_tMapInfo.vPosition.x = m_fTileX;
+				m_tMapInfo.vPosition.x = m_fTileX; 
 				m_tMapInfo.vPosition.y = 1.f;
 				m_tMapInfo.vPosition.z = m_fTileZ;
 
@@ -321,80 +405,7 @@ void CImgui_Manager::ShowMapTool()
 		}
 		//TODO 타일 탭 종료
 
-		//! 환경 탭 시작
-		if (ImGui::BeginTabItem(u8"환경"))
-		{
-			m_eMapTapID = TAP_ENVIRONMENT;
-
-			ImGui::Text(u8"환경");
-			
-			if(m_pDynamic_Terrain)
-			{
-
-				ImGui::Text(u8"Mouse X : %f", m_pDynamic_Terrain->GetMousePos().x);
-				ImGui::Text(u8"Mouse Y : %f", m_pDynamic_Terrain->GetMousePos().y);
-				ImGui::Text(u8"Mouse Z : %f", m_pDynamic_Terrain->GetMousePos().z);
-			}
-				//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
-				//	return;
-
-			ImGui::Checkbox(u8"픽킹", &m_bPicking);
-
-			if (m_bPicking)
-			{
-				static int iMode = 0;
-
-				ImGui::RadioButton(u8"Create", &m_iEnvironmentMode, 0);
-				ImGui::RadioButton(u8"Select", &m_iEnvironmentMode, 1);
-				//ImGui::RadioButton(u8"HEIGHT_SET", &iMode, 2);
-				//ImGui::RadioButton(u8"FILLTER", &iMode, 3);
-
-				if (m_pGameInstance->Mouse_Down(DIM_LB))
-				{
-					
-					m_fPickingPos = m_pDynamic_Terrain->GetMousePos();
-
-					if (iMode == 0)
-					{
-						CTestTree::TREE_DESC pDesc = {};
-
-						_float4 fResultPos = { m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f };
-						pDesc.vPos = fResultPos;
-
-						CTestTree* pTree = nullptr;
-
-						
-						if(m_pDynamic_Terrain->MouseOnTerrain())
-						{
-							if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_ForkLift"), &pDesc, reinterpret_cast<CGameObject**>(&pTree))))
-								return;
-
-							m_vecObject.push_back(pTree);
-						}
-						
-					}
-					else if (iMode == 1)
-					{
-						_uint iWinCX = g_iWinSizeX;
-						_uint iWinCY = g_iWinSizeY;
-
-						for (_int i = 0; i < m_vecObject.size(); ++i)
-						{
-							
-							
-						}
-					}
-
-				}
-					//CTestTree::Clone()
-
-
-
-			}
-
-			ImGui::EndTabItem();
-		}
-		//! 환경 탭 종료
+		
 
 		//! 높이 탭 시작
 		if (ImGui::BeginTabItem(u8"높이"))
@@ -403,7 +414,7 @@ void CImgui_Manager::ShowMapTool()
 			ImGui::EndTabItem();
 		}
 		//! 높이 탭 종료
-
+		
 		m_eMapTapID = TAP_END;
 		m_eToolID = TOOL_END;
 		ImGui::EndTabBar();
@@ -440,24 +451,178 @@ void CImgui_Manager::ShowEffectTool()
 
 void CImgui_Manager::ShowObjectTool()
 {
+
+	ObjectToolKeyInput();
+
 	ImGui::Begin(u8"오브젝트툴");
 	if (ImGui::BeginTabBar("##ObjectTabBar"))
 	{
-		//TODO 오브젝트1 탭 시작
-		if (ImGui::BeginTabItem(u8"오브젝트1"))
+		//TODO 애니메이션 모델 탭 시작
+		if (ImGui::BeginTabItem(u8"애니메이션 모델"))
 		{
-			ImGui::Text(u8"오브젝트1");
+				if (m_pDynamic_Terrain)
+				{
+					ImGui::Text(u8"Mouse X : %f", m_pDynamic_Terrain->GetMousePos().x);
+					ImGui::Text(u8"Mouse Y : %f", m_pDynamic_Terrain->GetMousePos().y);
+					ImGui::Text(u8"Mouse Z : %f", m_pDynamic_Terrain->GetMousePos().z);
+				}
+
+				ImGui::Checkbox(u8"픽킹", &m_bPicking);
+
+				if (m_bPicking)
+				{
+					ImGui::RadioButton(u8"Create", &m_iObjectMode, 0);
+					ImGui::RadioButton(u8"Select", &m_iObjectMode, 1);
+					//ImGui::RadioButton(u8"HEIGHT_SET", &iMode, 2);
+					//ImGui::RadioButton(u8"FILLTER", &iMode, 3);
+					if (m_iObjectMode == 0)
+					{
+						//! 데이터매니저로부터 태그리스트 얻어오는 함수
+						_int ObjectTagsSize = m_vecObjectProtoTags.size();
+
+						if (ImGui::BeginListBox(u8"태그 리스트"))
+						{
+							for (int n = 0; n < ObjectTagsSize; ++n)
+							{
+								const _bool isSelected = (m_iSelectTagIndex == n);
+
+								if (ImGui::Selectable(m_vecObjectProtoTags[n], isSelected))
+								{
+									m_iSelectTagIndex = n;
+
+									if (isSelected)
+										ImGui::SetItemDefaultFocus();
+								}
+							}
+
+							ImGui::EndListBox();
+						}
+					
+
+						if (m_pGameInstance->Mouse_Down(DIM_LB))
+						{
+
+							if (m_pDynamic_Terrain)
+								m_fPickingPos = m_pDynamic_Terrain->GetMousePos();
+
+								CGameObject* pObject = nullptr;
+
+								CGameObject::GAMEOBJECT_DESC pDesc;
+
+								pDesc.vPos = { m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f };
+								pDesc.isPicking = true;
+								pDesc.fRotationPerSec = 1.f;
+								pDesc.fSpeedPerSec = 1.f;
+
+								if (m_pDynamic_Terrain && m_pDynamic_Terrain->MouseOnTerrain() && Check_ImGui_Rect())
+								{
+									
+
+									wchar_t* wstr = ConvertCtoWC(m_vecObjectProtoTags[m_iSelectTagIndex]);
+									if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pObject))))
+										return;
+
+									m_vecObjects.push_back(pObject);
+									
+
+									_char SliceTag[MAX_PATH];
+									string* strTemp = new string;
+
+									*strTemp = SliceObjectTag(m_vecObjectProtoTags[m_iSelectTagIndex]);
+									// pushIndex 값을 문자열로 변환하여 연결
+									char pushIndexStr[10];
+									sprintf_s(pushIndexStr, sizeof(pushIndexStr), " %d", m_vecCreateObjectTag.size());
+									*strTemp += pushIndexStr;
+
+									// 새로운 메모리에 문자열을 복사하여 m_vecCreateObjectTag에 추가
+
+
+
+									m_vecCreateObjectTag.push_back(strTemp->c_str());
+
+									
+// 									strncpy(SliceTag,strTemp.c_str(), sizeof(SliceTag));
+// 
+// 									char pushIndexStr[10];
+// 									sprintf_s(pushIndexStr, sizeof(pushIndexStr), " %d", pushIndex);
+// 									strcat_s(SliceTag, pushIndexStr);
+// 
+// 									m_vecCreateObjectTag.push_back(SliceTag);
+// 
+// 									pushIndex++;
+
+									Safe_Delete(wstr);
+									
+								}
+						}
+					}
+
+					if (m_iObjectMode == 1)
+					{
+						_int iObjectListSize = m_vecCreateObjectTag.size();
+
+						if (ImGui::BeginListBox(u8""))
+						{
+							for (int n = 0; n < iObjectListSize; ++n)
+							{
+								const _bool isSelected = (m_iPickingObjectIndex == n);
+
+								if (ImGui::Selectable(m_vecCreateObjectTag[n], isSelected))
+								{
+									m_PickingObject = m_vecObjects[n];
+									m_iPickingObjectIndex = n;
+
+									if (isSelected)
+										ImGui::SetItemDefaultFocus();
+								}
+							}
+
+							ImGui::EndListBox();
+						}
+
+						if (m_pDynamic_Terrain)
+							m_fPickingPos = m_pDynamic_Terrain->GetMousePos();
+
+						_uint iWinCX = g_iWinSizeX;
+						_uint iWinCY = g_iWinSizeY;
+
+						//! 픽킹된 오브젝트가 있는 경우
+							//! T 키를 누르고 있을 때의 따라오게 만들자.
+												
+						//! 픽킹된 오브젝트가 없는 경우
+							//! P 키를 누르고 있을때 오브젝트들을 순회하면서 픽킹 검사를 하고 픽킹오브젝트로 대입하자.
+							
+
+						_int iObjectSize = m_vecObjects.size();
+
+						if (m_pGameInstance->Key_Pressing(DIK_P))
+						{
+							m_bPressing = true;
+
+							for (_int i = 0; i < iObjectSize; ++i)
+							{
+								if (m_vecObjects[i]->Picking(m_fPickingPos))
+								{
+									m_PickingObject = m_vecObjects[i];
+									m_iPickingObjectIndex = i;
+								}
+							}
+						}
+						else
+							m_bPressing = false;
+					}
+				}
+
 			ImGui::EndTabItem();
 		}
 		//TODO 오브젝트1 탭 종료
 
-		//! 오브젝트2 탭 시작
-		if (ImGui::BeginTabItem(u8"오브젝트2"))
+		//! 논애님 모델 탭 시작
+		if (ImGui::BeginTabItem(u8"논애님 모델"))
 		{
-			ImGui::Text(u8"오브젝트2");
 			ImGui::EndTabItem();
 		}
-		//! 오브젝트2 탭 종료
+		//! 논애님 모델 탭 종료
 		ImGui::EndTabBar();
 	}
 	ImGui::End();
@@ -468,13 +633,21 @@ void CImgui_Manager::ShowCameraTool()
 	ImGui::Begin(u8"카메라툴");
 	if (ImGui::BeginTabBar("##CameraTabBar"))
 	{
-		//TODO 베지어 탭 시작
-		if (ImGui::BeginTabItem(u8"베지어"))
+		//TODO 스플라인 탭 시작
+		if (ImGui::BeginTabItem(u8"스플라인"))
 		{
-			ImGui::Text(u8"베지어");
+			ImGui::Text(u8"스플라인");
+
+
+			if(ImGui::BeginListBox(u8"리스트박스"))
+			{
+				
+				ImGui::EndListBox();
+			}
+
 			ImGui::EndTabItem();
 		}
-		//TODO 베지어 탭 종료
+		//TODO 스플라인 탭 종료
 
 		//! 메뉴얼 탭 시작
 		if (ImGui::BeginTabItem(u8"메뉴얼"))
@@ -492,7 +665,9 @@ void CImgui_Manager::Picking(TOOLID eToolID, _int iMode)
 {
 	
 	_uint WinCX, WinCY;
-	WinCX = g_iWinSizeX; WinCY = g_iWinSizeY;			RAY WorldRay = m_pGameInstance->Get_Ray(WinCX, WinCY);
+	WinCX = g_iWinSizeX; WinCY = g_iWinSizeY;
+		
+	RAY WorldRay = m_pGameInstance->Get_Ray(WinCX, WinCY);
 
 	m_pDynamic_Terrain->Get_WorldMatrix();
 	
@@ -519,6 +694,15 @@ void CImgui_Manager::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 
+	for(auto& pTag : m_vecObjectProtoTags)
+		Safe_Delete(pTag);
+
+	m_vecObjectProtoTags.clear();
+
+	for(auto& pTag : m_vecCreateObjectTag)
+		Safe_Delete(pTag);
+
+	m_vecCreateObjectTag.clear();
 	//Safe_Release(m_pDynamic_Terrain);
 
 	ImGui_ImplDX11_Shutdown();

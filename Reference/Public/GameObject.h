@@ -16,6 +16,9 @@ public:
 		_float fSpeedPerSec		= 0.f;
 		_float fRotationPerSec	= 0.f;
 
+		_bool	isPicking = false;
+		_float4	vPos = { 0.f, 0.f, 0.f, 1.f };
+
 	}GAMEOBJECT_DESC;
 
 protected:
@@ -33,6 +36,9 @@ public:
 	virtual void	Tick(_float fTimeDelta);
 	virtual void	Late_Tick(_float fTimeDelta);
 	virtual HRESULT Render();
+
+public:
+	_bool	Picking(_float3 vPickPos);
 
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };

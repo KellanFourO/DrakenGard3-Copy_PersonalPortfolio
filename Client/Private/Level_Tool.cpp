@@ -15,10 +15,6 @@ HRESULT CLevel_Tool::Initialize()
 	//if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 	//	return E_FAIL;
 
-	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-		return E_FAIL;
-
-
 	if (FAILED(Ready_Imgui()))
 	{
 		Safe_Release(m_pDevice);
@@ -26,7 +22,9 @@ HRESULT CLevel_Tool::Initialize()
 	
 		return E_FAIL;
 	}
-	
+
+	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+		return E_FAIL;
 }
 
 void CLevel_Tool::Tick(_float fTimeDelta)
@@ -88,8 +86,14 @@ HRESULT CLevel_Tool::Ready_Layer_Camera(const wstring& strLayerTag)
 	Desc.fSpeedPerSec = 20.f;
 	Desc.fRotationPerSec = XMConvertToRadians(180.0f);
 
-	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, strLayerTag, TEXT("Prototype_GameObject_Camera_MapTool"), &Desc)))
+	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, strLayerTag, TEXT("Prototype_GameObject_Camera_MapTool"), &Desc, (CGameObject**)m_pImguiManager->Get_Cam())))
 		return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, strLayerTag, TEXT("Prototype_GameObject_TestTree"))))
+	//	return E_FAIL;
+
+//	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, strLayerTag, TEXT("Prototype_GameObject_ForkLift"))))
+//		return E_FAIL;
 
 	return S_OK;
 }

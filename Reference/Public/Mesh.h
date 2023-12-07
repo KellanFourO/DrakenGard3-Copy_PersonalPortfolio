@@ -20,7 +20,8 @@ public:
 
 public:
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, const vector<class CBone*>& Bones);
-
+	_bool	Compute_MousePos(RAY _Ray, _matrix _WorldMatrix, _float3* pOut);
+	
 private:
 	HRESULT Ready_Vertices_NonAnim(const aiMesh* pAIMesh, _fmatrix PivotMatrix);
 	HRESULT Ready_Vertices_Anim(const aiMesh* pAIMesh, const vector<class CBone*>& Bones);

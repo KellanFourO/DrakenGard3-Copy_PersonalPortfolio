@@ -47,6 +47,17 @@ HRESULT CGameObject::Initialize(void* pArg)
 
 	Safe_AddRef(m_pTransformCom);
 
+	if (Desc.isPicking)
+	{
+	//_float4 vPos = { Desc.vPos.x, Desc.vPos.y, Desc.vPos.z, 1.f };
+	//
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
+
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(Desc.vPos.x, Desc.vPos.y, Desc.vPos.z, 1.f));
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Desc.vPos);
+	}
+
 	return S_OK;
 }
 
@@ -77,6 +88,21 @@ void CGameObject::Late_Tick(_float fTimeDelta)
 HRESULT CGameObject::Render()
 {
 	return S_OK;
+}
+
+_bool CGameObject::Picking(_float3 vPickPos)
+{
+	_float3 vScale = m_pTransformCom->Get_Scaled();
+	_float3	vPos = m_pTransformCom->Get_Pos();
+
+	if (vPickPos.x >= vPos.x - vScale.x && vPickPos.x <= vPos.x + vScale.x &&
+		vPickPos.y >= vPos.y - vScale.y && vPickPos.y <= vPos.y + vScale.y &&
+		vPickPos.z >= vPos.z - vScale.z && vPickPos.z <= vPos.z + vScale.z)
+	{
+		return true; //ImGui ¿µ¿ª ³»
+	}
+	
+	return false;
 }
 
 

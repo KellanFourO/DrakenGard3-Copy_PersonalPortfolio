@@ -3,7 +3,7 @@
 #include "Timer_Manager.h"
 #include "Level_Manager.h"
 #include "Object_Manager.h"
-
+#include "Data_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -41,6 +41,10 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInstance, 
 	//TODO ÄÄÆ÷³ÍÆ® ¸Å´ÏÀú
 	m_pComponent_Manager = CComponent_Manager::Create(iNumLevels);
 	if (nullptr == m_pComponent_Manager)
+		return E_FAIL;
+
+	m_pData_Manager = CData_Manager::Create();
+	if(nullptr == m_pData_Manager)
 		return E_FAIL;
 
 	//TODO ·»´õ·¯
@@ -208,12 +212,12 @@ HRESULT CGameInstance::Open_Level(_uint iCurrentLevelIndex, CLevel* pNewLevel)
 	return m_pLevel_Manager->Open_Level(iCurrentLevelIndex, pNewLevel);
 }
 
-HRESULT CGameInstance::Add_Prototype(const wstring& strPrototypeTag, CGameObject* pPrototype)
+HRESULT CGameInstance::Add_Prototype(const wstring& strPrototypeTag, CGameObject* pPrototype, _bool bAddData)
 {
 	if(nullptr == m_pObject_Manager)
 		return E_FAIL;
 
-	return m_pObject_Manager->Add_Prototype(strPrototypeTag,pPrototype);
+	return m_pObject_Manager->Add_Prototype(strPrototypeTag,pPrototype, bAddData);
 }
 
 HRESULT CGameInstance::Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg, CGameObject** ppOut)
@@ -238,6 +242,23 @@ CComponent* CGameInstance::Clone_Component(_uint iLevelIndex, const wstring& str
 		return nullptr;
 
 	return m_pComponent_Manager->Clone_Component(iLevelIndex, strPrototypeTag,pArg);
+}
+
+HRESULT CGameInstance::Add_PrototypeTag(const wstring& strProtoTypeTag)
+{
+	if (nullptr == m_pData_Manager)
+		return E_FAIL;
+	
+	return m_pData_Manager->Add_PrototypeTag(strProtoTypeTag);
+}
+
+vector<wstring>& CGameInstance::Get_VecTags()
+{
+
+	if (nullptr == m_pData_Manager)
+		return vector<wstring>();
+
+	return m_pData_Manager->Get_VecTags();
 }
 
 HRESULT CGameInstance::Add_RenderGroup(CRenderer::RENDERGROUP eGroupID, CGameObject* pGameObject)
@@ -397,6 +418,7 @@ void CGameInstance::Release_Manager()
 	Safe_Release(m_pComponent_Manager);
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pTimer_Manager);
+	Safe_Release(m_pData_Manager);
 	Safe_Release(m_pRenderer);
 
 	Safe_Release(m_pInput_Device);

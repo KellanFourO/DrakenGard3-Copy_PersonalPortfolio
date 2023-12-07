@@ -1,28 +1,26 @@
 #include "stdafx.h"
-#include "TestTree.h"
+#include "ForkLift.h"
 #include "GameInstance.h"
 
-CTestTree::CTestTree(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CForkLift::CForkLift(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CNonAnimObject(pDevice, pContext)
 {
 }
 
-CTestTree::CTestTree(const CTestTree& rhs)
+CForkLift::CForkLift(const CForkLift& rhs)
 	: CNonAnimObject(rhs)
 {
 }
 
-HRESULT CTestTree::Initialize_Prototype(LEVEL eLevel)
+HRESULT CForkLift::Initialize_Prototype(LEVEL eLevel)
 {
 	m_eCurrentLevelID = eLevel;
 
 	return S_OK;
 }
 
-HRESULT CTestTree::Initialize(void* pArg)
+HRESULT CForkLift::Initialize(void* pArg)
 {
-	//if(nullptr == pArg)
-	//	return E_FAIL;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -33,21 +31,21 @@ HRESULT CTestTree::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CTestTree::Priority_Tick(_float fTimeDelta)
+void CForkLift::Priority_Tick(_float fTimeDelta)
 {
 }
 
-void CTestTree::Tick(_float fTimeDelta)
+void CForkLift::Tick(_float fTimeDelta)
 {
 }
 
-void CTestTree::Late_Tick(_float fTimeDelta)
+void CForkLift::Late_Tick(_float fTimeDelta)
 {
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return;
 }
 
-HRESULT CTestTree::Render()
+HRESULT CForkLift::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
@@ -66,7 +64,7 @@ HRESULT CTestTree::Render()
 	return S_OK;
 }
 
-HRESULT CTestTree::Ready_Components()
+HRESULT CForkLift::Ready_Components()
 {
 	/* For.Com_Shader */
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_Model"),
@@ -74,14 +72,14 @@ HRESULT CTestTree::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Model_TestTree"),
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Model_ForkLift"),
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CTestTree::Bind_ShaderResources()
+HRESULT CForkLift::Bind_ShaderResources()
 {
 	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
 		return E_FAIL;
@@ -96,33 +94,33 @@ HRESULT CTestTree::Bind_ShaderResources()
 }
 
 
-CTestTree* CTestTree::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel)
+CForkLift* CForkLift::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel)
 {
-	CTestTree* pInstance = new CTestTree(pDevice, pContext);
+	CForkLift* pInstance = new CForkLift(pDevice, pContext);
 
 	/* 원형객체를 초기화한다.  */
 	if (FAILED(pInstance->Initialize_Prototype(eLevel)))
 	{
-		MSG_BOX("Failed to Created : CTestTree");
+		MSG_BOX("Failed to Created : CForkLift");
 		Safe_Release(pInstance);
 	}
 	return pInstance;
 }
 
-CGameObject* CTestTree::Clone(void* pArg)
+CGameObject* CForkLift::Clone(void* pArg)
 {
-	CTestTree* pInstance = new CTestTree(*this);
+	CForkLift* pInstance = new CForkLift(*this);
 
 	/* 원형객체를 초기화한다.  */
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Cloned : CTestTree");
+		MSG_BOX("Failed to Cloned : CForkLift");
 		Safe_Release(pInstance);
 	}
 	return pInstance;
 }
 
-void CTestTree::Free()
+void CForkLift::Free()
 {
 	__super::Free();
 

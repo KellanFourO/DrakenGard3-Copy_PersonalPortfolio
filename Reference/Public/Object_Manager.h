@@ -15,10 +15,11 @@ private:
 
 public:
 	HRESULT Initialize(_uint iNumLevels);
-	HRESULT Add_Prototype(const wstring& strProtoTypeTag, class CGameObject* pPrototype);
+	HRESULT Add_Prototype(const wstring& strProtoTypeTag, class CGameObject* pPrototype, _bool bAddData = false);
 	HRESULT Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr, _Inout_ class CGameObject** ppOut = nullptr);
 	HRESULT	Remove_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg);
 
+public:
 	void	Priority_Tick(_float fTimeDelta);
 	void	Tick(_float fTimeDelta);
 	void	Late_Tick(_float fTimeDelta);

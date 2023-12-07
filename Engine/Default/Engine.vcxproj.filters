@@ -100,6 +100,15 @@
     <Filter Include="01. Utility\03. Components\04. Model\01. Bone">
       <UniqueIdentifier>{cd1553dd-bc77-498c-9a75-c0ad05ca25a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\03. Components\04. Model\02. Animation">
+      <UniqueIdentifier>{07ec027b-32e4-4dbd-a3e1-6775fbed3108}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\04. Model\02. Animation\00. Channel">
+      <UniqueIdentifier>{259c137e-1f09-4fa8-8435-33d6190df681}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Data">
+      <UniqueIdentifier>{8f016567-a2ce-4016-bb37-e2169e43f852}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -198,6 +207,15 @@
     <ClInclude Include="..\public\Bone.h">
       <Filter>01. Utility\03. Components\04. Model\01. Bone</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Animation.h">
+      <Filter>01. Utility\03. Components\04. Model\02. Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Channel.h">
+      <Filter>01. Utility\03. Components\04. Model\02. Animation\00. Channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Data_Manager.h">
+      <Filter>01. Utility\05. Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -283,6 +301,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Bone.cpp">
       <Filter>01. Utility\03. Components\04. Model\01. Bone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Animation.cpp">
+      <Filter>01. Utility\03. Components\04. Model\02. Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Channel.cpp">
+      <Filter>01. Utility\03. Components\04. Model\02. Animation\00. Channel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Data_Manager.cpp">
+      <Filter>01. Utility\05. Data</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -67,6 +67,9 @@
     <Filter Include="02. GameObjects\99. AnimModelObject">
       <UniqueIdentifier>{07b8b8d7-2612-4c0c-bd87-ce9fa43a95f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\05. ForkLift">
+      <UniqueIdentifier>{784e7824-784c-40c2-987e-037a767f0172}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -156,6 +159,9 @@
     <ClInclude Include="..\public\AnimObject.h">
       <Filter>02. GameObjects\99. AnimModelObject</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\ForkLift.h">
+      <Filter>02. GameObjects\05. ForkLift</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -232,6 +238,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\NonAnimObject.cpp">
       <Filter>02. GameObjects\98. NonAnimObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ForkLift.cpp">
+      <Filter>02. GameObjects\05. ForkLift</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

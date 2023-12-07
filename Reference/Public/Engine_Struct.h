@@ -82,6 +82,12 @@ namespace Engine
 		XMFLOAT3		vTangent;
 	}VTXDYNAMIC;
 
+	typedef struct tagKeyFrame
+	{
+		XMFLOAT3	vScale, vPosition;
+		XMFLOAT4	vRotation; //! 쿼터니언으로 되있어. XMFLOAT4야.
+		float		fTrackPosition; //! 동작을 취하는 시간은 언제야?
+	}KEYFRAME;
 }
 
 
