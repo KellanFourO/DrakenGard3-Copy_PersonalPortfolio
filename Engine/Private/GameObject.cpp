@@ -105,6 +105,22 @@ _bool CGameObject::Picking(_float3 vPickPos)
 	return false;
 }
 
+void CGameObject::Write_Json(json& Out_Json)
+{
+	for (auto& pComponent : m_Components)
+	{
+		pComponent.second->Write_Json(Out_Json["Component"]);
+	}
+}
+
+void CGameObject::Load_FromJson(const json& In_Json)
+{
+	for (auto& pComponent : m_Components)
+	{
+		pComponent.second->Load_FromJson(In_Json["Component"]);
+	}
+}
+
 
 
 HRESULT CGameObject::Add_Component(_uint iLevelIndex, const wstring& strPrototypeTag, const wstring& strComTag, _Inout_ CComponent** ppOut, void* pArg)

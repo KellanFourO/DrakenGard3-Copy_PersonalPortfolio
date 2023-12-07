@@ -1,20 +1,17 @@
 #include "stdafx.h"
 #include <regex>
 
-#include "../Imgui/imgui.h"
-#include "../Imgui/imgui_impl_win32.h"
-#include "../Imgui/imgui_impl_dx11.h"
-
+#include "Tool_Define.h"
 #include "Imgui_Manager.h"
-
 #include "GameInstance.h"
 #include "Dynamic_Terrain.h"
-#include "TestTree.h"
-
 
 IMPLEMENT_SINGLETON(CImgui_Manager)
 
 ImGuiIO g_io;
+static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+static ImGuizmo::MODE	   mCurrentGizmoMode(ImGuizmo::WORLD);
+static bool useSnap(false);
 
 CImgui_Manager::CImgui_Manager()
 {
@@ -35,7 +32,8 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 	m_bMapTool = false;
 
 	
-	
+	m_arrView = new float[16];
+	m_arrProj = new float[16];
 
 	m_pGameInstance = CGameInstance::GetInstance();
 	
@@ -74,6 +72,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+
+	BeginFrame();
 
 	ImGuiWindowFlags window_flags = 0;
 	window_flags |= ImGuiWindowFlags_NoBackground;
@@ -274,7 +274,7 @@ void CImgui_Manager::ObjectToolKeyInput()
 		m_PickingObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f));
 	}
 
-
+	
 	
 }
 
@@ -290,6 +290,104 @@ string CImgui_Manager::SliceObjectTag(string strFullTag)
 	}
 
 	return string();
+}
+
+void CImgui_Manager::CreateGuizmo()
+{
+	
+
+		/*==== Set ImGuizmo ====*/
+		ImGuizmo::SetOrthographic(false);
+		ImGuiIO& io = ImGui::GetIO();
+		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+
+		if (ImGui::IsKeyPressed(ImGuiKey_T))
+			mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+		if (ImGui::IsKeyPressed(ImGuiKey_R))
+			mCurrentGizmoOperation = ImGuizmo::ROTATE;
+		if (ImGui::IsKeyPressed(ImGuiKey_E))
+			mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+		if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
+			mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+		ImGui::SameLine();
+		if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
+			mCurrentGizmoOperation = ImGuizmo::ROTATE;
+		ImGui::SameLine();
+		if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
+			mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+		_float* arrView = m_arrView;
+		_float* arrProj = m_arrProj;
+
+		_float4x4 matWorld = m_PickingObject->Get_Transform()->Get_WorldFloat4x4();
+		_float arrWorld[] = { matWorld._11,matWorld._12,matWorld._13,matWorld._14,
+							  matWorld._21,matWorld._22,matWorld._23,matWorld._24,
+							  matWorld._31,matWorld._32,matWorld._33,matWorld._34,
+							  matWorld._41,matWorld._42,matWorld._43,matWorld._44 };
+
+		float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+		ImGuizmo::DecomposeMatrixToComponents(arrWorld, matrixTranslation, matrixRotation, matrixScale);
+		ImGui::DragFloat3("Tr", matrixTranslation);
+		ImGui::DragFloat3("Rt", matrixRotation);
+		ImGui::DragFloat3("Sc", matrixScale);
+		ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, arrWorld);
+
+
+		ImGui::Checkbox("UseSnap", &useSnap);
+		ImGui::SameLine();
+
+		switch (mCurrentGizmoOperation)
+		{
+		case ImGuizmo::TRANSLATE:
+			ImGui::DragFloat3("Snap", &snap[0]);
+			break;
+		case ImGuizmo::ROTATE:
+			ImGui::DragFloat3("Angle Snap", &snap[0]);
+			break;
+		case ImGuizmo::SCALE:
+			ImGui::DragFloat3("Scale Snap", &snap[0]);
+			break;
+		}
+
+		ImGuizmo::Manipulate(arrView, arrProj, mCurrentGizmoOperation, mCurrentGizmoMode, arrWorld, NULL, useSnap ? &snap[0] : NULL);
+
+		_float4x4 matW = { arrWorld[0],arrWorld[1],arrWorld[2],arrWorld[3],
+						arrWorld[4],arrWorld[5],arrWorld[6],arrWorld[7],
+						arrWorld[8],arrWorld[9],arrWorld[10],arrWorld[11],
+						arrWorld[12],arrWorld[13],arrWorld[14],arrWorld[15] };
+
+		m_PickingObject->Get_Transform()->Set_WorldFloat4x4(matW);
+
+
+		if (ImGuizmo::IsOver())
+		{
+			int a = 0;
+		}
+	
+}
+
+void CImgui_Manager::Set_View()
+{
+	_float4x4 matCamView = m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW);
+	_float	  arrView[] = { matCamView._11,matCamView._12,matCamView._13,matCamView._14,
+						  matCamView._21,matCamView._22,matCamView._23,matCamView._24,
+						  matCamView._31,matCamView._32,matCamView._33,matCamView._34,
+						  matCamView._41,matCamView._42,matCamView._43,matCamView._44 };
+
+	memcpy(m_arrView, &arrView, sizeof(arrView));
+
+}
+
+void CImgui_Manager::Set_Proj()
+{
+	_float4x4 matCamProj = m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ);
+	_float	  arrProj[] = { matCamProj._11,matCamProj._12,matCamProj._13,matCamProj._14,
+						  matCamProj._21,matCamProj._22,matCamProj._23,matCamProj._24,
+						  matCamProj._31,matCamProj._32,matCamProj._33,matCamProj._34,
+						  matCamProj._41,matCamProj._42,matCamProj._43,matCamProj._44 };
+	memcpy(m_arrProj, &arrProj, sizeof(arrProj));
 }
 
 _bool CImgui_Manager::Check_ImGui_Rect()
@@ -534,10 +632,6 @@ void CImgui_Manager::ShowObjectTool()
 									sprintf_s(pushIndexStr, sizeof(pushIndexStr), " %d", m_vecCreateObjectTag.size());
 									*strTemp += pushIndexStr;
 
-									// 새로운 메모리에 문자열을 복사하여 m_vecCreateObjectTag에 추가
-
-
-
 									m_vecCreateObjectTag.push_back(strTemp->c_str());
 
 									
@@ -559,6 +653,12 @@ void CImgui_Manager::ShowObjectTool()
 
 					if (m_iObjectMode == 1)
 					{
+						Set_View();
+						Set_Proj();
+
+						if(m_PickingObject)
+						CreateGuizmo();
+
 						_int iObjectListSize = m_vecCreateObjectTag.size();
 
 						if (ImGui::BeginListBox(u8""))
@@ -605,6 +705,7 @@ void CImgui_Manager::ShowObjectTool()
 								{
 									m_PickingObject = m_vecObjects[i];
 									m_iPickingObjectIndex = i;
+									
 								}
 							}
 						}
@@ -705,9 +806,14 @@ void CImgui_Manager::Free()
 	m_vecCreateObjectTag.clear();
 	//Safe_Release(m_pDynamic_Terrain);
 
+	Safe_Delete_Array(m_arrView);
+	Safe_Delete_Array(m_arrProj);
+
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+
+
 }
 
 void CImgui_Manager::HelpMarker(const char* desc)

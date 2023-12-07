@@ -32,6 +32,7 @@ public:
 		m_WorldMatrix.m[eState][3] = XMVectorGetW(vState);
 	}
 
+	
 
 	_vector Get_State(STATE eState)
 	{
@@ -69,6 +70,11 @@ public:
 		return XMLoadFloat4x4(&m_WorldMatrix);
 	}
 
+	void	Set_WorldFloat4x4(_float4x4 mat4x4)
+	{
+		XMStoreFloat4x4(&m_WorldMatrix, XMLoadFloat4x4(&mat4x4));
+	}
+
 	_float4x4 Get_WorldFloat4x4()
 	{
 		return m_WorldMatrix;
@@ -102,6 +108,10 @@ public:
 	void	Go_Target(_fvector vTargetPos, _float fTimeDelta, _float fSpare = 0.1f);
 	void	Look_At(_fvector vTargetPos);
 	void	Look_At_OnLand(_fvector vTargetPos);
+
+public:
+	virtual void Write_Json(json& Out_Json) override;
+	virtual void Load_FromJson(const json& In_Json) override;
 
 public:
 	virtual HRESULT Initialize_Prototype(_float fSpeedPerSec, _float fRotationPerSec);

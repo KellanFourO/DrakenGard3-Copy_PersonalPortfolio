@@ -109,6 +109,9 @@
     <Filter Include="01. Utility\05. Data">
       <UniqueIdentifier>{8f016567-a2ce-4016-bb37-e2169e43f852}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\51. Json">
+      <UniqueIdentifier>{8d5f54cc-030a-49d9-9c28-dafd46e9b5d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -216,6 +219,12 @@
     <ClInclude Include="..\public\Data_Manager.h">
       <Filter>01. Utility\05. Data</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\쥬신 스터디\참고자료\DX11_TeamProject_Thymesia-main\DX11_TeamProject_Thymesia-main\DX11_Thymesia_Framework\Engine\Public\Json\json.hpp">
+      <Filter>01. Utility\51. Json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\쥬신 스터디\참고자료\DX11_TeamProject_Thymesia-main\DX11_TeamProject_Thymesia-main\DX11_Thymesia_Framework\Engine\Public\Json\Json_Utility.h">
+      <Filter>01. Utility\51. Json</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -310,6 +319,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Data_Manager.cpp">
       <Filter>01. Utility\05. Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\쥬신 스터디\참고자료\DX11_TeamProject_Thymesia-main\DX11_TeamProject_Thymesia-main\DX11_Thymesia_Framework\Engine\Private\Json\Json_Utility.cpp">
+      <Filter>01. Utility\51. Json</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

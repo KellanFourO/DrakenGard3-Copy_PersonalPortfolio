@@ -129,9 +129,6 @@
     <ClInclude Include="..\..\Reference\Imgui\imstb_truetype.h">
       <Filter>96. Tool\99. Default</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Reference\Imgui\imconfig.h">
-      <Filter>96. Tool\99. Default</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Reference\Imgui\imgui.h">
       <Filter>96. Tool\99. Default</Filter>
     </ClInclude>
@@ -161,6 +158,27 @@
     </ClInclude>
     <ClInclude Include="..\Public\ForkLift.h">
       <Filter>02. GameObjects\05. ForkLift</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\ImGuizmo.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\ImSequencer.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\ImZoomSlider.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\GraphEditor.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\ImCurveEdit.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reference\Imgui\ImGradient.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="Tool_Define.h">
+      <Filter>99. Defines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

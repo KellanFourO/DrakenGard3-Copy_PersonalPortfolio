@@ -113,8 +113,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../Reference/Librarys/</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d11.lib;Engine.lib;DirectXTKd.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../Reference/Librarys/;../ThirdPartyLib/</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d11.lib;Engine.lib;DirectXTKd.lib;assimp-vc142-mtd.lib;imguizmod.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -161,7 +161,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../Reference/Librarys/</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d11.lib;Engine.lib;DirectXTK.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;Engine.lib;DirectXTK.lib;assimp-vc142-mt.lib;imguizmo.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <ShaderType>Effect</ShaderType>
@@ -178,14 +178,19 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Reference\Imgui\imconfig.h" />
+    <ClInclude Include="..\..\Reference\Imgui\GraphEditor.h" />
+    <ClInclude Include="..\..\Reference\Imgui\ImCurveEdit.h" />
+    <ClInclude Include="..\..\Reference\Imgui\ImGradient.h" />
     <ClInclude Include="..\..\Reference\Imgui\imgui.h" />
+    <ClInclude Include="..\..\Reference\Imgui\ImGuizmo.h" />
     <ClInclude Include="..\..\Reference\Imgui\imgui_impl_dx11.h" />
     <ClInclude Include="..\..\Reference\Imgui\imgui_impl_win32.h" />
     <ClInclude Include="..\..\Reference\Imgui\imgui_internal.h" />
+    <ClInclude Include="..\..\Reference\Imgui\ImSequencer.h" />
     <ClInclude Include="..\..\Reference\Imgui\imstb_rectpack.h" />
     <ClInclude Include="..\..\Reference\Imgui\imstb_textedit.h" />
     <ClInclude Include="..\..\Reference\Imgui\imstb_truetype.h" />
+    <ClInclude Include="..\..\Reference\Imgui\ImZoomSlider.h" />
     <ClInclude Include="..\public\AnimObject.h" />
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\public\Camera_Dynamic.h" />
@@ -208,6 +213,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Tool_Define.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Reference\Imgui\imgui.cpp" />

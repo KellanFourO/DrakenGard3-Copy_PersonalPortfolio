@@ -109,7 +109,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;ENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../Public/;../Default/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Public/;../Default/;../Private/</AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -179,6 +179,8 @@ xcopy "$(SolutionDir)Engine\ThirdPartyLib\*.*" "$(SolutionDir)Reference\Librarys
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\쥬신 스터디\참고자료\DX11_TeamProject_Thymesia-main\DX11_TeamProject_Thymesia-main\DX11_Thymesia_Framework\Engine\Public\Json\json.hpp" />
+    <ClInclude Include="..\..\..\..\쥬신 스터디\참고자료\DX11_TeamProject_Thymesia-main\DX11_TeamProject_Thymesia-main\DX11_Thymesia_Framework\Engine\Public\Json\Json_Utility.h" />
     <ClInclude Include="..\public\Animation.h" />
     <ClInclude Include="..\public\Base.h" />
     <ClInclude Include="..\Public\BehaviorTree.h" />
@@ -216,6 +218,7 @@ xcopy "$(SolutionDir)Engine\ThirdPartyLib\*.*" "$(SolutionDir)Reference\Librarys
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\쥬신 스터디\참고자료\DX11_TeamProject_Thymesia-main\DX11_TeamProject_Thymesia-main\DX11_Thymesia_Framework\Engine\Private\Json\Json_Utility.cpp" />
     <ClCompile Include="..\private\Animation.cpp" />
     <ClCompile Include="..\private\Base.cpp" />
     <ClCompile Include="..\Private\BehaviorTree.cpp" />

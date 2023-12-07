@@ -39,6 +39,10 @@ public:
 
 public:
 	_bool	Picking(_float3 vPickPos);
+	
+public:
+	virtual void Write_Json(json& Out_Json) override;
+	virtual void Load_FromJson(const json& In_Json) override;
 
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };

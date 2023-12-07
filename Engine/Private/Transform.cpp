@@ -206,6 +206,14 @@ void CTransform::Look_At_OnLand(_fvector vTargetPos)
 	Set_State(STATE_LOOK, vLook);
 }
 
+void CTransform::Write_Json(json& Out_Json)
+{
+}
+
+void CTransform::Load_FromJson(const json& In_Json)
+{
+}
+
 HRESULT CTransform::Bind_ShaderResource(CShader* pShader, const _char* pConstantName)
 {
 	return pShader->Bind_Matrix(pConstantName, &m_WorldMatrix);

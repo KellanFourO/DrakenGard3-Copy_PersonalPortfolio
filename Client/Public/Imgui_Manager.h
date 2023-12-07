@@ -43,6 +43,9 @@ private:
 	HRESULT	Ready_ProtoTagList();
 	void	ObjectToolKeyInput();
 	string	SliceObjectTag(string strFullTag);
+	void	CreateGuizmo();
+	void	Set_View();
+	void	Set_Proj();
 
 //TODO 오브젝트 툴 함수 종료
 
@@ -70,6 +73,7 @@ private:
 	TOOLID					m_eToolID = { TOOL_END };
 
 	RAY						m_tRay;
+
 
 //TODO 맵툴 변수 시작
 private:
@@ -104,6 +108,9 @@ private: //!For.Object
 	
 	vector<const char*>			m_vecCreateObjectTag;
 	
+	_float*					    m_arrView = { nullptr };
+	_float*						m_arrProj = { nullptr };
+	_float						snap[3] = { 1.f, 1.f, 1.f };
 
 //TODO 오브젝트 툴 변수 종료
 
