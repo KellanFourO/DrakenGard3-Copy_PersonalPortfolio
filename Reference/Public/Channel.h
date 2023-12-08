@@ -1,5 +1,5 @@
 #pragma once
-#include "Base.h"
+#include "Model.h"
 
 //TODO 애니메이션에서 사용하는 뼈의 정보
 //! 시간대에 따른 뼈의 상태(Scale, Rotation, Position)을 저장할거야.
@@ -13,8 +13,11 @@ private:
 	virtual ~CChannel() = default;
 
 public:
-	HRESULT Initialize(const aiNodeAnim* pChannel);
-	void Invalidate_TransformationMatrix(_float fCurrentTrackPosition);
+	HRESULT Initialize(const aiNodeAnim* pChannel, const CModel::BONES& Bones);
+	void Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones);
+
+public:
+	void Set_AnimationIndex(_uint AnimIndex) { m_iCurrentKeyFrameIndex = AnimIndex; }
 
 private:
 	_char				m_szName[MAX_PATH] = ""; //! CBone에 저장된 뼈의 이름과 동일해.
@@ -31,8 +34,14 @@ private:
 	//! 현재 키프레임이 0이고 트랙포지션이 0과 1사이에 있다고 가정하면 현재 인덱스는 0이겠지?
 	_uint				m_iCurrentKeyFrameIndex = { 0 };
 
+	_uint				m_iBoneIndex = { 0 };
+	_float				m_fInterpolation = { 0.2f };
+
 public:
-	static CChannel* Create(const aiNodeAnim* pChannel);
+	//! Create 할때 인자로 뼈들이 있는 벡터는 왜 받아왔어?
+	//! 채널은 애니메이션 에서 사용하는 뼈의정보라고 했었어. 뼈들이 있는 벡터를 순회하면서 같은 이름을 가진 뼈를 찾아서 그 친구의 인덱스를 가져오려고 한거야
+	//! 이 채널은 누가 들고있어? 애니메이션 객체가 들고있지. 그래서 애니메이션 객체를 생성할때부터 연결고리로 Bones 벡터를 받아와서 최종적으로 채널이 순회할수 있게 해준거야.
+	static CChannel* Create(const aiNodeAnim* pChannel, const CModel::BONES& Bones);
 	virtual void Free() override;
 };
 

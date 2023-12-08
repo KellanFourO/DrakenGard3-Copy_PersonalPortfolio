@@ -208,10 +208,25 @@ void CTransform::Look_At_OnLand(_fvector vTargetPos)
 
 void CTransform::Write_Json(json& Out_Json)
 {
+	Out_Json.clear();
+
+	Out_Json.emplace("Transform", m_WorldMatrix.m);
 }
 
 void CTransform::Load_FromJson(const json& In_Json)
 {
+	if (In_Json.find("Transform") == In_Json.end())
+	{
+		return;
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			m_WorldMatrix.m[i][j] = In_Json["Transform"][i][j];
+		}
+	}
 }
 
 HRESULT CTransform::Bind_ShaderResource(CShader* pShader, const _char* pConstantName)

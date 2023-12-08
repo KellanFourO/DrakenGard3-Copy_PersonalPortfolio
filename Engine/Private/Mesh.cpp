@@ -264,7 +264,7 @@ HRESULT CMesh::Ready_Vertices_Anim(const aiMesh* pAIMesh, const vector<class CBo
 	/* pVertices에 할당하여 채워놨던 정점들의 정보를 ID3D11Buffer로 할당한 공간에 복사하여 채워넣는다. */
 	if (FAILED(__super::Create_Buffer(&m_pVB)))
 		return E_FAIL;
-
+		
 	Safe_Delete_Array(pVertices);
 
 	if (0 == m_iNumBones)

@@ -18,7 +18,12 @@ CModel::CModel(const CModel& rhs)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
 	, m_Materials(rhs.m_Materials)
 	, m_Bones(rhs.m_Bones)
+	, m_Animations(rhs.m_Animations)
+	, m_iNumAnimations(rhs.m_iNumAnimations)
 {
+	for(auto& pAnimation : m_Animations)
+		Safe_AddRef(pAnimation);
+
 	for (auto& pBone : m_Bones)
 		Safe_AddRef(pBone);
 
@@ -127,13 +132,13 @@ HRESULT CModel::Render(_uint iMeshIndex)
 	return S_OK;
 }
 
-void CModel::Play_Animation(_float fTimeDelta)
+void CModel::Play_Animation(_float fTimeDelta, _bool isLoop)
 {
-	//if(m_iCurrentAnimIndex >= m_iNumAnimations)
-	//	return;
+	if(m_iCurrentAnimIndex >= m_iNumAnimations)
+		return;
 
 	//! 현재 애니메이션이 사용하고 있는 뼈들의 TransformationMatrix를 갱신해준다.
-	//m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(fTimeDelta);
+	m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(isLoop, fTimeDelta, m_Bones);
 	
 	//! 화면의 최종적인 상태로 그려내기위해서는 반드시, 뼈들의 CombindTransformationMatrix가 갱신된 이후여야 한다.
 	//! 모든 뼈들을 다 갱신하며 부모로부터 자식까지 순회하여 CombindTransformationMatrix를 갱신해주자.
@@ -141,7 +146,6 @@ void CModel::Play_Animation(_float fTimeDelta)
 	for (auto& pBone : m_Bones)
 	{
 		pBone->Invalidate_CombinedTransformationMatrix(m_Bones, XMLoadFloat4x4(&m_PivotMatrix));
-
 	}
 }
 
@@ -266,7 +270,7 @@ HRESULT CModel::Ready_Animations()
 
 	for (size_t i = 0; i < m_iNumAnimations; i++)
 	{
-		CAnimation* pAnimation = CAnimation::Create(m_pAIScene->mAnimations[i]);
+		CAnimation* pAnimation = CAnimation::Create(m_pAIScene->mAnimations[i], m_Bones);
 		if (nullptr == pAnimation)
 			return E_FAIL;
 	
@@ -304,6 +308,11 @@ void CModel::Free()
 {
 	__super::Free();
 
+	for(auto& pAnimation : m_Animations)
+		Safe_Release(pAnimation);
+
+	m_Animations.clear();
+
 	for (auto& pBone : m_Bones)
 	{
 		Safe_Release(pBone);
@@ -328,8 +337,5 @@ void CModel::Free()
 	if(false == m_isCloned)
 		m_Importer.FreeScene(); //! 원형객체일때만 임포터에 프리신 호출해서 정리해주자
 
-	for(auto& pAnimation : m_Animations)
-		Safe_Release(pAnimation);
-
-	m_Animations.clear();
+	
 }

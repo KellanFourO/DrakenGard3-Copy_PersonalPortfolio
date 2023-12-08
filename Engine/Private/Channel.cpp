@@ -1,12 +1,34 @@
 #include "Channel.h"
+#include "Bone.h"
 
 CChannel::CChannel()
 {
 }
 
-HRESULT CChannel::Initialize(const aiNodeAnim* pChannel)
+HRESULT CChannel::Initialize(const aiNodeAnim* pChannel, const CModel::BONES& Bones)
 {
 	strcpy_s(m_szName, pChannel->mNodeName.data);
+
+
+	//! 모델이 들고있는 뼈와 특정 애니메이션에서 사용하는 뼈의정보의 이름과 같은 걸 찾아서 인덱스를 가져올거야.
+	_uint	iBoneIndex = { 0 };
+
+	auto iter = find_if(Bones.begin(), Bones.end(), [&](CBone* pBone)
+		{
+			if (false == strcmp(m_szName, pBone->Get_Name()))
+			{
+				return true;
+			}
+
+			++iBoneIndex;
+
+			return false;
+		});
+
+	if(iter == Bones.end())
+		return E_FAIL;
+
+	m_iBoneIndex = iBoneIndex; //! 찾았다
 
 	//!#키프레임개수_주의점
 	//!  스케일, 로테이션,포지션의 키프레임의 개수는 각자 다를 수 있어.
@@ -62,8 +84,12 @@ HRESULT CChannel::Initialize(const aiNodeAnim* pChannel)
 	return S_OK;
 }
 
-void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition)
+void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones)
 {
+	//! 커런트 트랙포지션이 0.0으로 들어오는 경우는 루프돌릴때 말고는 없어. 그러니까 인덱스를 0으로 초기화 시켜주자
+	if(0.0f == fCurrentTrackPosition)
+		m_iCurrentKeyFrameIndex = 0;
+
 	_vector		vScale;
 	_vector		vRotation;
 	_vector		vPosition;
@@ -83,7 +109,15 @@ void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition)
 	{
 		//! 점프라는 애니메이션이 있다고 치자. 점프하려면 다리의 힘을 주는 애니메이션이 0번 프레임이라고 해보자고.
 		//! 현재 애니메이션 재생위치가 0번프레임보다 커졌다면 무릎이 펴진다는 애니메이션이 1번 프레임이라면 1번프레임으로 바뀌어야겠지?
-		if(fCurrentTrackPosition >= m_KeyFrames[m_iCurrentKeyFrameIndex + 1].fTrackPosition)
+		
+		//TODO While문을 사용한 이유.
+		//! 프레임이 떨어지면 메시가 깨지는 현상이 발생해.
+		//! 왜 깨지는걸까? 모델에 Play_Animation 함수를 호출하면서 내부에서 Invalidate_Combie 함수를 호출해서 해당 뼈의 Combine 행렬을 갱신해주고있었어
+		//! 그런데 프레임이 떨어지면서 넘겨주는 인자값이었던 TimeDelta 값이 생각보다 너무 큰 값이 넘겨져 버린거야.
+		//! 그래서, 프레임 인덱스가 한번에 건너뛰어버린거지. 예를 들자면 1에서 한번에 3으로.
+		//! 여기서 다음 키프레임은 2로 만들어져버린거야. 4가아니라. 여기서 참사가 발생한거야 이걸 막기위해 While문을 돌려준거지.
+		
+		while(fCurrentTrackPosition >= m_KeyFrames[m_iCurrentKeyFrameIndex + 1].fTrackPosition)
 			++m_iCurrentKeyFrameIndex;
 
 		//! 소스와 데스트야. 소스는 현재 프레임인 0번 프레임이 가진 상태를 의미하고, 데스트는 다음 프레임인 1번 프레임의 상태를 의미해.
@@ -119,13 +153,14 @@ void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition)
 	_matrix	TransformationMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f,0.f,0.f,1.f), vRotation, vPosition);
 
 	//! 이제 이 채널과 같은 이름을 가진 뼈를 찾아서 그 뼈의 TransformationMatrix 갱신해줄거야.
+	Bones[m_iBoneIndex]->Set_TransformationMatrix(TransformationMatrix);
 }
 
-CChannel* CChannel::Create(const aiNodeAnim* pChannel)
+CChannel* CChannel::Create(const aiNodeAnim* pChannel, const CModel::BONES& Bones)
 {
 	CChannel* pInstance = new CChannel();
 
-	if (FAILED(pInstance->Initialize(pChannel)))
+	if (FAILED(pInstance->Initialize(pChannel, Bones)))
 	{
 		MSG_BOX("Failed to Created : CChannel");
 		Safe_Release(pInstance);

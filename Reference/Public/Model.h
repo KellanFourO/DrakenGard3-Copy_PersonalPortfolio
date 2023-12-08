@@ -22,7 +22,7 @@ public:
 	virtual HRESULT Render(_uint iMeshIndex); //! virtual은 의미가없다. 자기 자신이 가지고잇는 메시들을 렌더링 시키기위한 함수이다.
 
 public:
-	void	Play_Animation(_float fTimeDelta);
+	void	Play_Animation(_float fTimeDelta, _bool isLoop = true);
 
 public:
 	//! 셰이더에 던질 뼈행렬은 특정매시에게 영향을 주는 뼈행렬을 던질 거라고했다. 모델에서 던지는것이아닌 매쉬 클래스를 통해 현재 클래스를 거쳐서 던져주는 행위를 하는 것이다.

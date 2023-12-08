@@ -23,10 +23,17 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+public:
+	virtual void Write_Json(json& Out_Json) override;
+	virtual void Load_FromJson(const json& In_Json) override;
+	virtual void Init_Desc();
 
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr }; //#버퍼컴에서_모델컴으로_변경됨
+
+private:
+	//STATE_LINK_MONSTER_DESC      m_tLinkStateDesc;
 
 private:
 	HRESULT Ready_Components();
