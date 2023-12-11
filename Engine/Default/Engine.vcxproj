@@ -125,6 +125,8 @@
     <PostBuildEvent>
       <Command>attrib -r "$(SolutionDir)Reference\Public\*.*" /s
 xcopy "$(SolutionDir)Engine\Public\*.*"    "$(SolutionDir)Reference\Public\" /y /e
+attrib -r "$(SolutionDir)Reference\Private\*.*" /s
+xcopy "$(SolutionDir)Engine\Private\*.*"    "$(SolutionDir)Reference\Private\" /y /e
 attrib +r "$(SolutionDir)Reference\Public\*.*" /s
 xcopy "$(OutDir)$(ProjectName).lib" "$(SolutionDir)Reference\Librarys\" /y
 xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Client\Bin\\$(Configuration)\$(PlatformTarget)\" /y
@@ -218,7 +220,7 @@ xcopy "$(SolutionDir)Engine\ThirdPartyLib\*.*" "$(SolutionDir)Reference\Librarys
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\쥬신 스터디\참고자료\DX11_TeamProject_Thymesia-main\DX11_TeamProject_Thymesia-main\DX11_Thymesia_Framework\Engine\Private\Json\Json_Utility.cpp" />
+    <ClCompile Include="..\..\Reference\Private\Json\Json_Utility.cpp" />
     <ClCompile Include="..\private\Animation.cpp" />
     <ClCompile Include="..\private\Base.cpp" />
     <ClCompile Include="..\Private\BehaviorTree.cpp" />

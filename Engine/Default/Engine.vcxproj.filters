@@ -320,7 +320,7 @@
     <ClCompile Include="..\Private\Data_Manager.cpp">
       <Filter>01. Utility\05. Data</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\쥬신 스터디\참고자료\DX11_TeamProject_Thymesia-main\DX11_TeamProject_Thymesia-main\DX11_Thymesia_Framework\Engine\Private\Json\Json_Utility.cpp">
+    <ClCompile Include="..\..\Reference\Private\Json\Json_Utility.cpp">
       <Filter>01. Utility\51. Json</Filter>
     </ClCompile>
   </ItemGroup>

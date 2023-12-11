@@ -180,6 +180,15 @@
     <ClInclude Include="Tool_Define.h">
       <Filter>99. Defines</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialog.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialogConfig.h">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomFont.h">
+      <Filter>99. Defines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -259,6 +268,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\ForkLift.cpp">
       <Filter>02. GameObjects\05. ForkLift</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialog.cpp">
+      <Filter>96. Tool\99. Default</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomFont.cpp">
+      <Filter>99. Defines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -14,10 +14,7 @@ private:
 
 public:
 	HRESULT Initialize(const aiNodeAnim* pChannel, const CModel::BONES& Bones);
-	void Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones);
-
-public:
-	void Set_AnimationIndex(_uint AnimIndex) { m_iCurrentKeyFrameIndex = AnimIndex; }
+	void Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame);
 
 private:
 	_char				m_szName[MAX_PATH] = ""; //! CBone에 저장된 뼈의 이름과 동일해.
@@ -32,7 +29,8 @@ private:
 
 	//! 매번 순회해서 현재 인덱스를 찾아오기 보다는 애초에 재생할때부터 인덱스를 갱신 해주는게 좋을 거같아 멤버변수로 둔거야.
 	//! 현재 키프레임이 0이고 트랙포지션이 0과 1사이에 있다고 가정하면 현재 인덱스는 0이겠지?
-	_uint				m_iCurrentKeyFrameIndex = { 0 };
+	//! 복제해줄때 커런트키프레임은 다 달라야한다. 애니메이션 클래스가 던져주기로 구조가 바뀌었다.
+	//_uint				m_iCurrentKeyFrameIndex = { 0 };
 
 	_uint				m_iBoneIndex = { 0 };
 	_float				m_fInterpolation = { 0.2f };

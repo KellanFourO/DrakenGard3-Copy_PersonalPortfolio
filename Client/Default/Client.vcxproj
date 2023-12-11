@@ -107,7 +107,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../Reference/Imgui/; ../../Reference/Librarys/;../../Reference/Public/;../Public/;../Default/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Reference/Imgui/;../../Reference/Librarys/;../../Reference/Private/;../../Reference/Public/;../Public/;../Default/</AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -209,7 +209,10 @@
     <ClInclude Include="..\public\Monster.h" />
     <ClInclude Include="..\public\NonAnimObject.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialog.h" />
+    <ClInclude Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialogConfig.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="CustomFont.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -240,7 +243,9 @@
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\Private\NonAnimObject.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialog.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="CustomFont.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

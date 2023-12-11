@@ -40,6 +40,7 @@ private:
 
 public:
 	static CBone*	Create(aiNode* pAINode, _int iParentIndex);
+	CBone*			Clone();
 	virtual void	Free() override;
 
 };

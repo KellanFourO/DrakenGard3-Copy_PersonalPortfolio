@@ -11,8 +11,6 @@ public:
 	static HRESULT		Load_Json(const char* _strPath, json& pOut);
 	static HRESULT		Save_Json(const char* _strPath, json _json);
 
-
-
 public:
 	static void			Write_Float2(json& Out_Json, const _float2& In_Float2);
 	static void			Write_Float3(json& Out_Json, const _float3& In_Float3);

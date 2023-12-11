@@ -2,6 +2,7 @@
 #include "Base.h"
 #include "Client_Defines.h"
 
+
 BEGIN(Client)
 class CImgui_Manager final : public CBase
 {
@@ -25,7 +26,7 @@ public:
 	void		  Set_Level_ID(LEVEL eLevel) { m_eLevelID = eLevel; }
 
 	void					KeyInput();
-	CCamera_MapTool**		Get_Cam() { return &m_pCamera; }
+	class CCamera_MapTool**		Get_Cam() { return &m_pCamera; }
 	_bool					Check_ImGui_Rect();
 
 //TODO 맵 툴 함수 시작
@@ -55,12 +56,17 @@ private:
 	string		ConverWstrToStr(const wstring& str);
 	wstring		ConverStrToWstr(const string& str);
 
+	//!Imgui Dialog
+	void		SaveDialog();
+	void		LoadDialog();
+	void		IntializeColor();
 	
 
 private:
 	class CGameInstance*		m_pGameInstance = { nullptr };
 	class CDynamic_Terrain*		m_pDynamic_Terrain = { nullptr };
 	class CCamera_MapTool*		m_pCamera = { nullptr };
+	
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };
@@ -69,11 +75,15 @@ private:
 	_bool					m_bReady = true;
 	_bool					m_bMainTool = { true };
 	_bool					m_bMapTool, m_bEffectTool, m_bObjectTool, m_bCameraTool = { false };
+	_bool					m_bDialog = false;
+
 	LEVEL					m_eLevelID = { LEVEL_END };
 	TOOLID					m_eToolID = { TOOL_END };
-
 	RAY						m_tRay;
 
+	//!ImGui Dialog
+	ImGuiFileDialog*	m_pFileDialogOpen;
+	ImGuiFileDialog*	m_pFileDialogExport;
 
 //TODO 맵툴 변수 시작
 private:

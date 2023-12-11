@@ -15,6 +15,9 @@ private:
 
 public:
 	_uint Get_NumMeshes() const { return m_iNumMeshes; }
+	_uint Get_Animation() { return m_iCurrentAnimIndex; }
+
+	void  Set_Animation(_uint iAnimIndex) { m_iCurrentAnimIndex = iAnimIndex; }
 
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eType, const string& strModelFilePath, _fmatrix PivotMatrix);

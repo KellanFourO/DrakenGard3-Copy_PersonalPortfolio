@@ -1,0 +1,1 @@
+{"Buffer":"Prototype_Component_VIBuffer_Dynamic_Terrain","Component":{"Transform":[[1.0,0.0,0.0,0.0],[0.0,1.0,0.0,0.0],[0.0,0.0,1.0,0.0],[0.0,0.0,0.0,1.0]]},"CurrentLevel":4,"Shader":"Prototype_Component_Shader_VtxNorTex","SizeX":50.0,"SizeY":1.0,"SizeZ":50.0,"Texture":"Prototype_Component_Texture_Terrain"}

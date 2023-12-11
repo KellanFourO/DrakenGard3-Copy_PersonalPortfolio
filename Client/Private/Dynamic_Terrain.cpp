@@ -92,6 +92,45 @@ HRESULT CDynamic_Terrain::Render()
 	return S_OK;
 }
 
+void CDynamic_Terrain::Write_Json(json& Out_Json)
+{
+	__super::Write_Json(Out_Json);
+
+	Out_Json.emplace("CurrentLevel", m_eCurrentLevelID);
+	Out_Json.emplace("Texture", "Prototype_Component_Texture_Terrain");
+	Out_Json.emplace("Buffer", "Prototype_Component_VIBuffer_Dynamic_Terrain");
+	Out_Json.emplace("Shader", "Prototype_Component_Shader_VtxNorTex");
+	Out_Json.emplace("SizeX", m_tDynamicInfo.fX);
+	Out_Json.emplace("SizeY", m_tDynamicInfo.fY);
+	Out_Json.emplace("SizeZ", m_tDynamicInfo.fZ);
+}
+
+void CDynamic_Terrain::Load_FromJson(const json& In_Json)
+{
+	__super::Load_FromJson(In_Json);
+
+	
+	//!//! For.Com_Shader
+	//!if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_VtxNorTex"),
+	//!	TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	//!	return E_FAIL;
+	//!
+	//!//! For.Com_VIBuffer_Dynamic
+	//!if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_VIBuffer_Dynamic_Terrain"),	// 생성까지 됐음
+	//!	TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), &m_tDynamicInfo)))
+	//!	return E_FAIL;
+	//!
+	//!//! For.Com_Texture
+	//!if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Texture_Terrain"),
+	//!	TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	//!	return E_FAIL;
+	
+	
+
+	//if(FAILED(__super::Add_Component(In_Json.find("레벨태그").value, In_Json.find("셰이더").value, TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	//	return E_FAIL;
+}
+
 void CDynamic_Terrain::Picking_Terrain(EDIT_MODE eMode)
 {
 	if (nullptr == m_pVIBufferCom)

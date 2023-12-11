@@ -6,6 +6,7 @@
 #include "Imgui_Manager.h"
 #include "GameInstance.h"
 #include "Dynamic_Terrain.h"
+#include "Camera_MapTool.h"
 
 IMPLEMENT_SINGLETON(CImgui_Manager)
 
@@ -31,12 +32,17 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 	m_bCameraTool = false;
 	m_bEffectTool = false;
 	m_bMapTool = false;
-
 	
+	//!Guizmo 뷰,투영 할당용 변수
 	m_arrView = new float[16];
 	m_arrProj = new float[16];
 
 	m_pGameInstance = CGameInstance::GetInstance();
+
+	m_pFileDialogOpen = ImGuiFileDialog::Instance();
+	m_pFileDialogExport = ImGuiFileDialog::Instance();
+	IntializeColor();
+
 	
 	Safe_AddRef(m_pGameInstance);
 
@@ -269,7 +275,6 @@ void CImgui_Manager::ObjectToolKeyInput()
 		m_bPicking = !m_bPicking;
 	}
 
-
 	if (m_PickingObject && m_pGameInstance->Key_Pressing(DIK_T))
 	{
 		m_PickingObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f));
@@ -295,8 +300,6 @@ string CImgui_Manager::SliceObjectTag(string strFullTag)
 
 void CImgui_Manager::CreateGuizmo()
 {
-	
-
 		/*==== Set ImGuizmo ====*/
 		ImGuizmo::SetOrthographic(false);
 		ImGuiIO& io = ImGui::GetIO();
@@ -425,7 +428,39 @@ wstring CImgui_Manager::ConverStrToWstr(const string& str)
 	return wideStr;
 }
 
+void CImgui_Manager::SaveDialog()
+{
+}
 
+void	CImgui_Manager::LoadDialog()
+{
+	if(!m_pFileDialogOpen->IsOpened())
+	{
+		if(m_pFileDialogExport->IsOpened())
+			m_pFileDialogExport->Close();
+
+		m_pFileDialogOpen->OpenDialog("MapToolLoad", u8"맵 데이터 불러오기", ".json", ".", 1, nullptr, ImGuiFileDialogFlags_Modal | ImGuiFileDialogFlags_ReadOnlyFileNameField | ImGuiFileDialogFlags_HideColumnType);
+	}
+
+}
+
+void CImgui_Manager::IntializeColor()
+{
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByFullName, "((Custom.+[.]h))", ImVec4(0.1f, 0.9f, 0.1f, 0.9f));  // use a regex
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".cpp", ImVec4(1.0f, 1.0f, 0.0f, 0.9f));
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".hpp", ImVec4(0.0f, 0.0f, 1.0f, 0.9f));
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".md", ImVec4(1.0f, 0.0f, 1.0f, 0.9f));
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".png", ImVec4(0.0f, 1.0f, 1.0f, 0.9f), ICON_IGFD_FILE_PIC);  // add an icon for the filter type
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".gif", ImVec4(0.0f, 1.0f, 0.5f, 0.9f), "[GIF]");             // add an text for a filter type
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeDir, nullptr, ImVec4(0.5f, 1.0f, 0.9f, 0.9f), ICON_IGFD_FOLDER);     // for all dirs
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeFile, "CMakeLists.txt", ImVec4(0.1f, 0.5f, 0.5f, 0.9f), ICON_IGFD_ADD);
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByFullName, "doc", ImVec4(0.9f, 0.2f, 0.0f, 0.9f), ICON_IGFD_FILE_PIC);
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeFile, nullptr, ImVec4(0.2f, 0.9f, 0.2f, 0.9f), ICON_IGFD_FILE);                              // for all link files
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeDir | IGFD_FileStyleByTypeLink, nullptr, ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FOLDER);  // for all link dirs
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeFile | IGFD_FileStyleByTypeLink, nullptr, ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FILE);   // for all link files
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeDir | IGFD_FileStyleByContainedInFullName, ".git", ImVec4(0.9f, 0.2f, 0.0f, 0.9f), ICON_IGFD_BOOKMARK);
+	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeFile | IGFD_FileStyleByContainedInFullName, ".git", ImVec4(0.5f, 0.8f, 0.5f, 0.9f), ICON_IGFD_SAVE);
+}
 
 void CImgui_Manager::ShowMapTool()
 {
@@ -434,33 +469,45 @@ void CImgui_Manager::ShowMapTool()
 	ImGui::Begin(u8"맵툴");
 	if (ImGui::BeginTabBar("##MapTabBar"))
 	{
-		
+
 		m_eToolID = CImgui_Manager::TOOL_MAP;
 
 		//TODO 타일 탭 시작
 		if (ImGui::BeginTabItem(u8"타일"))
-		{ 
-				m_eMapTapID = TAP_TILE;
-				ImGui::Text(u8"타일");
+		{
+			m_eMapTapID = TAP_TILE;
+			ImGui::Text(u8"타일");
 
-				ImGui::InputFloat(u8"입력 X : ", &m_fTileX);
-				ImGui::InputFloat(u8"입력 Z : ", &m_fTileZ);
+			if (ImGui::Button(u8"저장하기"))
+			{
+			}
 
-				m_tMapInfo.vPosition.x = m_fTileX; 
-				m_tMapInfo.vPosition.y = 1.f;
-				m_tMapInfo.vPosition.z = m_fTileZ;
+			ImGui::SameLine();
 
-				if (ImGui::Button("Create"))
+			if (ImGui::Button(u8"불러오기"))
+			{
+				LoadDialog();
+				m_bDialog = true;
+			}
+
+			ImGui::InputFloat(u8"입력 X : ", &m_fTileX);
+			ImGui::InputFloat(u8"입력 Z : ", &m_fTileZ);
+
+			m_tMapInfo.vPosition.x = m_fTileX;
+			m_tMapInfo.vPosition.y = 1.f;
+			m_tMapInfo.vPosition.z = m_fTileZ;
+				
+			if (ImGui::Button("Create"))
+			{
+				if (nullptr != m_pDynamic_Terrain)
 				{
-					if (nullptr != m_pDynamic_Terrain)
-					{
-						m_pDynamic_Terrain->Delete_Component(TEXT("Com_VIBuffer"));
-					}
-
-					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
-						return;
+					m_pDynamic_Terrain->Delete_Component(TEXT("Com_VIBuffer"));
 				}
-			
+
+				if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
+					return;
+			}
+
 				if(m_pDynamic_Terrain)
 				ImGui::Checkbox(u8"픽킹", &m_bTileing);
 
@@ -486,8 +533,7 @@ void CImgui_Manager::ShowMapTool()
 					ImGui::RadioButton(u8"FILLTER", &m_iTileMode, 3);
 					
 					m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)m_iTileMode);
-				
-			}
+				}
 			ImGui::EndTabItem();
 		}
 		//TODO 타일 탭 종료
