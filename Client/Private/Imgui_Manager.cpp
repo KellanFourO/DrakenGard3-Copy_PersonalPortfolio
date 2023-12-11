@@ -116,6 +116,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	if (m_bCameraTool) ShowCameraTool();
 	if (m_bObjectTool) ShowObjectTool();
 
+	ShowDialog(m_strCurrentDialogTag);
+
 	ImGui::End();
 
 }
@@ -279,9 +281,6 @@ void CImgui_Manager::ObjectToolKeyInput()
 	{
 		m_PickingObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f));
 	}
-
-	
-	
 }
 
 string CImgui_Manager::SliceObjectTag(string strFullTag)
@@ -296,6 +295,15 @@ string CImgui_Manager::SliceObjectTag(string strFullTag)
 	}
 
 	return string();
+
+	//m_pGameObject = pObj;
+	//wstring str = (*pObj).Get_Name();
+	//size_t pos = str.rfind(L"_");
+	//if (pos != wstring::npos)
+	//{
+	//	wstring tag = str.substr(pos + 1);
+	//	m_strPickModelTag = ConverWstrToStr(tag);
+	//}
 }
 
 void CImgui_Manager::CreateGuizmo()
@@ -428,18 +436,31 @@ wstring CImgui_Manager::ConverStrToWstr(const string& str)
 	return wideStr;
 }
 
-void CImgui_Manager::SaveDialog()
+void CImgui_Manager::SaveDialog(TOOLID eToolID)
 {
+	if (!m_pFileDialogExport->IsOpened())
+	{
+		if (m_pFileDialogOpen->IsOpened())
+			m_pFileDialogOpen->Close();
+
+		m_strCurrentDialogTag = "MapToolSave";
+		m_eDialogMode = CImgui_Manager::DIALOG_SAVE;
+		m_pFileDialogExport->OpenDialog("MapToolSave", u8"맵 데이터 저장", ".json", ".", 1, nullptr, ImGuiFileDialogFlags_Modal| ImGuiFileDialogFlags_ConfirmOverwrite);
+
+		m_bDialog = true;
+	}
 }
 
-void	CImgui_Manager::LoadDialog()
+void CImgui_Manager::LoadDialog(TOOLID eToolID)
 {
 	if(!m_pFileDialogOpen->IsOpened())
 	{
 		if(m_pFileDialogExport->IsOpened())
 			m_pFileDialogExport->Close();
-
+		m_strCurrentDialogTag = "MapToolLoad";
+		m_eDialogMode = CImgui_Manager::DIALOG_LOAD;
 		m_pFileDialogOpen->OpenDialog("MapToolLoad", u8"맵 데이터 불러오기", ".json", ".", 1, nullptr, ImGuiFileDialogFlags_Modal | ImGuiFileDialogFlags_ReadOnlyFileNameField | ImGuiFileDialogFlags_HideColumnType);
+		m_bDialog = true;
 	}
 
 }
@@ -460,6 +481,79 @@ void CImgui_Manager::IntializeColor()
 	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeFile | IGFD_FileStyleByTypeLink, nullptr, ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FILE);   // for all link files
 	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeDir | IGFD_FileStyleByContainedInFullName, ".git", ImVec4(0.9f, 0.2f, 0.0f, 0.9f), ICON_IGFD_BOOKMARK);
 	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeFile | IGFD_FileStyleByContainedInFullName, ".git", ImVec4(0.5f, 0.8f, 0.5f, 0.9f), ICON_IGFD_SAVE);
+
+	ImGuiFileDialog::Instance()->AddBookmark("Bin", "../Bin/");
+	ImGuiFileDialog::Instance()->AddBookmark("MapData", "../Bin/Data/Map/");
+	ImGuiFileDialog::Instance()->AddBookmark("ObjectData", "../Bin/Data/Object/");
+}
+
+void CImgui_Manager::ShowDialog(string& strDialogTag)
+{
+	ImGuiFileDialog* pDialog = ImGuiFileDialog::Instance();
+
+	switch (m_eDialogMode)
+	{
+	case Client::CImgui_Manager::DIALOG_SAVE:
+
+		if (pDialog->Display(strDialogTag))
+		{
+			if (pDialog->IsOk())
+			{
+				string filePathName = pDialog->GetFilePathName();
+				string filePath = pDialog->GetCurrentPath();
+				string fileName = pDialog->GetCurrentFileName();
+
+				string userDatas;
+				if (pDialog->GetUserDatas())
+					userDatas = std::string((const char*)pDialog->GetUserDatas());
+				auto selection = pDialog->GetSelection(); // multiselection
+
+				json OutJson;
+
+				m_pDynamic_Terrain->Write_Json(OutJson);
+
+				if (FAILED(CJson_Utility::Save_Json(filePathName.c_str(), OutJson)))
+				{
+					MSG_BOX("맵 세이브 실패");
+				}
+				else
+				{
+					MSG_BOX("저장 성공");
+				}
+
+			}
+
+			pDialog->Close();
+		}
+
+		break;
+
+	case Client::CImgui_Manager::DIALOG_LOAD:
+
+		if (pDialog->Display(strDialogTag))
+		{
+			if (pDialog->IsOk())
+			{
+				string filePathName = pDialog->GetFilePathName();
+				string filePath = pDialog->GetCurrentPath();
+
+				string userDatas;
+				if (pDialog->GetUserDatas())
+					userDatas = std::string((const char*)pDialog->GetUserDatas());
+				auto selection = pDialog->GetSelection(); // multiselection
+
+				json	InJson;
+
+				CJson_Utility::Load_Json(filePathName.c_str(),InJson);
+				
+				m_pDynamic_Terrain->Load_FromJson(InJson);
+			}
+
+			pDialog->Close();
+		}
+		break;
+	}
+
 }
 
 void CImgui_Manager::ShowMapTool()
@@ -480,14 +574,14 @@ void CImgui_Manager::ShowMapTool()
 
 			if (ImGui::Button(u8"저장하기"))
 			{
+				SaveDialog(m_eToolID);
 			}
 
 			ImGui::SameLine();
 
 			if (ImGui::Button(u8"불러오기"))
 			{
-				LoadDialog();
-				m_bDialog = true;
+				LoadDialog(m_eToolID);
 			}
 
 			ImGui::InputFloat(u8"입력 X : ", &m_fTileX);

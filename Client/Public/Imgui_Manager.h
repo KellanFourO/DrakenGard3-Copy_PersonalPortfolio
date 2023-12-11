@@ -11,22 +11,22 @@ class CImgui_Manager final : public CBase
 public:
 	enum TOOLID { TOOL_MAP, TOOL_OBJECT, TOOL_CAMERA, TOOL_EFFECT, TOOL_END };
 	enum MAPTAPID { TAP_TILE, TAP_ENVIRONMENT, TAP_END };
-	
+	enum DIALOGID { DIALOG_SAVE, DIALOG_LOAD, DIALOG_END };
 
 private:
 			 CImgui_Manager();
 	virtual ~CImgui_Manager() = default;
 
 public:
-	HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	void	Tick(_float fTimeDelta);
-	void	Render();
+	HRESULT		Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	void		Tick(_float fTimeDelta);
+	void		Render();
 
 	LEVEL		  Get_Level_ID() { return m_eLevelID; }
 	void		  Set_Level_ID(LEVEL eLevel) { m_eLevelID = eLevel; }
+	class CCamera_MapTool**		Get_Cam() { return &m_pCamera; }
 
 	void					KeyInput();
-	class CCamera_MapTool**		Get_Cam() { return &m_pCamera; }
 	_bool					Check_ImGui_Rect();
 
 //TODO 맵 툴 함수 시작
@@ -34,7 +34,7 @@ public:
 public:
 	HRESULT	Save_EditTexture();
 	void	MapToolKeyInput();
-
+	void	Set_ToolTerrain(class CDynamic_Terrain* pTerrain) { m_pDynamic_Terrain = pTerrain;}
 //TODO 맵 툴 함수 종료
 
 //TODO 오브젝트 툴 함수 시작
@@ -57,9 +57,11 @@ private:
 	wstring		ConverStrToWstr(const string& str);
 
 	//!Imgui Dialog
-	void		SaveDialog();
-	void		LoadDialog();
+	void		SaveDialog(TOOLID eToolID);
+	void		LoadDialog(TOOLID eToolID);
 	void		IntializeColor();
+	void		ShowDialog(string& strDialogTag);
+	
 	
 
 private:
@@ -84,6 +86,8 @@ private:
 	//!ImGui Dialog
 	ImGuiFileDialog*	m_pFileDialogOpen;
 	ImGuiFileDialog*	m_pFileDialogExport;
+	string				m_strCurrentDialogTag;
+	DIALOGID			m_eDialogMode = {DIALOG_END};
 
 //TODO 맵툴 변수 시작
 private:

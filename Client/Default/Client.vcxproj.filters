@@ -108,9 +108,6 @@
     <ClInclude Include="..\Public\Terrain.h">
       <Filter>02. GameObjects\01. Terrain</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Imgui_Manager.h">
-      <Filter>96. Tool</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Reference\Imgui\imgui_impl_dx11.h">
       <Filter>96. Tool\99. Default</Filter>
     </ClInclude>
@@ -189,6 +186,9 @@
     <ClInclude Include="CustomFont.h">
       <Filter>99. Defines</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Imgui_Manager.h">
+      <Filter>96. Tool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -217,9 +217,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Terrain.cpp">
       <Filter>02. GameObjects\01. Terrain</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Imgui_Manager.cpp">
-      <Filter>96. Tool</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Reference\Imgui\imgui_draw.cpp">
       <Filter>96. Tool\99. Default</Filter>
@@ -274,6 +271,9 @@
     </ClCompile>
     <ClCompile Include="CustomFont.cpp">
       <Filter>99. Defines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imgui_Manager.cpp">
+      <Filter>96. Tool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
