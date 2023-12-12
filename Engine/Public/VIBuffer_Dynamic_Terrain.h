@@ -29,7 +29,6 @@ private:
 
 	_float					m_fInterval = { 0.f };
 
-
 	vector<_uint3>			m_Indices;
 	vector<VTXDYNAMIC>		m_VertexInfo;
 

@@ -162,6 +162,12 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_AnimModel"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_AnimModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements)));
 
+	lstrcpy(m_szLoadingText, TEXT("네비게이션(을) 로드하는 중입니다."));
+	//! For.Prototype_Component_Navigation
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Navigation"),
+		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/DataFiles/Navigation.dat")))))
+		return E_FAIL;
+
 
 	lstrcpy(m_szLoadingText, TEXT("원형객체를(을) 로드하는 중입니다."));
 	/* For.Prototype_GameObject_Terrain */

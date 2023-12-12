@@ -10,25 +10,51 @@ class CImgui_Manager final : public CBase
 
 public:
 	enum TOOLID { TOOL_MAP, TOOL_OBJECT, TOOL_CAMERA, TOOL_EFFECT, TOOL_END };
-	enum MAPTAPID { TAP_TILE, TAP_ENVIRONMENT, TAP_END };
 	enum DIALOGID { DIALOG_SAVE, DIALOG_LOAD, DIALOG_END };
 
 private:
 			 CImgui_Manager();
 	virtual ~CImgui_Manager() = default;
+	
+public:
+	LEVEL					Get_Level_ID() { return m_eLevelID; }
+	void					Set_Level_ID(LEVEL eLevel) { m_eLevelID = eLevel; }
+	class CCamera_MapTool** Get_Cam() { return &m_pCamera; }
 
 public:
-	HRESULT		Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	void		Tick(_float fTimeDelta);
-	void		Render();
+	HRESULT					Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	void					Tick(_float fTimeDelta);
+	void					Render();
 
-	LEVEL		  Get_Level_ID() { return m_eLevelID; }
-	void		  Set_Level_ID(LEVEL eLevel) { m_eLevelID = eLevel; }
-	class CCamera_MapTool**		Get_Cam() { return &m_pCamera; }
+private:
+	HRESULT					ImGui_Initialize();
+	void					ImGuizmo_Initialize();
+	void					ImGuiFileDialog_Intialize();
+
+private:
+	void					ImGui_BeginTick();
+	void					ImGui_MapToolTick();
+
+private:
+	void					UpdateRay();
+
+private:
+	_bool					m_bReady = true;
+	RAY						m_tWorldRay = {};
+
+private: //TODO 맵툴 변수 시작
+
+_float	m_fTileX = { 0 }, m_fTileZ = { 0 };
+_int	m_iBrushRange = 1.f, m_iBrushPower = 1.f;
+_int	m_iTileMode = { 0 };
+
+		 //TODO 맵툴 변수 종료
+
+public:
+	virtual void			Free() override;
 
 	void					KeyInput();
 	_bool					Check_ImGui_Rect();
-
 //TODO 맵 툴 함수 시작
 
 public:
@@ -59,7 +85,7 @@ private:
 	//!Imgui Dialog
 	void		SaveDialog(TOOLID eToolID);
 	void		LoadDialog(TOOLID eToolID);
-	void		IntializeColor();
+
 	void		ShowDialog(string& strDialogTag);
 	
 	
@@ -74,7 +100,7 @@ private:
 	ID3D11Device*			m_pDevice = { nullptr };
 	ID3D11DeviceContext*	m_pContext = { nullptr };
 
-	_bool					m_bReady = true;
+	
 	_bool					m_bMainTool = { true };
 	_bool					m_bMapTool, m_bEffectTool, m_bObjectTool, m_bCameraTool = { false };
 	_bool					m_bDialog = false;
@@ -90,18 +116,12 @@ private:
 	DIALOGID			m_eDialogMode = {DIALOG_END};
 
 //TODO 맵툴 변수 시작
-private:
-	MAPTAPID	m_eMapTapID = { TAP_END };
 
 private: //! For. Map
 	VTXDYNAMIC					m_tMapInfo;
-	_float						m_fTileX = { 0.0f };
-	_float						m_fTileZ = { 0.0f };
 	_bool						m_bTileing = { false };
 	_bool						m_bCreate = { false };
-	_int						m_iTileMode = { 0 };
-	_int						m_iBrushRange = 1.f;
-	_int						m_iBrushPower = 1.f;
+
 
 //TODO 맵툴 변수 종료
 // 
@@ -152,7 +172,6 @@ private:
 	
 	
 
-public:
-	virtual void Free() override;
+
 };
 END

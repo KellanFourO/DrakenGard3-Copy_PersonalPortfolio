@@ -11,12 +11,7 @@ END
 BEGIN(Client)
 
 /* Dynamic Terrain*/
-typedef struct tagVertex_Dynamic_Info
-{
-	float		fX;
-	float		fY;
-	float		fZ;
-}DINFO;
+
 
 class CDynamic_Terrain final : public CGameObject
 {
@@ -33,6 +28,12 @@ public:
 		EDIT_END
 	};
 
+	typedef struct tagVertex_Dynamic_Info
+	{
+		float		fX;
+		float		fY;
+		float		fZ;
+	}DINFO;
 private:
 	CDynamic_Terrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CDynamic_Terrain(const CDynamic_Terrain& rhs);
@@ -53,6 +54,7 @@ public:
 public:
 	virtual void Write_Json(json& Out_Json) override;
 	virtual void Load_FromJson(const json& In_Json) override;
+	
 
 public:
 	void	Picking_Terrain(EDIT_MODE eMode);

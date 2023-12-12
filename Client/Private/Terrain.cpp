@@ -76,6 +76,10 @@ HRESULT CTerrain::Render()
 	//! 바인딩된 정점, 인덱스를 그려
 		m_pVIBufferCom->Render();
 
+#ifdef _DEBUG
+	m_pNavigationCom->Render();
+#endif 
+
 
 	
 	
@@ -84,6 +88,11 @@ HRESULT CTerrain::Render()
 
 HRESULT CTerrain::Ready_Components()
 {
+	//! For.Com_Navigation
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Navigation"),
+		TEXT("Com_Navigation"), reinterpret_cast<CComponent**>(&m_pNavigationCom))))
+		return E_FAIL;
+
 	//! For.Com_Shader
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_VtxNorTex"),
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
@@ -162,6 +171,8 @@ CGameObject* CTerrain::Clone(void* pArg)
 void CTerrain::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pNavigationCom);
 
 	Safe_Release(m_pVIBufferCom);
 

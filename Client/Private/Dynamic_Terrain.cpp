@@ -106,14 +106,12 @@ void CDynamic_Terrain::Write_Json(json& Out_Json)
 void CDynamic_Terrain::Load_FromJson(const json& In_Json)
 {
 	__super::Load_FromJson(In_Json);
-	//Delete_Component(TEXT("Com_Texture"));
-
-	Delete_Component(TEXT("Com_VIBuffer"));
 
 	m_tDynamicInfo.fX = In_Json["SizeX"];
 	m_tDynamicInfo.fY = In_Json["SizeY"];
 	m_tDynamicInfo.fZ = In_Json["SizeZ"];
 
+	Delete_Component(TEXT("Com_VIBuffer"));
 
 	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tDynamicInfo)))
 		return;
@@ -123,6 +121,7 @@ void CDynamic_Terrain::Load_FromJson(const json& In_Json)
 	_int i = 0;
 
 }
+
 
 void CDynamic_Terrain::Picking_Terrain(EDIT_MODE eMode)
 {

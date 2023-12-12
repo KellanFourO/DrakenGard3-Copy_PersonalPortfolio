@@ -4,8 +4,8 @@
 BEGIN(Engine)
 class CShader;
 class CTexture;
+class CNavigation;
 class CVIBuffer_Terrain;
-class CVIBuffer_Dynamic_Terrain;
 END
 
 BEGIN(Client)
@@ -31,6 +31,7 @@ private:
 	CShader*				m_pShaderCom = { nullptr };
 	CTexture*				m_pTextureCom[TYPE_END] = { nullptr };
 	CVIBuffer_Terrain*		m_pVIBufferCom = { nullptr };
+	CNavigation*			m_pNavigationCom = { nullptr };
 
 
 private:

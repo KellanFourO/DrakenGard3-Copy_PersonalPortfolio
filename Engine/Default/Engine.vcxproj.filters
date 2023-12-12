@@ -112,6 +112,18 @@
     <Filter Include="01. Utility\51. Json">
       <UniqueIdentifier>{8d5f54cc-030a-49d9-9c28-dafd46e9b5d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\03. Components\05. Navigation">
+      <UniqueIdentifier>{b6d75da7-a1f4-42d4-94ba-8a8875879ab5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\05. Navigation\Cell">
+      <UniqueIdentifier>{f7941108-66b1-46ce-84de-c8a1fd8e8a25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\00. VIBuffer\Cell">
+      <UniqueIdentifier>{7b74c240-f9b5-4a10-8434-73eba4b66313}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. ShaderFiles">
+      <UniqueIdentifier>{d2a090e2-1120-47e7-8883-3c4b02f680f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -225,6 +237,15 @@
     <ClInclude Include="..\..\..\..\쥬신 스터디\참고자료\DX11_TeamProject_Thymesia-main\DX11_TeamProject_Thymesia-main\DX11_Thymesia_Framework\Engine\Public\Json\Json_Utility.h">
       <Filter>01. Utility\51. Json</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Navigation.h">
+      <Filter>01. Utility\03. Components\05. Navigation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Cell.h">
+      <Filter>01. Utility\03. Components\05. Navigation\Cell</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Cell.h">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Cell</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -323,5 +344,19 @@
     <ClCompile Include="..\..\Reference\Private\Json\Json_Utility.cpp">
       <Filter>01. Utility\51. Json</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Navigation.cpp">
+      <Filter>01. Utility\03. Components\05. Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Cell.cpp">
+      <Filter>01. Utility\03. Components\05. Navigation\Cell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Cell.cpp">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Cell</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Navigation.hlsl">
+      <Filter>98. ShaderFiles</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

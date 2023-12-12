@@ -130,7 +130,8 @@ xcopy "$(SolutionDir)Engine\Private\*.*"    "$(SolutionDir)Reference\Private\" /
 attrib +r "$(SolutionDir)Reference\Public\*.*" /s
 xcopy "$(OutDir)$(ProjectName).lib" "$(SolutionDir)Reference\Librarys\" /y
 xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Client\Bin\\$(Configuration)\$(PlatformTarget)\" /y
-xcopy "$(SolutionDir)Engine\ThirdPartyLib\*.*" "$(SolutionDir)Reference\Librarys\" /y /e</Command>
+xcopy "$(SolutionDir)Engine\ThirdPartyLib\*.*" "$(SolutionDir)Reference\Librarys\" /y /e
+xcopy "$(SolutionDir)Engine\Bin\ShaderFiles\*.*" "$(SolutionDir)Client\Bin\ShaderFiles\" /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -177,7 +178,8 @@ xcopy "$(SolutionDir)Engine\Public\*.*"    "$(SolutionDir)Reference\Public\" /y 
 attrib +r "$(SolutionDir)Reference\Public\*.*" /s
 xcopy "$(OutDir)$(ProjectName).lib" "$(SolutionDir)Reference\Librarys\" /y
 xcopy "$(OutDir)$(ProjectName).dll" "$(SolutionDir)Client\Bin\\$(Configuration)\$(PlatformTarget)\" /y
-xcopy "$(SolutionDir)Engine\ThirdPartyLib\*.*" "$(SolutionDir)Reference\Librarys\" /y /e</Command>
+xcopy "$(SolutionDir)Engine\ThirdPartyLib\*.*" "$(SolutionDir)Reference\Librarys\" /y /e
+xcopy "$(SolutionDir)Engine\Bin\ShaderFiles\*.*" "$(SolutionDir)Client\Bin\ShaderFiles\" /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -188,6 +190,7 @@ xcopy "$(SolutionDir)Engine\ThirdPartyLib\*.*" "$(SolutionDir)Reference\Librarys
     <ClInclude Include="..\Public\BehaviorTree.h" />
     <ClInclude Include="..\public\Bone.h" />
     <ClInclude Include="..\Public\Camera.h" />
+    <ClInclude Include="..\Public\Cell.h" />
     <ClInclude Include="..\public\Channel.h" />
     <ClInclude Include="..\Public\Component.h" />
     <ClInclude Include="..\public\Component_Manager.h" />
@@ -206,6 +209,7 @@ xcopy "$(SolutionDir)Engine\ThirdPartyLib\*.*" "$(SolutionDir)Reference\Librarys
     <ClInclude Include="..\Public\Level_Manager.h" />
     <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\Public\Model.h" />
+    <ClInclude Include="..\Public\Navigation.h" />
     <ClInclude Include="..\Public\Object_Manager.h" />
     <ClInclude Include="..\public\PipeLine.h" />
     <ClInclude Include="..\Public\Renderer.h" />
@@ -215,6 +219,7 @@ xcopy "$(SolutionDir)Engine\ThirdPartyLib\*.*" "$(SolutionDir)Reference\Librarys
     <ClInclude Include="..\Public\Timer_Manager.h" />
     <ClInclude Include="..\public\Transform.h" />
     <ClInclude Include="..\public\VIBuffer.h" />
+    <ClInclude Include="..\Public\VIBuffer_Cell.h" />
     <ClInclude Include="..\Public\VIBuffer_Dynamic_Terrain.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
@@ -226,6 +231,7 @@ xcopy "$(SolutionDir)Engine\ThirdPartyLib\*.*" "$(SolutionDir)Reference\Librarys
     <ClCompile Include="..\Private\BehaviorTree.cpp" />
     <ClCompile Include="..\Private\Bone.cpp" />
     <ClCompile Include="..\Private\Camera.cpp" />
+    <ClCompile Include="..\Private\Cell.cpp" />
     <ClCompile Include="..\private\Channel.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
     <ClCompile Include="..\private\Component_Manager.cpp" />
@@ -240,6 +246,7 @@ xcopy "$(SolutionDir)Engine\ThirdPartyLib\*.*" "$(SolutionDir)Reference\Librarys
     <ClCompile Include="..\Private\Level_Manager.cpp" />
     <ClCompile Include="..\Private\Mesh.cpp" />
     <ClCompile Include="..\Private\Model.cpp" />
+    <ClCompile Include="..\Private\Navigation.cpp" />
     <ClCompile Include="..\Private\Object_Manager.cpp" />
     <ClCompile Include="..\Private\PipeLine.cpp" />
     <ClCompile Include="..\Private\Renderer.cpp" />
@@ -249,9 +256,13 @@ xcopy "$(SolutionDir)Engine\ThirdPartyLib\*.*" "$(SolutionDir)Reference\Librarys
     <ClCompile Include="..\Private\Timer_Manager.cpp" />
     <ClCompile Include="..\private\Transform.cpp" />
     <ClCompile Include="..\private\VIBuffer.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Cell.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Dynamic_Terrain.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Navigation.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

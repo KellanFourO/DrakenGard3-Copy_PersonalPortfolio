@@ -19,6 +19,7 @@ public:
 	HRESULT Initialize();
 	void Tick(_float fTimeDelta); //! 기존 프레임워크에서 사용하던 Update 함수의 개념이다. 정쌤 프레임워크에서는 Tick으로 명명해서 사용.
 	HRESULT Render();
+	HRESULT TestFunction();
 
 private:
 	//! Direct9 버전에서 사용했던 IDirect3DDevice9 == LPDIRECT3DDEVICE9 컴객체의 기능을 Direct11버전에서는 ID3D11Device, ID3D11DeviceContext 두개로 쪼갰다.
