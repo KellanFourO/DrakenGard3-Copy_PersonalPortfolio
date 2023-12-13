@@ -33,6 +33,8 @@ public:
 		float		fX;
 		float		fY;
 		float		fZ;
+
+		vector<VTXDYNAMIC> vecVertexInfo;
 	}DINFO;
 private:
 	CDynamic_Terrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -52,11 +54,12 @@ public:
 	virtual HRESULT Render() override;
 	
 public:
-	virtual void Write_Json(json& Out_Json) override;
-	virtual void Load_FromJson(const json& In_Json) override;
+	virtual void Write_Json(json& Out_Json, const wstring& strFileName);
+	virtual void Load_FromJson(const json& In_Json, const wstring& strFileName);
 	
 
 public:
+	void	CreateHeightMap();
 	void	Picking_Terrain(EDIT_MODE eMode);
 	_float3	GetMousePos();
 
@@ -70,15 +73,15 @@ private:
 	CTexture*				   m_pTextureCom[TYPE_END] = { nullptr }; // 지형과 마스크를 한곳에 담기위해 배열로 변경 0: 지형 2장, 1: 마스크 1장
 	CVIBuffer_Dynamic_Terrain* m_pVIBufferCom = { nullptr };
 
-	_float					m_fDrawRadious = { 1.f };
-	_float					m_fPower = { 2.f };
-	_float3					m_fPickingPos = { 0.f, 0.f, 0.f };
-
-	EDIT_MODE				m_eEditMode = { EDIT_MODE::NON };
 private:
-	LEVEL				m_eCurrentLevelID = { LEVEL_END };
-	//VTXDYNAMIC* m_test;
-	DINFO m_tDynamicInfo;
+	_float						m_fDrawRadious = { 1.f };
+	_float						m_fPower = { 2.f };
+	_float3						m_fPickingPos = { 0.f, 0.f, 0.f };
+
+private:
+	EDIT_MODE					m_eEditMode = { EDIT_MODE::NON };
+	LEVEL						m_eCurrentLevelID = { LEVEL_END };
+	DINFO						m_tDynamicInfo;
 
 private:
 	HRESULT Ready_Components();

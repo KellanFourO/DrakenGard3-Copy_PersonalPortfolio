@@ -32,17 +32,13 @@ HRESULT CDynamic_Terrain::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	/* 지형 정보 세팅 */
-	/*
-		1. 받은 데이터를 캐스팅을 통해 DINFO구조체로 바꿔서 담아주고, 이 구조체의 값을 또 다른 그릇에 담아서 함수에 넘겨주자.
-				* 이 방식을 거치지않고 그냥 주소로 넘겨줬을 땐, 값이 제대로 안넘어갔음 *
-	*/
-	// 구조체 캐스팅
 	DINFO* pInfo = (DINFO*)pArg;
 
 	// 캐스팅된 구조체의 값 담기
 	DINFO Info = { pInfo->fX, pInfo->fY, pInfo->fZ };
 
+	Info.vecVertexInfo = pInfo->vecVertexInfo;
+	
 	// 주소가 아닌, 값이 담긴 구조체 넘겨주기
 	ReceiveInfo(Info);
 
@@ -91,25 +87,79 @@ HRESULT CDynamic_Terrain::Render()
 	return S_OK;
 }
 
-void CDynamic_Terrain::Write_Json(json& Out_Json)
+void CDynamic_Terrain::Write_Json(json& Out_Json, const wstring& strFileName)
 {
 	__super::Write_Json(Out_Json);
 
-	//Out_Json.emplace("Texture", TEXT("Prototype_Component_Texture_Terrain"));
-	//Out_Json.emplace("Buffer", TEXT("Prototype_Component_VIBuffer_Dynamic_Terrain"));
-	//Out_Json.emplace("Shader", TEXT("Prototype_Component_Shader_VtxNorTex"));
+	CreateHeightMap();
+
+	wstring strFilePath = TEXT("../Bin/DataFiles/Map/");
+	wstring strEXT = TEXT(".dat");
+	
+	wstring strFullPath = strFilePath + strFileName + strEXT;
+
+
+	HANDLE	hFile = CreateFile(strFullPath.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+
+	if(0 == hFile)
+		return;
+	_ulong	dwByte;	
+
+	vector<VTXDYNAMIC>* vecInfo = m_pVIBufferCom->Get_Infos();
+
+	for (auto& tInfo : *vecInfo)
+	{
+		VTXDYNAMIC tOut;
+		memcpy(&tOut, &tInfo, sizeof(VTXDYNAMIC));
+		WriteFile(hFile, &tOut, sizeof(VTXDYNAMIC), &dwByte, nullptr);
+	}
+
+
+	CloseHandle(hFile);
+
+	//! 정점 정보를 저장할꺼야
+	//! 정점 정봊보는 버퍼컴포넌트가 가지고있어.
+	//! 바이너리화를 시킬 거야
+	//! JSON말고 일반파일입출력을 통해서 할거야.
+	
 	Out_Json.emplace("SizeX", m_tDynamicInfo.fX);
 	Out_Json.emplace("SizeY", m_tDynamicInfo.fY);
 	Out_Json.emplace("SizeZ", m_tDynamicInfo.fZ);
 }
 
-void CDynamic_Terrain::Load_FromJson(const json& In_Json)
+void CDynamic_Terrain::Load_FromJson(const json& In_Json, const wstring& strFileName)
 {
 	__super::Load_FromJson(In_Json);
+
+	wstring strFilePath = TEXT("../Bin/DataFiles/Map/");
+	wstring strEXT = TEXT(".dat");
+
+	wstring strFullPath = strFilePath + strFileName + strEXT;
 
 	m_tDynamicInfo.fX = In_Json["SizeX"];
 	m_tDynamicInfo.fY = In_Json["SizeY"];
 	m_tDynamicInfo.fZ = In_Json["SizeZ"];
+	
+	HANDLE hFile = CreateFile(strFullPath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
+	if (0 == hFile)
+		return;
+
+	_ulong dwByte = { 0 };
+
+	while (true)
+	{
+		VTXDYNAMIC tInfo;
+
+		ReadFile(hFile, &tInfo, sizeof(VTXDYNAMIC), &dwByte, nullptr);
+
+		if (0 == dwByte)
+			break;
+
+		m_tDynamicInfo.vecVertexInfo.push_back(tInfo);
+	}
+
+	CloseHandle(hFile);
 
 	Delete_Component(TEXT("Com_VIBuffer"));
 
@@ -122,6 +172,11 @@ void CDynamic_Terrain::Load_FromJson(const json& In_Json)
 
 }
 
+
+void CDynamic_Terrain::CreateHeightMap()
+{
+	
+}
 
 void CDynamic_Terrain::Picking_Terrain(EDIT_MODE eMode)
 {
@@ -260,6 +315,7 @@ HRESULT CDynamic_Terrain::Bind_ShaderResources()
 void CDynamic_Terrain::ReceiveInfo(DINFO pInfo)
 {
 	m_tDynamicInfo = { pInfo.fX, pInfo.fY, pInfo.fZ };
+	m_tDynamicInfo.vecVertexInfo = pInfo.vecVertexInfo;
 }
 
 void CDynamic_Terrain::Delete_Component(const wstring& strComTag)

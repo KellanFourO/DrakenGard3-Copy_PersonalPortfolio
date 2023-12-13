@@ -1,6 +1,7 @@
 #include "VIBuffer_Dynamic_Terrain.h"
 #include "GameInstance.h"
 
+
 CVIBuffer_Dynamic_Terrain::CVIBuffer_Dynamic_Terrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CVIBuffer(pDevice,pContext)
 {
@@ -71,6 +72,13 @@ HRESULT CVIBuffer_Dynamic_Terrain::Initialize_Prototype()
 HRESULT CVIBuffer_Dynamic_Terrain::Initialize(void* pArg)
 {
 	VTXDYNAMIC* pInfo = (VTXDYNAMIC*)pArg;
+	DINFO* pDinfo = (DINFO*)pArg;
+	_bool bTest = false;
+
+	if (!pDinfo->vecVertexInfo.empty())
+	{
+		bTest = true;
+	}
 
 	m_fInterval = 0.5f;
 	m_iNumVerticesX = (_uint)pInfo->vPosition.x;
@@ -80,6 +88,7 @@ HRESULT CVIBuffer_Dynamic_Terrain::Initialize(void* pArg)
 	m_iNumVertices = m_iNumVerticesX * m_iNumVerticesZ;
 	m_iNumVertexBuffers = 1;
 
+	
 	//!  πˆ≈ÿΩ∫ πˆ∆€ Ω√¿€
 	VTXDYNAMIC* pVertices = new VTXDYNAMIC[m_iNumVertices];
 	ZeroMemory(pVertices, sizeof(VTXDYNAMIC) * m_iNumVertices);
@@ -90,10 +99,21 @@ HRESULT CVIBuffer_Dynamic_Terrain::Initialize(void* pArg)
 		{
 			_uint iIndex = i * m_iNumVerticesX + j;
 
-			pVertices[iIndex].vPosition = _float3(_float(j * m_fInterval), 0.f, _float(i * m_fInterval));
-			pVertices[iIndex].vTexcoord = _float2(j / (m_iNumVerticesX - 1.f), i / (m_iNumVerticesZ - 1.f));
-			pVertices[iIndex].vNormal = _float3(0.f, 1.f, 0.f);
-			pVertices[iIndex].vTangent = _float3(1.f, 0.f, 0.f);
+			if (bTest)
+			{
+					pVertices[iIndex].vPosition = pDinfo->vecVertexInfo[iIndex].vPosition;
+					pVertices[iIndex].vTexcoord = pDinfo->vecVertexInfo[iIndex].vTexcoord;
+					pVertices[iIndex].vNormal = pDinfo->vecVertexInfo[iIndex].vNormal;
+					pVertices[iIndex].vTangent = pDinfo->vecVertexInfo[iIndex].vTangent;
+			}
+			else 
+			{
+				pVertices[iIndex].vPosition = _float3(_float(j * m_fInterval), 0.f, _float(i * m_fInterval));
+				pVertices[iIndex].vTexcoord = _float2(j / (m_iNumVerticesX - 1.f), i / (m_iNumVerticesZ - 1.f));
+				pVertices[iIndex].vNormal = _float3(0.f, 1.f, 0.f);
+				pVertices[iIndex].vTangent = _float3(1.f, 0.f, 0.f);
+			}
+			
 
 			m_VertexInfo.push_back(pVertices[iIndex]);
 		}
@@ -210,6 +230,7 @@ void CVIBuffer_Dynamic_Terrain::Update(_vector _vMousePos, _float _fRadious, _fl
 		{
 			_ulong	iIndex = iZ * m_iNumVerticesX + iX;
 
+			
 			_float3 vPos = ((VTXDYNAMIC*)SubResource.pData)[iIndex].vPosition;
 			_float  fLength = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vPos) - _vMousePos));
 
@@ -300,6 +321,7 @@ void CVIBuffer_Dynamic_Terrain::Update(_vector _vMousePos, _float _fRadious, _fl
 			if (0 > iAdjacency[1])
 				continue;
 
+			
 			// ≈∫¡®∆Æ ∫§≈Õ ∞ËªÍ
 			_float3 vTempTangent;
 			XMStoreFloat3(&vTempTangent, XMVector3Normalize(XMLoadFloat3(&m_VertexInfo[iAdjacency[1]].vPosition) - XMLoadFloat3(&m_VertexInfo[iIndex].vPosition)));

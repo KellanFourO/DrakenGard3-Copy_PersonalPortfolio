@@ -3,6 +3,7 @@
 
 #include "GameInstance.h"
 #include "Camera_Dynamic.h"
+#include "Dynamic_Terrain.h"
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -68,8 +69,34 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const wstring& strLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const wstring& strLayerTag)
 {
-	
-	if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Terrain"))))
+	HANDLE hFile = CreateFile(TEXT("../Bin/DataFiles/Map/test.dat"), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
+	if (0 == hFile)
+		return E_FAIL;
+
+	_ulong dwByte = { 0 };
+
+	CDynamic_Terrain::DINFO testInfo;
+
+	testInfo.fX = 50;
+	testInfo.fY = 1;
+	testInfo.fZ = 50;
+
+	while (true)
+	{
+		VTXDYNAMIC tInfo;
+
+		ReadFile(hFile, &tInfo, sizeof(VTXDYNAMIC), &dwByte, nullptr);
+
+		if (0 == dwByte)
+			break;
+
+		testInfo.vecVertexInfo.push_back(tInfo);
+	}
+
+	CloseHandle(hFile);
+
+	if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Dynamic_Terrain"), &testInfo)))
 		return E_FAIL;
 
 	//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_ForkLift"))))

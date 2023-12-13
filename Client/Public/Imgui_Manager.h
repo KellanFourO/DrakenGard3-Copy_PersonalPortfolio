@@ -63,8 +63,8 @@ private:
 
 private: //TODO Imguizmo #±âÁî¸ð
 	void					Set_Guizmo();
-	void					Set_View();
-	void					Set_Proj();
+	void					Set_GuizmoCamView();
+	void					Set_GuizmoCamProj();
 
 private:
 	_float*						m_arrView = { nullptr };
@@ -85,8 +85,8 @@ private:
 
 private: //TODO ¸ÊÅø #¸ÊÅø 
 	void					PickingTerrain(BRUSHMODE eBrushMode);
-	void					SaveMap(string strFilePath);
-	void					LoadMap(string strFilePath);
+	void					SaveMap(string strFilePath, string strFileName);
+	void					LoadMap(string strFilePath, string strFileName);
 
 private:
 	_bool						m_bReady = true;

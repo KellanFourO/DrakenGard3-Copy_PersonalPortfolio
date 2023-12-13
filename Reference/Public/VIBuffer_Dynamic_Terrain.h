@@ -11,8 +11,18 @@ private:
 	virtual ~CVIBuffer_Dynamic_Terrain() = default;
 
 public:
-	_bool			Get_Vertex(_uint _iIndex, VTXDYNAMIC * _pOut);
-	_bool			Get_Indices(_uint _iIndex, _uint3 * _pOut);
+	_bool				Get_Vertex(_uint _iIndex, VTXDYNAMIC * _pOut);
+	_bool				Get_Indices(_uint _iIndex, _uint3 * _pOut);
+	vector<VTXDYNAMIC>* Get_Infos() { return &m_VertexInfo; }
+
+	typedef struct tagVertex_Dynamic_Info
+	{
+		float		fX;
+		float		fY;
+		float		fZ;
+
+		vector<VTXDYNAMIC> vecVertexInfo;
+	}DINFO;
 
 public:
 	_bool			Compute_MousePos(RAY _Ray, _matrix _WorldMatrix, _float3 * pOut);

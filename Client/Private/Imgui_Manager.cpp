@@ -51,7 +51,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 {
 	//! 레이 월드좌표 갱신
 	UpdateRay();
-	
 
 	ImGui_MainTick();
 
@@ -68,7 +67,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		ImGui::EndTabBar();
 	}
-
 
 	//#Imgui_MainTool_End
 	ImGui::End(); 
@@ -366,7 +364,7 @@ void CImgui_Manager::Set_Guizmo()
 	}
 }
 
-void CImgui_Manager::Set_View()
+void CImgui_Manager::Set_GuizmoCamView()
 {
 	_float4x4 matCamView = m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW);
 	_float	  arrView[] = { matCamView._11,matCamView._12,matCamView._13,matCamView._14,
@@ -377,7 +375,7 @@ void CImgui_Manager::Set_View()
 	memcpy(m_arrView, &arrView, sizeof(arrView));
 }
 
-void CImgui_Manager::Set_Proj()
+void CImgui_Manager::Set_GuizmoCamProj()
 {
 	_float4x4 matCamProj = m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ);
 	_float	  arrProj[] = { matCamProj._11,matCamProj._12,matCamProj._13,matCamProj._14,
@@ -455,7 +453,7 @@ void CImgui_Manager::ShowDialog(TOOLID eToolID)
 					case Client::CImgui_Manager::DIALOG_SAVE:
 					{
 						if (m_eToolID == CImgui_Manager::TOOL_MAP)
-							SaveMap(filePathName);
+							SaveMap(filePathName, fileName);
 
 						else if (m_eToolID == CImgui_Manager::TOOL_OBJECT)
 							SaveObject(filePathName);
@@ -466,7 +464,7 @@ void CImgui_Manager::ShowDialog(TOOLID eToolID)
 					case Client::CImgui_Manager::DIALOG_LOAD:
 					{
 						if (m_eToolID == CImgui_Manager::TOOL_MAP)
-							LoadMap(filePathName);
+							LoadMap(filePathName, fileName);
 
 						else if (m_eToolID == CImgui_Manager::TOOL_OBJECT)
 							LoadObject(filePathName);
@@ -517,11 +515,27 @@ void CImgui_Manager::PickingTerrain(BRUSHMODE eBrushMode)
 	}
 }
 
-void CImgui_Manager::SaveMap(string strFilePath)
+void CImgui_Manager::SaveMap(string strFilePath, string strFileName)
 {
-	json OutJson;
+	
 
-	m_pDynamic_Terrain->Write_Json(OutJson);
+
+	json OutJson;
+	//size_t pos = strObjectTag.rfind(L"_");
+	//if (pos != wstring::npos)
+	//{
+	//	return strObjectTag.substr(pos + 1);
+	//}
+	size_t index = 0, current = 0;
+
+	current = strFileName.find(".");
+	string sub;
+	if(current != string::npos)
+	{
+		sub = strFileName.substr(index, current - index);
+	}
+
+	m_pDynamic_Terrain->Write_Json(OutJson, ConvertStrToWstr(sub));
 
 	if (FAILED(CJson_Utility::Save_Json(strFilePath.c_str(), OutJson)))
 	{
@@ -533,14 +547,23 @@ void CImgui_Manager::SaveMap(string strFilePath)
 	}
 }
 
-void CImgui_Manager::LoadMap(string strFilePath)
+void CImgui_Manager::LoadMap(string strFilePath, string strFileName)
 {
 	json	InJson;
+
+	size_t index = 0, current = 0;
+
+	current = strFileName.find(".");
+	string sub;
+	if (current != string::npos)
+	{
+		sub = strFileName.substr(index, current - index);
+	}
 
 	CJson_Utility::Load_Json(strFilePath.c_str(), InJson);
 
 	if (m_pDynamic_Terrain)
-		m_pDynamic_Terrain->Load_FromJson(InJson);
+		m_pDynamic_Terrain->Load_FromJson(InJson, ConvertStrToWstr(sub));
 
 	else
 	{
@@ -636,8 +659,8 @@ void CImgui_Manager::CreateObjectFunction()
 
 void CImgui_Manager::SelectObjectFunction()
 {
-	Set_View(); //! 기즈모 뷰 투영 셋팅해주기.
-	Set_Proj();	//! 기즈모 뷰 투영 셋팅해주기.
+	Set_GuizmoCamView(); //! 기즈모 뷰 투영 셋팅해주기.
+	Set_GuizmoCamProj();	//! 기즈모 뷰 투영 셋팅해주기.
 
 	if (nullptr != m_PickingObject)
 		Set_Guizmo();	
