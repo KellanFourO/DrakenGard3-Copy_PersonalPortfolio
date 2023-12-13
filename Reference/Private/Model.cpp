@@ -167,6 +167,20 @@ HRESULT CModel::Bind_ShaderResource(CShader* pShader, const _char* pConstantName
 	return m_Materials[iMaterialIndex].pMtrlTextures[eTextureType]->Bind_ShaderResource(pShader,pConstantName); //! 우리는 어처피 1장이다. textureIndex는 따로 줄 필요없다.
 }
 
+_bool CModel::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix)
+{
+	if (m_Meshes.empty()) // 메쉬가 비었는지 체크
+		return false;
+
+	for (auto& iter : m_Meshes)
+	{
+		if (iter->Compute_MousePos(_Ray, _WorldMatrix))
+			return true;
+	}
+
+	return false;
+}
+
 HRESULT CModel::Ready_Meshes(_fmatrix PivotMatrix)
 {
 	m_iNumMeshes = m_pAIScene->mNumMeshes; //! 읽어들인 메쉬개수로 멤버변수를 채워주자

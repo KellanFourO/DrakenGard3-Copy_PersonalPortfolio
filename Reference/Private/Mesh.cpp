@@ -60,6 +60,10 @@ HRESULT CMesh::Initialize_Prototype(CModel::TYPE eModelType, const aiMesh* pAIMe
 		pIndices[iNumIndices++] = pAIMesh->mFaces[i].mIndices[0];
 		pIndices[iNumIndices++] = pAIMesh->mFaces[i].mIndices[1];
 		pIndices[iNumIndices++] = pAIMesh->mFaces[i].mIndices[2];
+
+		m_MeshIndices.push_back( { pAIMesh->mFaces[i].mIndices[0],
+								   pAIMesh->mFaces[i].mIndices[1],
+								   pAIMesh->mFaces[i].mIndices[2] } );
 	}
 
 	m_SubResourceData.pSysMem = pIndices;
@@ -103,6 +107,40 @@ HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, c
 	return pShader->Bind_Matrices(pConstantName, BoneMatrices, 256);
 }
 
+_bool CMesh::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix)
+{
+	_matrix matWorld = XMMatrixInverse(nullptr, _WorldMatrix);
+	_vector vRayPos, vRayDir;
+
+	//! 마우스 광선 위치(시작점), 방향
+	vRayPos = XMVector3TransformCoord(XMLoadFloat4(&_Ray.vOrigin), matWorld);
+	vRayDir = XMVector3Normalize(XMVector3TransformNormal(XMLoadFloat3(&_Ray.vDirection), matWorld));
+
+	_float fDist;
+
+	_int	iMeshIndex = m_MeshIndices.size();
+
+	for (_uint i = 0; i < iMeshIndex; ++i)
+	{
+		_vector vPickedPos;
+
+		//삼각형  정점 인덱스 3개
+		_vector vIndexXPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i].ix]);
+		_vector vIndexYPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i].iy]);
+		_vector vIndexZPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i].iz]);
+
+		if (true == DirectX::TriangleTests::Intersects(vRayPos, vRayDir, vIndexXPos, vIndexYPos, vIndexZPos, fDist))
+		{
+			//vPickedPos = vRayPos + XMVector3Normalize(vRayDir) * fDist;
+			//XMStoreFloat3(pOut, vPickedPos);
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
 HRESULT CMesh::Ready_Vertices_NonAnim(const aiMesh* pAIMesh, _fmatrix PivotMatrix)
 {
 	m_iStride = sizeof(VTXMESH);
@@ -125,6 +163,7 @@ HRESULT CMesh::Ready_Vertices_NonAnim(const aiMesh* pAIMesh, _fmatrix PivotMatri
 	{
 		memcpy(&pVertices[i].vPosition, &pAIMesh->mVertices[i], sizeof(_float3));
 		XMStoreFloat3(&pVertices[i].vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), PivotMatrix));
+		m_MeshVertexs.push_back(pVertices[i].vPosition); //! 픽킹 정점 위치 저장해두기.
 
 		memcpy(&pVertices[i].vNormal, &pAIMesh->mNormals[i], sizeof(_float3));
 		XMStoreFloat3(&pVertices[i].vNormal, XMVector3TransformNormal(XMLoadFloat3(&pVertices[i].vNormal), PivotMatrix));
@@ -175,8 +214,9 @@ HRESULT CMesh::Ready_Vertices_Anim(const aiMesh* pAIMesh, const vector<class CBo
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
 		memcpy(&pVertices[i].vPosition, &pAIMesh->mVertices[i], sizeof(_float3));
-		memcpy(&pVertices[i].vNormal, &pAIMesh->mNormals[i], sizeof(_float3));
+		m_MeshVertexs.push_back(pVertices[i].vPosition);
 
+		memcpy(&pVertices[i].vNormal, &pAIMesh->mNormals[i], sizeof(_float3));
 		//TODO 텍스쿠드 주석추가 #모델_텍스쿠드_AiMesh
 		//! AiMesh안에 텍스쿠드는 배열로 선언되어있고 16진수 0x8만큼을 할당해놓았다.
 		//! 원래 한 정점이 가질수 있는 컬러와 텍스쿠드는 총 8개까지 선언될 수 있다.

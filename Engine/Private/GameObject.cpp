@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include "GameInstance.h"
 #include "Transform.h"
+#include "Model.h"
 
 CGameObject::CGameObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -47,17 +48,6 @@ HRESULT CGameObject::Initialize(void* pArg)
 
 	Safe_AddRef(m_pTransformCom);
 
-	if (Desc.isPicking)
-	{
-	//_float4 vPos = { Desc.vPos.x, Desc.vPos.y, Desc.vPos.z, 1.f };
-	//
-	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
-
-	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(Desc.vPos.x, Desc.vPos.y, Desc.vPos.z, 1.f));
-
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Desc.vPos);
-	}
-
 	return S_OK;
 }
 
@@ -90,19 +80,34 @@ HRESULT CGameObject::Render()
 	return S_OK;
 }
 
-_bool CGameObject::Picking(_float3 vPickPos)
+_bool CGameObject::Picking(_float3 vPickPos, class CModel* pModelCom)
 {
-	_float3 vScale = m_pTransformCom->Get_Scaled();
-	_float3	vPos = m_pTransformCom->Get_Pos();
+	if (pModelCom == nullptr)
+		return false;
 
-	if (vPickPos.x >= vPos.x - vScale.x && vPickPos.x <= vPos.x + vScale.x &&
-		vPickPos.y >= vPos.y - vScale.y && vPickPos.y <= vPos.y + vScale.y &&
-		vPickPos.z >= vPos.z - vScale.z && vPickPos.z <= vPos.z + vScale.z)
-	{
-		return true; //ImGui 영역 내
-	}
-	
+	_uint iWinSizeX = m_pGameInstance->Get_GraphicDesc().iBackBufferSizeX;
+	_uint iWinSizeY = m_pGameInstance->Get_GraphicDesc().iBackBufferSizeY;
+
+	// 마우스의 월드 스페이스를 받는다.
+	RAY MouseRayInWorldSpace = m_pGameInstance->Get_Ray(iWinSizeX, iWinSizeY);
+
+	// 받은 마우스 월드 스페이스와 이 녀석의 월드 스페이스를 넘겨주고, 픽킹이 됐다면 픽킹된 값을 받아온다.
+	if (pModelCom->Compute_MousePos(MouseRayInWorldSpace, m_pTransformCom->Get_WorldMatrix())) // 값 잘 받았음))
+		return true;
+
 	return false;
+
+	//_float3 vScale = m_pTransformCom->Get_Scaled();
+	//_float3	vPos = m_pTransformCom->Get_Pos();
+	//
+	//if (vPickPos.x >= vPos.x - vScale.x && vPickPos.x <= vPos.x + vScale.x &&
+	//	vPickPos.y >= vPos.y - vScale.y && vPickPos.y <= vPos.y + vScale.y &&
+	//	vPickPos.z >= vPos.z - vScale.z && vPickPos.z <= vPos.z + vScale.z)
+	//{
+	//	return true; //ImGui 영역 내
+	//}
+	//
+	//return false;
 }
 
 void CGameObject::Write_Json(json& Out_Json)

@@ -62,6 +62,7 @@ _bool CVIBuffer_Dynamic_Terrain::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix
 	return false;
 }
 
+
 HRESULT CVIBuffer_Dynamic_Terrain::Initialize_Prototype()
 {
 	return S_OK;

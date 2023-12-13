@@ -130,12 +130,7 @@ void CDynamic_Terrain::Picking_Terrain(EDIT_MODE eMode)
 		MSG_BOX("Picking_Terrain Buffer is nullptr");
 		return;
 	}
-		
-	//_bool bInputZ = m_pGameInstance->Key_Pressing(DIK_Z);
-	//_bool bInputX = m_pGameInstance->Key_Pressing(DIK_X);
-	//
-	//if(!bInputZ && !bInputX)
-	//	return;
+	
 	_uint WinCX, WinCY;
 	WinCX = g_iWinSizeX; WinCY = g_iWinSizeY;
 
@@ -144,7 +139,6 @@ void CDynamic_Terrain::Picking_Terrain(EDIT_MODE eMode)
 
 	if (m_pVIBufferCom->Compute_MousePos(WorldRay,m_pTransformCom->Get_WorldMatrix(), &m_fPickingPos))
 	{
-		if(m_pGameInstance->Mouse_Down(DIM_LB))
 		m_pVIBufferCom->Update(XMLoadFloat3(&m_fPickingPos), m_fDrawRadious, m_fPower, (_uint)eMode);
 	}
 	

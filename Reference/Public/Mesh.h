@@ -20,7 +20,7 @@ public:
 
 public:
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, const vector<class CBone*>& Bones);
-	_bool	Compute_MousePos(RAY _Ray, _matrix _WorldMatrix, _float3* pOut);
+	_bool	Compute_MousePos(RAY _Ray, _matrix _WorldMatrix);
 	
 private:
 	HRESULT Ready_Vertices_NonAnim(const aiMesh* pAIMesh, _fmatrix PivotMatrix);
@@ -35,7 +35,8 @@ private:
 
 	vector<_float4x4>	m_OffsetMatrices;
 
-
+	vector<_float3>		m_MeshVertexs;
+	vector<_uint3>		m_MeshIndices;
 
 public:
 	//TODO Create시에 인자값으로 const aiMesh* 를 받는 것을 알 수 있다.

@@ -30,7 +30,7 @@ public:
 
 private:
 	CShader* m_pShaderCom = { nullptr };
-	CModel* m_pModelCom = { nullptr }; //#버퍼컴에서_모델컴으로_변경됨
+	CModel*  m_pModelCom = { nullptr }; //#버퍼컴에서_모델컴으로_변경됨
 
 private:
 	//STATE_LINK_MONSTER_DESC      m_tLinkStateDesc;

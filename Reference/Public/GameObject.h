@@ -15,10 +15,7 @@ public:
 
 		_float fSpeedPerSec		= 0.f;
 		_float fRotationPerSec	= 0.f;
-
-		_bool	isPicking = false;
-		_float4	vPos = { 0.f, 0.f, 0.f, 1.f };
-
+	
 	}GAMEOBJECT_DESC;
 
 protected:
@@ -38,11 +35,12 @@ public:
 	virtual HRESULT Render();
 
 public:
-	_bool	Picking(_float3 vPickPos);
+	_bool	Picking(_float3 vPickPos, class CModel* pModelCom);
 
 public:
 	virtual void Write_Json(json& Out_Json) override;
 	virtual void Load_FromJson(const json& In_Json) override;
+	class CComponent* Find_Component(const wstring& strComTag);
 
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -66,7 +64,7 @@ protected:
 
 	void	Delete_Component(const wstring& strComTag);
 
-	class CComponent* Find_Component(const wstring& strComTag);
+	
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

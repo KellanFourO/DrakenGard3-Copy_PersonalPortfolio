@@ -32,6 +32,9 @@ public:
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
 	HRESULT Bind_ShaderResource(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType);
 
+public:
+	_bool	Compute_MousePos(RAY _Ray, _matrix _WorldMatrix);
+
 private:
 	//TODO aiScene은 뭔데?
 	//! Assimp라이브러리를 추가해서 사용할 수 있는 타입이다. 구조체이며 모델과 관련된 정보를 모두 가지고있다
