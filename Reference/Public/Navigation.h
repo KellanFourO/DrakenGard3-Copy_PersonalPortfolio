@@ -41,7 +41,7 @@ private:
 #endif
 
 private:
-	HRESULT		Make_Neighbors();
+	HRESULT		Make_Neighbors(); //! ÀÌ¿ô µî·Ï
 
 public:
 	static CNavigation* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const wstring & strNavgationFilePath);

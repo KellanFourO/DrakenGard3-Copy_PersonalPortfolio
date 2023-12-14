@@ -58,6 +58,8 @@ _bool CCell::Compare_Points(const _float3* pSourPoint, const _float3* pDestPoint
 
 	//!XMVector3Eqaul은 결과값으로 x,y,z,w가 모두 같다면 true 아니면 false를 리턴하는 형태
 
+	//!Navigation이 가지고있는 셀들을 이중 순회한다. #셀이중순회
+
 	if (true == XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_A]), XMLoadFloat3(pSourPoint)))
 	{
 		if(true == XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_B]), XMLoadFloat3(pDestPoint)))

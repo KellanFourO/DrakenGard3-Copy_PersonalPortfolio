@@ -23,7 +23,7 @@ CCell::CCell(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 HRESULT CCell::Initialize(const _float3* pPoints, _uint iIndex)
 {
-	memcpy(m_vPoints, pPoints, sizeof(_float3));
+	memcpy(m_vPoints, pPoints, sizeof(_float3) * POINT_END);
 
 	m_iIndex = iIndex;
 
@@ -57,6 +57,8 @@ _bool CCell::Compare_Points(const _float3* pSourPoint, const _float3* pDestPoint
 	//! x는 x, y는 y처럼 x,y,z,w를 각각 비교해서 만약 x,z가 같다면 { 1, 0 , 1, 0, } true,false를 가지고있는 벡터를 리턴하는 것
 
 	//!XMVector3Eqaul은 결과값으로 x,y,z,w가 모두 같다면 true 아니면 false를 리턴하는 형태
+
+	//!Navigation이 가지고있는 셀들을 이중 순회한다. #셀이중순회
 
 	if (true == XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_A]), XMLoadFloat3(pSourPoint)))
 	{

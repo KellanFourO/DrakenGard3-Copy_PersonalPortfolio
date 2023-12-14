@@ -51,6 +51,9 @@ HRESULT CNavigation::Initialize_Prototype(const wstring& strNavigationFilePath)
 
     CloseHandle(hFile);
 
+    if(FAILED(Make_Neighbors()))
+        return E_FAIL;
+
 #ifdef _DEBUG
     m_pShader = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Navigation.hlsl"), VTXPOS::Elements, VTXPOS::iNumElements);
     if (nullptr == m_pShader)
@@ -111,29 +114,32 @@ _bool CNavigation::isMove(_fvector vPosition)
 
 HRESULT CNavigation::Make_Neighbors()
 {
+
+    //#셀이중순회
     for (auto& pSourCell : m_Cells)
     {
-        for (auto& pDescCell : m_Cells)
+        for (auto& pDestCell : m_Cells)
         {
-            if(pSourCell == pDescCell)
+            if(pSourCell == pDestCell)
                 continue;
 
-            if (true == pDescCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_A), pSourCell->Get_Point(CCell::POINT_B)))
+            //! true를 반환하면 DestCell은 SourCell의 LINE_AB를 공유하는 이웃이라는 뜻이니 이웃으로 등록해주는 것.
+            if (true == pDestCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_A), pSourCell->Get_Point(CCell::POINT_B)))
             {
-               pSourCell->SetUp_Neighbor(CCell::LINE_AB, pDescCell);
+               pSourCell->SetUp_Neighbor(CCell::LINE_AB, pDestCell);
             }
-            if (true == pDescCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_B), pSourCell->Get_Point(CCell::POINT_C)))
+            if (true == pDestCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_B), pSourCell->Get_Point(CCell::POINT_C)))
             {
-                pSourCell->SetUp_Neighbor(CCell::LINE_BC, pDescCell);
+                pSourCell->SetUp_Neighbor(CCell::LINE_BC, pDestCell);
             }
-            if (true == pDescCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_C), pSourCell->Get_Point(CCell::POINT_A)))
+            if (true == pDestCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_C), pSourCell->Get_Point(CCell::POINT_A)))
             {
-                pSourCell->SetUp_Neighbor(CCell::LINE_CA, pDescCell);
+                pSourCell->SetUp_Neighbor(CCell::LINE_CA, pDestCell);
             }
         }
     }
     
-    return S_OK;
+     return S_OK;
 }
 
 CNavigation* CNavigation::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strNavigationFilePath)
