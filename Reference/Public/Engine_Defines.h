@@ -55,6 +55,7 @@ using namespace std;
 #include "Engine_Typedef.h"
 #include "Engine_Struct.h"
 
+
 namespace Engine
 {
 	static const wchar_t*	g_pTransformTag = TEXT("Com_Transform");

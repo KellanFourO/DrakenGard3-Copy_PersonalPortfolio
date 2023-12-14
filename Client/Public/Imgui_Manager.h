@@ -1,6 +1,7 @@
 #pragma once
 #include "Base.h"
 #include "Client_Defines.h"
+#include "DataType.h"
 
 
 BEGIN(Client)
@@ -10,7 +11,7 @@ class CImgui_Manager final : public CBase
 
 public:
 	enum TOOLID { TOOL_MAP, TOOL_OBJECT, TOOL_CAMERA, TOOL_EFFECT, TOOL_END };
-	enum DIALOGID { DIALOG_SAVE, DIALOG_LOAD, DIALOG_END };
+	enum DIALOGID { DIALOG_SAVE, DIALOG_LOAD, DIALOG_BINARY, DIALOG_END };
 	enum BRUSHMODE { BRUSH_DOWN, BRUSH_UP, BRUSH_PRESSING, BRUSH_END };
 
 private:
@@ -75,12 +76,15 @@ private:
 private: //TODO ImguiDialog #다이얼로그
 		void				OpenDialog(TOOLID eToolID);
 		void				ShowDialog(TOOLID eToolID);
+		void				OpenDialogBinaryModel();
+		void				ShowDialogBianryModel(MODEL_TYPE eModelType);
 
 private:
 		
 		ImGuiFileDialog*		m_pFileDialog;
 		string					m_strCurrentDialogTag;
 		DIALOGID				m_eDialogMode = { DIALOG_END };
+		MODEL_TYPE				m_eModelType = { MODEL_TYPE::TYPE_END };
 		
 
 private: //TODO 맵툴 #맵툴 
@@ -107,11 +111,23 @@ private: //TODO 오브젝트툴 #오브젝트툴
 	HRESULT					Add_PrototypeTag(const wstring& strPrototypeTag);
 	HRESULT					Ready_ProtoTagList();
 
+	void					BinaryModeTick();
+	void					ObjectModeTick();
+
 	void					CreateObjectFunction();
 	void					SelectObjectFunction();
 
 	void					SaveObject(string strFilePath);
 	void					LoadObject(string strFilePath);
+
+	HRESULT					BinaryConvert(string strFileName, string strFilePath, const MODEL_TYPE& eModelType);
+	HRESULT					ReadFBX(string strFilePath, const MODEL_TYPE& eModelType);
+
+	HRESULT					Read_BoneData(aiNode* pAINode, _int iParentIndex);
+	HRESULT					Read_MeshData(const MODEL_TYPE& eModelType);
+	HRESULT					Write_MeshData(string strFilePath);
+
+	_uint					Get_BoneIndex(const char* szName);
 
 private: 
 	_bool						m_bObjectToolPickMode;
@@ -122,10 +138,18 @@ private:
 	_int						m_iSelectTagIndex = { 0 };
 
 	vector<string>				m_vecCreateObjectTag;
-	vector<CGameObject*>		m_vecObjects;
-	CGameObject*				m_PickingObject = nullptr;
+	vector<class CGameObject*>	m_vecObjects;
+	class CGameObject*			m_PickingObject = nullptr;
 	_int						m_iPickingObjectIndex = 0;
 	_float3						m_fPickingPos = { 0.f, 0.f, 0.f };
+
+private:
+	const aiScene*				m_pAiScene = { nullptr };
+	Assimp::Importer			m_Impoter;
+	vector<asBone*>				m_vecBones;
+	vector<asMesh*>				m_vecMesh;
+	vector<asMaterial*>			m_vecMaterial;
+	vector<asAnimation*>		m_vecAnimation;
 
 	
 

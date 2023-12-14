@@ -183,11 +183,14 @@
     <ClInclude Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialogConfig.h">
       <Filter>96. Tool\99. Default</Filter>
     </ClInclude>
-    <ClInclude Include="CustomFont.h">
-      <Filter>99. Defines</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Imgui_Manager.h">
       <Filter>96. Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CustomFont.h">
+      <Filter>99. Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DataType.h">
+      <Filter>99. Defines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -269,11 +272,11 @@
     <ClCompile Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialog.cpp">
       <Filter>96. Tool\99. Default</Filter>
     </ClCompile>
-    <ClCompile Include="CustomFont.cpp">
-      <Filter>99. Defines</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Imgui_Manager.cpp">
       <Filter>96. Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CustomFont.cpp">
+      <Filter>99. Defines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

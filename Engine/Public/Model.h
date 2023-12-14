@@ -58,7 +58,7 @@ private:
 	//! #머터리얼구조체의_텍스처클래스를_사용하는이유 원래는 ShaderResourceView*를 들고있어도 되지만 그렇게하면 텍스처를 로드하는 기능을 다시 작성해줘야 한다. 텍스처로드기능은 이미 텍스쳐클래스에서 구현해놓았으니 텍스처클래스를 배열로 가지고있자.
 	vector<MATERIAL_DESC>	m_Materials; //! 어심프라이브러리에서 제공하는 재질 텍스처 정보열거체의 개수(18)만큼의 텍스처클래스 배열 == MATERIAL_DESC
 
-	vector<class CBone*>	m_Bones;
+	vector<class CBone*>		m_Bones;
 
 	_uint						m_iNumAnimations = { 0 }; //! AIScene으로 부터 읽어들일 애니메이션 개수
 	_uint						m_iCurrentAnimIndex = { 0 }; //! 현재 애니메이션의 인덱스를 미리 알아놓아야 편해.
