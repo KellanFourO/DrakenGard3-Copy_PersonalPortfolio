@@ -201,6 +201,7 @@
     <ClInclude Include="..\public\Dynamic_Terrain.h" />
     <ClInclude Include="..\Public\ForkLift.h" />
     <ClInclude Include="..\Public\Imgui_Manager.h" />
+    <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\TestTree.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
@@ -235,6 +236,7 @@
     <ClCompile Include="..\Private\Dynamic_Terrain.cpp" />
     <ClCompile Include="..\Private\ForkLift.cpp" />
     <ClCompile Include="..\Private\Imgui_Manager.cpp" />
+    <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\TestTree.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />

@@ -1,5 +1,6 @@
 #include "Transform.h"
 #include "Shader.h"
+#include "Navigation.h"
 
 CTransform::CTransform(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice, pContext)
@@ -53,7 +54,7 @@ void CTransform::Set_Scaling(_float fScaleX, _float fScaleY, _float fScaleZ)
 	Set_State(STATE_LOOK,  XMVector3Normalize(Get_State(CTransform::STATE_LOOK)) * fScaleZ);
 }
 
-void CTransform::Go_Straight(_float fTimeDelta)
+void CTransform::Go_Straight(_float fTimeDelta, class CNavigation* pNavigation)
 {
 	//TODO 방향벡터를 만들어서 가게하면된다.
 
@@ -63,6 +64,14 @@ void CTransform::Go_Straight(_float fTimeDelta)
 
 	//! 룩 벡터를 정규화하지 않았다면 바로 그 위치로 이동되버린다. 그래서 정규화 시킨 후에 바라보는 방향을 시간값에 비례한 속도로 이동시키는 것.
 	vPostion += XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+
+	//TODO 네비게이션 매쉬 검사
+	//! 내가 가려고 하는 위치가 갈수있는 위치인지 검사 하고 갈 수 있는  위치라면 Set_State 해주는 것.
+	if (nullptr != pNavigation)
+	{
+		if(false == pNavigation->isMove(vPostion))
+			return;
+	}
 
 	//! 위에서 연산을 끝낸 벡터를 실제 월드행렬의 위치벡터에게 적용시킨다. 
 	Set_State(STATE_POSITION, vPostion);

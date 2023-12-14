@@ -42,7 +42,7 @@ HRESULT CNavigation::Initialize_Prototype(const wstring& strNavigationFilePath)
             break;
 
         //! 여기서 Create 할 것. CCell*
-        CCell*  pCell = CCell::Create(m_pDevice, m_pContext, vPoints);
+        CCell*  pCell = CCell::Create(m_pDevice, m_pContext, vPoints, m_Cells.size());
         if(nullptr == pCell)
             return E_FAIL;
 
@@ -63,6 +63,9 @@ HRESULT CNavigation::Initialize_Prototype(const wstring& strNavigationFilePath)
 
 HRESULT CNavigation::Initialize(void* pArg)
 {
+    if(nullptr != pArg)
+        m_iCurrentIndex = ((NAVI_DESC*)pArg)->iCurrentIndex;
+
     return S_OK;
 }
 
@@ -74,6 +77,62 @@ HRESULT CNavigation::Render()
             pCell->Render(m_pShader);
     }
 
+    return S_OK;
+}
+
+_bool CNavigation::isMove(_fvector vPosition)
+{
+    _int        iNeighborIndex = { -1 };
+
+    if(true == m_Cells[m_iCurrentIndex]->isIn(vPosition, &iNeighborIndex))
+        return true;
+
+    else
+    {
+        if (-1 != iNeighborIndex)
+        {
+            while (true)
+            {
+                if(-1 == iNeighborIndex)
+                    return false;
+
+                if (true == m_Cells[iNeighborIndex]->isIn(vPosition, &iNeighborIndex))
+                {
+                    m_iCurrentIndex = iNeighborIndex;
+                    return true;
+                }
+            }
+        }
+        else
+            return false;
+    }
+    
+}
+
+HRESULT CNavigation::Make_Neighbors()
+{
+    for (auto& pSourCell : m_Cells)
+    {
+        for (auto& pDescCell : m_Cells)
+        {
+            if(pSourCell == pDescCell)
+                continue;
+
+            if (true == pDescCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_A), pSourCell->Get_Point(CCell::POINT_B)))
+            {
+               pSourCell->SetUp_Neighbor(CCell::LINE_AB, pDescCell);
+            }
+            if (true == pDescCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_B), pSourCell->Get_Point(CCell::POINT_C)))
+            {
+                pSourCell->SetUp_Neighbor(CCell::LINE_BC, pDescCell);
+            }
+            if (true == pDescCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_C), pSourCell->Get_Point(CCell::POINT_A)))
+            {
+                pSourCell->SetUp_Neighbor(CCell::LINE_CA, pDescCell);
+            }
+        }
+    }
+    
     return S_OK;
 }
 

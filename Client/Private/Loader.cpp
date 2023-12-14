@@ -10,6 +10,7 @@
 #include "Monster.h"
 #include "TestTree.h"
 #include "ForkLift.h"
+#include "Player.h"
 
 
 //TODO Tool
@@ -170,6 +171,12 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 
 
 	lstrcpy(m_szLoadingText, TEXT("원형객체를(을) 로드하는 중입니다."));
+
+	/* For.Prototype_GameObject_Player */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
+		CPlayer::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	/* For.Prototype_GameObject_Terrain */
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext, eLevel))))
@@ -188,6 +195,8 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 
 	//! For.Prototype_GameObject_ForkLift #포크리프트_AddPrototype
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ForkLift"), CForkLift::Create(m_pDevice, m_pContext, eLevel), true));
+
+	
 		
 
 	

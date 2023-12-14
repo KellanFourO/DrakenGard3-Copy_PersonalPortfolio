@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 #include "Camera_Dynamic.h"
 #include "Dynamic_Terrain.h"
+#include "Player.h"
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -14,6 +15,9 @@ HRESULT CLevel_GamePlay::Initialize()
 {
 	
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+		return E_FAIL;
+
+	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
@@ -51,6 +55,20 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const wstring& strLayerTag)
 	Desc.fRotationPerSec = XMConvertToRadians(180.0f);
 
 	if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY,strLayerTag,TEXT("Prototype_GameObject_Camera_Dynamic"), &Desc)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Layer_Player(const wstring& strLayerTag)
+{
+	CPlayer::PLAYER_DESC		PlayerDesc = {};
+
+	PlayerDesc.a = 10;
+	PlayerDesc.fRotationPerSec = XMConvertToRadians(90.0f);
+	PlayerDesc.fSpeedPerSec = 7.0f;
+
+	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Player"), &PlayerDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -96,7 +114,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const wstring& strLayerTag)
 
 	CloseHandle(hFile);
 
-	if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Dynamic_Terrain"), &testInfo)))
+	//if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Dynamic_Terrain"), &testInfo)))
+	//	return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Terrain"))))
 		return E_FAIL;
 
 	//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_ForkLift"))))

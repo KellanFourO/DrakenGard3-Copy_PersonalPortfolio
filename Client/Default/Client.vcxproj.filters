@@ -70,6 +70,9 @@
     <Filter Include="02. GameObjects\05. ForkLift">
       <UniqueIdentifier>{784e7824-784c-40c2-987e-037a767f0172}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\06. Player">
+      <UniqueIdentifier>{fcad7db1-bfa0-4bd6-8780-e7e6f6bceb78}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -192,6 +195,9 @@
     <ClInclude Include="..\Public\DataType.h">
       <Filter>99. Defines</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Player.h">
+      <Filter>02. GameObjects\06. Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -277,6 +283,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\CustomFont.cpp">
       <Filter>99. Defines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player.cpp">
+      <Filter>02. GameObjects\06. Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
