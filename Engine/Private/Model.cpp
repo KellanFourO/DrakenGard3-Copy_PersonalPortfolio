@@ -184,7 +184,7 @@ HRESULT CModel::Read_BoneData(const wstring& strPath)
 
 	DWORD dwByte = 0;
 
-	while (ReadFile(hFile, &dwByte, sizeof(DWORD), nullptr, nullptr) && dwByte > 0)
+	while (true)
 	{
 		_float4x4 matTransformation = {};
 		_float4x4 matOffset = {};
@@ -201,6 +201,9 @@ HRESULT CModel::Read_BoneData(const wstring& strPath)
 		string strName(strLength, '\0');
 		if (!ReadFile(hFile, &strName[0], strLength, &dwByte, nullptr))
 			return E_FAIL;
+
+		// Ensure null-termination
+		strName.resize(strLength);
 
 		if (!ReadFile(hFile, &matTransformation, sizeof(_float4x4), &dwByte, nullptr))
 			return E_FAIL;
@@ -223,6 +226,9 @@ HRESULT CModel::Read_BoneData(const wstring& strPath)
 			return E_FAIL;
 
 		m_Bones.push_back(pBone);
+
+		if(dwByte == 0)
+			break;
 	}
 
 	CloseHandle(hFile);
@@ -249,12 +255,12 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 
 HRESULT CModel::Read_MaterialData(const wstring& strPath)
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 HRESULT CModel::Read_AnimationData(const wstring& strPath)
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 
