@@ -1047,8 +1047,6 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 		}
 
 		pMeshData->iMaterialIndex = pAIMesh->mMaterialIndex;
-		pMeshData->vecBones = m_vecBones;
-
 		// 		pMeshData->vecBones.reserve(m_vecBones.size());
 		// 
 		// 		for (asBone* pBoneData : m_vecBones)
@@ -1120,19 +1118,6 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 		for (_int& index : m_vecMesh[i]->vecBoneIndices)
 		{
 			WriteFile(hFile, &index, sizeof(_int), &dwByte, nullptr);
-		}
-
-		for (asBone* pBoneData : m_vecMesh[i]->vecBones)
-		{
-			size_t strLength = pBoneData->strName.size();
-			WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
-			WriteFile(hFile, pBoneData->strName.c_str(), strLength, &dwByte, nullptr);
-
-			WriteFile(hFile, &pBoneData->matTransformation, sizeof(XMFLOAT4X4), &dwByte, nullptr);
-			WriteFile(hFile, &pBoneData->matOffset, sizeof(XMFLOAT4X4), &dwByte, nullptr);
-			WriteFile(hFile, &pBoneData->iIndex, sizeof(_int), &dwByte, nullptr);
-			WriteFile(hFile, &pBoneData->iParent, sizeof(_int), &dwByte, nullptr);
-			WriteFile(hFile, &pBoneData->iDepth, sizeof(_uint), &dwByte, nullptr);
 		}
 
 	}
