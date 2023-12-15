@@ -915,6 +915,8 @@ HRESULT CImgui_Manager::Write_BoneData(string strFileName)
 		return E_FAIL;
 
 	DWORD dwByte;
+	size_t vecBonesSize = m_vecBones.size();
+	WriteFile(hFile, &vecBonesSize, sizeof(size_t), &dwByte, nullptr);
 
 	for (asBone* pBone : m_vecBones)
 	{
@@ -1076,6 +1078,9 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 
 	DWORD dwByte = 0;
 
+	size_t MeshSize = m_vecMesh.size();
+	WriteFile(hFile, &MeshSize, sizeof(size_t), &dwByte, nullptr);
+
 	for (_int i = 0; i < m_vecMesh.size(); ++i)
 	{
 		size_t strLength = m_vecMesh[i]->strName.size();
@@ -1086,6 +1091,8 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 
 		if (m_vecMesh[i]->isAnim == (_uint)MODEL_TYPE::TYPE_NONANIM)
 		{
+			size_t vecNonAnimsSize = m_vecMesh[i]->vecNonAnims.size();
+			WriteFile(hFile, &vecNonAnimsSize, sizeof(size_t), &dwByte, nullptr);
 			for (VTXMESH& vertex : m_vecMesh[i]->vecNonAnims)
 			{
 				WriteFile(hFile, &vertex.vPosition, sizeof(_float3), &dwByte, nullptr);
@@ -1096,6 +1103,8 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 		}
 		else
 		{
+			size_t vecAnimsSize = m_vecMesh[i]->vecAnims.size();
+			WriteFile(hFile, &vecAnimsSize, sizeof(size_t), &dwByte, nullptr);
 			for (VTXANIMMESH& vertex : m_vecMesh[i]->vecAnims)
 			{
 				WriteFile(hFile, &vertex.vPosition, sizeof(_float3), &dwByte, nullptr);
@@ -1108,6 +1117,8 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 			}
 		}
 
+		size_t vecIndicesSize = m_vecMesh[i]->vecIndices.size();
+		WriteFile(hFile, &vecIndicesSize, sizeof(size_t), &dwByte, nullptr);
 		for (_int& index : m_vecMesh[i]->vecIndices)
 		{
 			WriteFile(hFile, &index, sizeof(_int), &dwByte, nullptr);
@@ -1115,6 +1126,8 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 
 		WriteFile(hFile, &m_vecMesh[i]->iMaterialIndex, sizeof(_uint), &dwByte, nullptr);
 
+		size_t vecBoneIndicesSize = m_vecMesh[i]->vecBoneIndices.size();
+		WriteFile(hFile, &vecBoneIndicesSize, sizeof(size_t), &dwByte, nullptr);
 		for (_int& index : m_vecMesh[i]->vecBoneIndices)
 		{
 			WriteFile(hFile, &index, sizeof(_int), &dwByte, nullptr);
@@ -1184,6 +1197,9 @@ HRESULT CImgui_Manager::Write_MaterialData(string strFileName)
 		return E_FAIL;
 	}
 	DWORD dwByte = 0;
+
+	size_t vecMaterialSize = m_vecMaterial.size();
+	WriteFile(hFile, &vecMaterialSize, sizeof(size_t), &dwByte, nullptr);
 
 	for (asMaterial* pMaterialData : m_vecMaterial)
 	{
@@ -1297,7 +1313,8 @@ HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 		return E_FAIL;
 	}
 	DWORD dwByte = 0;
-
+	size_t vecAnimationSize = m_vecAnimation.size();
+	WriteFile(hFile, &vecAnimationSize, sizeof(size_t), &dwByte, nullptr);
 	for (asAnimation* pAnimationData : m_vecAnimation)
 	{
 		size_t strLength = pAnimationData->strName.size();
@@ -1306,9 +1323,9 @@ HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 
 		WriteFile(hFile, &pAnimationData->fDuration, sizeof(_float), &dwByte, nullptr);
 		WriteFile(hFile, &pAnimationData->fTicksPerSecond, sizeof(_float), &dwByte, nullptr);
-
-		WriteFile(hFile, &pAnimationData->vecChannels, sizeof(size_t) * pAnimationData->vecChannels.size(), &dwByte, nullptr);
-
+		
+		size_t vecChannelSize = pAnimationData->vecChannels.size();
+		WriteFile(hFile, &vecChannelSize, sizeof(size_t), &dwByte, nullptr);
 		for (asChannel* pChannelData : pAnimationData->vecChannels)
 		{
 			size_t strLength = pChannelData->strName.size();
@@ -1316,8 +1333,8 @@ HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 			WriteFile(hFile, pChannelData->strName.c_str(), strLength, &dwByte, nullptr);
 			
 
-			WriteFile(hFile, &pChannelData->vecKeyFrames, sizeof(size_t) * pChannelData->vecKeyFrames.size(), &dwByte, nullptr);
-
+			size_t vecKeyFrameSize = pChannelData->vecKeyFrames.size();
+			WriteFile(hFile, &vecKeyFrameSize, sizeof(size_t), &dwByte, nullptr);
 			for (asKeyFrame* pKeyFrameData : pChannelData->vecKeyFrames)
 			{
 				WriteFile(hFile, &pKeyFrameData->fTrackPosition, sizeof(_float), &dwByte, nullptr);
