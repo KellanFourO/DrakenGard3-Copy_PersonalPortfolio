@@ -1080,7 +1080,9 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 
 	for (_int i = 0; i < m_vecMesh.size(); ++i)
 	{
-		WriteFile(hFile, &m_vecMesh[i]->strName, sizeof(string), &dwByte, nullptr);
+		size_t strLength = m_vecMesh[i]->strName.size();
+		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
+		WriteFile(hFile, m_vecMesh[i]->strName.c_str(), strLength, &dwByte, nullptr);
 		WriteFile(hFile, &m_vecMesh[i]->isAnim, sizeof(_bool), &dwByte, nullptr);
 
 
@@ -1122,7 +1124,10 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 
 		for (asBone* pBoneData : m_vecMesh[i]->vecBones)
 		{
-			WriteFile(hFile, &pBoneData->strName, sizeof(string), &dwByte, nullptr);
+			size_t strLength = pBoneData->strName.size();
+			WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
+			WriteFile(hFile, pBoneData->strName.c_str(), strLength, &dwByte, nullptr);
+
 			WriteFile(hFile, &pBoneData->matTransformation, sizeof(XMFLOAT4X4), &dwByte, nullptr);
 			WriteFile(hFile, &pBoneData->matOffset, sizeof(XMFLOAT4X4), &dwByte, nullptr);
 			WriteFile(hFile, &pBoneData->iIndex, sizeof(_int), &dwByte, nullptr);
@@ -1197,9 +1202,18 @@ HRESULT CImgui_Manager::Write_MaterialData(string strFileName)
 
 	for (asMaterial* pMaterialData : m_vecMaterial)
 	{
-		WriteFile(hFile, &pMaterialData->strDiffuseFilePath, sizeof(string), &dwByte, nullptr);
-		WriteFile(hFile, &pMaterialData->strSpecularFilePath, sizeof(string), &dwByte, nullptr);
-		WriteFile(hFile, &pMaterialData->strNormalFilePath, sizeof(string), &dwByte, nullptr);
+		size_t strLength = pMaterialData->strDiffuseFilePath.size();
+		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
+		WriteFile(hFile, pMaterialData->strDiffuseFilePath.c_str(), strLength, &dwByte, nullptr);
+
+		size_t strLength = pMaterialData->strSpecularFilePath.size();
+		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
+		WriteFile(hFile, pMaterialData->strSpecularFilePath.c_str(), strLength, &dwByte, nullptr);
+
+		size_t strLength = pMaterialData->strNormalFilePath.size();
+		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
+		WriteFile(hFile, pMaterialData->strNormalFilePath.c_str(), strLength, &dwByte, nullptr);
+
 	}
 
 
@@ -1301,7 +1315,10 @@ HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 
 	for (asAnimation* pAnimationData : m_vecAnimation)
 	{
-		WriteFile(hFile, &pAnimationData->strName, sizeof(string), &dwByte, nullptr);
+		size_t strLength = pAnimationData->strName.size();
+		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
+		WriteFile(hFile, pAnimationData->strName.c_str(), strLength, &dwByte, nullptr);
+
 		WriteFile(hFile, &pAnimationData->fDuration, sizeof(_float), &dwByte, nullptr);
 		WriteFile(hFile, &pAnimationData->fTicksPerSecond, sizeof(_float), &dwByte, nullptr);
 
@@ -1309,7 +1326,11 @@ HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 
 		for (asChannel* pChannelData : pAnimationData->vecChannels)
 		{
-			WriteFile(hFile, &pChannelData->strName, sizeof(string), &dwByte, nullptr);
+			size_t strLength = pChannelData->strName.size();
+			WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
+			WriteFile(hFile, pChannelData->strName.c_str(), strLength, &dwByte, nullptr);
+			
+
 			WriteFile(hFile, &pChannelData->vecKeyFrames, sizeof(size_t) * pChannelData->vecKeyFrames.size(), &dwByte, nullptr);
 
 			for (asKeyFrame* pKeyFrameData : pChannelData->vecKeyFrames)
