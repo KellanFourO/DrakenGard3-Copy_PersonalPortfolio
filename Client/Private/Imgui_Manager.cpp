@@ -1203,18 +1203,17 @@ HRESULT CImgui_Manager::Write_MaterialData(string strFileName)
 
 	for (asMaterial* pMaterialData : m_vecMaterial)
 	{
-		//size_t strLength = pMaterialData->strDiffuseFilePath.size();
-		//WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
-		WriteFile(hFile, &pMaterialData->strDiffuseFilePath, sizeof(string), &dwByte, nullptr);
+		size_t strLength = pMaterialData->strDiffuseFilePath.size();
+		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
+		WriteFile(hFile, pMaterialData->strDiffuseFilePath.c_str(), strLength, &dwByte, nullptr);
 
-		//strLength = pMaterialData->strSpecularFilePath.size();
-		//WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
-		WriteFile(hFile, &pMaterialData->strSpecularFilePath, sizeof(string), &dwByte, nullptr);
+		strLength = pMaterialData->strSpecularFilePath.size();
+		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
+		WriteFile(hFile, pMaterialData->strSpecularFilePath.c_str(), strLength, &dwByte, nullptr);
 
-		//strLength = pMaterialData->strNormalFilePath.size();
-		//WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
-		WriteFile(hFile, &pMaterialData->strNormalFilePath, sizeof(string), &dwByte, nullptr);
-
+		strLength = pMaterialData->strNormalFilePath.size();
+		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
+		WriteFile(hFile, pMaterialData->strNormalFilePath.c_str(), strLength, &dwByte, nullptr);
 	}
 
 

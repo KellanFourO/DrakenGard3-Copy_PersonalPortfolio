@@ -408,36 +408,62 @@ HRESULT CModel::Read_MaterialData(wstring& strPath)
 		MATERIAL_DESC		MaterialDesc;
 		ZeroMemory(&MaterialDesc, sizeof(MATERIAL_DESC));
 		
-			string path, fileName;
+			string path;
 
-			if (!ReadFile(hFile, &fileName, sizeof(string), &dwByte, nullptr))
+			// Read string length
+			size_t strLength;
+			if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
 				return E_FAIL;
 
+			// Read string content
+			string strDiffuseName(strLength, '\0');
+			if (!ReadFile(hFile, &strDiffuseName[0], strLength, &dwByte, nullptr))
+				return E_FAIL;
+
+			// Ensure null-termination
+			strDiffuseName.resize(strLength);
+
 			string newExtension = "dds";
-			string ddsFileName = ReplaceExtension(fileName, newExtension);
-			if (!fileName.empty())
+			string ddsFileName = ReplaceExtension(strDiffuseName, newExtension);
+			if (!strDiffuseName.empty())
 			{
 				path = ConvertWstrToStr(strPath) + "/" + ddsFileName;
 				string modifyPath = ModifyPath(path);
 				MaterialDesc.pMtrlTextures[aiTextureType_DIFFUSE] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(modifyPath));
 			}
 
-			if (!ReadFile(hFile, &fileName, sizeof(string), &dwByte, nullptr))
+			if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
 				return E_FAIL;
 
-			 ddsFileName = ReplaceExtension(fileName, newExtension);
-			if (!fileName.empty())
+			// Read string content
+			string strSpecularName(strLength, '\0');
+			if (!ReadFile(hFile, &strSpecularName[0], strLength, &dwByte, nullptr))
+				return E_FAIL;
+
+			// Ensure null-termination
+			strSpecularName.resize(strLength);
+
+			 ddsFileName = ReplaceExtension(strSpecularName, newExtension);
+			if (!strSpecularName.empty())
 			{
 				path = ConvertWstrToStr(strPath) + "/" + ddsFileName;
 				string modifyPath = ModifyPath(path);
 				MaterialDesc.pMtrlTextures[aiTextureType_SPECULAR] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(modifyPath));
 			}
 
-			if (!ReadFile(hFile, &fileName, sizeof(string), &dwByte, nullptr))
+			if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
 				return E_FAIL;
 
-			ddsFileName = ReplaceExtension(fileName, newExtension);
-			if (!fileName.empty())
+			// Read string content
+			string strNormalName(strLength, '\0');
+			if (!ReadFile(hFile, &strNormalName[0], strLength, &dwByte, nullptr))
+				return E_FAIL;
+
+			// Ensure null-termination
+			strNormalName.resize(strLength);
+
+			ddsFileName = ReplaceExtension(strNormalName, newExtension);
+			if (!strNormalName.empty())
 			{
 				path = ConvertWstrToStr(strPath) + "/" + ddsFileName;
 				string modifyPath = ModifyPath(path);
