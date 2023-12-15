@@ -9,6 +9,8 @@
 
 #include <regex>
 #include <codecvt>
+#include <filesystem>
+
 
 ImGuiIO g_io;
 static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
@@ -470,7 +472,7 @@ void CImgui_Manager::OpenDialogBinaryModel()
 		return;
 
 	string strKey, strTitle, strPath;
-	const _char* szFilters = "Binary (*.dat, *.vfx,){.dat,.vfx},Instance (*.dat){.dat},Json (*.json){.json},All files{.*}";
+	const _char* szFilters = "Target (*.fbx){.fbx},All files{.*}";
 
 	string strAdd;
 
@@ -483,7 +485,7 @@ void CImgui_Manager::OpenDialogBinaryModel()
 	strTitle = u8"모델 바이너리 저장";
 	strTitle += strAdd;
 
-	strPath = "../Bin/DafaFiles/Object/";
+	strPath = "../Bin/Resources/Models/";
 
 	m_pFileDialog->OpenDialog(strKey, strTitle, szFilters, strPath, 1, nullptr, ImGuiFileDialogFlags_Modal | ImGuiFileDialogFlags_ConfirmOverwrite);
 }
@@ -803,20 +805,46 @@ void CImgui_Manager::LoadObject(string strFilePath)
 {
 }
 
-HRESULT CImgui_Manager::BinaryConvert(string strFileName, string strFilePath, const MODEL_TYPE& eModelType)
+HRESULT CImgui_Manager::StartBakeBinary()
 {
 	
+	
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::BinaryConvert(string strFileName, string strFilePath, const MODEL_TYPE& eModelType)
+{
+	//! strFilePath가 곧 sourceUpperPath
+
 	if(FAILED(ReadFBX(strFilePath, eModelType)))
 		return E_FAIL;
 
-	if (FAILED(Read_BoneData(m_pAiScene->mRootNode, -1)))
+	if (FAILED(Read_BoneData(m_pAiScene->mRootNode, 0, -1, 0)))
 		return E_FAIL;
 
 	if(FAILED(Read_MeshData(eModelType)))
 		return E_FAIL;
 
-	if(FAILED(Write_MeshData(strFilePath)))
+	if(FAILED(Write_MeshData(strFileName)))
 		return E_FAIL;
+
+	if(FAILED(Write_BoneData(strFileName)))
+		return E_FAIL;
+
+	if(FAILED(Read_MaterialData()))
+		return E_FAIL;
+
+	if (FAILED(Write_MaterialData(strFileName)))
+		return E_FAIL;
+
+	if (MODEL_TYPE::TYPE_ANIM == eModelType)
+	{
+		if (FAILED(Read_AnimationData()))
+			return E_FAIL;
+
+		if (FAILED(Write_AnimationData(strFileName)))
+			return E_FAIL;
+	}
 	
 	return S_OK;
 }
@@ -841,7 +869,7 @@ HRESULT CImgui_Manager::ReadFBX(string strFilePath, const MODEL_TYPE& eModelType
 	return S_OK;
 }
 
-HRESULT CImgui_Manager::Read_BoneData(aiNode* pAINode, _int iParentIndex)
+HRESULT CImgui_Manager::Read_BoneData(aiNode* pAINode, _int iIndex, _int iParentIndex, _int iDepth)
 {
 	if(nullptr == pAINode)
 		return E_FAIL;
@@ -850,6 +878,8 @@ HRESULT CImgui_Manager::Read_BoneData(aiNode* pAINode, _int iParentIndex)
 
 	pBone->strName = pAINode->mName.data;
 	pBone->iParent = iParentIndex;
+	pBone->iIndex = iIndex;
+	pBone->iDepth = iDepth;
 
 	_float4x4 matTransformation;
 
@@ -859,12 +889,41 @@ HRESULT CImgui_Manager::Read_BoneData(aiNode* pAINode, _int iParentIndex)
 	
 	m_vecBones.push_back(pBone);
 
-	_int iChildParentIndex = m_vecBones.size() - 1;
 
 	for (size_t i = 0; i < pAINode->mNumChildren; ++i)
 	{
-		Read_BoneData(pAINode->mChildren[i], iChildParentIndex);
+		Read_BoneData(pAINode->mChildren[i], m_vecBones.size(), iIndex, pBone->iDepth + 1 );
 	}
+
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Write_BoneData(string strFileName)
+{
+	string strFilePath = "../Bin/DataFiles/Model/";
+	string strEXT = ".bone";
+
+	string strFileName1 = filesystem::path(strFileName).stem().string();
+
+	string strFullPath = strFilePath + strFileName1 + strEXT;
+
+	HANDLE	hFile;
+
+	hFile = CreateFile(ConvertStrToWstr(strFullPath).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+	
+	DWORD dwByte;
+
+	for (asBone* pBone : m_vecBones)
+	{
+		WriteFile(hFile, &pBone->strName, sizeof(pBone->strName.size()), &dwByte, nullptr);
+		WriteFile(hFile, &pBone->matTransformation, sizeof(XMFLOAT4X4), &dwByte, nullptr);
+		WriteFile(hFile, &pBone->matOffset, sizeof(XMFLOAT4X4), &dwByte, nullptr);
+		WriteFile(hFile, &pBone->iIndex, sizeof(_int), &dwByte, nullptr);
+		WriteFile(hFile, &pBone->iParent, sizeof(_int), &dwByte, nullptr);
+		WriteFile(hFile, &pBone->iDepth, sizeof(_uint), &dwByte, nullptr);
+	}
+
+	CloseHandle(hFile);
 
 	return S_OK;
 }
@@ -878,14 +937,14 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 
 		asMesh* pMeshData = new asMesh;
 		pMeshData->strName = pAIMesh->mName.data;
-
+		
 		if(eModelType == MODEL_TYPE::TYPE_NONANIM)
 		{
 			pMeshData->isAnim = (UINT)eModelType;
 
 			pMeshData->vecNonAnims.reserve(pAIMesh->mNumVertices);
-
-			VTXNONANIM vertex{};
+			
+			VTXMESH vertex{};
 
 			for (_uint j = 0; j < pAIMesh->mNumVertices; ++j)
 			{
@@ -903,8 +962,13 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 			pMeshData->isAnim = (UINT)eModelType;
 
 			pMeshData->vecAnims.reserve(pAIMesh->mNumVertices);
+			for (_int j = 0; j < pAIMesh->mNumVertices; ++j)
+			{
+				pMeshData->vecAnims.push_back(VTXANIMMESH{});
+			}
 
-			VTXANIM vertex{};
+
+			VTXANIMMESH vertex{};
 
 			for (_uint j = 0; j < pAIMesh->mNumVertices; ++j)
 			{
@@ -926,37 +990,39 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 
 				XMStoreFloat4x4(&OffsetMatrix, XMMatrixTranspose(XMLoadFloat4x4(&OffsetMatrix)));
 
-				pMeshData->vecOffsetMatrices.push_back(OffsetMatrix);
-
 				iBoneIndex = Get_BoneIndex(pAIBone->mName.data);
+				
+				m_vecBones[iBoneIndex]->matOffset = OffsetMatrix;
+				
+
 				pMeshData->vecBoneIndices.push_back(iBoneIndex);
 
 				for (_uint k = 0; k < pAIBone->mNumWeights; ++k)
 				{
 					_uint iVertexIndex = pAIBone->mWeights[k].mVertexId;
 
-					if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeight.x)
+					if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.x)
 					{
-						pMeshData->vecAnims[iVertexIndex].vBlendIndex.x = Get_BoneIndex(pAIBone->mName.data);
-						pMeshData->vecAnims[iVertexIndex].vBlendWeight.x = pAIBone->mWeights[k].mWeight;
+						pMeshData->vecAnims[iVertexIndex].vBlendIndices.x = Get_BoneIndex(pAIBone->mName.data);
+						pMeshData->vecAnims[iVertexIndex].vBlendWeights.x = pAIBone->mWeights[k].mWeight;
 					}
 
-					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeight.y)
+					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.y)
 					{
-						pMeshData->vecAnims[iVertexIndex].vBlendIndex.y = Get_BoneIndex(pAIBone->mName.data);
-						pMeshData->vecAnims[iVertexIndex].vBlendWeight.y = pAIBone->mWeights[k].mWeight;
+						pMeshData->vecAnims[iVertexIndex].vBlendIndices.y = Get_BoneIndex(pAIBone->mName.data);
+						pMeshData->vecAnims[iVertexIndex].vBlendWeights.y = pAIBone->mWeights[k].mWeight;
 					}
 
-					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeight.z)
+					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.z)
 					{
-						pMeshData->vecAnims[iVertexIndex].vBlendIndex.z = Get_BoneIndex(pAIBone->mName.data);
-						pMeshData->vecAnims[iVertexIndex].vBlendWeight.z = pAIBone->mWeights[k].mWeight;
+						pMeshData->vecAnims[iVertexIndex].vBlendIndices.z = Get_BoneIndex(pAIBone->mName.data);
+						pMeshData->vecAnims[iVertexIndex].vBlendWeights.z = pAIBone->mWeights[k].mWeight;
 					}
 
-					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeight.w)
+					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.w)
 					{
-						pMeshData->vecAnims[iVertexIndex].vBlendIndex.w = Get_BoneIndex(pAIBone->mName.data);
-						pMeshData->vecAnims[iVertexIndex].vBlendWeight.w = pAIBone->mWeights[k].mWeight;
+						pMeshData->vecAnims[iVertexIndex].vBlendIndices.w = Get_BoneIndex(pAIBone->mName.data);
+						pMeshData->vecAnims[iVertexIndex].vBlendWeights.w = pAIBone->mWeights[k].mWeight;
 					}
 				}
 			}
@@ -975,15 +1041,315 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 		}
 
 		pMeshData->iMaterialIndex = pAIMesh->mMaterialIndex;
+		pMeshData->vecBones = m_vecBones;
+
+// 		pMeshData->vecBones.reserve(m_vecBones.size());
+// 
+// 		for (asBone* pBoneData : m_vecBones)
+// 		{
+// 			pMeshData->vecBones.push_back(*pBoneData);
+// 		}
+
+
+		m_vecMesh.push_back(pMeshData);
 	}
 
 	return S_OK;
 }
 
-HRESULT CImgui_Manager::Write_MeshData(string strFilePath)
-
+HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 {
-	return E_NOTIMPL;
+	string strFilePath = "../Bin/DataFiles/Model/";
+	string strEXT = ".mesh";
+
+	string strFileName1 = filesystem::path(strFileName).stem().string();
+
+	string strFullPath = strFilePath + strFileName1 + strEXT;
+
+	HANDLE	hFile;
+
+	hFile = CreateFile(ConvertStrToWstr(strFullPath).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+
+	DWORD dwByte = 0;
+
+	for (_int i = 0; i < m_vecMesh.size(); ++i)
+	{
+		WriteFile(hFile, &m_vecMesh[i]->strName, sizeof(m_vecMesh[i]->strName.size()), &dwByte, nullptr);
+		WriteFile(hFile, &m_vecMesh[i]->isAnim, sizeof(m_vecMesh[i]->isAnim), &dwByte, nullptr);
+		
+		
+		if (m_vecMesh[i]->isAnim == (_uint)MODEL_TYPE::TYPE_NONANIM)
+		{
+			for (VTXMESH& vertex : m_vecMesh[i]->vecNonAnims)
+			{
+				WriteFile(hFile, &vertex.vPosition, sizeof(vertex.vPosition), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vNormal, sizeof(vertex.vNormal), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vTexcoord, sizeof(vertex.vTexcoord), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vTangent, sizeof(vertex.vTangent), &dwByte, nullptr);
+			}
+		}
+		else
+		{
+			for (VTXANIMMESH& vertex : m_vecMesh[i]->vecAnims)
+			{
+				WriteFile(hFile, &vertex.vPosition, sizeof(vertex.vPosition), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vNormal, sizeof(vertex.vNormal), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vTexcoord, sizeof(vertex.vTexcoord), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vTangent, sizeof(vertex.vTangent), &dwByte, nullptr);
+
+				WriteFile(hFile, &vertex.vBlendIndices, sizeof(vertex.vBlendIndices), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vBlendWeights, sizeof(vertex.vBlendWeights), &dwByte, nullptr);
+			}
+		}
+
+		for (_int& index : m_vecMesh[i]->vecIndices)
+		{
+			WriteFile(hFile, &index, sizeof(index), &dwByte, nullptr);
+		}
+
+		WriteFile(hFile, &m_vecMesh[i]->iMaterialIndex, sizeof(m_vecMesh[i]->iMaterialIndex), &dwByte, nullptr);
+
+		for (_int& index : m_vecMesh[i]->vecBoneIndices)
+		{
+			WriteFile(hFile, &index, sizeof(index), &dwByte, nullptr);
+		}
+
+		for (asBone* pBoneData : m_vecMesh[i]->vecBones)
+		{
+			WriteFile(hFile, &pBoneData->strName, sizeof(pBoneData->strName.size()), &dwByte, nullptr);
+			WriteFile(hFile, &pBoneData->matTransformation, sizeof(XMFLOAT4X4), &dwByte, nullptr);
+			WriteFile(hFile, &pBoneData->matOffset, sizeof(XMFLOAT4X4), &dwByte, nullptr);
+			WriteFile(hFile, &pBoneData->iIndex, sizeof(_int), &dwByte, nullptr);
+			WriteFile(hFile, &pBoneData->iParent, sizeof(_int), &dwByte, nullptr);
+			WriteFile(hFile, &pBoneData->iDepth, sizeof(_uint), &dwByte, nullptr);
+		}
+
+	}
+
+	CloseHandle(hFile);
+
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Read_MaterialData()
+{
+	for (_uint i = 0; i < m_pAiScene->mNumMaterials; ++i)
+	{
+		aiMaterial* pMaterial = m_pAiScene->mMaterials[i];
+
+		if(nullptr == pMaterial)
+			return E_FAIL;
+
+		asMaterial* pMaterialData = new asMaterial;
+
+		aiString aifile;
+		string strName;
+
+		if(FAILED(pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aifile)))
+			return E_FAIL; //!Continue
+
+		strName = aifile.data;
+		pMaterialData->strDiffuseFilePath = filesystem::path(strName).filename().string();
+
+		if (FAILED(pMaterial->GetTexture(aiTextureType_SPECULAR, 0, &aifile)))
+			return E_FAIL; //!Continue
+
+		strName = aifile.data;
+		pMaterialData->strSpecularFilePath = filesystem::path(strName).filename().string();
+
+		if (FAILED(pMaterial->GetTexture(aiTextureType_NORMALS, 0, &aifile)))
+			return E_FAIL; //!Continue
+
+		strName = aifile.data;
+		pMaterialData->strNormalFilePath = filesystem::path(strName).filename().string();
+		
+		m_vecMaterial.push_back(pMaterialData);
+	}
+	
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Write_MaterialData(string strFileName)
+{
+
+	string strFilePath = "../Bin/DataFiles/Model/";
+	string strEXT = ".mat";
+
+	string strFileName1 = filesystem::path(strFileName).stem().string();
+
+	string strFullPath = strFilePath + strFileName1 + strEXT;
+
+	HANDLE	hFile;
+
+	hFile = CreateFile(ConvertStrToWstr(strFullPath).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+
+	if (nullptr == hFile)
+	{
+		return E_FAIL;
+	}
+	DWORD dwByte = 0;
+
+	for (asMaterial* pMaterialData : m_vecMaterial)
+	{
+		WriteFile(hFile, &pMaterialData->strDiffuseFilePath, sizeof(pMaterialData->strDiffuseFilePath), &dwByte, nullptr );
+		WriteFile(hFile, &pMaterialData->strSpecularFilePath, sizeof(pMaterialData->strSpecularFilePath), &dwByte, nullptr);
+		WriteFile(hFile, &pMaterialData->strNormalFilePath, sizeof(pMaterialData->strNormalFilePath), &dwByte, nullptr);
+	}
+
+
+	CloseHandle(hFile);
+
+	//!WriteFile(hFile, &m_vecMesh[i]->strName, sizeof(m_vecMesh[i]->strName), &dwByte, nullptr);
+
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Read_AnimationData()
+{
+	for (_uint i = 0; i < m_pAiScene->mNumAnimations; ++i)
+	{
+		aiAnimation* pAnimation = m_pAiScene->mAnimations[i];
+		asAnimation* pAnimationData = new asAnimation;
+
+		pAnimationData->strName = pAnimation->mName.data;
+		pAnimationData->fDuration = pAnimation->mDuration;
+		pAnimationData->fTicksPerSecond = pAnimation->mTicksPerSecond;
+
+		for (_uint j = 0; j < pAnimation->mNumChannels; ++j)
+		{
+			asChannel* pChannelData = new asChannel;
+			aiNodeAnim* pChannel = pAnimation->mChannels[j];
+
+			pChannelData->strName = pChannel->mNodeName.data;
+
+			_uint iNumKeyFrames;
+
+			iNumKeyFrames = max(pChannel->mNumScalingKeys, pChannel->mNumRotationKeys);
+			iNumKeyFrames = max(pChannel->mNumPositionKeys, iNumKeyFrames);
+
+			_float3		vScale{};
+			_float4		vRotation{};
+			_float3		vPosition{};
+
+			for (_uint k = 0; k < iNumKeyFrames; ++k)
+			{
+				asKeyFrame* pKeyFrameData = new asKeyFrame;
+
+				if (k < pChannel->mNumScalingKeys)
+				{
+					memcpy(&vScale, &pChannel->mScalingKeys[k].mValue, sizeof(_float3));
+					pKeyFrameData->fTrackPosition = pChannel->mScalingKeys[k].mTime;
+				}
+
+				if (k < pChannel->mNumRotationKeys)
+				{
+					//! 어심프의 로테이션키의 밸류는 aiQuaternion이야. x,y,z,w 순이아닌 w,x,y,z 순으로 되어있어
+					//! 우리가 쓰던 거랑 순서가 다르지? 그래서 memcpy를 사용하면 안돼.
+
+					vRotation.x = pChannel->mRotationKeys[k].mValue.x;
+					vRotation.y = pChannel->mRotationKeys[k].mValue.y;
+					vRotation.z = pChannel->mRotationKeys[k].mValue.z;
+					vRotation.w = pChannel->mRotationKeys[k].mValue.w;
+					pKeyFrameData->fTrackPosition = pChannel->mRotationKeys[k].mTime;
+				}
+
+				if (k < pChannel->mNumPositionKeys)
+				{
+					memcpy(&vPosition, &pChannel->mPositionKeys[k].mValue, sizeof(_float3));
+					pKeyFrameData->fTrackPosition = pChannel->mPositionKeys[k].mTime;
+				}
+
+				pKeyFrameData->vScale = vScale;
+				pKeyFrameData->vRotation = vRotation;
+				pKeyFrameData->vPosition = vPosition;
+
+				pChannelData->vecKeyFrames.push_back(pKeyFrameData);
+			}
+			pAnimationData->vecChannels.push_back(pChannelData);
+		}
+		m_vecAnimation.push_back(pAnimationData);
+	}
+
+	
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
+{
+	string strFilePath = "../Bin/DataFiles/Model/";
+	string strEXT = ".anim";
+
+	string strFileName1 = filesystem::path(strFileName).stem().string();
+
+	string strFullPath = strFilePath + strFileName1 + strEXT;
+
+	HANDLE	hFile;
+
+	hFile = CreateFile(ConvertStrToWstr(strFullPath).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+
+	if (nullptr == hFile)
+	{
+		return E_FAIL;
+	}
+	DWORD dwByte = 0;
+
+	for (asAnimation* pAnimationData : m_vecAnimation)
+	{
+		WriteFile(hFile, &pAnimationData->strName, sizeof(pAnimationData->strName.size()), &dwByte, nullptr);
+		WriteFile(hFile, &pAnimationData->fDuration, sizeof(_float), &dwByte, nullptr);
+		WriteFile(hFile, &pAnimationData->fTicksPerSecond, sizeof(_float), &dwByte, nullptr);
+
+		WriteFile(hFile, &pAnimationData->vecChannels, sizeof(size_t) * pAnimationData->vecChannels.size(), &dwByte, nullptr);
+
+		for (asChannel* pChannelData : pAnimationData->vecChannels)
+		{
+			WriteFile(hFile, &pChannelData->strName, sizeof(pChannelData->strName.size()), &dwByte, nullptr);
+			WriteFile(hFile, &pChannelData->vecKeyFrames, sizeof(size_t) * pChannelData->vecKeyFrames.size(), &dwByte, nullptr);
+
+			for (asKeyFrame* pKeyFrameData : pChannelData->vecKeyFrames)
+			{
+				WriteFile(hFile, &pKeyFrameData->fTrackPosition, sizeof(_float), &dwByte, nullptr);
+				WriteFile(hFile, &pKeyFrameData->vScale, sizeof(_float3), &dwByte, nullptr);
+				WriteFile(hFile, &pKeyFrameData->vRotation, sizeof(_float4), &dwByte, nullptr);
+				WriteFile(hFile, &pKeyFrameData->vPosition, sizeof(_float3), &dwByte, nullptr);
+			}
+		}
+	}
+
+	CloseHandle(hFile);
+	m_vecBones.clear();
+	m_vecMesh.clear();
+	m_vecMaterial.clear();
+	m_vecAnimation.clear();
+	
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Bake_Character()
+{
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Bake_Env_NonAnim()
+{
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Bake_Env_Anim()
+{
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Bake_Weapon()
+{
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Bake_Select(string strFilePath, const MODEL_TYPE& eModelType)
+{
+	
+
+	return S_OK;
 }
 
 _uint CImgui_Manager::Get_BoneIndex(const char* szName)
@@ -1018,6 +1384,48 @@ wstring CImgui_Manager::SliceObjectTag(const wstring& strObjectTag)
 	{
 		return strObjectTag.substr(pos + 1);
 	}
+}
+
+void CImgui_Manager::Replace(string& str, string comp, string rep)
+{	
+		string temp = str;
+
+		size_t start_pos = 0;
+		while ((start_pos = temp.find(comp, start_pos)) != wstring::npos)
+		{
+			temp.replace(start_pos, comp.length(), rep);
+			start_pos += rep.length();
+		}
+
+		str = temp;
+}
+
+vector<string> CImgui_Manager::Get_AllFolderNames(const string& strDirPath)
+{
+	vector<std::string> folderNames;
+	try
+	{
+		for (const auto& entry : filesystem::directory_iterator(strDirPath))
+		{
+			if (filesystem::is_directory(entry))
+			{
+				folderNames.push_back(entry.path().filename().string());
+			}
+		}
+	}
+	catch (const std::exception& e)
+	{
+		MSG_BOX("폴더명을 얻어오지못햇음");
+	}
+
+	return folderNames;
+}
+
+void CImgui_Manager::CheckOrCreatePath(const string& strPath)
+{
+	auto p = filesystem::path(strPath);
+	filesystem::create_directory(p.parent_path().parent_path());
+	filesystem::create_directory(p.parent_path());
 }
 
 void CImgui_Manager::Free()

@@ -1,7 +1,7 @@
 #pragma once
 #include "Base.h"
 #include "Client_Defines.h"
-#include "DataType.h"
+
 
 
 BEGIN(Client)
@@ -82,9 +82,10 @@ private: //TODO ImguiDialog #다이얼로그
 private:
 		
 		ImGuiFileDialog*		m_pFileDialog;
-		string					m_strCurrentDialogTag;
-		DIALOGID				m_eDialogMode = { DIALOG_END };
-		MODEL_TYPE				m_eModelType = { MODEL_TYPE::TYPE_END };
+		string						m_strCurrentDialogTag;
+		DIALOGID					m_eDialogMode = { DIALOG_END };
+		MODEL_TYPE					m_eModelType = { MODEL_TYPE::TYPE_END };
+		
 		
 
 private: //TODO 맵툴 #맵툴 
@@ -120,12 +121,28 @@ private: //TODO 오브젝트툴 #오브젝트툴
 	void					SaveObject(string strFilePath);
 	void					LoadObject(string strFilePath);
 
+	HRESULT					StartBakeBinary();
 	HRESULT					BinaryConvert(string strFileName, string strFilePath, const MODEL_TYPE& eModelType);
 	HRESULT					ReadFBX(string strFilePath, const MODEL_TYPE& eModelType);
 
-	HRESULT					Read_BoneData(aiNode* pAINode, _int iParentIndex);
+	HRESULT					Read_BoneData(aiNode* pAINode, _int iIndex, _int iParentIndex, _int iDepth);
+	HRESULT					Write_BoneData(string strFileName);
+
 	HRESULT					Read_MeshData(const MODEL_TYPE& eModelType);
-	HRESULT					Write_MeshData(string strFilePath);
+	HRESULT					Write_MeshData(string strFileName);
+
+	HRESULT					Read_MaterialData();
+	HRESULT					Write_MaterialData(string strFileName);
+
+	HRESULT					Read_AnimationData();
+	HRESULT					Write_AnimationData(string strFileName);
+
+	HRESULT					Bake_Character();
+	HRESULT					Bake_Env_NonAnim();
+	HRESULT					Bake_Env_Anim();
+	HRESULT					Bake_Weapon();
+	HRESULT					Bake_Select(string strFilePath, const MODEL_TYPE& eModelType);
+
 
 	_uint					Get_BoneIndex(const char* szName);
 
@@ -151,12 +168,18 @@ private:
 	vector<asMaterial*>			m_vecMaterial;
 	vector<asAnimation*>		m_vecAnimation;
 
+private:
+	string sourceUpperPath = "../Assets/";
+	string destUpperPath = "../../Client/Bin/Resources/Models/";
 	
 
 private: //TODO 문자열 #문자열함수
 	string					ConvertWstrToStr(const wstring& str);
 	wstring					ConvertStrToWstr(const string& str);
 	wstring					SliceObjectTag(const wstring& strObjectTag);
+	void					Replace(string& str, string comp, string rep);
+	vector<string>			Get_AllFolderNames(const string& strDirPath);
+	void					CheckOrCreatePath(const string& strPath);
 		 
 
 public:

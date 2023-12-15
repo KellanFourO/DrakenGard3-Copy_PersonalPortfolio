@@ -121,11 +121,13 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 
 	lstrcpy(m_szLoadingText, TEXT("모델를(을) 로드하는 중입니다."));
 
+
+	CModel::ModelData* pFilePathData = new CModel::ModelData;
 	////!For.Prototype_Component_Model_Fiona #피오나_Add_ProtoType
 	_matrix PivotMatrix; //#모델_초기행렬 
 	PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Fiona"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, "../Bin/Resources/Models/Fiona/Fiona.fbx", PivotMatrix)));
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("Fiona"), pFilePathData), PivotMatrix)));
 	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Fiona"),
 	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, "../Bin/Resources/Models/Player/pl00.fbx", PivotMatrix)));
@@ -133,11 +135,13 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	//!For.Prototype_Component_Model_ForkLift #포크리프트_Add_ProtoType
 	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_ForkLift"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, "../Bin/Resources/Models/ForkLift/ForkLift.fbx", PivotMatrix)));
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("ForkLift"), pFilePathData), PivotMatrix)));
 
 	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_TestTree"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, "../Bin/Resources/Models/Tree/Tree.fbx", PivotMatrix)));
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Tree"), pFilePathData), PivotMatrix)));
+
+	//Safe_Delete(pFilePathData);
 
 	//!For.Prototype_Component_VIBuffer_Terrain #터레인_Add_ProtoType
 		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Terrain"),
@@ -263,6 +267,24 @@ HRESULT CLoader::Loading_For_Tool_Level()
 	return Loading_For_Level(LEVEL_TOOL);
 }
 
+CModel::ModelData* CLoader::CreateDataPath(wstring strModelName, CModel::ModelData* pModelData)
+{
+	wstring strDataPath = TEXT("../Bin/DataFiles/Model/");
+	wstring strBoneEXT = TEXT(".bone");
+	wstring strMeshEXT = TEXT(".mesh");
+	wstring strMaterialEXT = TEXT(".mat");
+	wstring strAnimationEXT = TEXT(".anim");
+
+	
+
+	pModelData->strBoneDataPath = strDataPath + strModelName + strBoneEXT;
+	pModelData->strMeshDataPath = strDataPath + strModelName + strMeshEXT;
+	pModelData->strMaterialDataPath = strDataPath + strModelName + strMaterialEXT;
+	pModelData->strAnimationDataPath = strDataPath + strModelName + strAnimationEXT;
+
+	return pModelData;
+}
+
 CLoader* CLoader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eNextLevelID)
 {
 	CLoader* pInstance = new CLoader(pDevice, pContext);
@@ -285,6 +307,7 @@ void CLoader::Free()
 
 	CloseHandle(m_hThread);
 
+	
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

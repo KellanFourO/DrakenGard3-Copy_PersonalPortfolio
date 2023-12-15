@@ -12,25 +12,25 @@ CMesh::CMesh(const CMesh& rhs)
 {
 }
 
-HRESULT CMesh::Initialize_Prototype(CModel::TYPE eModelType, const aiMesh* pAIMesh, _fmatrix PivotMatrix, const vector<class CBone*>& Bones)
+HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXANIMMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<asBone*> Bones)
 {
-	m_iMaterialIndex = pAIMesh->mMaterialIndex; //! AIMesh가 들고있는 인덱스 받아오자
+	m_iMaterialIndex = m_iMaterialIndex; //! AIMesh가 들고있는 인덱스 받아오자
 
-	strcpy_s(m_szName, pAIMesh->mName.data); //! mName 안의 데이터가 캐릭터 배열이다 이름가져오자
+	strcpy_s(m_szName, strName.c_str()); //! mName 안의 데이터가 캐릭터 배열이다 이름가져오자
 
 	m_iNumVertexBuffers = 1;
-	m_iNumVertices = pAIMesh->mNumVertices; //! 정점의 개수는 읽어들인 개수다.
-
-	m_iNumIndices = pAIMesh->mNumFaces * 3; //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
+	m_iNumVertices = (_int)Vertices.size() / 3; //! 정점의 개수는 읽어들인 개수다.
+	
+	//!m_iNumIndices = pAIMesh->mNumFaces * 3;
+	m_iNumIndices = ((_int)Indices.size()); //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
 	m_iIndexStride = 4; //! 모델은 왠만해선 정점이 65535개를 넘어간다. 그러니까 그냥 4로 Default
 
 	m_eIndexFormat = m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
 	m_eTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 #pragma region VERTEX_BUFFER
-	HRESULT		hr = CModel::TYPE_NONANIM == eModelType ? Ready_Vertices_NonAnim(pAIMesh, PivotMatrix) : Ready_Vertices_Anim(pAIMesh, Bones);
 
-	if(FAILED(hr))
+	if(FAILED(Ready_Vertices_Anim(Vertices, Bones)))
 		return E_FAIL;
 
 #pragma endregion
@@ -47,25 +47,88 @@ HRESULT CMesh::Initialize_Prototype(CModel::TYPE eModelType, const aiMesh* pAIMe
 	ZeroMemory(&m_SubResourceData, sizeof m_SubResourceData);
 
 	//! 모델의 정점의 개수가 65535는 무조건 넘어갈거니 디폴트로 4로 줫엇다. int로 할당하자
-	_uint* pIndices = new _uint[m_iNumIndices];
-
-	//! mNumFace가 삼각형 개수라고했엇다. 삼각형 개수만큼 루프돌아서 인덱스 정보 채워주자
+	FACEINDICES32* pIndices = new FACEINDICES32[m_iNumIndices];
+	ZeroMemory(pIndices, sizeof(FACEINDICES32) * m_iNumIndices);
 	
+	for (_uint i = 0, j = 0; i < m_iNumIndices; ++i, ++j)
+	{
+		pIndices[i]._1 = Indices[j];
+		pIndices[i]._2 = Indices[++j];
+		pIndices[i]._3 = Indices[++j];
+
+
+		m_MeshIndices.push_back({ pIndices[i]._1,
+								   pIndices[i]._2,
+								   pIndices[i]._3 });
+	}
+
+	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
+	m_SubResourceData.pSysMem = pIndices;
+
+	if (FAILED(__super::Create_Buffer(&m_pIB)))
+		return E_FAIL;
+
+	Safe_Delete_Array(pIndices);
+
+#pragma endregion
+
+	return S_OK;
+}
+
+HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<asBone*> Bones, _matrix PivotMatrix)
+{
+	m_iMaterialIndex = m_iMaterialIndex; //! AIMesh가 들고있는 인덱스 받아오자
+
+	strcpy_s(m_szName, strName.c_str()); //! mName 안의 데이터가 캐릭터 배열이다 이름가져오자
+
+	m_iNumVertexBuffers = 1;
+	m_iNumVertices = (_int)Vertices.size(); //! 정점의 개수는 읽어들인 개수다.
+
+	m_iNumIndices = ((_int)Indices.size()) / 3; //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
+	m_iIndexStride = 4; //! 모델은 왠만해선 정점이 65535개를 넘어간다. 그러니까 그냥 4로 Default
+
+	m_eIndexFormat = m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+	m_eTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+
+#pragma region VERTEX_BUFFER
+
+	if (FAILED(Ready_Vertices_NonAnim(Vertices, PivotMatrix)))
+		return E_FAIL;
+
+#pragma endregion
+
+#pragma region INDEX_BUFFER
+	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
+	m_BufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
+	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT /*D3D11_USAGE_DYNAMIC*/;
+	m_BufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	m_BufferDesc.CPUAccessFlags = 0;
+	m_BufferDesc.MiscFlags = 0;
+	m_BufferDesc.StructureByteStride = 0;
+
+	ZeroMemory(&m_SubResourceData, sizeof m_SubResourceData);
+
+	//! 모델의 정점의 개수가 65535는 무조건 넘어갈거니 디폴트로 4로 줫엇다. int로 할당하자
+	FACEINDICES32* pIndices = new FACEINDICES32[m_iNumIndices];
+	ZeroMemory(pIndices, sizeof(FACEINDICES32) * m_iNumIndices);
+	//! mNumFace가 삼각형 개수라고했엇다. 삼각형 개수만큼 루프돌아서 인덱스 정보 채워주자
+
 	//!인덱스는 계속늘어나고 i를 사용하면 안되는 상황이다 변수 하나 더쓰자
 	_uint iNumIndices = { 0 };
 
-	for (size_t i = 0; i < pAIMesh->mNumFaces; i++)
+	for (_uint i = 0, j = 0; i < m_iNumIndices; ++i, ++j)
 	{
-		//!mFaces안의 삼각형(폴리곤) 정보가 정의되어있고 그중에 mIndices는 삼각형 정보를 담고잇는 배열이다 사용하자
-		pIndices[iNumIndices++] = pAIMesh->mFaces[i].mIndices[0];
-		pIndices[iNumIndices++] = pAIMesh->mFaces[i].mIndices[1];
-		pIndices[iNumIndices++] = pAIMesh->mFaces[i].mIndices[2];
+		pIndices[i]._1 = Indices[j];
+		pIndices[i]._2 = Indices[++j];
+		pIndices[i]._3 = Indices[++j];
 
-		m_MeshIndices.push_back( { pAIMesh->mFaces[i].mIndices[0],
-								   pAIMesh->mFaces[i].mIndices[1],
-								   pAIMesh->mFaces[i].mIndices[2] } );
+		
+		m_MeshIndices.push_back({ pIndices[i]._1,
+								   pIndices[i]._2,
+								   pIndices[i]._3 });
 	}
 
+	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = pIndices;
 
 	if (FAILED(__super::Create_Buffer(&m_pIB)))
@@ -141,7 +204,7 @@ _bool CMesh::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix)
 	return false;
 }
 
-HRESULT CMesh::Ready_Vertices_NonAnim(const aiMesh* pAIMesh, _fmatrix PivotMatrix)
+HRESULT CMesh::Ready_Vertices_NonAnim(vector<VTXMESH>& Vertices, _fmatrix PivotMatrix)
 {
 	m_iStride = sizeof(VTXMESH);
 
@@ -161,11 +224,11 @@ HRESULT CMesh::Ready_Vertices_NonAnim(const aiMesh* pAIMesh, _fmatrix PivotMatri
 
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
-		memcpy(&pVertices[i].vPosition, &pAIMesh->mVertices[i], sizeof(_float3));
+		memcpy(&pVertices[i].vPosition, &Vertices[i].vPosition, sizeof(_float3));
 		XMStoreFloat3(&pVertices[i].vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), PivotMatrix));
 		m_MeshVertexs.push_back(pVertices[i].vPosition); //! 픽킹 정점 위치 저장해두기.
 
-		memcpy(&pVertices[i].vNormal, &pAIMesh->mNormals[i], sizeof(_float3));
+		memcpy(&pVertices[i].vNormal, &Vertices[i].vNormal, sizeof(_float3));
 		XMStoreFloat3(&pVertices[i].vNormal, XMVector3TransformNormal(XMLoadFloat3(&pVertices[i].vNormal), PivotMatrix));
 
 		//TODO 텍스쿠드 주석추가 #모델_텍스쿠드_AiMesh
@@ -177,9 +240,11 @@ HRESULT CMesh::Ready_Vertices_NonAnim(const aiMesh* pAIMesh, _fmatrix PivotMatri
 		//! 상황에 따라 재질을 표현하는 텍스처가 꼭 디퓨즈만 있는 것이 아니다. 엠비언트나 노말등도 있을 수 있다
 		//! 재질을 표현하는 텍스처.png 또는 확장자를 열어보았더니 같은 모양 이미지가 색깔이 다르게 되어있따면 같은 메시
 		//! 아니라면 다양한 UV좌표를 사용한다고 생각하고 작업해야한다.
-
-		memcpy(&pVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float3));
-		memcpy(&pVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));
+		
+		memcpy(&pVertices[i].vTexcoord, &Vertices[i].vTexcoord, sizeof(_float3));
+		memcpy(&pVertices[i].vTangent, &Vertices[i].vTangent, sizeof(_float3));
+		//memcpy(&pVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float3));
+		//memcpy(&pVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));
 	}
 
 	m_SubResourceData.pSysMem = pVertices;
@@ -193,7 +258,7 @@ HRESULT CMesh::Ready_Vertices_NonAnim(const aiMesh* pAIMesh, _fmatrix PivotMatri
 	return S_OK;
 }
 
-HRESULT CMesh::Ready_Vertices_Anim(const aiMesh* pAIMesh, const vector<class CBone*>& Bones)
+HRESULT CMesh::Ready_Vertices_Anim(vector<VTXANIMMESH>& Vertices, vector<asBone*> Bones)
 {
 	m_iStride = sizeof(VTXANIMMESH);
 
@@ -213,90 +278,26 @@ HRESULT CMesh::Ready_Vertices_Anim(const aiMesh* pAIMesh, const vector<class CBo
 
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
-		memcpy(&pVertices[i].vPosition, &pAIMesh->mVertices[i], sizeof(_float3));
+		memcpy(&pVertices[i].vPosition, &Vertices[i].vPosition, sizeof(_float3));
 		m_MeshVertexs.push_back(pVertices[i].vPosition);
 
-		memcpy(&pVertices[i].vNormal, &pAIMesh->mNormals[i], sizeof(_float3));
-		//TODO 텍스쿠드 주석추가 #모델_텍스쿠드_AiMesh
-		//! AiMesh안에 텍스쿠드는 배열로 선언되어있고 16진수 0x8만큼을 할당해놓았다.
-		//! 원래 한 정점이 가질수 있는 컬러와 텍스쿠드는 총 8개까지 선언될 수 있다.
-		//! 즉 , 위 사항을 고려해서 총 8개의 컬러,텍스쿠드를 가져올 수 있도록 미리 벡터의 배열을 8개만큼 선언 해놓은 것.
-		//! 우리는 텍스쿠드를 하나만 사용하고 있기에 0번째에서 i를 넣어주는 상황인 것이다.
-		//! 하지만 만약 모델의 색깔이 이상하게 들어온다면 uv좌표가 잘못된 상태가 아닌지 의심해봐야 한다.
-		//! 상황에 따라 재질을 표현하는 텍스처가 꼭 디퓨즈만 있는 것이 아니다. 엠비언트나 노말등도 있을 수 있다
-		//! 재질을 표현하는 텍스처.png 또는 확장자를 열어보았더니 같은 모양 이미지가 색깔이 다르게 되어있따면 같은 메시
-		//! 아니라면 다양한 UV좌표를 사용한다고 생각하고 작업해야한다.
-
-		memcpy(&pVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float3));
-		memcpy(&pVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));
+		memcpy(&pVertices[i].vNormal, &Vertices[i].vNormal, sizeof(_float3));
+		memcpy(&pVertices[i].vTexcoord, &Vertices[i].vTexcoord, sizeof(_float3));
+		memcpy(&pVertices[i].vTangent, &Vertices[i].vTangent, sizeof(_float3));
+		memcpy(&pVertices[i].vBlendIndices, &Vertices[i].vBlendIndices, sizeof(XMUINT4));
+		memcpy(&pVertices[i].vBlendWeights, &Vertices[i].vBlendWeights, sizeof(_float4));
 	}
 
-	m_iNumBones = pAIMesh->mNumBones;
+	m_iNumBones = (_uint)Bones.size();
 
 	//! 메시에게 영향을 주는 뼈를 순회하면서 각각의 뼈가 어떤 정점들에게 영향을 주는지 파악한다.
-	for (size_t i = 0; i < pAIMesh->mNumBones; i++)
+	for (size_t i = 0; i < m_iNumBones; i++)
 	{
-		aiBone*		pAIBone = pAIMesh->mBones[i]; //! 뼈하나를 가져왔다.
+		asBone*		pAIBone = Bones[i]; //! 뼈하나를 가져왔다.
 
-		_float4x4	OffsetMatrix; //#오프셋매트릭스셋팅
-		memcpy(&OffsetMatrix, &pAIBone->mOffsetMatrix, sizeof(_float4x4));
-		//! 마찬가지로 전치해주자
-		XMStoreFloat4x4(&OffsetMatrix, XMMatrixTranspose(XMLoadFloat4x4(&OffsetMatrix)));
+		m_OffsetMatrices.push_back(pAIBone->matOffset);
 
-		m_OffsetMatrices.push_back(OffsetMatrix);
-
-		_uint iBoneIndex = { 0 }; //! 영향을 주는 뼈의 인덱스를 저장해놓을거다.
-
-		//TODO CBone 클래스는 AINode로 이루어져있고, 현재 클래스인 Mesh 클래스는 AIBone으로 이루어져있다.  AINode와 AIBone은 방식은 다르지만 뼈의 이름은 같다.
-		//! 위 특성을 이용해서 모델클래스에서 Bone클래스를 저장하고있는 Bones 벡터를 가져와서 같은 이름을 가진 뼈를 찾아서 인덱스를 셋팅하자.
-		
-		auto iter = find_if(Bones.begin(), Bones.end(), [&](CBone* pBone)
-			{
-				if (false == strcmp(pAIBone->mName.data, pBone->Get_Name()))
-				{
-					return true;
-				}
-
-				++iBoneIndex;
-
-				return false;
-			});
-
-		if(iter == Bones.end())
-			return E_FAIL;
-
-		//!위에서 찾아서 true를 만났다면 해당 index를 보관해주자
-		m_BoneIndices.push_back(iBoneIndex);
-
-		//! 위에가져온 뼈는 몇개의 정점에게 영향을 주는가?
-		for (size_t j = 0; j < pAIBone->mNumWeights; j++)
-		{
-			//!pAIBone->mWeight[j].mVertexId == 이 뼈가 영향을 주는 j번째 정점의 인덱스
-			//! #제로메모리조건
-			if (0.0f == pVertices[pAIBone->mWeights[j].mVertexId].vBlendWeights.x) //! 해당 정점의 가중치값이 셋팅이 안됐다면
-			{
-				pVertices[pAIBone->mWeights[j].mVertexId].vBlendIndices.x = i; 
-				pVertices[pAIBone->mWeights[j].mVertexId].vBlendWeights.x = pAIBone->mWeights[j].mWeight; //! 가중치 채워주자
-			}
-
-			else if (0.0f == pVertices[pAIBone->mWeights[j].mVertexId].vBlendWeights.y) 
-			{
-				pVertices[pAIBone->mWeights[j].mVertexId].vBlendIndices.y = i;
-				pVertices[pAIBone->mWeights[j].mVertexId].vBlendWeights.y = pAIBone->mWeights[j].mWeight; 
-			}
-
-			else if (0.0f == pVertices[pAIBone->mWeights[j].mVertexId].vBlendWeights.z)
-			{
-				pVertices[pAIBone->mWeights[j].mVertexId].vBlendIndices.z = i;
-				pVertices[pAIBone->mWeights[j].mVertexId].vBlendWeights.z = pAIBone->mWeights[j].mWeight;
-			}
-
-			else if (0.0f == pVertices[pAIBone->mWeights[j].mVertexId].vBlendWeights.w)
-			{
-				pVertices[pAIBone->mWeights[j].mVertexId].vBlendIndices.w = i;
-				pVertices[pAIBone->mWeights[j].mVertexId].vBlendWeights.w = pAIBone->mWeights[j].mWeight;
-			}
-		}
+		m_BoneIndices.push_back(pAIBone->iIndex);
 	}
 
 	m_SubResourceData.pSysMem = pVertices;
@@ -313,9 +314,9 @@ HRESULT CMesh::Ready_Vertices_Anim(const aiMesh* pAIMesh, const vector<class CBo
 
 		_uint		iBoneIndex = { 0 };
 
-		auto	iter = find_if(Bones.begin(), Bones.end(), [&](CBone* pBone)
+		auto	iter = find_if(Bones.begin(), Bones.end(), [&](asBone* pBone)
 			{
-				if (false == strcmp(m_szName, pBone->Get_Name()))
+				if (false == strcmp(m_szName, pBone->strName.c_str()))
 				{
 					return true;
 				}
@@ -339,11 +340,23 @@ HRESULT CMesh::Ready_Vertices_Anim(const aiMesh* pAIMesh, const vector<class CBo
 	return S_OK;
 }
 
-CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, const aiMesh* pAIMesh, _fmatrix PivotMatrix, const vector<class CBone*>& Bones)
+CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXANIMMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<asBone*> Bones)
 {
 	CMesh* pInstance = new CMesh(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(eModelType, pAIMesh, PivotMatrix, Bones)))
+	if (FAILED(pInstance->Initialize_Prototype(pDevice, pContext, eModelType, strName, Vertices, Indices, iMaterialIndex, BoneIndices, Bones)))
+	{
+		MSG_BOX("Failed to Created : CMesh");
+		Safe_Release(pInstance);
+	}
+	return pInstance;
+}
+
+CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<asBone*> Bones, _matrix PivotMatrix)
+{
+	CMesh* pInstance = new CMesh(pDevice, pContext);
+
+	if (FAILED(pInstance->Initialize_Prototype(pDevice, pContext, eModelType, strName, Vertices, Indices, iMaterialIndex, BoneIndices, Bones, PivotMatrix)))
 	{
 		MSG_BOX("Failed to Created : CMesh");
 		Safe_Release(pInstance);

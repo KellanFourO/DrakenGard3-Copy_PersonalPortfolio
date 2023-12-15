@@ -8,6 +8,14 @@ class ENGINE_DLL CModel final : public CComponent
 public:
 	enum TYPE { TYPE_NONANIM, TYPE_ANIM, TYPE_END }; //! 애니메이션이 있는 모델과 없는 모델을 구분짓기 위한 열거체
 
+	struct ModelData
+	{
+		wstring strBoneDataPath;
+		wstring strMeshDataPath;
+		wstring strMaterialDataPath;
+		wstring strAnimationDataPath;
+	};
+
 private:
 	CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CModel(const CModel& rhs);
@@ -20,7 +28,8 @@ public:
 	void  Set_Animation(_uint iAnimIndex) { m_iCurrentAnimIndex = iAnimIndex; }
 
 public:
-	virtual HRESULT Initialize_Prototype(TYPE eType, const string& strModelFilePath, _fmatrix PivotMatrix);
+	virtual HRESULT Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);
+	//HRESULT Initialize_PrototypeLoad(TYPE eType, const string& strModelFilePath, _fmatrix PivotMatrix);
 	virtual HRESULT Initialize(void* pArg);
 	virtual HRESULT Render(_uint iMeshIndex); //! virtual은 의미가없다. 자기 자신이 가지고잇는 메시들을 렌더링 시키기위한 함수이다.
 
@@ -63,17 +72,19 @@ private:
 	_uint						m_iNumAnimations = { 0 }; //! AIScene으로 부터 읽어들일 애니메이션 개수
 	_uint						m_iCurrentAnimIndex = { 0 }; //! 현재 애니메이션의 인덱스를 미리 알아놓아야 편해.
 	vector<class CAnimation*>	m_Animations;
+
+	ModelData					m_tDataFilePath;
 public:
 	typedef vector<class CBone*>	BONES;
 
 private:
-	HRESULT	Ready_Meshes(_fmatrix PivotMatrix);
-	HRESULT Ready_Materials(const string& strModelFilePath); //!#모델텍스처로드
-	HRESULT	Ready_Bones(aiNode* pAInode, _int iParentIndex); //! _uint가 아닌 _int를 사용한 이유는 부모가 존재하지 않는 노드일경우에는 -1로 셋팅하기 위해서이다.
-	HRESULT Ready_Animations();
+	HRESULT Read_BoneData(const wstring& strPath);
+	HRESULT Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix);
+	HRESULT Read_MaterialData(const wstring& strPath);
+	HRESULT Read_AnimationData(const wstring& strPath);
 
 public:
-	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, const string& strModelFilePath, _fmatrix PivotMatrix);
+	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

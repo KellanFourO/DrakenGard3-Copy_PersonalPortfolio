@@ -40,6 +40,8 @@ public:
 	HRESULT Loading_For_GamePlay_Level();
 	HRESULT Loading_For_Tool_Level();
 
+private:
+	CModel::ModelData* CreateDataPath(wstring strModelName, CModel::ModelData* pModelData);
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };

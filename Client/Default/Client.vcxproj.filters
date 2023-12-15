@@ -192,9 +192,6 @@
     <ClInclude Include="..\Public\CustomFont.h">
       <Filter>99. Defines</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\DataType.h">
-      <Filter>99. Defines</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Player.h">
       <Filter>02. GameObjects\06. Player</Filter>
     </ClInclude>

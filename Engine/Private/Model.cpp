@@ -43,7 +43,7 @@ CModel::CModel(const CModel& rhs)
 	}
 }
 
-HRESULT CModel::Initialize_Prototype(TYPE eType, const string& strModelFilePath, _fmatrix PivotMatrix)
+HRESULT CModel::Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix)
 {
 	//TODO m_Importer 객체가 가지고있는 ReadFile 함수를 호출한다
 	
@@ -62,17 +62,9 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const string& strModelFilePath,
 	//! aiProcessPreset_TargetRealtime_Fast == 퀄리티는 조금 떨어지더라도 가장 빠른 방식을 선택해서 읽어들일게
 	
 	m_eModelType = eType;
-
-	_uint iFlag = aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast;
+	m_tDataFilePath = tDataFilePath;
 
 	//!  엵애니메이션이 없는모델이면 PreTransformVertices 더 해주자
-	if(TYPE_NONANIM == eType)
-		iFlag |= aiProcess_PreTransformVertices;
-	
-	m_pAIScene = m_Importer.ReadFile(strModelFilePath, iFlag);
-
-	if(nullptr == m_pAIScene)
-		return E_FAIL;
 
 	//#PivotMatrix
 	//! 피봇매트리스는 디자이너들이 보통 우리의 환경에 맞게 완벽하게 셋팅해주지않는다. 그래서 180도 돌아가있는 상태로 로드시키면 룩과 다르게 모델이 반대를 바라보는 참사가 일어난다.
@@ -80,21 +72,22 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const string& strModelFilePath,
 	
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 
-	if (FAILED(Ready_Bones(m_pAIScene->mRootNode, -1))) //! 최초 노드는 당연히 루트노드일거고, 최상위 부모이기에 부모인덱스는 없으니 -1로 채워주자
+	if (FAILED(Read_BoneData(m_tDataFilePath.strBoneDataPath))) //! 최초 노드는 당연히 루트노드일거고, 최상위 부모이기에 부모인덱스는 없으니 -1로 채워주자
 		return E_FAIL;
 
-	if(FAILED(Ready_Meshes(PivotMatrix)))
+	if(FAILED(Read_MeshData(m_tDataFilePath.strMeshDataPath, PivotMatrix)))
 		return E_FAIL;
 
 	//#모델재질_Ready_Materials
-	if(FAILED(Ready_Materials(strModelFilePath)))
+	if(FAILED(Read_MaterialData(m_tDataFilePath.strMaterialDataPath)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Animations()))
+	if (FAILED(Read_AnimationData(m_tDataFilePath.strAnimationDataPath)))
 		return E_FAIL;
 
 	return S_OK;
 }
+
 
 HRESULT CModel::Initialize(void* pArg)
 {
@@ -181,128 +174,81 @@ _bool CModel::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix)
 	return false;
 }
 
-HRESULT CModel::Ready_Meshes(_fmatrix PivotMatrix)
+
+HRESULT CModel::Read_BoneData(const wstring& strPath)
 {
-	m_iNumMeshes = m_pAIScene->mNumMeshes; //! 읽어들인 메쉬개수로 멤버변수를 채워주자
+	HANDLE hFile = CreateFile(strPath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
-	m_Meshes.reserve(m_iNumMeshes); //! 메쉬 개수를 알게됐으니 벡터를 예약해주자
-
-	for (size_t i = 0; i < m_iNumMeshes; i++)
-	{
-		CMesh*	pMesh = CMesh::Create(m_pDevice,m_pContext, m_eModelType, m_pAIScene->mMeshes[i], PivotMatrix, m_Bones);
-
-		if(nullptr == pMesh)
-			return E_FAIL;
-
-		m_Meshes.push_back(pMesh);
-	}
-	
-	return S_OK;
-}
-
-HRESULT CModel::Ready_Materials(const string& strModelFilePath)
-{
-	m_iNumMaterials = m_pAIScene->mNumMaterials; //! AIScene으로 부터 읽어온 매터리얼의 개수를 받자.
-
-	for (size_t i = 0; i < m_iNumMaterials; i++)
-	{
-		aiMaterial* pAIMaterial = m_pAIScene->mMaterials[i];
-
-		MATERIAL_DESC	MaterialDesc = {}; //! 제로 메모리
-
-		for (size_t j = 1; j < AI_TEXTURE_TYPE_MAX; j++)
-		{
-			//! 한 메시안에 디퓨즈 매터리얼이 여러개 있을수도있다. 원래는 3중루프를 돌려야하나 보통은 1개만 사용한다. 만약 뭔가 이상하다면 pAIMaterial->GetTextureCount 함수를 호출해서 확인해보자
-			/* 
-			for (size_t k = 0; k < pAIMaterial->GetTextureCount(aiTextureType(j)); k++)
-			{
-				pAIMaterial->GetTexture(aiTextureType(j), k, );
-			}; */
-
-			//TODO 어심프가 읽은 텍스처의 경로는 애초에 추출할때 사용했던 텍스처의 경로로 인식한다. 파일명과 확장자만 떼서 fbx 모델파일이 있는 경로에 붙여주고 fbx 모델이있는곳에 관련 이미지 파일들을 넣어주자
-			_char	szDrive[MAX_PATH ] = "";
-			_char	szDirectory[MAX_PATH] = "";
-
-			_splitpath_s(strModelFilePath.c_str(), szDrive, MAX_PATH, szDirectory, MAX_PATH, nullptr, 0, nullptr, 0);
-
-			aiString		strPath;
-
-			//! GetTexture 함수의 리턴값을 보면 aiReturn인데 실패하면 0 아니면 0이 아닌값을 리턴해서 HRESULT 형식과 같아서 체크 가능하다.
-			if (FAILED(pAIMaterial->GetTexture(aiTextureType(j), 0, &strPath))) //!  어심프가 읽을때 받아온 텍스처의 로드의 경로를 strPath 변수로 받자
-				continue;
-
-			_char	szFileName[MAX_PATH] = "";
-			_char	szEXT[MAX_PATH] = "";
-
-			_splitpath_s(strPath.data, nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szEXT, MAX_PATH);
-
-			_char szTemp[MAX_PATH] = "";
-			strcpy_s(szTemp, szDrive); //! 아까 가져온 드라이브 경로받자.
-			strcat_s(szTemp, szDirectory); //! 폴더 경로 붙여주자
-			strcat_s(szTemp, szFileName); //! 파일명 붙여주자
-			strcat_s(szTemp, szEXT); //! 파일명 붙여주자
-
-			//_char szTest[MAX_PATH] = ".dds";
-			//
-			//strcat_s(szTemp, szTest); //! 확장자 붙여주자
-
-			_tchar szFullPath[MAX_PATH] = TEXT("");
-
-			MultiByteToWideChar(CP_ACP, 0, szTemp, strlen(szTemp), szFullPath, MAX_PATH); //! Texture클래스는 읹인자값으로 wstring을 받고있따다. 바꿔주자
-
-			MaterialDesc.pMtrlTextures[j] = CTexture::Create(m_pDevice,m_pContext,szFullPath, 1);
-			if(nullptr == MaterialDesc.pMtrlTextures[j])
-				return E_FAIL;
-		}
-
-		m_Materials.push_back(MaterialDesc);
-	}
-
-	return S_OK;
-}
-
-HRESULT CModel::Ready_Bones(aiNode* pAInode, _int iParentIndex)
-{
-	CBone*	pBone = CBone::Create(pAInode, iParentIndex);
-
-	if(nullptr == pBone)
+	if (0 == hFile)
 		return E_FAIL;
 
-	m_Bones.push_back(pBone);
+	_ulong dwByte = { 0 };
 
-
-	//! 루프문 밖에서 부모인덱스를 미리 셋팅해놔야 참사를 막을수있다. dfs 탐색을 사용하고 우리의 부모인덱스는 옆노드가 아닌 상위노드의인덱스이기 때문에 루프문 바깥에서 해줘야한다.
-	_int	iParentIdx = m_Bones.size() - 1;
-
-	for (size_t i = 0; i < pAInode->mNumChildren; i++)
+	while (true)
 	{
-		Ready_Bones(pAInode->mChildren[i], iParentIdx);
-	}
-	
-	return S_OK;
-}
+		string		strName;
+		_float4x4	matTransformation;
+		_float4x4	matOffset;
+		_int 		iBoneIndex;
+		_int		iParentIndex;
+		_uint		iDepth;
 
-HRESULT CModel::Ready_Animations()
-{
-	m_iNumAnimations = m_pAIScene->mNumAnimations;
+		ReadFile(hFile, &strName, sizeof(string), &dwByte, nullptr );
+		ReadFile(hFile, &matTransformation, sizeof(_float4x4), &dwByte, nullptr); 
+		ReadFile(hFile, &matOffset, sizeof(_float4x4), &dwByte, nullptr);
+		ReadFile(hFile, &iBoneIndex, sizeof(_int), &dwByte, nullptr);
+		ReadFile(hFile, &iParentIndex, sizeof(_int), &dwByte, nullptr);
+		ReadFile(hFile, &iDepth, sizeof(_uint), &dwByte, nullptr);
 
-	for (size_t i = 0; i < m_iNumAnimations; i++)
-	{
-		CAnimation* pAnimation = CAnimation::Create(m_pAIScene->mAnimations[i], m_Bones);
-		if (nullptr == pAnimation)
+		CBone* pBone = CBone::Create(strName, matTransformation, iBoneIndex, iParentIndex, iDepth);
+		
+		if(nullptr == pBone)
 			return E_FAIL;
-	
-		m_Animations.push_back(pAnimation);
+
+		m_Bones.push_back(pBone);
+
+		if (0 == dwByte)
+			break;
+
 	}
-	
+
 	return S_OK;
+	
 }
 
-CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, const string& strModelFilePath, _fmatrix PivotMatrix)
+HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
+{
+	HANDLE hFile = CreateFile(strPath.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
+	DWORD dwByte = 0;
+
+	size_t iNumMeshes = 0;
+
+	ReadFile(hFile, &iNumMeshes, sizeof(size_t), &dwByte, nullptr);
+
+	
+
+	return S_OK;
+	
+}
+
+HRESULT CModel::Read_MaterialData(const wstring& strPath)
+{
+	return E_NOTIMPL;
+}
+
+HRESULT CModel::Read_AnimationData(const wstring& strPath)
+{
+	return E_NOTIMPL;
+}
+
+
+
+CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix)
 {
 	CModel* pInstance = new CModel(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(eType, strModelFilePath, PivotMatrix)))
+	if (FAILED(pInstance->Initialize_Prototype(eType, tDataFilePath, PivotMatrix)))
 	{
 		MSG_BOX("Failed to Created : CModel");
 		Safe_Release(pInstance);
@@ -357,3 +303,4 @@ void CModel::Free()
 
 	
 }
+

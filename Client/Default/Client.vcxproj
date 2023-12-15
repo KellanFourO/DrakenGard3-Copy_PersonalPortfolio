@@ -197,7 +197,6 @@
     <ClInclude Include="..\Public\Camera_MapTool.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\CustomFont.h" />
-    <ClInclude Include="..\Public\DataType.h" />
     <ClInclude Include="..\public\Dynamic_Terrain.h" />
     <ClInclude Include="..\Public\ForkLift.h" />
     <ClInclude Include="..\Public\Imgui_Manager.h" />
