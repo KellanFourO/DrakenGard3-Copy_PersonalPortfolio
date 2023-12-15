@@ -212,6 +212,8 @@ HRESULT CModel::Read_BoneData(const wstring& strPath)
 
 	}
 
+	CloseHandle(hFile);
+
 	return S_OK;
 	
 }
