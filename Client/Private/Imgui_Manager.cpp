@@ -915,7 +915,7 @@ HRESULT CImgui_Manager::Write_BoneData(string strFileName)
 
 	for (asBone* pBone : m_vecBones)
 	{
-		WriteFile(hFile, &pBone->strName, sizeof(pBone->strName.size()), &dwByte, nullptr);
+		WriteFile(hFile, &pBone->strName, sizeof(string), &dwByte, nullptr);
 		WriteFile(hFile, &pBone->matTransformation, sizeof(XMFLOAT4X4), &dwByte, nullptr);
 		WriteFile(hFile, &pBone->matOffset, sizeof(XMFLOAT4X4), &dwByte, nullptr);
 		WriteFile(hFile, &pBone->iIndex, sizeof(_int), &dwByte, nullptr);
@@ -1074,49 +1074,49 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 
 	for (_int i = 0; i < m_vecMesh.size(); ++i)
 	{
-		WriteFile(hFile, &m_vecMesh[i]->strName, sizeof(m_vecMesh[i]->strName.size()), &dwByte, nullptr);
-		WriteFile(hFile, &m_vecMesh[i]->isAnim, sizeof(m_vecMesh[i]->isAnim), &dwByte, nullptr);
+		WriteFile(hFile, &m_vecMesh[i]->strName, sizeof(string), &dwByte, nullptr);
+		WriteFile(hFile, &m_vecMesh[i]->isAnim, sizeof(_bool), &dwByte, nullptr);
 
 
 		if (m_vecMesh[i]->isAnim == (_uint)MODEL_TYPE::TYPE_NONANIM)
 		{
 			for (VTXMESH& vertex : m_vecMesh[i]->vecNonAnims)
 			{
-				WriteFile(hFile, &vertex.vPosition, sizeof(vertex.vPosition), &dwByte, nullptr);
-				WriteFile(hFile, &vertex.vNormal, sizeof(vertex.vNormal), &dwByte, nullptr);
-				WriteFile(hFile, &vertex.vTexcoord, sizeof(vertex.vTexcoord), &dwByte, nullptr);
-				WriteFile(hFile, &vertex.vTangent, sizeof(vertex.vTangent), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vPosition, sizeof(_float3), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vNormal, sizeof(_float3), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vTexcoord, sizeof(_float2), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vTangent, sizeof(_float3), &dwByte, nullptr);
 			}
 		}
 		else
 		{
 			for (VTXANIMMESH& vertex : m_vecMesh[i]->vecAnims)
 			{
-				WriteFile(hFile, &vertex.vPosition, sizeof(vertex.vPosition), &dwByte, nullptr);
-				WriteFile(hFile, &vertex.vNormal, sizeof(vertex.vNormal), &dwByte, nullptr);
-				WriteFile(hFile, &vertex.vTexcoord, sizeof(vertex.vTexcoord), &dwByte, nullptr);
-				WriteFile(hFile, &vertex.vTangent, sizeof(vertex.vTangent), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vPosition, sizeof(_float3), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vNormal, sizeof(_float3), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vTexcoord, sizeof(_float2), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vTangent, sizeof(_float3), &dwByte, nullptr);
 
-				WriteFile(hFile, &vertex.vBlendIndices, sizeof(vertex.vBlendIndices), &dwByte, nullptr);
-				WriteFile(hFile, &vertex.vBlendWeights, sizeof(vertex.vBlendWeights), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vBlendIndices, sizeof(XMUINT4), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vBlendWeights, sizeof(_float4), &dwByte, nullptr);
 			}
 		}
 
 		for (_int& index : m_vecMesh[i]->vecIndices)
 		{
-			WriteFile(hFile, &index, sizeof(index), &dwByte, nullptr);
+			WriteFile(hFile, &index, sizeof(_int), &dwByte, nullptr);
 		}
 
-		WriteFile(hFile, &m_vecMesh[i]->iMaterialIndex, sizeof(m_vecMesh[i]->iMaterialIndex), &dwByte, nullptr);
+		WriteFile(hFile, &m_vecMesh[i]->iMaterialIndex, sizeof(_uint), &dwByte, nullptr);
 
 		for (_int& index : m_vecMesh[i]->vecBoneIndices)
 		{
-			WriteFile(hFile, &index, sizeof(index), &dwByte, nullptr);
+			WriteFile(hFile, &index, sizeof(_int), &dwByte, nullptr);
 		}
 
 		for (asBone* pBoneData : m_vecMesh[i]->vecBones)
 		{
-			WriteFile(hFile, &pBoneData->strName, sizeof(pBoneData->strName.size()), &dwByte, nullptr);
+			WriteFile(hFile, &pBoneData->strName, sizeof(string), &dwByte, nullptr);
 			WriteFile(hFile, &pBoneData->matTransformation, sizeof(XMFLOAT4X4), &dwByte, nullptr);
 			WriteFile(hFile, &pBoneData->matOffset, sizeof(XMFLOAT4X4), &dwByte, nullptr);
 			WriteFile(hFile, &pBoneData->iIndex, sizeof(_int), &dwByte, nullptr);
@@ -1191,9 +1191,9 @@ HRESULT CImgui_Manager::Write_MaterialData(string strFileName)
 
 	for (asMaterial* pMaterialData : m_vecMaterial)
 	{
-		WriteFile(hFile, &pMaterialData->strDiffuseFilePath, sizeof(pMaterialData->strDiffuseFilePath), &dwByte, nullptr);
-		WriteFile(hFile, &pMaterialData->strSpecularFilePath, sizeof(pMaterialData->strSpecularFilePath), &dwByte, nullptr);
-		WriteFile(hFile, &pMaterialData->strNormalFilePath, sizeof(pMaterialData->strNormalFilePath), &dwByte, nullptr);
+		WriteFile(hFile, &pMaterialData->strDiffuseFilePath, sizeof(string), &dwByte, nullptr);
+		WriteFile(hFile, &pMaterialData->strSpecularFilePath, sizeof(string), &dwByte, nullptr);
+		WriteFile(hFile, &pMaterialData->strNormalFilePath, sizeof(string), &dwByte, nullptr);
 	}
 
 
@@ -1295,7 +1295,7 @@ HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 
 	for (asAnimation* pAnimationData : m_vecAnimation)
 	{
-		WriteFile(hFile, &pAnimationData->strName, sizeof(pAnimationData->strName.size()), &dwByte, nullptr);
+		WriteFile(hFile, &pAnimationData->strName, sizeof(string), &dwByte, nullptr);
 		WriteFile(hFile, &pAnimationData->fDuration, sizeof(_float), &dwByte, nullptr);
 		WriteFile(hFile, &pAnimationData->fTicksPerSecond, sizeof(_float), &dwByte, nullptr);
 
@@ -1303,7 +1303,7 @@ HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 
 		for (asChannel* pChannelData : pAnimationData->vecChannels)
 		{
-			WriteFile(hFile, &pChannelData->strName, sizeof(pChannelData->strName.size()), &dwByte, nullptr);
+			WriteFile(hFile, &pChannelData->strName, sizeof(string), &dwByte, nullptr);
 			WriteFile(hFile, &pChannelData->vecKeyFrames, sizeof(size_t) * pChannelData->vecKeyFrames.size(), &dwByte, nullptr);
 
 			for (asKeyFrame* pKeyFrameData : pChannelData->vecKeyFrames)
