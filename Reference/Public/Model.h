@@ -80,8 +80,11 @@ public:
 private:
 	HRESULT Read_BoneData(const wstring& strPath);
 	HRESULT Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix);
-	HRESULT Read_MaterialData(const wstring& strPath);
+	HRESULT Read_MaterialData(wstring& strPath);
 	HRESULT Read_AnimationData(const wstring& strPath);
+
+	string	ConvertWstrToStr(const wstring& wstr);
+	wstring	ConvertStrToWstr(const string& str);
 
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);

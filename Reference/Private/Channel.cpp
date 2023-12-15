@@ -5,83 +5,16 @@ CChannel::CChannel()
 {
 }
 
-HRESULT CChannel::Initialize(const aiNodeAnim* pChannel, const CModel::BONES& Bones)
+HRESULT CChannel::Initialize(const string strName, vector<KEYFRAME>& Keyframes)
 {
-	strcpy_s(m_szName, pChannel->mNodeName.data);
+	strcpy_s(m_szName, strName.c_str());
 
-
-	//! 모델이 들고있는 뼈와 특정 애니메이션에서 사용하는 뼈의정보의 이름과 같은 걸 찾아서 인덱스를 가져올거야.
-	_uint	iBoneIndex = { 0 };
-
-	auto iter = find_if(Bones.begin(), Bones.end(), [&](CBone* pBone)
-		{
-			if (false == strcmp(m_szName, pBone->Get_Name()))
-			{
-				return true;
-			}
-
-			++iBoneIndex;
-
-			return false;
-		});
-
-	if(iter == Bones.end())
-		return E_FAIL;
-
-	m_iBoneIndex = iBoneIndex; //! 찾았다
-
-	//!#키프레임개수_주의점
-	//!  스케일, 로테이션,포지션의 키프레임의 개수는 각자 다를 수 있어.
-	//!  왜냐하면,  애니메이션이 구동될때 크기의 변화는 없이 회전만 할 수도 있고 마찬가지로 위치는 달라지는데 회전은 하지 않을수도 있는 거지.
-	//! 즉, 이전 위치 그대로일 수도 있다는거야. 그래서 키 프레임의 개수는 다 다르니 
-	//! 총 키프레임의 개수는 스케일,로테이션,포지션 각 가지고있는 키프레임의 개수들중 가장 큰값을 가진 놈으로 찾아서 보관할거야.
-	m_iNumKeyFrames = max(pChannel->mNumScalingKeys, pChannel->mNumRotationKeys);
-	m_iNumKeyFrames = max(pChannel->mNumPositionKeys, m_iNumKeyFrames);
-
-	//TODO 위 주의점에서 말했듯 이전 위치를 기억해야겠지?
-	//!  밑에서 루프를 돌릴건데, 예를들어 공격 애니메이션의 3번 프레임의 스케일은 존재하지않을 수 있어.
-	//! 그래서 각각 조건문을 걸어서 걸러줄건데, 그 조건문을 통과하지못한다면 그냥 0으로 채워질거야. 
-	//! 루프문 돌기전에 변수를 선언해놓고 값을 채워줘서 이전 값을 기억하게 하자.
-	_float3 vScale;
-	_float4	vRotation;
-	_float3	vPosition;
-
-	for (size_t i = 0; i < m_iNumKeyFrames; i++)
-	{
-		KEYFRAME		KeyFrame = {};
-
-		if (i < pChannel->mNumScalingKeys)
-		{
-			memcpy(&vScale, &pChannel->mScalingKeys[i].mValue, sizeof(_float3));
-			KeyFrame.fTrackPosition = pChannel->mScalingKeys[i].mTime;
-		}
-
-		if (i < pChannel->mNumRotationKeys)
-		{
-			//! 어심프의 로테이션키의 밸류는 aiQuaternion이야. x,y,z,w 순이아닌 w,x,y,z 순으로 되어있어
-			//! 우리가 쓰던 거랑 순서가 다르지? 그래서 memcpy를 사용하면 안돼.
-		
-			vRotation.x = pChannel->mRotationKeys[i].mValue.x;
-			vRotation.y = pChannel->mRotationKeys[i].mValue.y;
-			vRotation.z = pChannel->mRotationKeys[i].mValue.z;
-			vRotation.w = pChannel->mRotationKeys[i].mValue.w;
-			KeyFrame.fTrackPosition = pChannel->mRotationKeys[i].mTime;
-		}
-
-		if (i < pChannel->mNumPositionKeys)
-		{
-			memcpy(&vPosition, &pChannel->mPositionKeys[i].mValue, sizeof(_float3));
-			KeyFrame.fTrackPosition = pChannel->mPositionKeys[i].mTime;
-		}
-
-		KeyFrame.vScale = vScale;
-		KeyFrame.vRotation = vRotation;
-		KeyFrame.vPosition = vPosition;
-
-		m_KeyFrames.push_back(KeyFrame);
-	}
+	m_KeyFrames.reserve(Keyframes.size());
+	for (auto& iter : Keyframes)
+		m_KeyFrames.push_back(iter);
 
 	return S_OK;
+
 }
 
 void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame)
@@ -156,11 +89,11 @@ void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, con
 	Bones[m_iBoneIndex]->Set_TransformationMatrix(TransformationMatrix);
 }
 
-CChannel* CChannel::Create(const aiNodeAnim* pChannel, const CModel::BONES& Bones)
+CChannel* CChannel::Create(const string strName, vector<KEYFRAME>& Keyframes)
 {
 	CChannel* pInstance = new CChannel();
 
-	if (FAILED(pInstance->Initialize(pChannel, Bones)))
+	if (FAILED(pInstance->Initialize(strName, Keyframes)))
 	{
 		MSG_BOX("Failed to Created : CChannel");
 		Safe_Release(pInstance);

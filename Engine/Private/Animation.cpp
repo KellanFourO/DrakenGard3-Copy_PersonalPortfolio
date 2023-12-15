@@ -21,38 +21,20 @@ CAnimation::CAnimation(const CAnimation& rhs)
 		Safe_AddRef(pChannel);
 }
 
-HRESULT CAnimation::Initialize(const aiAnimation* pAIAnimation, const CModel::BONES& Bones)
+HRESULT CAnimation::Initialize(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName)
 {
 	//!이름을 빼두면 디버깅할 때 좋겠지?
-	strcpy_s(m_szName, pAIAnimation->mName.data);
-	
-	m_fDuration = (_float)pAIAnimation->mDuration; //! 재생하려는 애니메이션의 총 길이
-
-	//TODO 틱스퍼세컨드는 뭐야?
-	//! 재생속도를 의미해. 나중에 틱스퍼세컨드랑 타임델타 곱을 m_fTrackPosition에 누적할거야.
-	//! m_fTrackPosition이 듀레이션 보다 커지면 애니메이션이 종료되는 개념이야.
-	//! m_fTrackPosition은 현재 재생되고 있는 위치를 의미해.
-	   m_fTicksPerSecond = (_float)pAIAnimation->mTicksPerSecond;
+	strcpy_s(m_szName, strName.c_str());
+	m_fDuration = fDuration;// / 60.f;
+	m_fTicksPerSecond = fTickPerSecond;
 
 	//TODO 채널은 뭐야?
 	//! 애니메이션이 사용하는 뼈의 갯수가 NumChannels야.
 	//! 그럼 채널은 뭐겠어? 애니메이션이 사용하는 뼈라는 얘기겠지.
 	//! C_STRUCT aiNodeAnim** mChannels;
-	m_iNumChannels = pAIAnimation->mNumChannels;
-
-	m_CurrentKeyFrames.resize(m_iNumChannels);
-
-	//! 이 애니메이션에서 사용하기위한 뼈(AINodeAnim 또는 Channel)의 정보를 만든다.
-	
-	for (size_t i = 0; i < m_iNumChannels; i++)
-	{
-		CChannel*	pChannel = CChannel::Create(pAIAnimation->mChannels[i], Bones);
-
-		if(nullptr == pChannel)
-			return E_FAIL;
-
-		m_Channels.push_back(pChannel);
-	}
+	m_Channels.reserve(Channels.size());
+	for (auto& iter : Channels)
+		m_Channels.push_back(iter);
 
 	return S_OK;
 }
@@ -92,12 +74,12 @@ void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta
 	}
 }
 
-CAnimation* CAnimation::Create(const aiAnimation* pAIAnimation, const CModel::BONES& Bones)
+CAnimation* CAnimation::Create(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName)
 {
 	CAnimation* pInstance = new CAnimation();
 
 	/* 원형객체를 초기화한다.  */
-	if (FAILED(pInstance->Initialize(pAIAnimation, Bones)))
+	if (FAILED(pInstance->Initialize(fDuration,fTickPerSecond,Channels,strName)))
 	{
 		MSG_BOX("Failed to Created : CAnimation");
 		Safe_Release(pInstance);

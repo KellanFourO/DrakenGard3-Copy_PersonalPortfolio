@@ -16,7 +16,7 @@ public:
 	_bool	Get_Finished() { return m_isFinished; }
 
 public:
-	HRESULT Initialize(const aiAnimation* pAIAnimation, const CModel::BONES& Bones);
+	HRESULT Initialize(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName);
 	void	Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones);
 
 private:
@@ -31,7 +31,7 @@ private:
 	_bool					m_isFinished = { false };
 
 public:
-	static CAnimation* Create(const aiAnimation* pAIAnimation, const CModel::BONES& Bones);
+	static CAnimation* Create(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName);
 	CAnimation*	 Clone();
 	virtual void Free() override;
 

@@ -19,10 +19,10 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 	strcpy_s(m_szName, strName.c_str()); //! mName 안의 데이터가 캐릭터 배열이다 이름가져오자
 
 	m_iNumVertexBuffers = 1;
-	m_iNumVertices = (_int)Vertices.size() / 3; //! 정점의 개수는 읽어들인 개수다.
+	m_iNumVertices = (_int)Vertices.size(); //! 정점의 개수는 읽어들인 개수다.
 	
 	//!m_iNumIndices = pAIMesh->mNumFaces * 3;
-	m_iNumIndices = ((_int)Indices.size()); //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
+	m_iNumIndices = ((_int)Indices.size()) / 3; //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
 	m_iIndexStride = 4; //! 모델은 왠만해선 정점이 65535개를 넘어간다. 그러니까 그냥 4로 Default
 
 	m_eIndexFormat = m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
@@ -188,9 +188,9 @@ _bool CMesh::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix)
 		_vector vPickedPos;
 
 		//삼각형  정점 인덱스 3개
-		_vector vIndexXPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i].ix]);
-		_vector vIndexYPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i].iy]);
-		_vector vIndexZPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i].iz]);
+		_vector vIndexXPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i]._1]);
+		_vector vIndexYPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i]._2]);
+		_vector vIndexZPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i]._3]);
 
 		if (true == DirectX::TriangleTests::Intersects(vRayPos, vRayDir, vIndexXPos, vIndexYPos, vIndexZPos, fDist))
 		{

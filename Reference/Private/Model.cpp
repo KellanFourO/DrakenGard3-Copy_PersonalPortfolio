@@ -1,8 +1,16 @@
+#pragma once
+
+
+
 #include "Model.h"
 #include "Mesh.h"
 #include "Texture.h"
 #include "Bone.h"
 #include "Animation.h"
+#include "Channel.h"
+
+#include <regex>
+#include <codecvt>
 
 CModel::CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice,pContext)
@@ -184,7 +192,10 @@ HRESULT CModel::Read_BoneData(const wstring& strPath)
 
 	DWORD dwByte = 0;
 
-	while (true)
+	size_t BonesSize;
+	ReadFile(hFile, &BonesSize, sizeof(size_t), &dwByte, nullptr);
+
+	for (size_t i = 0; i < BonesSize; ++i)
 	{
 		_float4x4 matTransformation = {};
 		_float4x4 matOffset = {};
@@ -227,8 +238,6 @@ HRESULT CModel::Read_BoneData(const wstring& strPath)
 
 		m_Bones.push_back(pBone);
 
-		if(dwByte == 0)
-			break;
 	}
 
 	CloseHandle(hFile);
@@ -378,161 +387,165 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 	}
 	return S_OK;
 
-// 	while (true)
-// 	{
-// 		// Read string length
-// 		size_t strLength;
-// 		if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
-// 			return E_FAIL;
-// 
-// 		// Read string content
-// 		string strName(strLength, '\0');
-// 		if (!ReadFile(hFile, &strName[0], strLength, &dwByte, nullptr))
-// 			return E_FAIL;
-// 
-// 		// Ensure null-termination
-// 		strName.resize(strLength);
-// 
-// 		vector<VTXMESH>			NonAnimVertices;
-// 		vector<VTXANIMMESH>		AnimVertices;
-// 		vector<_int>			Indices;
-// 		_uint					iMaterialIndex;
-// 		vector<_int>			BoneIndices;
-// 		_bool					isAnim;
-// 		vector<asBone*>			Bones;
-// 
-// 		if (!ReadFile(hFile, &isAnim, sizeof(_bool), &dwByte, nullptr))
-// 			return E_FAIL;
-// 
-// 		if (isAnim)
-// 		{
-// 			m_eModelType = CModel::TYPE_ANIM;
-// 
-// 			size_t vecSize;
-// 			if(!ReadFile(hFile, &vecSize, sizeof(size_t), &dwByte, nullptr))
-// 				return E_FAIL;
-// 
-// 			AnimVertices.reserve(vecSize);
-// 
-// 			for (size_t i = 0; i < vecSize; ++i)
-// 			{
-// 				VTXANIMMESH vertex;
-// 
-// 				if (!ReadFile(hFile, &vertex.vPosition, sizeof(_float3), &dwByte, nullptr))
-// 					return E_FAIL;
-// 				if (!ReadFile(hFile, &vertex.vNormal, sizeof(_float3), &dwByte, nullptr))
-// 					return E_FAIL;
-// 				if (!ReadFile(hFile, &vertex.vTexcoord, sizeof(_float2), &dwByte, nullptr))
-// 					return E_FAIL;
-// 				if (!ReadFile(hFile, &vertex.vTangent, sizeof(_float3), &dwByte, nullptr))
-// 					return E_FAIL;
-// 				if (!ReadFile(hFile, &vertex.vBlendIndices, sizeof(XMUINT4), &dwByte, nullptr))
-// 					return E_FAIL;
-// 				if (!ReadFile(hFile, &vertex.vBlendWeights, sizeof(_float4), &dwByte, nullptr))
-// 					return E_FAIL;
-// 
-// 				AnimVertices.push_back(vertex);
-// 			}
-// 		}
-// 		else
-// 		{
-// 			m_eModelType = CModel::TYPE_NONANIM;
-// 
-// 			size_t vecSize;
-// 			if (!ReadFile(hFile, &vecSize, sizeof(size_t), &dwByte, nullptr))
-// 				return E_FAIL;
-// 
-// 			NonAnimVertices.reserve(vecSize);
-// 
-// 			for (size_t i = 0; i < vecSize; ++i)
-// 			{
-// 				VTXMESH vertex;
-// 
-// 				if (!ReadFile(hFile, &vertex.vPosition, sizeof(_float3), &dwByte, nullptr))
-// 					return E_FAIL;
-// 				if (!ReadFile(hFile, &vertex.vNormal, sizeof(_float3), &dwByte, nullptr))
-// 					return E_FAIL;
-// 				if (!ReadFile(hFile, &vertex.vTexcoord, sizeof(_float2), &dwByte, nullptr))
-// 					return E_FAIL;
-// 				if (!ReadFile(hFile, &vertex.vTangent, sizeof(_float3), &dwByte, nullptr))
-// 					return E_FAIL;
-// 
-// 				NonAnimVertices.push_back(vertex);
-// 			}
-// 		}
-// 
-// 		size_t vecIndiceSize;
-// 		if (!ReadFile(hFile, &vecIndiceSize, sizeof(size_t), &dwByte, nullptr))
-// 			return E_FAIL;
-// 		
-// 		Indices.reserve(vecIndiceSize);
-// 
-// 		for (size_t i = 0; i < vecIndiceSize; ++i)
-// 		{
-// 			_int index;
-// 
-// 			if (!ReadFile(hFile, &index, sizeof(_int), &dwByte, nullptr))
-// 				return E_FAIL;
-// 
-// 			Indices.push_back(index);
-// 		}
-// 
-// 		if (!ReadFile(hFile, &iMaterialIndex, sizeof(_uint), &dwByte, nullptr))
-// 			return E_FAIL;
-// 
-// 		size_t vecBoneIndiceSize;
-// 		if (!ReadFile(hFile, &vecBoneIndiceSize, sizeof(size_t), &dwByte, nullptr))
-// 			return E_FAIL;
-// 
-// 		Indices.reserve(vecBoneIndiceSize);
-// 
-// 		for (size_t i = 0; i < vecBoneIndiceSize; ++i)
-// 		{
-// 			_int Boneindex;
-// 
-// 			if (!ReadFile(hFile, &Boneindex, sizeof(_int), &dwByte, nullptr))
-// 				return E_FAIL;
-// 
-// 			BoneIndices.push_back(Boneindex);
-// 		}
-// 
-// 		CMesh* pMesh = nullptr;
-// 
-// 		if (isAnim)
-// 		{
-// 			pMesh = CMesh::Create(m_pDevice,m_pContext,m_eModelType,strName, AnimVertices, Indices, iMaterialIndex, BoneIndices, m_Bones);
-// 
-// 			if(nullptr == pMesh)
-// 				return E_FAIL;
-// 		}
-// 		else
-// 		{
-// 			pMesh = CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, NonAnimVertices, Indices, iMaterialIndex, BoneIndices, PivotMatrix);
-// 
-// 			if (nullptr == pMesh)
-// 				return E_FAIL;
-// 		}
-// 
-// 		m_Meshes.push_back(pMesh);
-// 
-// 		if (dwByte == 0)
-// 			break;
-// 	}
-// 
-// 	CloseHandle(hFile);
-// 
-// 	return S_OK;
-	
 }
 
-HRESULT CModel::Read_MaterialData(const wstring& strPath)
+HRESULT CModel::Read_MaterialData(wstring& strPath)
 {
+	
+	HANDLE hFile = CreateFile(strPath.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
+	if (INVALID_HANDLE_VALUE == hFile)
+		return E_FAIL;
+
+	DWORD dwByte = 0;
+
+	/* 모든 매태리얼 순회 */
+	size_t iNumMaterials;
+
+	ReadFile(hFile, &iNumMaterials, sizeof(size_t), &dwByte, nullptr);
+	for (size_t i = 0; i < iNumMaterials; i++)
+	{
+		MATERIAL_DESC		MaterialDesc;
+		ZeroMemory(&MaterialDesc, sizeof(MATERIAL_DESC));
+		{
+			string path, fileName;
+
+			if (!ReadFile(hFile, &fileName, sizeof(string), &dwByte, nullptr))
+				return E_FAIL;
+
+			if (!fileName.empty())
+			{
+				path = ConvertWstrToStr(strPath) + "/" + fileName;
+				MaterialDesc.pMtrlTextures[aiTextureType_DIFFUSE] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
+			}
+
+			if (!ReadFile(hFile, &fileName, sizeof(string), &dwByte, nullptr))
+				return E_FAIL;
+
+			if (!fileName.empty())
+			{
+				path = ConvertWstrToStr(strPath) + "/" + fileName;
+				MaterialDesc.pMtrlTextures[aiTextureType_SPECULAR] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
+			}
+
+			if (!ReadFile(hFile, &fileName, sizeof(string), &dwByte, nullptr))
+				return E_FAIL;
+
+			if (!fileName.empty())
+			{
+				path = ConvertWstrToStr(strPath) + "/" + fileName;
+				MaterialDesc.pMtrlTextures[aiTextureType_NORMALS] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
+			}
+		}
+		m_Materials.push_back(MaterialDesc);
+	}
+	
 	return S_OK;
 }
 
 HRESULT CModel::Read_AnimationData(const wstring& strPath)
 {
+	/* 모든 애니메이션 순회 */
+	HANDLE hFile = CreateFile(strPath.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
+	if (INVALID_HANDLE_VALUE == hFile)
+		return E_FAIL;
+
+	DWORD dwByte = 0;
+
+	/* 모든 메시 순회 */
+	size_t iNumAnims;
+
+	ReadFile(hFile, &iNumAnims, sizeof(size_t), &dwByte, nullptr);
+
+	
+	for (size_t i = 0; i < iNumAnims; i++)
+	{
+		// Read string length
+		size_t strLength;
+		if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
+			return E_FAIL;
+
+		// Read string content
+		string strName(strLength, '\0');
+		if (!ReadFile(hFile, &strName[0], strLength, &dwByte, nullptr))
+			return E_FAIL;
+
+		_float fDuration;
+
+		ReadFile(hFile, &fDuration, sizeof(_float), &dwByte, nullptr);
+
+		_float fTickPerSecond;
+
+		ReadFile(hFile, &fTickPerSecond, sizeof(_float), &dwByte, nullptr);
+
+		/* 모든 채널 순회 */
+		size_t iNumChannels;
+
+		ReadFile(hFile, &iNumChannels, sizeof(size_t), &dwByte, nullptr);
+		vector<CChannel*> Channels;
+		Channels.reserve(iNumChannels);
+		for (size_t j = 0; j < iNumChannels; j++)
+		{
+			// Read string length
+			size_t strLength;
+			if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
+				return E_FAIL;
+
+			// Read string content
+			string strName(strLength, '\0');
+			if (!ReadFile(hFile, &strName[0], strLength, &dwByte, nullptr))
+				return E_FAIL;
+
+
+			/* 모든 채널 순회 */
+			size_t iNumKeyframes;
+
+			ReadFile(hFile, &iNumKeyframes, sizeof(size_t), &dwByte, nullptr);
+			vector<KEYFRAME> Keyframes;
+			Keyframes.reserve(iNumKeyframes);
+			for (size_t k = 0; k < iNumKeyframes; k++)
+			{
+				KEYFRAME keyframe;
+
+				ReadFile(hFile, &keyframe.fTrackPosition, sizeof(_float), &dwByte, nullptr);
+				ReadFile(hFile, &keyframe.vScale, sizeof(_float3), &dwByte, nullptr);
+				ReadFile(hFile, &keyframe.vRotation, sizeof(_float4), &dwByte, nullptr);
+				ReadFile(hFile, &keyframe.vPosition, sizeof(_float3), &dwByte, nullptr);
+				
+				Keyframes.push_back(keyframe);
+			}
+
+			CChannel* pChannel = CChannel::Create(strName, Keyframes);
+			if (nullptr == pChannel)
+				return E_FAIL;
+
+			Channels.push_back(pChannel);
+		}
+
+		CAnimation* pAnimation = CAnimation::Create(fDuration, fTickPerSecond, Channels, strName);
+		if (nullptr == pAnimation)
+			return E_FAIL;
+
+		m_Animations.push_back(pAnimation);
+	}
 	return S_OK;
+}
+
+string CModel::ConvertWstrToStr(const wstring& wstr)
+{
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), nullptr, 0, nullptr, nullptr);
+	std::string str(size_needed, 0);
+	WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), &str[0], size_needed, nullptr, nullptr);
+	return str;
+}
+
+wstring CModel::ConvertStrToWstr(const string& str)
+{
+	int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), nullptr, 0);
+	std::wstring wstr(size_needed, 0);
+	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), &wstr[0], size_needed);
+	return wstr;
 }
 
 
