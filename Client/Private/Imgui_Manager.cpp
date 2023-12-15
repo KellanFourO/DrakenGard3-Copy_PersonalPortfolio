@@ -970,20 +970,16 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 			pMeshData->isAnim = (UINT)eModelType;
 
 			pMeshData->vecAnims.reserve(pAIMesh->mNumVertices);
-			for (_int j = 0; j < pAIMesh->mNumVertices; ++j)
-			{
+
+			for (size_t j = 0; j < pAIMesh->mNumVertices; j++)
 				pMeshData->vecAnims.push_back(VTXANIMMESH{});
-			}
 
-
-			VTXANIMMESH vertex{};
-
-			for (_uint j = 0; j < pAIMesh->mNumVertices; ++j)
+			for (_uint j = 0; j < pMeshData->vecAnims.size(); j++)
 			{
-				memcpy(&vertex.vPosition, &pAIMesh->mVertices[j], sizeof(_float3));
-				memcpy(&vertex.vNormal, &pAIMesh->mNormals[j], sizeof(_float3));
-				memcpy(&vertex.vTexcoord, &pAIMesh->mTextureCoords[0][j], sizeof(_float2));
-				memcpy(&vertex.vTangent, &pAIMesh->mTangents[j], sizeof(_float3));
+				memcpy(&pMeshData->vecAnims[j].vPosition, &pAIMesh->mVertices[j], sizeof(_float3));
+				memcpy(&pMeshData->vecAnims[j].vNormal, &pAIMesh->mNormals[j], sizeof(_float3));
+				memcpy(&pMeshData->vecAnims[j].vTexcoord, &pAIMesh->mTextureCoords[0][j], sizeof(_float2));
+				memcpy(&pMeshData->vecAnims[j].vTangent, &pAIMesh->mTangents[j], sizeof(_float3));
 			}
 
 			_int iBoneIndex;
