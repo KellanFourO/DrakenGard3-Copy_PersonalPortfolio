@@ -401,13 +401,13 @@ HRESULT CModel::Read_MaterialData(wstring& strPath)
 
 	/* 모든 매태리얼 순회 */
 	size_t iNumMaterials;
-
 	ReadFile(hFile, &iNumMaterials, sizeof(size_t), &dwByte, nullptr);
+	m_Materials.reserve(iNumMaterials);
 	for (size_t i = 0; i < iNumMaterials; i++)
 	{
 		MATERIAL_DESC		MaterialDesc;
 		ZeroMemory(&MaterialDesc, sizeof(MATERIAL_DESC));
-		{
+		
 			string path, fileName;
 
 			if (!ReadFile(hFile, &fileName, sizeof(string), &dwByte, nullptr))
@@ -443,7 +443,7 @@ HRESULT CModel::Read_MaterialData(wstring& strPath)
 				string modifyPath = ModifyPath(path);
 				MaterialDesc.pMtrlTextures[aiTextureType_NORMALS] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(modifyPath));
 			}
-		}
+		
 		m_Materials.push_back(MaterialDesc);
 	}
 	
