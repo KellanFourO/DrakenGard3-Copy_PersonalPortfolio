@@ -3,22 +3,15 @@
 #ifdef _DEBUG
 	#include "Shader.h"
 	#include "VIBuffer_Cell.h"
-	#include "GameInstance.h"
 #endif
 
 CCell::CCell(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
 	, m_pContext(pContext)
-#ifdef _DEBUG
-	, m_pGameInstance(CGameInstance::GetInstance())
-#endif
+
 {
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
-
-#ifdef _DEBUG
-	Safe_AddRef(m_pGameInstance);
-#endif
 }
 
 HRESULT CCell::Initialize(const _float3* pPoints, _uint iIndex)
@@ -90,14 +83,25 @@ _bool CCell::Compare_Points(const _float3* pSourPoint, const _float3* pDestPoint
 	return false;
 }
 
-_bool CCell::isIn(_fvector vPosition, _int* pNeighborIndex)
+_bool CCell::isIn(_fvector vPosition, _fmatrix WorldMatrix, _int* pNeighborIndex)
 {
+	//TODO 왜 월드행렬을 곱하는거야?
+
+	//! 이전에는 월드상제 존재한다고 가정하고 있었었어.
+	//! 하지만 만약 지형이 움직인다고 가정해보자고, 그러면 네비게이션이 렌더링만 월드위치로 그릴게아니라 실제 위치도 월드로 갈 필요가있었어.
+	//! 전체 셀이 월드위치로 갈 필요는 없었고. 내가 비교할 셀만 월드위치로 올리는게 훨씬 값이 싸게 먹혀.
+	//! 그래서 클라이언트 지형객체가 네비게이션으로 월드행렬을 던지고 네비게이션이 셀에게 월드행렬을 던져주는 과정이 있던거고.
+	//! 그 지형객체의 월드행렬을 곱해주는 형태로 가져간거지. 마찬가지로 그릴때도 월드행렬 던져줘야겟지
+
 	for (size_t i = 0; i < LINE_END; ++i)
 	{
-		_vector vSourDir = vPosition - XMLoadFloat3(&m_vPoints[i]);
+		_vector vStartPoint = XMVector3TransformCoord(XMLoadFloat3(&m_vPoints[i]), WorldMatrix);
+		_vector vNormal = XMVector3TransformNormal(XMLoadFloat3(&m_vNormals[i]), WorldMatrix);
+
+		_vector vSourDir = vPosition - vStartPoint;
 
 		if (0 < XMVectorGetX(XMVector3Dot(XMVector3Normalize(vSourDir),
-			XMVector3Normalize(XMLoadFloat3(&m_vNormals[i])))))
+			XMVector3Normalize(vNormal))))
 		{
 			*pNeighborIndex = m_iNeighbors[i];
 			return false;
@@ -108,21 +112,8 @@ _bool CCell::isIn(_fvector vPosition, _int* pNeighborIndex)
 }
 
 #ifdef _DEBUG
-HRESULT CCell::Render(class CShader* pShader)
+HRESULT CCell::Render()
 {
-	_float4x4 WorldMatrix;
-
-	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
-
-	if(FAILED(pShader->Bind_Matrix("g_WorldMatrix", &WorldMatrix)))
-		return E_FAIL;
-	if (FAILED(pShader->Bind_Matrix("g_ViewMatrix", &m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW))))
-		return E_FAIL;
-	if (FAILED(pShader->Bind_Matrix("g_ProjMatrix", &m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ))))
-		return E_FAIL;
-
-	pShader->Begin(0);
-
 	m_pVIBuffer->Bind_VIBuffers();
 
 	m_pVIBuffer->Render();
@@ -148,7 +139,6 @@ void CCell::Free()
 {
 #ifdef _DEBUG
 	Safe_Release(m_pVIBuffer);
-	Safe_Release(m_pGameInstance);
 #endif
 
 	Safe_Release(m_pDevice);

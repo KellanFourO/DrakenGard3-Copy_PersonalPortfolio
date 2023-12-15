@@ -19,7 +19,7 @@ public:
 public:
 	HRESULT Initialize(const _float3* pPoints, _uint iIndex);
 	_bool	Compare_Points(const _float3* pSourPoint, const _float3* pDestPoint);
-	_bool	isIn(_fvector vPosition, _int* pNeighborIndex);
+	_bool	isIn(_fvector vPosition, _fmatrix WorldMatrix, _int* pNeighborIndex);
 	void	SetUp_Neighbor(LINE eLine, CCell* pNeighborCell)
 	{
 		m_iNeighbors[eLine] = pNeighborCell->m_iIndex;
@@ -27,7 +27,7 @@ public:
 
 #ifdef _DEBUG
 public:
-	HRESULT Render(class CShader* pShader);
+	HRESULT Render();
 #endif
 private:
 	ID3D11Device*		 m_pDevice = { nullptr };
@@ -41,7 +41,6 @@ private:
 #ifdef _DEBUG
 private:
 	class CVIBuffer_Cell* m_pVIBuffer = { nullptr };
-	class CGameInstance* m_pGameInstance = { nullptr };
 
 #endif
 

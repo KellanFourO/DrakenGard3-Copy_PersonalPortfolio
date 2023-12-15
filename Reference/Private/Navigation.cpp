@@ -1,6 +1,8 @@
 #include "Navigation.h"
 #include "Cell.h"
-#include "Shader.h"
+#include "GameInstance.h"
+
+_float4x4	CNavigation::m_WorldMatrix = {};
 
 CNavigation::CNavigation(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CComponent(pDevice, pContext)
@@ -74,20 +76,57 @@ HRESULT CNavigation::Initialize(void* pArg)
 
 HRESULT CNavigation::Render()
 {
-    for (auto& pCell : m_Cells)
+    _float4 vColor = { 0.f, 0.f, 0.f, 1.f};
+
+    if (m_iCurrentIndex == -1)
     {
-        if (nullptr != pCell)
-            pCell->Render(m_pShader);
+        vColor = _float4(0.f, 1.f, 0.f, 1.f);
+    }
+    else
+    {
+        //! 높이값 올려줄거야.
+        vColor = _float4(1.f, 0.f, 0.f, 1.f);
+        m_WorldMatrix.m[3][1] = m_WorldMatrix.m[3][1] + 0.1f;
     }
 
+    //! 내비게이션을 그릴때도 월드위치 던져줘야지.
+
+    if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW))))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ))))
+        return E_FAIL;
+
+    m_pShader->Bind_RawValue("g_vColor", &vColor, sizeof(_float4));
+
+    m_pShader->Begin(0);
+
+    if (m_iCurrentIndex == -1)
+    {
+        for (auto& pCell : m_Cells)
+        {
+            if (nullptr != pCell)
+                pCell->Render();
+        }
+    }
+    else
+        m_Cells[m_iCurrentIndex]->Render();
+    
+
     return S_OK;
+}
+
+void CNavigation::Update(_fmatrix WorldMatrix)
+{
+    XMStoreFloat4x4(&m_WorldMatrix, WorldMatrix);
 }
 
 _bool CNavigation::isMove(_fvector vPosition)
 {
     _int        iNeighborIndex = { -1 };
 
-    if(true == m_Cells[m_iCurrentIndex]->isIn(vPosition, &iNeighborIndex))
+    if(true == m_Cells[m_iCurrentIndex]->isIn(vPosition, XMLoadFloat4x4(&m_WorldMatrix),&iNeighborIndex))
         return true;
 
     else
@@ -99,7 +138,7 @@ _bool CNavigation::isMove(_fvector vPosition)
                 if(-1 == iNeighborIndex)
                     return false;
 
-                if (true == m_Cells[iNeighborIndex]->isIn(vPosition, &iNeighborIndex))
+                if (true == m_Cells[iNeighborIndex]->isIn(vPosition, XMLoadFloat4x4(&m_WorldMatrix), &iNeighborIndex))
                 {
                     m_iCurrentIndex = iNeighborIndex;
                     return true;

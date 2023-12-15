@@ -28,7 +28,7 @@ HRESULT CTerrain::Initialize_Prototype(LEVEL eLevel)
 HRESULT CTerrain::Initialize(void* pArg)
 {
 
-	if(FAILED(__super::Initialize(pArg))) 
+	if(FAILED(__super::Initialize(&GAMEOBJECT_DESC(0.0f, XMConvertToRadians(20.f)))))
 		return E_FAIL;
 
 
@@ -40,7 +40,7 @@ HRESULT CTerrain::Initialize(void* pArg)
 
 void CTerrain::Priority_Tick(_float fTimeDelta)
 {
-	int i = 0;
+	m_pNavigationCom->Update(m_pTransformCom->Get_WorldMatrix());
 }
 
 void CTerrain::Tick(_float fTimeDelta)

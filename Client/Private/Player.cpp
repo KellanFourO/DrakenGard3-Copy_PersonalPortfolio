@@ -92,6 +92,9 @@ HRESULT CPlayer::Render()
 		m_pModelCom->Render(i);
 	}
 	
+	#ifdef _DEBUG
+		m_pNavigationCom->Render();
+	#endif
 	
 
 	return S_OK;

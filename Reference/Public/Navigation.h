@@ -29,11 +29,13 @@ public:
 	virtual HRESULT Render();
 	
 public:
+	void	Update(_fmatrix WorldMatrix);
 	_bool	isMove(_fvector vPosition);
 
 private:
 	vector<class CCell*>	m_Cells;
 	_int					m_iCurrentIndex = { -1 };
+	static _float4x4		m_WorldMatrix;
 
 #ifdef _DEBUG
 private:
