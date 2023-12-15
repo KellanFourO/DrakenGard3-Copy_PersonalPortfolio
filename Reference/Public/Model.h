@@ -85,7 +85,9 @@ private:
 
 	string	ConvertWstrToStr(const wstring& wstr);
 	wstring	ConvertStrToWstr(const string& str);
-
+	string ModifyPath(const string& originalPath);
+	string ReplaceExtension(const string& originalPath, const string& newExtension);
+	
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);
 	virtual CComponent* Clone(void* pArg) override;

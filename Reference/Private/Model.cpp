@@ -413,28 +413,35 @@ HRESULT CModel::Read_MaterialData(wstring& strPath)
 			if (!ReadFile(hFile, &fileName, sizeof(string), &dwByte, nullptr))
 				return E_FAIL;
 
+			string newExtension = "dds";
+			string ddsFileName = ReplaceExtension(fileName, newExtension);
 			if (!fileName.empty())
 			{
-				path = ConvertWstrToStr(strPath) + "/" + fileName;
-				MaterialDesc.pMtrlTextures[aiTextureType_DIFFUSE] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
+				path = ConvertWstrToStr(strPath) + "/" + ddsFileName;
+				string modifyPath = ModifyPath(path);
+				MaterialDesc.pMtrlTextures[aiTextureType_DIFFUSE] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(modifyPath));
 			}
 
 			if (!ReadFile(hFile, &fileName, sizeof(string), &dwByte, nullptr))
 				return E_FAIL;
 
+			 ddsFileName = ReplaceExtension(fileName, newExtension);
 			if (!fileName.empty())
 			{
-				path = ConvertWstrToStr(strPath) + "/" + fileName;
-				MaterialDesc.pMtrlTextures[aiTextureType_SPECULAR] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
+				path = ConvertWstrToStr(strPath) + "/" + ddsFileName;
+				string modifyPath = ModifyPath(path);
+				MaterialDesc.pMtrlTextures[aiTextureType_SPECULAR] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(modifyPath));
 			}
 
 			if (!ReadFile(hFile, &fileName, sizeof(string), &dwByte, nullptr))
 				return E_FAIL;
 
+			ddsFileName = ReplaceExtension(fileName, newExtension);
 			if (!fileName.empty())
 			{
-				path = ConvertWstrToStr(strPath) + "/" + fileName;
-				MaterialDesc.pMtrlTextures[aiTextureType_NORMALS] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
+				path = ConvertWstrToStr(strPath) + "/" + ddsFileName;
+				string modifyPath = ModifyPath(path);
+				MaterialDesc.pMtrlTextures[aiTextureType_NORMALS] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(modifyPath));
 			}
 		}
 		m_Materials.push_back(MaterialDesc);
@@ -546,6 +553,38 @@ wstring CModel::ConvertStrToWstr(const string& str)
 	std::wstring wstr(size_needed, 0);
 	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), &wstr[0], size_needed);
 	return wstr;
+}
+
+string CModel::ModifyPath(const string& originalPath)
+{
+	// Find the position of "mat/" in the string
+	size_t matPos = originalPath.find(".mat/");
+
+	// If "mat/" is found, remove it
+	if (matPos != std::string::npos)
+	{
+		std::string modifiedPath = originalPath;
+		modifiedPath.erase(matPos, 4); // Remove "mat/"
+		return modifiedPath;
+	}
+
+	// If "mat/" is not found, return the original path
+	return originalPath;
+}
+
+string CModel::ReplaceExtension(const string& originalPath, const string& newExtension)
+{
+	size_t dotPos = originalPath.find_last_of('.');
+
+	if (dotPos != std::string::npos)
+	{
+		std::string modifiedPath = originalPath;
+		modifiedPath.replace(dotPos + 1, std::string::npos, newExtension);
+		return modifiedPath;
+	}
+
+	// If no dot is found, return the original path
+	return originalPath;
 }
 
 
