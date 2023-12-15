@@ -9,6 +9,8 @@
 
 #include <regex>
 #include <codecvt>
+#include <filesystem>
+
 
 ImGuiIO g_io;
 static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
@@ -56,11 +58,11 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	//#Imgui_MainTool_Start
 	ImGui::Begin(u8"메인 툴");
-	
+
 	if (ImGui::BeginTabBar(u8""))
 	{
-		ImGui_MapToolTick();	
-		
+		ImGui_MapToolTick();
+
 		ImGui_ObjectToolTick();
 
 		ShowDialog(m_eToolID);
@@ -69,7 +71,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	}
 
 	//#Imgui_MainTool_End
-	ImGui::End(); 
+	ImGui::End();
 
 }
 
@@ -156,99 +158,99 @@ void CImgui_Manager::ImGui_MainTick()
 void CImgui_Manager::ImGui_MapToolTick()
 {
 
-		if (ImGui::BeginTabItem(u8"맵"))
+	if (ImGui::BeginTabItem(u8"맵"))
+	{
+		m_eToolID = CImgui_Manager::TOOL_MAP;
+
+		if (ImGui::Button(u8"저장하기 ")) { m_eDialogMode = CImgui_Manager::DIALOG_SAVE; OpenDialog(m_eToolID); } ImGui::SameLine(); if (ImGui::Button(u8"불러오기 ")) { m_eDialogMode = CImgui_Manager::DIALOG_LOAD; OpenDialog(m_eToolID); }
+
+		ImGui::InputFloat(u8"X 사이즈", &m_fTileX);
+		ImGui::InputFloat(u8"Z 사이즈", &m_fTileZ);
+
+		m_tMapInfo.vPosition.x = m_fTileX;
+		m_tMapInfo.vPosition.y = 1.f;
+		m_tMapInfo.vPosition.z = m_fTileZ;
+
+		if (ImGui::Button(u8"생성"))
 		{
-			m_eToolID = CImgui_Manager::TOOL_MAP;
-
-			if (ImGui::Button(u8"저장하기 "))	{ m_eDialogMode = CImgui_Manager::DIALOG_SAVE; OpenDialog(m_eToolID); } ImGui::SameLine(); if (ImGui::Button(u8"불러오기 ")) { m_eDialogMode = CImgui_Manager::DIALOG_LOAD; OpenDialog(m_eToolID); }
-
-			ImGui::InputFloat(u8"X 사이즈", &m_fTileX);
-			ImGui::InputFloat(u8"Z 사이즈", &m_fTileZ);
-
-			m_tMapInfo.vPosition.x = m_fTileX;
-			m_tMapInfo.vPosition.y = 1.f;
-			m_tMapInfo.vPosition.z = m_fTileZ;
-
-			if (ImGui::Button(u8"생성"))
-			{
-				if (nullptr != m_pDynamic_Terrain)
-				{
-					m_pDynamic_Terrain->Delete_Component(TEXT("Com_VIBuffer"));
-				}
-
-				if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
-					return;
-			}
-
 			if (nullptr != m_pDynamic_Terrain)
 			{
-				ImGui::Checkbox(u8"픽킹모드", &m_bMapToolPickMode);
-
-				if (m_bMapToolPickMode)
-				{
-					ImGui::Text(u8"마우스 X : %f", m_pDynamic_Terrain->GetMousePos().x);
-					ImGui::Text(u8"마우스 Y : %f", m_pDynamic_Terrain->GetMousePos().y);
-					ImGui::Text(u8"마우스 Z : %f", m_pDynamic_Terrain->GetMousePos().z);
-
-					if (ImGui::InputInt(u8"브러시 범위", &m_iBrushRange)) { m_pDynamic_Terrain->SetRadious(m_iBrushRange); }
-					if (ImGui::InputInt(u8"브러시 힘", &m_iBrushPower)) { m_pDynamic_Terrain->SetPower(m_iBrushPower); }
-					
-					ImGui::NewLine(); //! 브러시 모드 라디오
-
-					static int BrushIndex = 0;
-					const char* BrushModeName[3] = { u8"다운", u8"업", u8"프레싱" };
-
-					for (_uint i = 0; i < IM_ARRAYSIZE(BrushModeName); ++i)
-					{
-						if(i > 0) { ImGui::SameLine(); }
-						ImGui::RadioButton(BrushModeName[i], &BrushIndex, i);
-					}
-
-					m_eBrushMode = BRUSHMODE(BrushIndex);
-					
-					ImGui::NewLine(); //! 지형 픽킹 모드 라디오
-
-					const char* TileModeName[4] = { u8"뾰족", u8"둥글게", u8"사각", u8"필터" };
-
-					for (_uint i = 0; i < IM_ARRAYSIZE(TileModeName); ++i)
-					{
-						if (i > 0) { ImGui::SameLine(); }
-						ImGui::RadioButton(TileModeName[i], &m_iTileMode, i);
-					}
-
-					if(ImGui_MouseInCheck())
-					PickingTerrain(m_eBrushMode);
-
-				}
+				m_pDynamic_Terrain->Delete_Component(TEXT("Com_VIBuffer"));
 			}
 
-			ImGui::EndTabItem();
+			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
+				return;
 		}
+
+		if (nullptr != m_pDynamic_Terrain)
+		{
+			ImGui::Checkbox(u8"픽킹모드", &m_bMapToolPickMode);
+
+			if (m_bMapToolPickMode)
+			{
+				ImGui::Text(u8"마우스 X : %f", m_pDynamic_Terrain->GetMousePos().x);
+				ImGui::Text(u8"마우스 Y : %f", m_pDynamic_Terrain->GetMousePos().y);
+				ImGui::Text(u8"마우스 Z : %f", m_pDynamic_Terrain->GetMousePos().z);
+
+				if (ImGui::InputInt(u8"브러시 범위", &m_iBrushRange)) { m_pDynamic_Terrain->SetRadious(m_iBrushRange); }
+				if (ImGui::InputInt(u8"브러시 힘", &m_iBrushPower)) { m_pDynamic_Terrain->SetPower(m_iBrushPower); }
+
+				ImGui::NewLine(); //! 브러시 모드 라디오
+
+				static int BrushIndex = 0;
+				const char* BrushModeName[3] = { u8"다운", u8"업", u8"프레싱" };
+
+				for (_uint i = 0; i < IM_ARRAYSIZE(BrushModeName); ++i)
+				{
+					if (i > 0) { ImGui::SameLine(); }
+					ImGui::RadioButton(BrushModeName[i], &BrushIndex, i);
+				}
+
+				m_eBrushMode = BRUSHMODE(BrushIndex);
+
+				ImGui::NewLine(); //! 지형 픽킹 모드 라디오
+
+				const char* TileModeName[4] = { u8"뾰족", u8"둥글게", u8"사각", u8"필터" };
+
+				for (_uint i = 0; i < IM_ARRAYSIZE(TileModeName); ++i)
+				{
+					if (i > 0) { ImGui::SameLine(); }
+					ImGui::RadioButton(TileModeName[i], &m_iTileMode, i);
+				}
+
+				if (ImGui_MouseInCheck())
+					PickingTerrain(m_eBrushMode);
+
+			}
+		}
+
+		ImGui::EndTabItem();
+	}
 }
 
 void CImgui_Manager::ImGui_ObjectToolTick()
 {
 
-		if (ImGui::BeginTabItem(u8"오브젝트"))
+	if (ImGui::BeginTabItem(u8"오브젝트"))
+	{
+		m_eToolID = CImgui_Manager::TOOL_OBJECT;
+
+		static int iObjectToolMode = 0;
+
+		ImGui::RadioButton(u8"오브젝트", &iObjectToolMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"바이너리", &iObjectToolMode, 1);
+
+		if (iObjectToolMode == 0)
 		{
-			m_eToolID = CImgui_Manager::TOOL_OBJECT;
-
-			static int iObjectToolMode = 0;
-
-			ImGui::RadioButton(u8"오브젝트", &iObjectToolMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"바이너리", &iObjectToolMode, 1);
-
-			if (iObjectToolMode == 0)
-			{
-				ObjectModeTick();
-			}
-
-			else if (iObjectToolMode == 1)
-			{
-				BinaryModeTick();
-			}
-			
-			ImGui::EndTabItem();
+			ObjectModeTick();
 		}
+
+		else if (iObjectToolMode == 1)
+		{
+			BinaryModeTick();
+		}
+
+		ImGui::EndTabItem();
+	}
 }
 
 
@@ -381,18 +383,18 @@ void CImgui_Manager::OpenDialog(TOOLID eToolID)
 
 	string strAdd;
 
-	if(m_eDialogMode == CImgui_Manager::DIALOG_SAVE)
+	if (m_eDialogMode == CImgui_Manager::DIALOG_SAVE)
 		strAdd = u8" 저장";
-	else if(m_eDialogMode == CImgui_Manager::DIALOG_LOAD)
+	else if (m_eDialogMode == CImgui_Manager::DIALOG_LOAD)
 		strAdd = u8" 불러오기";
-	
+
 	switch (eToolID)
 	{
 	case Client::CImgui_Manager::TOOL_MAP:
 		strKey = "MapToolDialog";
 		strTitle = u8"맵 다이얼로그" + strAdd;
 		strPath = "../Bin/DafaFiles/Map/";
-		
+
 		break;
 	case Client::CImgui_Manager::TOOL_OBJECT:
 		strKey = "ObjectToolDialog";
@@ -405,9 +407,9 @@ void CImgui_Manager::OpenDialog(TOOLID eToolID)
 		break;
 	}
 
-	
+
 	m_pFileDialog->OpenDialog(strKey, strTitle, szFilters, strPath, 1, nullptr, ImGuiFileDialogFlags_Modal | ImGuiFileDialogFlags_ConfirmOverwrite);
-	
+
 }
 
 void CImgui_Manager::ShowDialog(TOOLID eToolID)
@@ -416,74 +418,74 @@ void CImgui_Manager::ShowDialog(TOOLID eToolID)
 
 	if (eToolID == CImgui_Manager::TOOL_MAP)
 	{
-		 DialogKey = "MapToolDialog";
+		DialogKey = "MapToolDialog";
 	}
 	else if (eToolID == CImgui_Manager::TOOL_OBJECT)
 	{
 		DialogKey = "ObjectToolDialog";
 	}
 
-		if (m_pFileDialog->Display(DialogKey))
+	if (m_pFileDialog->Display(DialogKey))
+	{
+		if (m_pFileDialog->IsOk())
 		{
-			if (m_pFileDialog->IsOk())
+			string filePathName = m_pFileDialog->GetFilePathName();
+			string filePath = m_pFileDialog->GetCurrentPath();
+			string fileName = m_pFileDialog->GetCurrentFileName();
+
+			string userDatas;
+			if (m_pFileDialog->GetUserDatas())
+				userDatas = std::string((const char*)m_pFileDialog->GetUserDatas());
+			auto selection = m_pFileDialog->GetSelection(); // multiselection
+
+			switch (m_eDialogMode)
 			{
-				string filePathName = m_pFileDialog->GetFilePathName();
-				string filePath = m_pFileDialog->GetCurrentPath();
-				string fileName = m_pFileDialog->GetCurrentFileName();
+			case Client::CImgui_Manager::DIALOG_SAVE:
+			{
+				if (m_eToolID == CImgui_Manager::TOOL_MAP)
+					SaveMap(filePathName, fileName);
 
-				string userDatas;
-				if (m_pFileDialog->GetUserDatas())
-					userDatas = std::string((const char*)m_pFileDialog->GetUserDatas());
-				auto selection = m_pFileDialog->GetSelection(); // multiselection
-
-				switch (m_eDialogMode)
-				{
-					case Client::CImgui_Manager::DIALOG_SAVE:
-					{
-						if (m_eToolID == CImgui_Manager::TOOL_MAP)
-							SaveMap(filePathName, fileName);
-
-						else if (m_eToolID == CImgui_Manager::TOOL_OBJECT)
-							SaveObject(filePathName);
-						break;
-					}
-						
-
-					case Client::CImgui_Manager::DIALOG_LOAD:
-					{
-						if (m_eToolID == CImgui_Manager::TOOL_MAP)
-							LoadMap(filePathName, fileName);
-
-						else if (m_eToolID == CImgui_Manager::TOOL_OBJECT)
-							LoadObject(filePathName);
-						break;
-					}
-				}
+				else if (m_eToolID == CImgui_Manager::TOOL_OBJECT)
+					SaveObject(filePathName);
+				break;
 			}
-			m_pFileDialog->Close();
-		}	
+
+
+			case Client::CImgui_Manager::DIALOG_LOAD:
+			{
+				if (m_eToolID == CImgui_Manager::TOOL_MAP)
+					LoadMap(filePathName, fileName);
+
+				else if (m_eToolID == CImgui_Manager::TOOL_OBJECT)
+					LoadObject(filePathName);
+				break;
+			}
+			}
+		}
+		m_pFileDialog->Close();
+	}
 }
 
 void CImgui_Manager::OpenDialogBinaryModel()
 {
-	if(m_eModelType == MODEL_TYPE::TYPE_END)
+	if (m_eModelType == MODEL_TYPE::TYPE_END)
 		return;
 
 	string strKey, strTitle, strPath;
-	const _char* szFilters = "Binary (*.dat, *.vfx,){.dat,.vfx},Instance (*.dat){.dat},Json (*.json){.json},All files{.*}";
+	const _char* szFilters = "Target (*.fbx){.fbx},All files{.*}";
 
 	string strAdd;
 
-	if(m_eModelType == MODEL_TYPE::TYPE_ANIM)
+	if (m_eModelType == MODEL_TYPE::TYPE_ANIM)
 		strAdd = u8" (애니메이션)";
-	else if(m_eModelType == MODEL_TYPE::TYPE_NONANIM)
+	else if (m_eModelType == MODEL_TYPE::TYPE_NONANIM)
 		strAdd = u8" (논애니메이션)";
 
 	strKey = "BinarySave";
 	strTitle = u8"모델 바이너리 저장";
 	strTitle += strAdd;
 
-	strPath = "../Bin/DafaFiles/Object/";
+	strPath = "../Bin/Resources/Models/";
 
 	m_pFileDialog->OpenDialog(strKey, strTitle, szFilters, strPath, 1, nullptr, ImGuiFileDialogFlags_Modal | ImGuiFileDialogFlags_ConfirmOverwrite);
 }
@@ -513,46 +515,46 @@ void CImgui_Manager::ShowDialogBianryModel(MODEL_TYPE eModelType)
 
 void CImgui_Manager::PickingTerrain(BRUSHMODE eBrushMode)
 {
-	if(eBrushMode == CImgui_Manager::BRUSH_END)
+	if (eBrushMode == CImgui_Manager::BRUSH_END)
 		return;
 
 	switch (eBrushMode)
 	{
-		case Client::CImgui_Manager::BRUSH_DOWN: 
+	case Client::CImgui_Manager::BRUSH_DOWN:
+	{
+		if (m_pGameInstance->Mouse_Down(DIM_LB))
 		{
-			if (m_pGameInstance->Mouse_Down(DIM_LB))
-			{
-				m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)m_iTileMode);
-			}
-
-			break;
-		}
-		
-		case Client::CImgui_Manager::BRUSH_UP:
-		{
-			if (m_pGameInstance->Mouse_Up(DIM_LB))
-			{
-				m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)m_iTileMode);
-			}
-
-			break;
+			m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)m_iTileMode);
 		}
 
-		case Client::CImgui_Manager::BRUSH_PRESSING:
-		{
-			if (m_pGameInstance->Mouse_Pressing(DIM_LB))
-			{
-				m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)m_iTileMode);
-			}
+		break;
+	}
 
-			break;
+	case Client::CImgui_Manager::BRUSH_UP:
+	{
+		if (m_pGameInstance->Mouse_Up(DIM_LB))
+		{
+			m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)m_iTileMode);
 		}
+
+		break;
+	}
+
+	case Client::CImgui_Manager::BRUSH_PRESSING:
+	{
+		if (m_pGameInstance->Mouse_Pressing(DIM_LB))
+		{
+			m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)m_iTileMode);
+		}
+
+		break;
+	}
 	}
 }
 
 void CImgui_Manager::SaveMap(string strFilePath, string strFileName)
 {
-	
+
 
 
 	json OutJson;
@@ -565,7 +567,7 @@ void CImgui_Manager::SaveMap(string strFilePath, string strFileName)
 
 	current = strFileName.find(".");
 	string sub;
-	if(current != string::npos)
+	if (current != string::npos)
 	{
 		sub = strFileName.substr(index, current - index);
 	}
@@ -643,7 +645,7 @@ void CImgui_Manager::BinaryModeTick()
 	static bool bModelType = true;
 
 	ImGui::Text(u8"체크안할시 논애님");
-	ImGui::Checkbox(u8"모델타입", &bModelType); 
+	ImGui::Checkbox(u8"모델타입", &bModelType);
 
 	m_eModelType = (MODEL_TYPE)bModelType;
 
@@ -690,17 +692,17 @@ void CImgui_Manager::CreateObjectFunction()
 {
 	_int iObjectTagSize = m_vecObjectProtoTags.size();
 
-	if(ImGui::BeginListBox(u8"태그 리스트"))
+	if (ImGui::BeginListBox(u8"태그 리스트"))
 	{
-		for(_uint i = 0; i < iObjectTagSize; ++i)
+		for (_uint i = 0; i < iObjectTagSize; ++i)
 		{
 			const _bool isSelected = (m_iSelectTagIndex == i);
 
-			if(ImGui::Selectable(m_vecObjectProtoTags[i].c_str(), isSelected))
+			if (ImGui::Selectable(m_vecObjectProtoTags[i].c_str(), isSelected))
 			{
 				m_iSelectTagIndex = i;
 
-				if(isSelected)
+				if (isSelected)
 					ImGui::SetItemDefaultFocus();
 			}
 		}
@@ -709,14 +711,14 @@ void CImgui_Manager::CreateObjectFunction()
 
 	if (m_pGameInstance->Mouse_Down(DIM_LB))
 	{
-		if(nullptr != m_pDynamic_Terrain)
+		if (nullptr != m_pDynamic_Terrain)
 			m_fPickingPos = m_pDynamic_Terrain->GetMousePos(); //! 마우스 클릭한 지점의 월드 좌표 받기
 		else
 		{
 			MSG_BOX("터레인부터 생성해");
 			return;
 		}
-		
+
 		if (m_pDynamic_Terrain->MouseOnTerrain() && ImGui_MouseInCheck())
 		{
 			CGameObject* pGameObject = nullptr;
@@ -726,18 +728,18 @@ void CImgui_Manager::CreateObjectFunction()
 			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), wstr, nullptr, reinterpret_cast<CGameObject**>(&pGameObject))))
 				return;
 
-			
+
 
 			string SliceTag = ConvertWstrToStr(wstr);
 			string IndexTag = to_string(m_vecObjects.size() + 1);
 			SliceTag = SliceTag + IndexTag;
 
 			m_vecCreateObjectTag.push_back(SliceTag);
-			
+
 			m_vecObjects.push_back(pGameObject);
 			pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f));
 		}
-		
+
 	}
 
 }
@@ -748,7 +750,7 @@ void CImgui_Manager::SelectObjectFunction()
 	Set_GuizmoCamProj();	//! 기즈모 뷰 투영 셋팅해주기.
 
 	if (nullptr != m_PickingObject)
-		Set_Guizmo();	
+		Set_Guizmo();
 
 	//_int iObjectListSize = m_vecCreateObjectTag.size();
 	_int iObjectListSize = m_vecCreateObjectTag.size();
@@ -775,7 +777,7 @@ void CImgui_Manager::SelectObjectFunction()
 
 	ImGui::Checkbox(u8"픽킹모드", &m_bObjectToolPickMode);
 
-	if(nullptr != m_pDynamic_Terrain && false == m_bObjectToolPickMode)
+	if (nullptr != m_pDynamic_Terrain && false == m_bObjectToolPickMode)
 		return;
 
 	m_fPickingPos = m_pDynamic_Terrain->GetMousePos();
@@ -783,7 +785,7 @@ void CImgui_Manager::SelectObjectFunction()
 	if (m_pGameInstance->Mouse_Down(DIM_LB))
 	{
 		_int iObjectSize = m_vecObjects.size();
-		
+
 		for (_uint i = 0; i < iObjectSize; ++i)
 		{
 			if (m_vecObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecObjects[i]->Find_Component(TEXT("Com_Model")))))
@@ -803,27 +805,53 @@ void CImgui_Manager::LoadObject(string strFilePath)
 {
 }
 
+HRESULT CImgui_Manager::StartBakeBinary()
+{
+
+
+	return S_OK;
+}
+
 HRESULT CImgui_Manager::BinaryConvert(string strFileName, string strFilePath, const MODEL_TYPE& eModelType)
 {
-	
-	if(FAILED(ReadFBX(strFilePath, eModelType)))
+	//! strFilePath가 곧 sourceUpperPath
+
+	if (FAILED(ReadFBX(strFilePath, eModelType)))
 		return E_FAIL;
 
-	if (FAILED(Read_BoneData(m_pAiScene->mRootNode, -1)))
+	if (FAILED(Read_BoneData(m_pAiScene->mRootNode, 0, -1, 0)))
 		return E_FAIL;
 
-	if(FAILED(Read_MeshData(eModelType)))
+	if (FAILED(Read_MeshData(eModelType)))
 		return E_FAIL;
 
-	if(FAILED(Write_MeshData(strFilePath)))
+	if (FAILED(Write_MeshData(strFileName)))
 		return E_FAIL;
-	
+
+	if (FAILED(Write_BoneData(strFileName)))
+		return E_FAIL;
+
+	if (FAILED(Read_MaterialData()))
+		return E_FAIL;
+
+	if (FAILED(Write_MaterialData(strFileName)))
+		return E_FAIL;
+
+	if (MODEL_TYPE::TYPE_ANIM == eModelType)
+	{
+		if (FAILED(Read_AnimationData()))
+			return E_FAIL;
+
+		if (FAILED(Write_AnimationData(strFileName)))
+			return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 HRESULT CImgui_Manager::ReadFBX(string strFilePath, const MODEL_TYPE& eModelType)
 {
-	if(MODEL_TYPE::TYPE_END == eModelType)
+	if (MODEL_TYPE::TYPE_END == eModelType)
 		return E_FAIL;
 
 	_int iFlag = 0;
@@ -833,45 +861,76 @@ HRESULT CImgui_Manager::ReadFBX(string strFilePath, const MODEL_TYPE& eModelType
 	else
 		iFlag |= aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast;
 
-	m_pAiScene = m_Impoter.ReadFile(strFilePath,iFlag);
+	m_pAiScene = m_Impoter.ReadFile(strFilePath, iFlag);
 
-	if(nullptr == m_pAiScene)
+	if (nullptr == m_pAiScene)
 		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CImgui_Manager::Read_BoneData(aiNode* pAINode, _int iParentIndex)
+HRESULT CImgui_Manager::Read_BoneData(aiNode* pAINode, _int iIndex, _int iParentIndex, _int iDepth)
 {
-	if(nullptr == pAINode)
+	if (nullptr == pAINode)
 		return E_FAIL;
 
-	asBone*	pBone = new asBone;
+	asBone* pBone = new asBone;
 
 	pBone->strName = pAINode->mName.data;
 	pBone->iParent = iParentIndex;
+	pBone->iIndex = iIndex;
+	pBone->iDepth = iDepth;
 
 	_float4x4 matTransformation;
 
 	memcpy(&matTransformation, &pAINode->mTransformation, sizeof(_float4x4));
 
 	XMStoreFloat4x4(&pBone->matTransformation, XMMatrixTranspose(XMLoadFloat4x4(&matTransformation)));
-	
+
 	m_vecBones.push_back(pBone);
 
-	_int iChildParentIndex = m_vecBones.size() - 1;
 
 	for (size_t i = 0; i < pAINode->mNumChildren; ++i)
 	{
-		Read_BoneData(pAINode->mChildren[i], iChildParentIndex);
+		Read_BoneData(pAINode->mChildren[i], m_vecBones.size(), iIndex, pBone->iDepth + 1);
 	}
+
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Write_BoneData(string strFileName)
+{
+	string strFilePath = "../Bin/DataFiles/Model/";
+	string strEXT = ".bone";
+
+	string strFileName1 = filesystem::path(strFileName).stem().string();
+
+	string strFullPath = strFilePath + strFileName1 + strEXT;
+
+	HANDLE	hFile;
+
+	hFile = CreateFile(ConvertStrToWstr(strFullPath).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+
+	DWORD dwByte;
+
+	for (asBone* pBone : m_vecBones)
+	{
+		WriteFile(hFile, &pBone->strName, sizeof(pBone->strName.size()), &dwByte, nullptr);
+		WriteFile(hFile, &pBone->matTransformation, sizeof(XMFLOAT4X4), &dwByte, nullptr);
+		WriteFile(hFile, &pBone->matOffset, sizeof(XMFLOAT4X4), &dwByte, nullptr);
+		WriteFile(hFile, &pBone->iIndex, sizeof(_int), &dwByte, nullptr);
+		WriteFile(hFile, &pBone->iParent, sizeof(_int), &dwByte, nullptr);
+		WriteFile(hFile, &pBone->iDepth, sizeof(_uint), &dwByte, nullptr);
+	}
+
+	CloseHandle(hFile);
 
 	return S_OK;
 }
 
 HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 {
-	
+
 	for (_uint i = 0; i < m_pAiScene->mNumMeshes; ++i)
 	{
 		const aiMesh* pAIMesh = m_pAiScene->mMeshes[i];
@@ -879,13 +938,13 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 		asMesh* pMeshData = new asMesh;
 		pMeshData->strName = pAIMesh->mName.data;
 
-		if(eModelType == MODEL_TYPE::TYPE_NONANIM)
+		if (eModelType == MODEL_TYPE::TYPE_NONANIM)
 		{
 			pMeshData->isAnim = (UINT)eModelType;
 
 			pMeshData->vecNonAnims.reserve(pAIMesh->mNumVertices);
 
-			VTXNONANIM vertex{};
+			VTXMESH vertex{};
 
 			for (_uint j = 0; j < pAIMesh->mNumVertices; ++j)
 			{
@@ -903,8 +962,13 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 			pMeshData->isAnim = (UINT)eModelType;
 
 			pMeshData->vecAnims.reserve(pAIMesh->mNumVertices);
+			for (_int j = 0; j < pAIMesh->mNumVertices; ++j)
+			{
+				pMeshData->vecAnims.push_back(VTXANIMMESH{});
+			}
 
-			VTXANIM vertex{};
+
+			VTXANIMMESH vertex{};
 
 			for (_uint j = 0; j < pAIMesh->mNumVertices; ++j)
 			{
@@ -921,49 +985,51 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 				aiBone* pAIBone = pAIMesh->mBones[j];
 
 				_float4x4 OffsetMatrix;
-				
+
 				memcpy(&OffsetMatrix, &pAIBone->mOffsetMatrix, sizeof(_float4x4));
 
 				XMStoreFloat4x4(&OffsetMatrix, XMMatrixTranspose(XMLoadFloat4x4(&OffsetMatrix)));
 
-				pMeshData->vecOffsetMatrices.push_back(OffsetMatrix);
-
 				iBoneIndex = Get_BoneIndex(pAIBone->mName.data);
+
+				m_vecBones[iBoneIndex]->matOffset = OffsetMatrix;
+
+
 				pMeshData->vecBoneIndices.push_back(iBoneIndex);
 
 				for (_uint k = 0; k < pAIBone->mNumWeights; ++k)
 				{
 					_uint iVertexIndex = pAIBone->mWeights[k].mVertexId;
 
-					if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeight.x)
+					if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.x)
 					{
-						pMeshData->vecAnims[iVertexIndex].vBlendIndex.x = Get_BoneIndex(pAIBone->mName.data);
-						pMeshData->vecAnims[iVertexIndex].vBlendWeight.x = pAIBone->mWeights[k].mWeight;
+						pMeshData->vecAnims[iVertexIndex].vBlendIndices.x = Get_BoneIndex(pAIBone->mName.data);
+						pMeshData->vecAnims[iVertexIndex].vBlendWeights.x = pAIBone->mWeights[k].mWeight;
 					}
 
-					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeight.y)
+					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.y)
 					{
-						pMeshData->vecAnims[iVertexIndex].vBlendIndex.y = Get_BoneIndex(pAIBone->mName.data);
-						pMeshData->vecAnims[iVertexIndex].vBlendWeight.y = pAIBone->mWeights[k].mWeight;
+						pMeshData->vecAnims[iVertexIndex].vBlendIndices.y = Get_BoneIndex(pAIBone->mName.data);
+						pMeshData->vecAnims[iVertexIndex].vBlendWeights.y = pAIBone->mWeights[k].mWeight;
 					}
 
-					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeight.z)
+					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.z)
 					{
-						pMeshData->vecAnims[iVertexIndex].vBlendIndex.z = Get_BoneIndex(pAIBone->mName.data);
-						pMeshData->vecAnims[iVertexIndex].vBlendWeight.z = pAIBone->mWeights[k].mWeight;
+						pMeshData->vecAnims[iVertexIndex].vBlendIndices.z = Get_BoneIndex(pAIBone->mName.data);
+						pMeshData->vecAnims[iVertexIndex].vBlendWeights.z = pAIBone->mWeights[k].mWeight;
 					}
 
-					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeight.w)
+					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.w)
 					{
-						pMeshData->vecAnims[iVertexIndex].vBlendIndex.w = Get_BoneIndex(pAIBone->mName.data);
-						pMeshData->vecAnims[iVertexIndex].vBlendWeight.w = pAIBone->mWeights[k].mWeight;
+						pMeshData->vecAnims[iVertexIndex].vBlendIndices.w = Get_BoneIndex(pAIBone->mName.data);
+						pMeshData->vecAnims[iVertexIndex].vBlendWeights.w = pAIBone->mWeights[k].mWeight;
 					}
 				}
 			}
 		}
 
 		pMeshData->vecIndices.reserve(pAIMesh->mNumFaces * 3);
-		
+
 		for (_uint j = 0; j < pAIMesh->mNumFaces; ++j)
 		{
 			aiFace& AIFace = pAIMesh->mFaces[j];
@@ -975,15 +1041,315 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 		}
 
 		pMeshData->iMaterialIndex = pAIMesh->mMaterialIndex;
+		pMeshData->vecBones = m_vecBones;
+
+		// 		pMeshData->vecBones.reserve(m_vecBones.size());
+		// 
+		// 		for (asBone* pBoneData : m_vecBones)
+		// 		{
+		// 			pMeshData->vecBones.push_back(*pBoneData);
+		// 		}
+
+
+		m_vecMesh.push_back(pMeshData);
 	}
 
 	return S_OK;
 }
 
-HRESULT CImgui_Manager::Write_MeshData(string strFilePath)
-
+HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 {
-	return E_NOTIMPL;
+	string strFilePath = "../Bin/DataFiles/Model/";
+	string strEXT = ".mesh";
+
+	string strFileName1 = filesystem::path(strFileName).stem().string();
+
+	string strFullPath = strFilePath + strFileName1 + strEXT;
+
+	HANDLE	hFile;
+
+	hFile = CreateFile(ConvertStrToWstr(strFullPath).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+
+	DWORD dwByte = 0;
+
+	for (_int i = 0; i < m_vecMesh.size(); ++i)
+	{
+		WriteFile(hFile, &m_vecMesh[i]->strName, sizeof(m_vecMesh[i]->strName.size()), &dwByte, nullptr);
+		WriteFile(hFile, &m_vecMesh[i]->isAnim, sizeof(m_vecMesh[i]->isAnim), &dwByte, nullptr);
+
+
+		if (m_vecMesh[i]->isAnim == (_uint)MODEL_TYPE::TYPE_NONANIM)
+		{
+			for (VTXMESH& vertex : m_vecMesh[i]->vecNonAnims)
+			{
+				WriteFile(hFile, &vertex.vPosition, sizeof(vertex.vPosition), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vNormal, sizeof(vertex.vNormal), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vTexcoord, sizeof(vertex.vTexcoord), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vTangent, sizeof(vertex.vTangent), &dwByte, nullptr);
+			}
+		}
+		else
+		{
+			for (VTXANIMMESH& vertex : m_vecMesh[i]->vecAnims)
+			{
+				WriteFile(hFile, &vertex.vPosition, sizeof(vertex.vPosition), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vNormal, sizeof(vertex.vNormal), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vTexcoord, sizeof(vertex.vTexcoord), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vTangent, sizeof(vertex.vTangent), &dwByte, nullptr);
+
+				WriteFile(hFile, &vertex.vBlendIndices, sizeof(vertex.vBlendIndices), &dwByte, nullptr);
+				WriteFile(hFile, &vertex.vBlendWeights, sizeof(vertex.vBlendWeights), &dwByte, nullptr);
+			}
+		}
+
+		for (_int& index : m_vecMesh[i]->vecIndices)
+		{
+			WriteFile(hFile, &index, sizeof(index), &dwByte, nullptr);
+		}
+
+		WriteFile(hFile, &m_vecMesh[i]->iMaterialIndex, sizeof(m_vecMesh[i]->iMaterialIndex), &dwByte, nullptr);
+
+		for (_int& index : m_vecMesh[i]->vecBoneIndices)
+		{
+			WriteFile(hFile, &index, sizeof(index), &dwByte, nullptr);
+		}
+
+		for (asBone* pBoneData : m_vecMesh[i]->vecBones)
+		{
+			WriteFile(hFile, &pBoneData->strName, sizeof(pBoneData->strName.size()), &dwByte, nullptr);
+			WriteFile(hFile, &pBoneData->matTransformation, sizeof(XMFLOAT4X4), &dwByte, nullptr);
+			WriteFile(hFile, &pBoneData->matOffset, sizeof(XMFLOAT4X4), &dwByte, nullptr);
+			WriteFile(hFile, &pBoneData->iIndex, sizeof(_int), &dwByte, nullptr);
+			WriteFile(hFile, &pBoneData->iParent, sizeof(_int), &dwByte, nullptr);
+			WriteFile(hFile, &pBoneData->iDepth, sizeof(_uint), &dwByte, nullptr);
+		}
+
+	}
+
+	CloseHandle(hFile);
+
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Read_MaterialData()
+{
+	for (_uint i = 0; i < m_pAiScene->mNumMaterials; ++i)
+	{
+		aiMaterial* pMaterial = m_pAiScene->mMaterials[i];
+
+		if (nullptr == pMaterial)
+			return E_FAIL;
+
+		asMaterial* pMaterialData = new asMaterial;
+
+		aiString aifile;
+		string strName;
+
+		if (FAILED(pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aifile)))
+			return E_FAIL; //!Continue
+
+		strName = aifile.data;
+		pMaterialData->strDiffuseFilePath = filesystem::path(strName).filename().string();
+
+		if (FAILED(pMaterial->GetTexture(aiTextureType_SPECULAR, 0, &aifile)))
+			return E_FAIL; //!Continue
+
+		strName = aifile.data;
+		pMaterialData->strSpecularFilePath = filesystem::path(strName).filename().string();
+
+		if (FAILED(pMaterial->GetTexture(aiTextureType_NORMALS, 0, &aifile)))
+			return E_FAIL; //!Continue
+
+		strName = aifile.data;
+		pMaterialData->strNormalFilePath = filesystem::path(strName).filename().string();
+
+		m_vecMaterial.push_back(pMaterialData);
+	}
+
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Write_MaterialData(string strFileName)
+{
+
+	string strFilePath = "../Bin/DataFiles/Model/";
+	string strEXT = ".mat";
+
+	string strFileName1 = filesystem::path(strFileName).stem().string();
+
+	string strFullPath = strFilePath + strFileName1 + strEXT;
+
+	HANDLE	hFile;
+
+	hFile = CreateFile(ConvertStrToWstr(strFullPath).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+
+	if (nullptr == hFile)
+	{
+		return E_FAIL;
+	}
+	DWORD dwByte = 0;
+
+	for (asMaterial* pMaterialData : m_vecMaterial)
+	{
+		WriteFile(hFile, &pMaterialData->strDiffuseFilePath, sizeof(pMaterialData->strDiffuseFilePath), &dwByte, nullptr);
+		WriteFile(hFile, &pMaterialData->strSpecularFilePath, sizeof(pMaterialData->strSpecularFilePath), &dwByte, nullptr);
+		WriteFile(hFile, &pMaterialData->strNormalFilePath, sizeof(pMaterialData->strNormalFilePath), &dwByte, nullptr);
+	}
+
+
+	CloseHandle(hFile);
+
+	//!WriteFile(hFile, &m_vecMesh[i]->strName, sizeof(m_vecMesh[i]->strName), &dwByte, nullptr);
+
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Read_AnimationData()
+{
+	for (_uint i = 0; i < m_pAiScene->mNumAnimations; ++i)
+	{
+		aiAnimation* pAnimation = m_pAiScene->mAnimations[i];
+		asAnimation* pAnimationData = new asAnimation;
+
+		pAnimationData->strName = pAnimation->mName.data;
+		pAnimationData->fDuration = pAnimation->mDuration;
+		pAnimationData->fTicksPerSecond = pAnimation->mTicksPerSecond;
+
+		for (_uint j = 0; j < pAnimation->mNumChannels; ++j)
+		{
+			asChannel* pChannelData = new asChannel;
+			aiNodeAnim* pChannel = pAnimation->mChannels[j];
+
+			pChannelData->strName = pChannel->mNodeName.data;
+
+			_uint iNumKeyFrames;
+
+			iNumKeyFrames = max(pChannel->mNumScalingKeys, pChannel->mNumRotationKeys);
+			iNumKeyFrames = max(pChannel->mNumPositionKeys, iNumKeyFrames);
+
+			_float3		vScale{};
+			_float4		vRotation{};
+			_float3		vPosition{};
+
+			for (_uint k = 0; k < iNumKeyFrames; ++k)
+			{
+				asKeyFrame* pKeyFrameData = new asKeyFrame;
+
+				if (k < pChannel->mNumScalingKeys)
+				{
+					memcpy(&vScale, &pChannel->mScalingKeys[k].mValue, sizeof(_float3));
+					pKeyFrameData->fTrackPosition = pChannel->mScalingKeys[k].mTime;
+				}
+
+				if (k < pChannel->mNumRotationKeys)
+				{
+					//! 어심프의 로테이션키의 밸류는 aiQuaternion이야. x,y,z,w 순이아닌 w,x,y,z 순으로 되어있어
+					//! 우리가 쓰던 거랑 순서가 다르지? 그래서 memcpy를 사용하면 안돼.
+
+					vRotation.x = pChannel->mRotationKeys[k].mValue.x;
+					vRotation.y = pChannel->mRotationKeys[k].mValue.y;
+					vRotation.z = pChannel->mRotationKeys[k].mValue.z;
+					vRotation.w = pChannel->mRotationKeys[k].mValue.w;
+					pKeyFrameData->fTrackPosition = pChannel->mRotationKeys[k].mTime;
+				}
+
+				if (k < pChannel->mNumPositionKeys)
+				{
+					memcpy(&vPosition, &pChannel->mPositionKeys[k].mValue, sizeof(_float3));
+					pKeyFrameData->fTrackPosition = pChannel->mPositionKeys[k].mTime;
+				}
+
+				pKeyFrameData->vScale = vScale;
+				pKeyFrameData->vRotation = vRotation;
+				pKeyFrameData->vPosition = vPosition;
+
+				pChannelData->vecKeyFrames.push_back(pKeyFrameData);
+			}
+			pAnimationData->vecChannels.push_back(pChannelData);
+		}
+		m_vecAnimation.push_back(pAnimationData);
+	}
+
+
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
+{
+	string strFilePath = "../Bin/DataFiles/Model/";
+	string strEXT = ".anim";
+
+	string strFileName1 = filesystem::path(strFileName).stem().string();
+
+	string strFullPath = strFilePath + strFileName1 + strEXT;
+
+	HANDLE	hFile;
+
+	hFile = CreateFile(ConvertStrToWstr(strFullPath).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+
+	if (nullptr == hFile)
+	{
+		return E_FAIL;
+	}
+	DWORD dwByte = 0;
+
+	for (asAnimation* pAnimationData : m_vecAnimation)
+	{
+		WriteFile(hFile, &pAnimationData->strName, sizeof(pAnimationData->strName.size()), &dwByte, nullptr);
+		WriteFile(hFile, &pAnimationData->fDuration, sizeof(_float), &dwByte, nullptr);
+		WriteFile(hFile, &pAnimationData->fTicksPerSecond, sizeof(_float), &dwByte, nullptr);
+
+		WriteFile(hFile, &pAnimationData->vecChannels, sizeof(size_t) * pAnimationData->vecChannels.size(), &dwByte, nullptr);
+
+		for (asChannel* pChannelData : pAnimationData->vecChannels)
+		{
+			WriteFile(hFile, &pChannelData->strName, sizeof(pChannelData->strName.size()), &dwByte, nullptr);
+			WriteFile(hFile, &pChannelData->vecKeyFrames, sizeof(size_t) * pChannelData->vecKeyFrames.size(), &dwByte, nullptr);
+
+			for (asKeyFrame* pKeyFrameData : pChannelData->vecKeyFrames)
+			{
+				WriteFile(hFile, &pKeyFrameData->fTrackPosition, sizeof(_float), &dwByte, nullptr);
+				WriteFile(hFile, &pKeyFrameData->vScale, sizeof(_float3), &dwByte, nullptr);
+				WriteFile(hFile, &pKeyFrameData->vRotation, sizeof(_float4), &dwByte, nullptr);
+				WriteFile(hFile, &pKeyFrameData->vPosition, sizeof(_float3), &dwByte, nullptr);
+			}
+		}
+	}
+
+	CloseHandle(hFile);
+	m_vecBones.clear();
+	m_vecMesh.clear();
+	m_vecMaterial.clear();
+	m_vecAnimation.clear();
+
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Bake_Character()
+{
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Bake_Env_NonAnim()
+{
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Bake_Env_Anim()
+{
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Bake_Weapon()
+{
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Bake_Select(string strFilePath, const MODEL_TYPE& eModelType)
+{
+
+
+	return S_OK;
 }
 
 _uint CImgui_Manager::Get_BoneIndex(const char* szName)
@@ -993,7 +1359,7 @@ _uint CImgui_Manager::Get_BoneIndex(const char* szName)
 		if (!strcmp(m_vecBones[i]->strName.c_str(), szName))
 			return i;
 	}
-	
+
 	return 0;
 }
 
@@ -1020,13 +1386,55 @@ wstring CImgui_Manager::SliceObjectTag(const wstring& strObjectTag)
 	}
 }
 
+void CImgui_Manager::Replace(string& str, string comp, string rep)
+{
+	string temp = str;
+
+	size_t start_pos = 0;
+	while ((start_pos = temp.find(comp, start_pos)) != wstring::npos)
+	{
+		temp.replace(start_pos, comp.length(), rep);
+		start_pos += rep.length();
+	}
+
+	str = temp;
+}
+
+vector<string> CImgui_Manager::Get_AllFolderNames(const string& strDirPath)
+{
+	vector<std::string> folderNames;
+	try
+	{
+		for (const auto& entry : filesystem::directory_iterator(strDirPath))
+		{
+			if (filesystem::is_directory(entry))
+			{
+				folderNames.push_back(entry.path().filename().string());
+			}
+		}
+	}
+	catch (const std::exception& e)
+	{
+		MSG_BOX("폴더명을 얻어오지못햇음");
+	}
+
+	return folderNames;
+}
+
+void CImgui_Manager::CheckOrCreatePath(const string& strPath)
+{
+	auto p = filesystem::path(strPath);
+	filesystem::create_directory(p.parent_path().parent_path());
+	filesystem::create_directory(p.parent_path());
+}
+
 void CImgui_Manager::Free()
 {
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 
-	for(auto& pBoneData : m_vecBones)
+	for (auto& pBoneData : m_vecBones)
 		Safe_Delete(pBoneData);
 
 	m_vecBones.clear();

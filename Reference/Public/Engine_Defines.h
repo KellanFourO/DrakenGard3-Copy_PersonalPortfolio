@@ -54,6 +54,7 @@ using namespace std;
 #include "Engine_Function.h"
 #include "Engine_Typedef.h"
 #include "Engine_Struct.h"
+#include "DataType.h"
 
 
 namespace Engine

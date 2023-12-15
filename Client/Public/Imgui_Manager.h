@@ -1,7 +1,7 @@
 #pragma once
 #include "Base.h"
 #include "Client_Defines.h"
-#include "DataType.h"
+
 
 
 BEGIN(Client)
@@ -15,9 +15,9 @@ public:
 	enum BRUSHMODE { BRUSH_DOWN, BRUSH_UP, BRUSH_PRESSING, BRUSH_END };
 
 private:
-			 CImgui_Manager();
+	CImgui_Manager();
 	virtual ~CImgui_Manager() = default;
-	
+
 public:
 	LEVEL					Get_Level_ID() { return m_eLevelID; }
 	void					Set_Level_ID(LEVEL eLevel) { m_eLevelID = eLevel; }
@@ -42,17 +42,17 @@ private:
 	_bool					ImGui_MouseInCheck();
 	void					UpdateRay();
 
-//TODO Imguizmo #기즈모
-//TODO ImguiDialog #다이얼로그
-//TODO 맵툴 #맵툴
-//TODO 오브젝트툴 #오브젝트툴
-//TODO 묹문자열 #문자열함수	 
+	//TODO Imguizmo #기즈모
+	//TODO ImguiDialog #다이얼로그
+	//TODO 맵툴 #맵툴
+	//TODO 오브젝트툴 #오브젝트툴
+	//TODO 묹문자열 #문자열함수	 
 
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };
 	class CDynamic_Terrain* m_pDynamic_Terrain = { nullptr };
 	class CCamera_MapTool* m_pCamera = { nullptr };
-	
+
 private:
 	ID3D11Device* m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pContext = { nullptr };
@@ -68,24 +68,25 @@ private: //TODO Imguizmo #기즈모
 	void					Set_GuizmoCamProj();
 
 private:
-	_float*						m_arrView = { nullptr };
-	_float*						m_arrProj = { nullptr };
+	_float* m_arrView = { nullptr };
+	_float* m_arrProj = { nullptr };
 	_float						snap[3] = { 1.f, 1.f, 1.f };
-		 
+
 
 private: //TODO ImguiDialog #다이얼로그
-		void				OpenDialog(TOOLID eToolID);
-		void				ShowDialog(TOOLID eToolID);
-		void				OpenDialogBinaryModel();
-		void				ShowDialogBianryModel(MODEL_TYPE eModelType);
+	void				OpenDialog(TOOLID eToolID);
+	void				ShowDialog(TOOLID eToolID);
+	void				OpenDialogBinaryModel();
+	void				ShowDialogBianryModel(MODEL_TYPE eModelType);
 
 private:
-		
-		ImGuiFileDialog*		m_pFileDialog;
-		string					m_strCurrentDialogTag;
-		DIALOGID				m_eDialogMode = { DIALOG_END };
-		MODEL_TYPE				m_eModelType = { MODEL_TYPE::TYPE_END };
-		
+
+	ImGuiFileDialog* m_pFileDialog;
+	string						m_strCurrentDialogTag;
+	DIALOGID					m_eDialogMode = { DIALOG_END };
+	MODEL_TYPE					m_eModelType = { MODEL_TYPE::TYPE_END };
+
+
 
 private: //TODO 맵툴 #맵툴 
 	void					PickingTerrain(BRUSHMODE eBrushMode);
@@ -105,7 +106,7 @@ private:
 	_float						m_fTileX = { 0 }, m_fTileZ = { 0 };
 
 	_int						m_iBrushRange = 1.f, m_iBrushPower = 1.f;
-		 
+
 
 private: //TODO 오브젝트툴 #오브젝트툴
 	HRESULT					Add_PrototypeTag(const wstring& strPrototypeTag);
@@ -120,16 +121,32 @@ private: //TODO 오브젝트툴 #오브젝트툴
 	void					SaveObject(string strFilePath);
 	void					LoadObject(string strFilePath);
 
+	HRESULT					StartBakeBinary();
 	HRESULT					BinaryConvert(string strFileName, string strFilePath, const MODEL_TYPE& eModelType);
 	HRESULT					ReadFBX(string strFilePath, const MODEL_TYPE& eModelType);
 
-	HRESULT					Read_BoneData(aiNode* pAINode, _int iParentIndex);
+	HRESULT					Read_BoneData(aiNode* pAINode, _int iIndex, _int iParentIndex, _int iDepth);
+	HRESULT					Write_BoneData(string strFileName);
+
 	HRESULT					Read_MeshData(const MODEL_TYPE& eModelType);
-	HRESULT					Write_MeshData(string strFilePath);
+	HRESULT					Write_MeshData(string strFileName);
+
+	HRESULT					Read_MaterialData();
+	HRESULT					Write_MaterialData(string strFileName);
+
+	HRESULT					Read_AnimationData();
+	HRESULT					Write_AnimationData(string strFileName);
+
+	HRESULT					Bake_Character();
+	HRESULT					Bake_Env_NonAnim();
+	HRESULT					Bake_Env_Anim();
+	HRESULT					Bake_Weapon();
+	HRESULT					Bake_Select(string strFilePath, const MODEL_TYPE& eModelType);
+
 
 	_uint					Get_BoneIndex(const char* szName);
 
-private: 
+private:
 	_bool						m_bObjectToolPickMode;
 	_bool						m_bPressing;
 
@@ -139,25 +156,31 @@ private:
 
 	vector<string>				m_vecCreateObjectTag;
 	vector<class CGameObject*>	m_vecObjects;
-	class CGameObject*			m_PickingObject = nullptr;
+	class CGameObject* m_PickingObject = nullptr;
 	_int						m_iPickingObjectIndex = 0;
 	_float3						m_fPickingPos = { 0.f, 0.f, 0.f };
 
 private:
-	const aiScene*				m_pAiScene = { nullptr };
+	const aiScene* m_pAiScene = { nullptr };
 	Assimp::Importer			m_Impoter;
 	vector<asBone*>				m_vecBones;
 	vector<asMesh*>				m_vecMesh;
 	vector<asMaterial*>			m_vecMaterial;
 	vector<asAnimation*>		m_vecAnimation;
 
-	
+private:
+	string sourceUpperPath = "../Assets/";
+	string destUpperPath = "../../Client/Bin/Resources/Models/";
+
 
 private: //TODO 문자열 #문자열함수
 	string					ConvertWstrToStr(const wstring& str);
 	wstring					ConvertStrToWstr(const string& str);
 	wstring					SliceObjectTag(const wstring& strObjectTag);
-		 
+	void					Replace(string& str, string comp, string rep);
+	vector<string>			Get_AllFolderNames(const string& strDirPath);
+	void					CheckOrCreatePath(const string& strPath);
+
 
 public:
 	virtual void			Free() override;
