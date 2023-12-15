@@ -911,11 +911,17 @@ HRESULT CImgui_Manager::Write_BoneData(string strFileName)
 
 	hFile = CreateFile(ConvertStrToWstr(strFullPath).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 
+	if (hFile == INVALID_HANDLE_VALUE)
+		return E_FAIL;
+
 	DWORD dwByte;
 
 	for (asBone* pBone : m_vecBones)
 	{
-		WriteFile(hFile, &pBone->strName, sizeof(string), &dwByte, nullptr);
+		size_t strLength = pBone->strName.size();
+		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
+		WriteFile(hFile, pBone->strName.c_str(), strLength, &dwByte, nullptr);
+
 		WriteFile(hFile, &pBone->matTransformation, sizeof(XMFLOAT4X4), &dwByte, nullptr);
 		WriteFile(hFile, &pBone->matOffset, sizeof(XMFLOAT4X4), &dwByte, nullptr);
 		WriteFile(hFile, &pBone->iIndex, sizeof(_int), &dwByte, nullptr);
