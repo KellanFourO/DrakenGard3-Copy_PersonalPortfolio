@@ -12,7 +12,7 @@ CMesh::CMesh(const CMesh& rhs)
 {
 }
 
-HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXANIMMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<asBone*> Bones)
+HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXANIMMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<class CBone*> Bones)
 {
 	m_iMaterialIndex = m_iMaterialIndex; //! AIMesh가 들고있는 인덱스 받아오자
 
@@ -75,7 +75,7 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 	return S_OK;
 }
 
-HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<asBone*> Bones, _matrix PivotMatrix)
+HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, _matrix PivotMatrix)
 {
 	m_iMaterialIndex = m_iMaterialIndex; //! AIMesh가 들고있는 인덱스 받아오자
 
@@ -258,7 +258,7 @@ HRESULT CMesh::Ready_Vertices_NonAnim(vector<VTXMESH>& Vertices, _fmatrix PivotM
 	return S_OK;
 }
 
-HRESULT CMesh::Ready_Vertices_Anim(vector<VTXANIMMESH>& Vertices, vector<asBone*> Bones)
+HRESULT CMesh::Ready_Vertices_Anim(vector<VTXANIMMESH>& Vertices, vector<class CBone*> Bones)
 {
 	m_iStride = sizeof(VTXANIMMESH);
 
@@ -293,11 +293,11 @@ HRESULT CMesh::Ready_Vertices_Anim(vector<VTXANIMMESH>& Vertices, vector<asBone*
 	//! 메시에게 영향을 주는 뼈를 순회하면서 각각의 뼈가 어떤 정점들에게 영향을 주는지 파악한다.
 	for (size_t i = 0; i < m_iNumBones; i++)
 	{
-		asBone*		pAIBone = Bones[i]; //! 뼈하나를 가져왔다.
+		CBone*		pAIBone = Bones[i]; //! 뼈하나를 가져왔다.
 
-		m_OffsetMatrices.push_back(pAIBone->matOffset);
+		m_OffsetMatrices.push_back(pAIBone->Get_OffsetFloat4x4());
 
-		m_BoneIndices.push_back(pAIBone->iIndex);
+		m_BoneIndices.push_back(pAIBone->Get_Index());
 	}
 
 	m_SubResourceData.pSysMem = pVertices;
@@ -314,9 +314,9 @@ HRESULT CMesh::Ready_Vertices_Anim(vector<VTXANIMMESH>& Vertices, vector<asBone*
 
 		_uint		iBoneIndex = { 0 };
 
-		auto	iter = find_if(Bones.begin(), Bones.end(), [&](asBone* pBone)
+		auto	iter = find_if(Bones.begin(), Bones.end(), [&](CBone* pBone)
 			{
-				if (false == strcmp(m_szName, pBone->strName.c_str()))
+				if (false == strcmp(m_szName, pBone->Get_Name()))
 				{
 					return true;
 				}
@@ -340,7 +340,7 @@ HRESULT CMesh::Ready_Vertices_Anim(vector<VTXANIMMESH>& Vertices, vector<asBone*
 	return S_OK;
 }
 
-CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXANIMMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<asBone*> Bones)
+CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXANIMMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<class CBone*> Bones)
 {
 	CMesh* pInstance = new CMesh(pDevice, pContext);
 
@@ -352,11 +352,11 @@ CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CMode
 	return pInstance;
 }
 
-CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<asBone*> Bones, _matrix PivotMatrix)
+CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, _matrix PivotMatrix)
 {
 	CMesh* pInstance = new CMesh(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(pDevice, pContext, eModelType, strName, Vertices, Indices, iMaterialIndex, BoneIndices, Bones, PivotMatrix)))
+	if (FAILED(pInstance->Initialize_Prototype(pDevice, pContext, eModelType, strName, Vertices, Indices, iMaterialIndex, BoneIndices, PivotMatrix)))
 	{
 		MSG_BOX("Failed to Created : CMesh");
 		Safe_Release(pInstance);

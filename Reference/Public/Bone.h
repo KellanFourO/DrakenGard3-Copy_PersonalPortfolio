@@ -12,8 +12,10 @@ private:
 
 public:
 	const _char* Get_Name() const { return m_szName; }
+	_int		 Get_Index() const { return m_iIndex; }
 
 	_matrix Get_CombinedTransformationMatrix() const { return XMLoadFloat4x4(&m_CombinedTransformationMatrix); }
+	_float4x4 Get_OffsetFloat4x4() const { return m_OffsetMatrix; }
 
 	void	Set_TransformationMatrix(_fmatrix TransformationMatrix)
 	{
@@ -21,7 +23,7 @@ public:
 	}
 
 public:
-	HRESULT Initialize(string strName, _float4x4 matTransformation, _int iBoneIndex, _int iParentIndex, _uint iDepth);
+	HRESULT Initialize(string strName, _float4x4 matTransformation, _float4x4 matOffset, _int iBoneIndex, _int iParentIndex, _uint iDepth);
 	void	Invalidate_CombinedTransformationMatrix(CModel::BONES& Bones, _fmatrix PivotMatrix);
 
 private:
@@ -37,11 +39,11 @@ private:
 	//! m_TransformationMatrix는 부모행렬의 영향을 받기때문에 반드시 부모행렬의 상태행렬을 갱신이 끝난 이후에  CombindTransformationMatrix도 갱신해준다.
 
 	_float4x4		m_TransformationMatrix; //! 이 뼈만의 상태행렬
-	
+	_float4x4		m_OffsetMatrix;
 	_float4x4		m_CombinedTransformationMatrix; //! 이 뼈만의 상태행렬 * 부모의 컴바인 행렬
 
 public:
-	static CBone*	Create(string strName, _float4x4 matTransformation, _int iBoneIndex, _int iParentIndex, _uint iDepth);
+	static CBone*	Create(string strName, _float4x4 matTransformation, _float4x4 matOffset, _int iBoneIndex, _int iParentIndex, _uint iDepth);
 	CBone*			Clone();
 	virtual void	Free() override;
 

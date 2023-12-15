@@ -220,7 +220,7 @@ HRESULT CModel::Read_BoneData(const wstring& strPath)
 		if (!ReadFile(hFile, &iDepth, sizeof(_uint), &dwByte, nullptr))
 			return E_FAIL;
 
-		CBone* pBone = CBone::Create(strName, matTransformation, iBoneIndex, iParentIndex, iDepth);
+		CBone* pBone = CBone::Create(strName, matTransformation, matOffset, iBoneIndex, iParentIndex, iDepth);
 
 		if (nullptr == pBone)
 			return E_FAIL;
@@ -241,13 +241,153 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 {
 	HANDLE hFile = CreateFile(strPath.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
+	if (INVALID_HANDLE_VALUE == hFile)
+		return E_FAIL;
+
 	DWORD dwByte = 0;
 
-	size_t iNumMeshes = 0;
+	while (true)
+	{
+		// Read string length
+		size_t strLength;
+		if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
+			return E_FAIL;
 
-	ReadFile(hFile, &iNumMeshes, sizeof(size_t), &dwByte, nullptr);
+		// Read string content
+		string strName(strLength, '\0');
+		if (!ReadFile(hFile, &strName[0], strLength, &dwByte, nullptr))
+			return E_FAIL;
 
-	
+		// Ensure null-termination
+		strName.resize(strLength);
+
+		vector<VTXMESH>			NonAnimVertices;
+		vector<VTXANIMMESH>		AnimVertices;
+		vector<_int>			Indices;
+		_uint					iMaterialIndex;
+		vector<_int>			BoneIndices;
+		_bool					isAnim;
+		vector<asBone*>			Bones;
+
+		if (!ReadFile(hFile, &isAnim, sizeof(_bool), &dwByte, nullptr))
+			return E_FAIL;
+
+		if (isAnim)
+		{
+			m_eModelType = CModel::TYPE_ANIM;
+
+			size_t vecSize;
+			if(!ReadFile(hFile, &vecSize, sizeof(size_t), &dwByte, nullptr))
+				return E_FAIL;
+
+			AnimVertices.reserve(vecSize);
+
+			for (size_t i = 0; i < vecSize; ++i)
+			{
+				VTXANIMMESH vertex;
+
+				if (!ReadFile(hFile, &vertex.vPosition, sizeof(_float3), &dwByte, nullptr))
+					return E_FAIL;
+				if (!ReadFile(hFile, &vertex.vNormal, sizeof(_float3), &dwByte, nullptr))
+					return E_FAIL;
+				if (!ReadFile(hFile, &vertex.vTexcoord, sizeof(_float2), &dwByte, nullptr))
+					return E_FAIL;
+				if (!ReadFile(hFile, &vertex.vTangent, sizeof(_float3), &dwByte, nullptr))
+					return E_FAIL;
+				if (!ReadFile(hFile, &vertex.vBlendIndices, sizeof(XMUINT4), &dwByte, nullptr))
+					return E_FAIL;
+				if (!ReadFile(hFile, &vertex.vBlendWeights, sizeof(_float4), &dwByte, nullptr))
+					return E_FAIL;
+
+				AnimVertices.push_back(vertex);
+			}
+		}
+		else
+		{
+			m_eModelType = CModel::TYPE_NONANIM;
+
+			size_t vecSize;
+			if (!ReadFile(hFile, &vecSize, sizeof(size_t), &dwByte, nullptr))
+				return E_FAIL;
+
+			NonAnimVertices.reserve(vecSize);
+
+			for (size_t i = 0; i < vecSize; ++i)
+			{
+				VTXMESH vertex;
+
+				if (!ReadFile(hFile, &vertex.vPosition, sizeof(_float3), &dwByte, nullptr))
+					return E_FAIL;
+				if (!ReadFile(hFile, &vertex.vNormal, sizeof(_float3), &dwByte, nullptr))
+					return E_FAIL;
+				if (!ReadFile(hFile, &vertex.vTexcoord, sizeof(_float2), &dwByte, nullptr))
+					return E_FAIL;
+				if (!ReadFile(hFile, &vertex.vTangent, sizeof(_float3), &dwByte, nullptr))
+					return E_FAIL;
+
+				NonAnimVertices.push_back(vertex);
+			}
+		}
+
+		size_t vecIndiceSize;
+		if (!ReadFile(hFile, &vecIndiceSize, sizeof(size_t), &dwByte, nullptr))
+			return E_FAIL;
+		
+		Indices.reserve(vecIndiceSize);
+
+		for (size_t i = 0; i < vecIndiceSize; ++i)
+		{
+			_int index;
+
+			if (!ReadFile(hFile, &index, sizeof(_int), &dwByte, nullptr))
+				return E_FAIL;
+
+			Indices.push_back(index);
+		}
+
+		if (!ReadFile(hFile, &iMaterialIndex, sizeof(_uint), &dwByte, nullptr))
+			return E_FAIL;
+
+		size_t vecBoneIndiceSize;
+		if (!ReadFile(hFile, &vecBoneIndiceSize, sizeof(size_t), &dwByte, nullptr))
+			return E_FAIL;
+
+		Indices.reserve(vecBoneIndiceSize);
+
+		for (size_t i = 0; i < vecBoneIndiceSize; ++i)
+		{
+			_int Boneindex;
+
+			if (!ReadFile(hFile, &Boneindex, sizeof(_int), &dwByte, nullptr))
+				return E_FAIL;
+
+			BoneIndices.push_back(Boneindex);
+		}
+
+		CMesh* pMesh = nullptr;
+
+		if (isAnim)
+		{
+			pMesh = CMesh::Create(m_pDevice,m_pContext,m_eModelType,strName, AnimVertices, Indices, iMaterialIndex, BoneIndices, m_Bones);
+
+			if(nullptr == pMesh)
+				return E_FAIL;
+		}
+		else
+		{
+			pMesh = CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, NonAnimVertices, Indices, iMaterialIndex, BoneIndices, PivotMatrix);
+
+			if (nullptr == pMesh)
+				return E_FAIL;
+		}
+
+		m_Meshes.push_back(pMesh);
+
+		if (dwByte == 0)
+			break;
+	}
+
+	CloseHandle(hFile);
 
 	return S_OK;
 	

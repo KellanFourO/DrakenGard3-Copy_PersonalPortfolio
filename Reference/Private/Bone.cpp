@@ -4,7 +4,7 @@ CBone::CBone()
 {
 }
 
-HRESULT CBone::Initialize(string strName, _float4x4 matTransformation, _int iBoneIndex, _int iParentIndex, _uint iDepth)
+HRESULT CBone::Initialize(string strName, _float4x4 matTransformation, _float4x4 matOffset, _int iBoneIndex, _int iParentIndex, _uint iDepth)
 {
 	m_iIndex = iBoneIndex;
 	m_iParentIndex = iParentIndex;
@@ -13,11 +13,10 @@ HRESULT CBone::Initialize(string strName, _float4x4 matTransformation, _int iBon
 	strcpy_s(m_szName, strName.c_str()); //! 이름 가져오자
 
 	memcpy(&m_TransformationMatrix, &matTransformation, sizeof(_float4x4));
-	
+	memcpy(&m_OffsetMatrix, &matOffset, sizeof(_float4x4));
 	//! AINode에서 읽어온 상태행렬은 우리가 사용하는 행렬과 행과 열의 순서가 반전되있기에 반드시 전치해줘야한다.
 	//! 아래에서 전치해주자
 	
-	XMStoreFloat4x4(&m_TransformationMatrix, XMMatrixTranspose(XMLoadFloat4x4(&m_TransformationMatrix)));
 	
 	XMStoreFloat4x4(&m_CombinedTransformationMatrix, XMMatrixIdentity()); //! 컴바인은 아직 부모행렬 정보가 없기에 항등.
 
@@ -37,11 +36,11 @@ void CBone::Invalidate_CombinedTransformationMatrix(CModel::BONES& Bones, _fmatr
 
 }
 
-CBone* CBone::Create(string strName, _float4x4 matTransformation, _int iBoneIndex, _int iParentIndex, _uint iDepth)
+CBone* CBone::Create(string strName, _float4x4 matTransformation, _float4x4 matOffset, _int iBoneIndex, _int iParentIndex, _uint iDepth)
 {
 	CBone* pInstance = new CBone();
 
-	if (FAILED(pInstance->Initialize(strName, matTransformation, iBoneIndex, iParentIndex, iDepth)))
+	if (FAILED(pInstance->Initialize(strName, matTransformation, matOffset, iBoneIndex, iParentIndex, iDepth)))
 	{
 		MSG_BOX("Failed To Created : CBone");
 		Safe_Release(pInstance);
