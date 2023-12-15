@@ -48,8 +48,6 @@ namespace Engine
 		
 		
 		vector<_int>		vecBoneIndices;
-		
-		vector<asBone*>		vecBones;
 	};
 	
 	struct asMaterial

@@ -1042,7 +1042,6 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 		}
 
 		pMeshData->iMaterialIndex = pAIMesh->mMaterialIndex;
-		pMeshData->vecBones = m_vecBones;
 
 // 		pMeshData->vecBones.reserve(m_vecBones.size());
 // 
@@ -1072,6 +1071,9 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 	hFile = CreateFile(ConvertStrToWstr(strFullPath).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 
 	DWORD dwByte = 0;
+
+	size_t MeshSize = m_vecMesh.size();
+	WriteFile(hFile, &MeshSize, sizeof(size_t), &dwByte, nullptr);
 
 	for (_int i = 0; i < m_vecMesh.size(); ++i)
 	{
@@ -1114,17 +1116,6 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 		{
 			WriteFile(hFile, &index, sizeof(_int), &dwByte, nullptr);
 		}
-
-		for (asBone* pBoneData : m_vecMesh[i]->vecBones)
-		{
-			WriteFile(hFile, &pBoneData->strName, sizeof(string), &dwByte, nullptr);
-			WriteFile(hFile, &pBoneData->matTransformation, sizeof(XMFLOAT4X4), &dwByte, nullptr);
-			WriteFile(hFile, &pBoneData->matOffset, sizeof(XMFLOAT4X4), &dwByte, nullptr);
-			WriteFile(hFile, &pBoneData->iIndex, sizeof(_int), &dwByte, nullptr);
-			WriteFile(hFile, &pBoneData->iParent, sizeof(_int), &dwByte, nullptr);
-			WriteFile(hFile, &pBoneData->iDepth, sizeof(_uint), &dwByte, nullptr);
-		}
-
 	}
 
 	CloseHandle(hFile);
