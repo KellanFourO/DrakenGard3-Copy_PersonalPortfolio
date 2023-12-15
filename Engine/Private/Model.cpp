@@ -182,45 +182,47 @@ HRESULT CModel::Read_BoneData(const wstring& strPath)
 	if (INVALID_HANDLE_VALUE == hFile)
 		return E_FAIL;
 
-	DWORD dwByte = { 0 };
+	DWORD dwByte = 0;
 
-	while (true)
+	while (ReadFile(hFile, &dwByte, sizeof(DWORD), nullptr, nullptr) && dwByte > 0)
 	{
-		string		strName = "";
-		_float4x4	matTransformation = {};
-		_float4x4	matOffset = {};
-		_int 		iBoneIndex = 0;
-		_int		iParentIndex = 0;
-		_uint		iDepth = 0;
+		_float4x4 matTransformation = {};
+		_float4x4 matOffset = {};
+		_int iBoneIndex = 0;
+		_int iParentIndex = 0;
+		_uint iDepth = 0;
 
-		if (false == ReadFile(hFile, &strName, sizeof(string), &dwByte, nullptr))
+		// Read string length
+		size_t strLength;
+		if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
 			return E_FAIL;
 
-		if(false == ReadFile(hFile, &matTransformation, sizeof(_float4x4), &dwByte, nullptr))
+		// Read string content
+		string strName(strLength, '\0');
+		if (!ReadFile(hFile, &strName[0], strLength, &dwByte, nullptr))
 			return E_FAIL;
 
-		if(false == ReadFile(hFile, &matOffset, sizeof(_float4x4), &dwByte, nullptr))
+		if (!ReadFile(hFile, &matTransformation, sizeof(_float4x4), &dwByte, nullptr))
 			return E_FAIL;
 
-		if (false == ReadFile(hFile, &iBoneIndex, sizeof(_int), &dwByte, nullptr))
+		if (!ReadFile(hFile, &matOffset, sizeof(_float4x4), &dwByte, nullptr))
 			return E_FAIL;
 
-		if (false == ReadFile(hFile, &iParentIndex, sizeof(_int), &dwByte, nullptr))
+		if (!ReadFile(hFile, &iBoneIndex, sizeof(_int), &dwByte, nullptr))
 			return E_FAIL;
 
-		if (false == ReadFile(hFile, &iDepth, sizeof(_uint), &dwByte, nullptr))
+		if (!ReadFile(hFile, &iParentIndex, sizeof(_int), &dwByte, nullptr))
+			return E_FAIL;
+
+		if (!ReadFile(hFile, &iDepth, sizeof(_uint), &dwByte, nullptr))
 			return E_FAIL;
 
 		CBone* pBone = CBone::Create(strName, matTransformation, iBoneIndex, iParentIndex, iDepth);
-		
-		if(nullptr == pBone)
+
+		if (nullptr == pBone)
 			return E_FAIL;
 
 		m_Bones.push_back(pBone);
-
-		if (0 == dwByte)
-			break;
-
 	}
 
 	CloseHandle(hFile);

@@ -911,6 +911,7 @@ HRESULT CImgui_Manager::Write_BoneData(string strFileName)
 
 	hFile = CreateFile(ConvertStrToWstr(strFullPath).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 	
+	
 	DWORD dwByte;
 
 	for (asBone* pBone : m_vecBones)
@@ -1295,7 +1296,7 @@ HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 
 	for (asAnimation* pAnimationData : m_vecAnimation)
 	{
-		WriteFile(hFile, &pAnimationData->strName, sizeof(pAnimationData->strName.size()), &dwByte, nullptr);
+		WriteFile(hFile, &pAnimationData->strName, sizeof(string), &dwByte, nullptr);
 		WriteFile(hFile, &pAnimationData->fDuration, sizeof(_float), &dwByte, nullptr);
 		WriteFile(hFile, &pAnimationData->fTicksPerSecond, sizeof(_float), &dwByte, nullptr);
 
@@ -1303,7 +1304,7 @@ HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 
 		for (asChannel* pChannelData : pAnimationData->vecChannels)
 		{
-			WriteFile(hFile, &pChannelData->strName, sizeof(pChannelData->strName.size()), &dwByte, nullptr);
+			WriteFile(hFile, &pChannelData->strName, sizeof(string), &dwByte, nullptr);
 			WriteFile(hFile, &pChannelData->vecKeyFrames, sizeof(size_t) * pChannelData->vecKeyFrames.size(), &dwByte, nullptr);
 
 			for (asKeyFrame* pKeyFrameData : pChannelData->vecKeyFrames)
