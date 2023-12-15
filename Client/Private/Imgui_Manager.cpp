@@ -1206,11 +1206,11 @@ HRESULT CImgui_Manager::Write_MaterialData(string strFileName)
 		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
 		WriteFile(hFile, pMaterialData->strDiffuseFilePath.c_str(), strLength, &dwByte, nullptr);
 
-		size_t strLength = pMaterialData->strSpecularFilePath.size();
+		strLength = pMaterialData->strSpecularFilePath.size();
 		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
 		WriteFile(hFile, pMaterialData->strSpecularFilePath.c_str(), strLength, &dwByte, nullptr);
 
-		size_t strLength = pMaterialData->strNormalFilePath.size();
+		strLength = pMaterialData->strNormalFilePath.size();
 		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
 		WriteFile(hFile, pMaterialData->strNormalFilePath.c_str(), strLength, &dwByte, nullptr);
 
