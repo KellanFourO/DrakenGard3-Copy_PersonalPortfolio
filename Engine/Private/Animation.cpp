@@ -32,6 +32,10 @@ HRESULT CAnimation::Initialize(const _float& fDuration, const _float& fTickPerSe
 	//! 애니메이션이 사용하는 뼈의 갯수가 NumChannels야.
 	//! 그럼 채널은 뭐겠어? 애니메이션이 사용하는 뼈라는 얘기겠지.
 	//! C_STRUCT aiNodeAnim** mChannels;
+	
+	m_iNumChannels = Channels.size();
+	m_CurrentKeyFrames.resize(m_iNumChannels);
+
 	m_Channels.reserve(Channels.size());
 	for (auto& iter : Channels)
 		m_Channels.push_back(iter);

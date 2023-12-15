@@ -491,7 +491,8 @@ HRESULT CModel::Read_AnimationData(const wstring& strPath)
 
 	ReadFile(hFile, &iNumAnims, sizeof(size_t), &dwByte, nullptr);
 
-	
+	m_iNumAnimations = iNumAnims;
+
 	for (size_t i = 0; i < iNumAnims; i++)
 	{
 		// Read string length

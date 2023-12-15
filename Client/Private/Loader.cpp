@@ -141,7 +141,7 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_TestTree"),
 	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Tree"), pFilePathData), PivotMatrix)));
 
-	//Safe_Delete(pFilePathData);
+	Safe_Delete(pFilePathData);
 
 	//!For.Prototype_Component_VIBuffer_Terrain #ÅÍ·¹ÀÎ_Add_ProtoType
 		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Terrain"),
@@ -308,6 +308,7 @@ void CLoader::Free()
 	CloseHandle(m_hThread);
 
 	
+
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
