@@ -177,28 +177,39 @@ _bool CModel::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix)
 
 HRESULT CModel::Read_BoneData(const wstring& strPath)
 {
-	HANDLE hFile = CreateFile(strPath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	HANDLE hFile = CreateFile(strPath.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
-	if (0 == hFile)
+	if (INVALID_HANDLE_VALUE == hFile)
 		return E_FAIL;
 
-	_ulong dwByte = { 0 };
+	DWORD dwByte = { 0 };
 
 	while (true)
 	{
-		string		strName;
-		_float4x4	matTransformation;
-		_float4x4	matOffset;
-		_int 		iBoneIndex;
-		_int		iParentIndex;
-		_uint		iDepth;
+		string		strName = "";
+		_float4x4	matTransformation = {};
+		_float4x4	matOffset = {};
+		_int 		iBoneIndex = 0;
+		_int		iParentIndex = 0;
+		_uint		iDepth = 0;
 
-		ReadFile(hFile, &strName, sizeof(string), &dwByte, nullptr );
-		ReadFile(hFile, &matTransformation, sizeof(_float4x4), &dwByte, nullptr); 
-		ReadFile(hFile, &matOffset, sizeof(_float4x4), &dwByte, nullptr);
-		ReadFile(hFile, &iBoneIndex, sizeof(_int), &dwByte, nullptr);
-		ReadFile(hFile, &iParentIndex, sizeof(_int), &dwByte, nullptr);
-		ReadFile(hFile, &iDepth, sizeof(_uint), &dwByte, nullptr);
+		if (false == ReadFile(hFile, &strName, sizeof(string), &dwByte, nullptr))
+			return E_FAIL;
+
+		if(false == ReadFile(hFile, &matTransformation, sizeof(_float4x4), &dwByte, nullptr))
+			return E_FAIL;
+
+		if(false == ReadFile(hFile, &matOffset, sizeof(_float4x4), &dwByte, nullptr))
+			return E_FAIL;
+
+		if (false == ReadFile(hFile, &iBoneIndex, sizeof(_int), &dwByte, nullptr))
+			return E_FAIL;
+
+		if (false == ReadFile(hFile, &iParentIndex, sizeof(_int), &dwByte, nullptr))
+			return E_FAIL;
+
+		if (false == ReadFile(hFile, &iDepth, sizeof(_uint), &dwByte, nullptr))
+			return E_FAIL;
 
 		CBone* pBone = CBone::Create(strName, matTransformation, iBoneIndex, iParentIndex, iDepth);
 		
