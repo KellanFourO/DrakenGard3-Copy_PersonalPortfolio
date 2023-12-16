@@ -260,6 +260,8 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 
 	ReadFile(hFile, &iNumMeshes, sizeof(size_t), &dwByte, nullptr);
 
+	m_iNumMeshes = iNumMeshes;
+
 	for (size_t i = 0; i < iNumMeshes; i++)
 	{
 
@@ -279,6 +281,8 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 		ReadFile(hFile, &bAnim, sizeof(_bool), &dwByte, nullptr);
 
 		m_eModelType = bAnim ? TYPE_ANIM : TYPE_NONANIM;
+
+		//bAnim = false;
 
 		vector<VTXMESH>			StaticVertices;
 		vector<VTXANIMMESH>		AnimVertices;
@@ -372,13 +376,29 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 			
 			BoneIndices.push_back(Boneindex);
 		}
+
+		vector<_float4x4> vecOffsetMatrix;
+		/* Bone Indices*/
+		size_t iOffsetMatrixSize;
+		ReadFile(hFile, &iOffsetMatrixSize, sizeof(size_t), &dwByte, nullptr);
+		vecOffsetMatrix.reserve(iOffsetMatrixSize);
+
+		for (size_t j = 0; j < iOffsetMatrixSize; j++)
+		{
+			_float4x4 OffSetMatrix;
+
+			if (!ReadFile(hFile, &OffSetMatrix, sizeof(_float4x4), &dwByte, nullptr))
+				return E_FAIL;
+
+			vecOffsetMatrix.push_back(OffSetMatrix);
+		}
 			
 
 		/* Create Mesh */
 		CMesh* pMesh = nullptr;
 		{
-			pMesh = (bAnim) ? CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, AnimVertices, Indiecs, iMaterialIndex, BoneIndices, m_Bones) :
-				CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, StaticVertices, Indiecs, iMaterialIndex, BoneIndices, PivotMatrix);
+			pMesh = (bAnim) ? CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, AnimVertices, Indiecs, iMaterialIndex, BoneIndices, vecOffsetMatrix, m_Bones) :
+				CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, StaticVertices, Indiecs, iMaterialIndex, BoneIndices, vecOffsetMatrix, PivotMatrix);
 
 			if (nullptr == pMesh)
 				return E_FAIL;
@@ -403,6 +423,7 @@ HRESULT CModel::Read_MaterialData(wstring& strPath)
 	size_t iNumMaterials;
 	ReadFile(hFile, &iNumMaterials, sizeof(size_t), &dwByte, nullptr);
 	m_Materials.reserve(iNumMaterials);
+	m_iNumMaterials = iNumMaterials;
 	for (size_t i = 0; i < iNumMaterials; i++)
 	{
 		MATERIAL_DESC		MaterialDesc;
@@ -550,7 +571,7 @@ HRESULT CModel::Read_AnimationData(const wstring& strPath)
 				Keyframes.push_back(keyframe);
 			}
 
-			CChannel* pChannel = CChannel::Create(strName, Keyframes);
+			CChannel* pChannel = CChannel::Create(strName, Keyframes, Get_BoneIndex(strName.c_str()));
 			if (nullptr == pChannel)
 				return E_FAIL;
 
@@ -564,6 +585,17 @@ HRESULT CModel::Read_AnimationData(const wstring& strPath)
 		m_Animations.push_back(pAnimation);
 	}
 	return S_OK;
+}
+
+_uint CModel::Get_BoneIndex(const char* szName)
+{
+	for (_uint i = 0; i < m_Bones.size(); ++i)
+	{
+		if (!strcmp(m_Bones[i]->Get_Name(), szName))
+			return i;
+	}
+
+	return 0;
 }
 
 string CModel::ConvertWstrToStr(const wstring& wstr)

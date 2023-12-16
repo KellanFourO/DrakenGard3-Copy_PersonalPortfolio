@@ -5,7 +5,7 @@ CChannel::CChannel()
 {
 }
 
-HRESULT CChannel::Initialize(const string strName, vector<KEYFRAME>& Keyframes)
+HRESULT CChannel::Initialize(const string strName, vector<KEYFRAME>& Keyframes, _int iBoneIndex)
 {
 	strcpy_s(m_szName, strName.c_str());
 
@@ -13,6 +13,9 @@ HRESULT CChannel::Initialize(const string strName, vector<KEYFRAME>& Keyframes)
 	for (auto& iter : Keyframes)
 		m_KeyFrames.push_back(iter);
 
+	m_iNumKeyFrames = m_KeyFrames.size();
+
+	m_iBoneIndex = iBoneIndex;
 	return S_OK;
 
 }
@@ -89,11 +92,11 @@ void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, con
 	Bones[m_iBoneIndex]->Set_TransformationMatrix(TransformationMatrix);
 }
 
-CChannel* CChannel::Create(const string strName, vector<KEYFRAME>& Keyframes)
+CChannel* CChannel::Create(const string strName, vector<KEYFRAME>& Keyframes, _int iBoneIndex)
 {
 	CChannel* pInstance = new CChannel();
 
-	if (FAILED(pInstance->Initialize(strName, Keyframes)))
+	if (FAILED(pInstance->Initialize(strName, Keyframes, iBoneIndex)))
 	{
 		MSG_BOX("Failed to Created : CChannel");
 		Safe_Release(pInstance);

@@ -87,7 +87,7 @@ HRESULT CPlayer::Render()
 
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 
-		m_pShaderCom->Begin(1);
+		m_pShaderCom->Begin(0);
 
 		m_pModelCom->Render(i);
 	}

@@ -83,6 +83,8 @@ private:
 	HRESULT Read_MaterialData(wstring& strPath);
 	HRESULT Read_AnimationData(const wstring& strPath);
 
+	_uint	Get_BoneIndex(const char* szName);
+
 	string	ConvertWstrToStr(const wstring& wstr);
 	wstring	ConvertStrToWstr(const string& str);
 	string ModifyPath(const string& originalPath);

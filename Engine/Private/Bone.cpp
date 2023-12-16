@@ -17,7 +17,7 @@ HRESULT CBone::Initialize(string strName, _float4x4 matTransformation, _float4x4
 	//! AINode에서 읽어온 상태행렬은 우리가 사용하는 행렬과 행과 열의 순서가 반전되있기에 반드시 전치해줘야한다.
 	//! 아래에서 전치해주자
 	
-	
+	//XMStoreFloat4x4(&m_TransformationMatrix, XMMatrixTranspose(XMLoadFloat4x4(&m_TransformationMatrix)));
 	XMStoreFloat4x4(&m_CombinedTransformationMatrix, XMMatrixIdentity()); //! 컴바인은 아직 부모행렬 정보가 없기에 항등.
 
 	return S_OK;

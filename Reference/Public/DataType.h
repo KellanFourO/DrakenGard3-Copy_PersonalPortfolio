@@ -41,13 +41,14 @@ namespace Engine
 		string				strName;
 		_bool				isAnim;
 		_uint				iMaterialIndex;
+		
 
 		vector<VTXMESH>		vecNonAnims;
 		vector<VTXANIMMESH>	vecAnims;
 		vector<_int>		vecIndices;
 		
-		
 		vector<_int>		vecBoneIndices;
+		vector<XMFLOAT4X4>	vecOffsetMatrix;
 	};
 	
 	struct asMaterial

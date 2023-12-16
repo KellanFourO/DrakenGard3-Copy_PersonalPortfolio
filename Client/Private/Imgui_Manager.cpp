@@ -1,4 +1,7 @@
 #pragma once
+
+#define   ZEROMEMORY(_ptr)            ZeroMemory(_ptr, sizeof *_ptr)
+
 #include "stdafx.h"
 
 #include "Tool_Define.h"
@@ -880,6 +883,7 @@ HRESULT CImgui_Manager::Read_BoneData(aiNode* pAINode, _int iIndex, _int iParent
 	pBone->iParent = iParentIndex;
 	pBone->iIndex = iIndex;
 	pBone->iDepth = iDepth;
+	
 
 	_float4x4 matTransformation;
 
@@ -938,12 +942,19 @@ HRESULT CImgui_Manager::Write_BoneData(string strFileName)
 
 HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 {
+	if(nullptr == m_pAiScene)
+		return E_FAIL;
+
 
 	for (_uint i = 0; i < m_pAiScene->mNumMeshes; ++i)
 	{
-		const aiMesh* pAIMesh = m_pAiScene->mMeshes[i];
+		aiMesh* pAIMesh = m_pAiScene->mMeshes[i];
+
 
 		asMesh* pMeshData = new asMesh;
+		//ZEROMEMORY(pMeshData);
+		//pMeshData->strName = string();
+		//
 		pMeshData->strName = pAIMesh->mName.data;
 
 		if (eModelType == MODEL_TYPE::TYPE_NONANIM)
@@ -974,7 +985,7 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 			for (size_t j = 0; j < pAIMesh->mNumVertices; j++)
 				pMeshData->vecAnims.push_back(VTXANIMMESH{});
 
-			for (_uint j = 0; j < pMeshData->vecAnims.size(); j++)
+			for (size_t j = 0; j < pMeshData->vecAnims.size(); j++)
 			{
 				memcpy(&pMeshData->vecAnims[j].vPosition, &pAIMesh->mVertices[j], sizeof(_float3));
 				memcpy(&pMeshData->vecAnims[j].vNormal, &pAIMesh->mNormals[j], sizeof(_float3));
@@ -982,50 +993,36 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 				memcpy(&pMeshData->vecAnims[j].vTangent, &pAIMesh->mTangents[j], sizeof(_float3));
 			}
 
-			_int iBoneIndex;
-
+			/* Static과 달리 해당 메시에 영향을 주는 뼈의 정보를 저장한다. */
 			for (_uint j = 0; j < pAIMesh->mNumBones; ++j)
 			{
 				aiBone* pAIBone = pAIMesh->mBones[j];
 
-				_float4x4 OffsetMatrix;
-
-				memcpy(&OffsetMatrix, &pAIBone->mOffsetMatrix, sizeof(_float4x4));
-
-				XMStoreFloat4x4(&OffsetMatrix, XMMatrixTranspose(XMLoadFloat4x4(&OffsetMatrix)));
-
-				iBoneIndex = Get_BoneIndex(pAIBone->mName.data);
-
-				m_vecBones[iBoneIndex]->matOffset = OffsetMatrix;
-
-
-				pMeshData->vecBoneIndices.push_back(iBoneIndex);
-
 				for (_uint k = 0; k < pAIBone->mNumWeights; ++k)
 				{
-					_uint iVertexIndex = pAIBone->mWeights[k].mVertexId;
-
+					_uint		iVertexIndex = pAIBone->mWeights[k].mVertexId;
+					
 					if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.x)
 					{
-						pMeshData->vecAnims[iVertexIndex].vBlendIndices.x = Get_BoneIndex(pAIBone->mName.data);
+						pMeshData->vecAnims[iVertexIndex].vBlendIndices.x = j;
 						pMeshData->vecAnims[iVertexIndex].vBlendWeights.x = pAIBone->mWeights[k].mWeight;
 					}
 
 					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.y)
 					{
-						pMeshData->vecAnims[iVertexIndex].vBlendIndices.y = Get_BoneIndex(pAIBone->mName.data);
+						pMeshData->vecAnims[iVertexIndex].vBlendIndices.y = j;
 						pMeshData->vecAnims[iVertexIndex].vBlendWeights.y = pAIBone->mWeights[k].mWeight;
 					}
 
 					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.z)
 					{
-						pMeshData->vecAnims[iVertexIndex].vBlendIndices.z = Get_BoneIndex(pAIBone->mName.data);
+						pMeshData->vecAnims[iVertexIndex].vBlendIndices.z = j;
 						pMeshData->vecAnims[iVertexIndex].vBlendWeights.z = pAIBone->mWeights[k].mWeight;
 					}
 
 					else if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.w)
 					{
-						pMeshData->vecAnims[iVertexIndex].vBlendIndices.w = Get_BoneIndex(pAIBone->mName.data);
+						pMeshData->vecAnims[iVertexIndex].vBlendIndices.w = j;
 						pMeshData->vecAnims[iVertexIndex].vBlendWeights.w = pAIBone->mWeights[k].mWeight;
 					}
 				}
@@ -1045,13 +1042,24 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 		}
 
 		pMeshData->iMaterialIndex = pAIMesh->mMaterialIndex;
-		// 		pMeshData->vecBones.reserve(m_vecBones.size());
-		// 
-		// 		for (asBone* pBoneData : m_vecBones)
-		// 		{
-		// 			pMeshData->vecBones.push_back(*pBoneData);
-		// 		}
 
+		/* Bones (현재 메시에 영향을 주는 뼈들을 순회하며 행렬 정보를 저장하고 뼈들을 컨테이너에 모아둔다. */
+		_uint numBones = pAIMesh->mNumBones;
+
+		for (_uint j = 0; j < numBones; j++)
+		{
+			aiBone* srcMeshBone = pAIMesh->mBones[j];
+
+			_float4x4 OffsetMatrix;
+			memcpy(&OffsetMatrix, &srcMeshBone->mOffsetMatrix, sizeof(_float4x4));
+			XMStoreFloat4x4(&OffsetMatrix, XMMatrixTranspose(XMLoadFloat4x4(&OffsetMatrix)));
+
+			_uint boneIndex = Get_BoneIndex(srcMeshBone->mName.C_Str());
+			m_vecBones[boneIndex]->matOffset = OffsetMatrix;
+
+			pMeshData->vecBoneIndices.push_back(boneIndex);
+			pMeshData->vecOffsetMatrix.push_back(OffsetMatrix);
+		}
 
 		m_vecMesh.push_back(pMeshData);
 	}
@@ -1127,6 +1135,13 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 		for (_int& index : m_vecMesh[i]->vecBoneIndices)
 		{
 			WriteFile(hFile, &index, sizeof(_int), &dwByte, nullptr);
+		}
+
+		size_t vecOffsetMatrixSize = m_vecMesh[i]->vecOffsetMatrix.size();
+		WriteFile(hFile, &vecOffsetMatrixSize, sizeof(size_t), &dwByte, nullptr);
+		for (_float4x4& OffsetMatrix : m_vecMesh[i]->vecOffsetMatrix)
+		{
+			WriteFile(hFile, &OffsetMatrix, sizeof(_float4x4), &dwByte, nullptr);
 		}
 
 	}
