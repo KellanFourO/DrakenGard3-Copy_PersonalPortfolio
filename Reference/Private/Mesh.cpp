@@ -14,18 +14,18 @@ CMesh::CMesh(const CMesh& rhs)
 
 HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXANIMMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<_float4x4>& vecOffsetMatrix, vector<class CBone*> Bones)
 {
-	m_iMaterialIndex = iMaterialIndex; //! AIMesh가 들고있는 인덱스 받아오자
+	strcpy_s(m_szName, strName.c_str());
+	m_iMaterialIndex = iMaterialIndex; 
 
-	m_OffsetMatrices = vecOffsetMatrix;
 	m_BoneIndices = BoneIndices;
-	strcpy_s(m_szName, strName.c_str()); //! mName 안의 데이터가 캐릭터 배열이다 이름가져오자
+	m_OffsetMatrices = vecOffsetMatrix;
 
 	m_iNumVertexBuffers = 1;
 	m_iNumVertices = (_int)Vertices.size(); //! 정점의 개수는 읽어들인 개수다.
 	
-	//!m_iNumIndices = pAIMesh->mNumFaces * 3;
+	//!m_iNumIndices = pAIMesh->mNumFaces * 3;y
 	m_iNumBones = BoneIndices.size();
-	m_iNumIndices = Indices.size(); //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
+	m_iNumIndices = ((_int)Indices.size()) / 3; //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
 	m_iIndexStride = 4; //! 모델은 왠만해선 정점이 65535개를 넘어간다. 그러니까 그냥 4로 Default
 
 	m_eIndexFormat = m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
@@ -39,8 +39,9 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 #pragma endregion
 
 #pragma region INDEX_BUFFER
+
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
-	m_BufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
+	m_BufferDesc.ByteWidth = m_iNumIndices * sizeof(FACEINDICES32);
 	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT /*D3D11_USAGE_DYNAMIC*/;
 	m_BufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	m_BufferDesc.CPUAccessFlags = 0;
@@ -50,29 +51,19 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 	ZeroMemory(&m_SubResourceData, sizeof m_SubResourceData);
 
 	//! 모델의 정점의 개수가 65535는 무조건 넘어갈거니 디폴트로 4로 줫엇다. int로 할당하자
-	_uint* pIndices = new _uint[m_iNumIndices];
-	ZeroMemory(pIndices, sizeof(_uint) * m_iNumIndices);
+	FACEINDICES32* pIndices = new FACEINDICES32[m_iNumIndices];
+	ZeroMemory(pIndices, sizeof(FACEINDICES32) * m_iNumIndices);
 	
-	_int iNumIndice1 = 0;
-	_int iNumIndice2 = 0;
-
-	for (_uint i = 0, j = 0; i < Indices.size() / 3; ++i, ++j)
+	for (_uint i = 0, j = 0; i < m_iNumIndices; ++i, ++j)
 	{
-		_uint indice1 = 0, indice2 = 0, indice3 = 0;
-		
-		indice1 = Indices[iNumIndice1++];
-		indice1 = Indices[iNumIndice1++];
-		indice1 = Indices[iNumIndice1++];
+		pIndices[i]._1 = Indices[j];
+		pIndices[i]._2 = Indices[++j];
+		pIndices[i]._3 = Indices[++j];
 
-		pIndices[iNumIndice2++] = indice1;
-		pIndices[iNumIndice2++] = indice2;
-		pIndices[iNumIndice2++] = indice3;
 
-		
-
-		m_MeshIndices.push_back({ indice1,
-								  indice2,
-								  indice3 });
+		m_MeshIndices.push_back({ pIndices[i]._1,
+								   pIndices[i]._2,
+								   pIndices[i]._3 });
 	}
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
@@ -98,7 +89,7 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 	m_iNumVertexBuffers = 1;
 	m_iNumVertices = (_int)Vertices.size(); //! 정점의 개수는 읽어들인 개수다.
 
-	m_iNumIndices = Indices.size(); //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
+	m_iNumIndices = ((_int)Indices.size()) / 3; //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
 	m_iIndexStride = 4; //! 모델은 왠만해선 정점이 65535개를 넘어간다. 그러니까 그냥 4로 Default
 
 	m_eIndexFormat = m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
@@ -123,31 +114,23 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 	ZeroMemory(&m_SubResourceData, sizeof m_SubResourceData);
 
 	//! 모델의 정점의 개수가 65535는 무조건 넘어갈거니 디폴트로 4로 줫엇다. int로 할당하자
-	_uint* pIndices = new _uint[m_iNumIndices];
-	ZeroMemory(pIndices, sizeof(_uint) * m_iNumIndices);
+	FACEINDICES32* pIndices = new FACEINDICES32[m_iNumIndices];
+	ZeroMemory(pIndices, sizeof(FACEINDICES32) * m_iNumIndices);
 	//! mNumFace가 삼각형 개수라고했엇다. 삼각형 개수만큼 루프돌아서 인덱스 정보 채워주자
 
 	//!인덱스는 계속늘어나고 i를 사용하면 안되는 상황이다 변수 하나 더쓰자
-	_int iNumIndice1 = 0;
-	_int iNumIndice2 = 0;
+	_uint iNumIndices = { 0 };
 
-	for (_uint i = 0, j = 0; i < Indices.size() / 3; ++i, ++j)
+	for (_uint i = 0, j = 0; i < m_iNumIndices; ++i, ++j)
 	{
-		_uint indice1 = 0, indice2 = 0, indice3 = 0;
+		pIndices[i]._1 = Indices[j];
+		pIndices[i]._2 = Indices[++j];
+		pIndices[i]._3 = Indices[++j];
 
-		indice1 = Indices[iNumIndice1++];
-		indice1 = Indices[iNumIndice1++];
-		indice1 = Indices[iNumIndice1++];
-
-		pIndices[iNumIndice2++] = indice1;
-		pIndices[iNumIndice2++] = indice2;
-		pIndices[iNumIndice2++] = indice3;
-
-
-
-		m_MeshIndices.push_back({ indice1,
-								  indice2,
-								  indice3 });
+		
+		m_MeshIndices.push_back({ pIndices[i]._1,
+								   pIndices[i]._2,
+								   pIndices[i]._3 });
 	}
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
@@ -210,9 +193,9 @@ _bool CMesh::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix)
 		_vector vPickedPos;
 
 		//삼각형  정점 인덱스 3개
-		_vector vIndexXPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i].ix]);
-		_vector vIndexYPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i].iy]);
-		_vector vIndexZPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i].iz]);
+		_vector vIndexXPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i]._1]);
+		_vector vIndexYPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i]._2]);
+		_vector vIndexZPos = XMLoadFloat3(&m_MeshVertexs[m_MeshIndices[i]._3]);
 
 		if (true == DirectX::TriangleTests::Intersects(vRayPos, vRayDir, vIndexXPos, vIndexYPos, vIndexZPos, fDist))
 		{

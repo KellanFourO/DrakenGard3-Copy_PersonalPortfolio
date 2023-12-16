@@ -38,7 +38,7 @@ private:
 	vector<_float4x4>			m_OffsetMatrices;
 
 	vector<_float3>				m_MeshVertexs;
-	vector<_uint3>				m_MeshIndices;
+	vector<FACEINDICES32>		m_MeshIndices;
 
 public:
 	//TODO Create시에 인자값으로 const aiMesh* 를 받는 것을 알 수 있다.

@@ -1029,7 +1029,7 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 			}
 		}
 
-		pMeshData->vecIndices.resize(pAIMesh->mNumFaces * 3);
+		pMeshData->vecIndices.reserve(pAIMesh->mNumFaces);
 
 		_uint iNumIndice = { 0 };
 
@@ -1037,10 +1037,14 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 		{
 			aiFace& AIFace = pAIMesh->mFaces[j];
 
-			pMeshData->vecIndices[iNumIndice++] = AIFace.mIndices[0];
-			pMeshData->vecIndices[iNumIndice++] = AIFace.mIndices[1];
-			pMeshData->vecIndices[iNumIndice++] = AIFace.mIndices[2];
+			pMeshData->vecIndices[iNumIndice] = AIFace.mIndices[0];
+			pMeshData->vecIndices[iNumIndice] = AIFace.mIndices[1];
+			pMeshData->vecIndices[iNumIndice] = AIFace.mIndices[2];
 
+			for (_uint k = 0; k < 3; ++k)
+			{
+				pMeshData->vecIndices.push_back(AIFace.mIndices[k]);
+			}
 		}
 
 		pMeshData->iMaterialIndex = pAIMesh->mMaterialIndex;
