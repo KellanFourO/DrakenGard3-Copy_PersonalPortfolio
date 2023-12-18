@@ -949,7 +949,7 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 	for (_uint i = 0; i < m_pAiScene->mNumMeshes; ++i)
 	{
 		aiMesh* pAIMesh = m_pAiScene->mMeshes[i];
-
+		
 
 		asMesh* pMeshData = new asMesh;
 		//ZEROMEMORY(pMeshData);
@@ -959,6 +959,7 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 
 		if (eModelType == MODEL_TYPE::TYPE_NONANIM)
 		{
+			pMeshData->iNumFace = pAIMesh->mNumFaces;
 			pMeshData->isAnim = (UINT)eModelType;
 
 			pMeshData->vecNonAnims.reserve(pAIMesh->mNumVertices);
@@ -979,7 +980,7 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 		else if (eModelType == MODEL_TYPE::TYPE_ANIM)
 		{
 			pMeshData->isAnim = (UINT)eModelType;
-
+			pMeshData->iNumFace = pAIMesh->mNumFaces;
 			pMeshData->vecAnims.reserve(pAIMesh->mNumVertices);
 
 			for (size_t j = 0; j < pAIMesh->mNumVertices; j++)
@@ -1001,7 +1002,7 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 				for (_uint k = 0; k < pAIBone->mNumWeights; ++k)
 				{
 					_uint		iVertexIndex = pAIBone->mWeights[k].mVertexId;
-					
+											   pAIBone->mWeights[j].mVertexId;
 					if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.x)
 					{
 						pMeshData->vecAnims[iVertexIndex].vBlendIndices.x = j;
@@ -1029,22 +1030,15 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 			}
 		}
 
-		pMeshData->vecIndices.reserve(pAIMesh->mNumFaces);
+		pMeshData->vecIndices.resize(pAIMesh->mNumFaces);
 
 		_uint iNumIndice = { 0 };
 
 		for (_uint j = 0; j < pAIMesh->mNumFaces; ++j)
 		{
 			aiFace& AIFace = pAIMesh->mFaces[j];
-
-			pMeshData->vecIndices[iNumIndice] = AIFace.mIndices[0];
-			pMeshData->vecIndices[iNumIndice] = AIFace.mIndices[1];
-			pMeshData->vecIndices[iNumIndice] = AIFace.mIndices[2];
-
-			for (_uint k = 0; k < 3; ++k)
-			{
-				pMeshData->vecIndices.push_back(AIFace.mIndices[k]);
-			}
+			
+			pMeshData->vecIndices[j] = { AIFace.mIndices[0], AIFace.mIndices[1], AIFace.mIndices[2] };
 		}
 
 		pMeshData->iMaterialIndex = pAIMesh->mMaterialIndex;
@@ -1129,12 +1123,13 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 
 		size_t vecIndicesSize = m_vecMesh[i]->vecIndices.size();
 		WriteFile(hFile, &vecIndicesSize, sizeof(size_t), &dwByte, nullptr);
-		for (_int& index : m_vecMesh[i]->vecIndices)
+		for (FACEINDICES32& index : m_vecMesh[i]->vecIndices)
 		{
-			WriteFile(hFile, &index, sizeof(_int), &dwByte, nullptr);
+			WriteFile(hFile, &index, sizeof(FACEINDICES32), &dwByte, nullptr);
 		}
 
 		WriteFile(hFile, &m_vecMesh[i]->iMaterialIndex, sizeof(_uint), &dwByte, nullptr);
+		WriteFile(hFile, &m_vecMesh[i]->iNumFace, sizeof(_int), &dwByte, nullptr);
 
 		size_t vecBoneIndicesSize = m_vecMesh[i]->vecBoneIndices.size();
 		WriteFile(hFile, &vecBoneIndicesSize, sizeof(size_t), &dwByte, nullptr);

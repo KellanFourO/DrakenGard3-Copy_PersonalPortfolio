@@ -286,8 +286,9 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 
 		vector<VTXMESH>			StaticVertices;
 		vector<VTXANIMMESH>		AnimVertices;
-		vector<_int>			Indiecs;
+		vector<FACEINDICES32>			Indiecs;
 		_uint					iMaterialIndex;
+		_int					iNumFace;
 		vector<_int>			BoneIndices;
 
 		/* Vertices */
@@ -349,9 +350,9 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 
 		for (size_t j = 0; j < iNumIndices; j++)
 		{
-			_int index;
+			FACEINDICES32 index;
 
-			if (!ReadFile(hFile, &index, sizeof(_int), &dwByte, nullptr))
+			if (!ReadFile(hFile, &index, sizeof(FACEINDICES32), &dwByte, nullptr))
 				return E_FAIL;
 
 			Indiecs.push_back(index);
@@ -360,6 +361,9 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 
 		/* Material Index */
 		if (!ReadFile(hFile, &iMaterialIndex, sizeof(_uint), &dwByte, nullptr))
+			return E_FAIL;
+
+		if (!ReadFile(hFile, &iNumFace, sizeof(_uint), &dwByte, nullptr))
 			return E_FAIL;
 
 		/* Bone Indices*/
@@ -394,12 +398,12 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 		}
 			
 
-		/* Create Mesh */
+		
 		CMesh* pMesh = nullptr;
 		{
-			pMesh = (bAnim) ? CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, AnimVertices, Indiecs, iMaterialIndex, BoneIndices, vecOffsetMatrix, m_Bones) :
-				CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, StaticVertices, Indiecs, iMaterialIndex, BoneIndices, vecOffsetMatrix, PivotMatrix);
-
+			pMesh = (bAnim) ? CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, iNumFace, AnimVertices, Indiecs, iMaterialIndex, BoneIndices, vecOffsetMatrix, m_Bones) :
+				CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, iNumFace, StaticVertices, Indiecs, iMaterialIndex, BoneIndices, vecOffsetMatrix, PivotMatrix);
+		
 			if (nullptr == pMesh)
 				return E_FAIL;
 		}

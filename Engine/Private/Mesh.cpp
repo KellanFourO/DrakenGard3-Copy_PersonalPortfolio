@@ -12,7 +12,7 @@ CMesh::CMesh(const CMesh& rhs)
 {
 }
 
-HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXANIMMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<_float4x4>& vecOffsetMatrix, vector<class CBone*> Bones)
+HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, _int iNumFace, vector<VTXANIMMESH>& Vertices, vector<FACEINDICES32>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<_float4x4>& vecOffsetMatrix, vector<class CBone*> Bones)
 {
 	strcpy_s(m_szName, strName.c_str());
 	m_iMaterialIndex = iMaterialIndex; 
@@ -25,7 +25,7 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 	
 	//!m_iNumIndices = pAIMesh->mNumFaces * 3;y
 	m_iNumBones = BoneIndices.size();
-	m_iNumIndices = ((_int)Indices.size()) / 3; //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
+	m_iNumIndices = iNumFace * 3; //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
 	m_iIndexStride = 4; //! 모델은 왠만해선 정점이 65535개를 넘어간다. 그러니까 그냥 4로 Default
 
 	m_eIndexFormat = m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
@@ -41,7 +41,7 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 #pragma region INDEX_BUFFER
 
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
-	m_BufferDesc.ByteWidth = m_iNumIndices * sizeof(FACEINDICES32);
+	m_BufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
 	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT /*D3D11_USAGE_DYNAMIC*/;
 	m_BufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	m_BufferDesc.CPUAccessFlags = 0;
@@ -51,19 +51,19 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 	ZeroMemory(&m_SubResourceData, sizeof m_SubResourceData);
 
 	//! 모델의 정점의 개수가 65535는 무조건 넘어갈거니 디폴트로 4로 줫엇다. int로 할당하자
-	FACEINDICES32* pIndices = new FACEINDICES32[m_iNumIndices];
-	ZeroMemory(pIndices, sizeof(FACEINDICES32) * m_iNumIndices);
-	
-	for (_uint i = 0, j = 0; i < m_iNumIndices; ++i, ++j)
+	_uint* pIndices = new _uint[m_iNumIndices];
+
+	_uint		iNumIndices = { 0 };
+
+	_int iIndiceSize = Indices.size();
+
+	for (size_t i = 0; i < iIndiceSize; i++)
 	{
-		pIndices[i]._1 = Indices[j];
-		pIndices[i]._2 = Indices[++j];
-		pIndices[i]._3 = Indices[++j];
+		pIndices[iNumIndices++] = Indices[i]._1;
+		pIndices[iNumIndices++] = Indices[i]._2;
+		pIndices[iNumIndices++] = Indices[i]._3;
 
-
-		m_MeshIndices.push_back({ pIndices[i]._1,
-								   pIndices[i]._2,
-								   pIndices[i]._3 });
+		m_MeshIndices.push_back(Indices[i]);
 	}
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
@@ -79,7 +79,7 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 	return S_OK;
 }
 
-HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<_float4x4>& vecOffsetMatrix, _matrix PivotMatrix)
+HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, _int iNumFace, vector<VTXMESH>& Vertices, vector<FACEINDICES32>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<_float4x4>& vecOffsetMatrix, _matrix PivotMatrix)
 {
 	m_iMaterialIndex = m_iMaterialIndex; //! AIMesh가 들고있는 인덱스 받아오자
 	m_OffsetMatrices = vecOffsetMatrix;
@@ -89,7 +89,7 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 	m_iNumVertexBuffers = 1;
 	m_iNumVertices = (_int)Vertices.size(); //! 정점의 개수는 읽어들인 개수다.
 
-	m_iNumIndices = ((_int)Indices.size()) / 3; //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
+	m_iNumIndices = iNumFace * 3; //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
 	m_iIndexStride = 4; //! 모델은 왠만해선 정점이 65535개를 넘어간다. 그러니까 그냥 4로 Default
 
 	m_eIndexFormat = m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
@@ -114,24 +114,27 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 	ZeroMemory(&m_SubResourceData, sizeof m_SubResourceData);
 
 	//! 모델의 정점의 개수가 65535는 무조건 넘어갈거니 디폴트로 4로 줫엇다. int로 할당하자
-	FACEINDICES32* pIndices = new FACEINDICES32[m_iNumIndices];
-	ZeroMemory(pIndices, sizeof(FACEINDICES32) * m_iNumIndices);
 	//! mNumFace가 삼각형 개수라고했엇다. 삼각형 개수만큼 루프돌아서 인덱스 정보 채워주자
 
 	//!인덱스는 계속늘어나고 i를 사용하면 안되는 상황이다 변수 하나 더쓰자
 	_uint iNumIndices = { 0 };
+	_uint iNumIndices2 = { 0 };
 
-	for (_uint i = 0, j = 0; i < m_iNumIndices; ++i, ++j)
+	//! 모델의 정점의 개수가 65535는 무조건 넘어갈거니 디폴트로 4로 줫엇다. int로 할당하자
+	_uint* pIndices = new _uint[m_iNumIndices];
+
+	_int iIndiceSize = Indices.size();
+
+	for (size_t i = 0; i < iIndiceSize; i++)
 	{
-		pIndices[i]._1 = Indices[j];
-		pIndices[i]._2 = Indices[++j];
-		pIndices[i]._3 = Indices[++j];
+		pIndices[iNumIndices++] = Indices[i]._1;
+		pIndices[iNumIndices++] = Indices[i]._2;
+		pIndices[iNumIndices++] = Indices[i]._3;
 
-		
-		m_MeshIndices.push_back({ pIndices[i]._1,
-								   pIndices[i]._2,
-								   pIndices[i]._3 });
+		m_MeshIndices.push_back(Indices[i]);
 	}
+	
+	
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = pIndices;
@@ -333,11 +336,11 @@ HRESULT CMesh::Ready_Vertices_Anim(vector<VTXANIMMESH>& Vertices, vector<class C
 	return S_OK;
 }
 
-CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXANIMMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<_float4x4>& vecOffsetMatrix, vector<class CBone*> Bones)
+CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, _int iNumFace, vector<VTXANIMMESH>& Vertices, vector<FACEINDICES32>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<_float4x4>& vecOffsetMatrix, vector<class CBone*> Bones)
 {
 	CMesh* pInstance = new CMesh(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(pDevice, pContext, eModelType, strName, Vertices, Indices, iMaterialIndex, BoneIndices, vecOffsetMatrix, Bones)))
+	if (FAILED(pInstance->Initialize_Prototype(pDevice, pContext, eModelType, strName, iNumFace, Vertices, Indices, iMaterialIndex, BoneIndices, vecOffsetMatrix, Bones)))
 	{
 		MSG_BOX("Failed to Created : CMesh");
 		Safe_Release(pInstance);
@@ -345,11 +348,11 @@ CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CMode
 	return pInstance;
 }
 
-CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, vector<VTXMESH>& Vertices, vector<_int>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<_float4x4>& vecOffsetMatrix, _matrix PivotMatrix)
+CMesh* CMesh::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, _int iNumFace, vector<VTXMESH>& Vertices, vector<FACEINDICES32>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<_float4x4>& vecOffsetMatrix, _matrix PivotMatrix)
 {
 	CMesh* pInstance = new CMesh(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(pDevice, pContext, eModelType, strName, Vertices, Indices, iMaterialIndex, BoneIndices, vecOffsetMatrix, PivotMatrix)))
+	if (FAILED(pInstance->Initialize_Prototype(pDevice, pContext, eModelType, strName, iNumFace, Vertices, Indices, iMaterialIndex, BoneIndices, vecOffsetMatrix, PivotMatrix)))
 	{
 		MSG_BOX("Failed to Created : CMesh");
 		Safe_Release(pInstance);
@@ -366,3 +369,4 @@ void CMesh::Free()
 {
 	__super::Free();
 }
+
