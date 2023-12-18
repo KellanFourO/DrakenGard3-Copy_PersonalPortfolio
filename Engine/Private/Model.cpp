@@ -286,7 +286,7 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 
 		vector<VTXMESH>			StaticVertices;
 		vector<VTXANIMMESH>		AnimVertices;
-		vector<FACEINDICES32>			Indiecs;
+		vector<FACEINDICES32>	Indiecs;
 		_uint					iMaterialIndex;
 		_int					iNumFace;
 		vector<_int>			BoneIndices;
@@ -452,9 +452,9 @@ HRESULT CModel::Read_MaterialData(wstring& strPath)
 			string ddsFileName = ReplaceExtension(strDiffuseName, newExtension);
 			if (!strDiffuseName.empty())
 			{
-				path = ConvertWstrToStr(strPath) + "/" + ddsFileName;
-				string modifyPath = ModifyPath(path);
-				MaterialDesc.pMtrlTextures[aiTextureType_DIFFUSE] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(modifyPath));
+				path = ModifyPath(ConvertWstrToStr(strPath)) + ddsFileName;
+				
+				MaterialDesc.pMtrlTextures[aiTextureType_DIFFUSE] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
 			}
 
 			if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
@@ -471,9 +471,9 @@ HRESULT CModel::Read_MaterialData(wstring& strPath)
 			 ddsFileName = ReplaceExtension(strSpecularName, newExtension);
 			if (!strSpecularName.empty())
 			{
-				path = ConvertWstrToStr(strPath) + "/" + ddsFileName;
-				string modifyPath = ModifyPath(path);
-				MaterialDesc.pMtrlTextures[aiTextureType_SPECULAR] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(modifyPath));
+				path = ModifyPath(ConvertWstrToStr(strPath)) + ddsFileName;
+
+				MaterialDesc.pMtrlTextures[aiTextureType_SPECULAR] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
 			}
 
 			if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
@@ -490,9 +490,9 @@ HRESULT CModel::Read_MaterialData(wstring& strPath)
 			ddsFileName = ReplaceExtension(strNormalName, newExtension);
 			if (!strNormalName.empty())
 			{
-				path = ConvertWstrToStr(strPath) + "/" + ddsFileName;
-				string modifyPath = ModifyPath(path);
-				MaterialDesc.pMtrlTextures[aiTextureType_NORMALS] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(modifyPath));
+				path = ModifyPath(ConvertWstrToStr(strPath)) + ddsFileName;
+
+				MaterialDesc.pMtrlTextures[aiTextureType_NORMALS] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
 			}
 		
 		m_Materials.push_back(MaterialDesc);
@@ -620,19 +620,13 @@ wstring CModel::ConvertStrToWstr(const string& str)
 
 string CModel::ModifyPath(const string& originalPath)
 {
-	// Find the position of "mat/" in the string
-	size_t matPos = originalPath.find(".mat/");
+	filesystem::path pathObj = originalPath;
 
-	// If "mat/" is found, remove it
-	if (matPos != std::string::npos)
-	{
-		std::string modifiedPath = originalPath;
-		modifiedPath.erase(matPos, 4); // Remove "mat/"
-		return modifiedPath;
-	}
+	filesystem::path directoryPath = pathObj.parent_path();
+	
+	filesystem::path modifiedPath = directoryPath;
 
-	// If "mat/" is not found, return the original path
-	return originalPath;
+	return modifiedPath.string() + "/";
 }
 
 string CModel::ReplaceExtension(const string& originalPath, const string& newExtension)

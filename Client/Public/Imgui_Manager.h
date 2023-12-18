@@ -179,7 +179,7 @@ private: //TODO 문자열 #문자열함수
 	wstring					SliceObjectTag(const wstring& strObjectTag);
 	void					Replace(string& str, string comp, string rep);
 	vector<string>			Get_AllFolderNames(const string& strDirPath);
-	void					CheckOrCreatePath(const string& strPath);
+	string					CheckOrCreatePath(const string& strPath);
 		 
 
 public:

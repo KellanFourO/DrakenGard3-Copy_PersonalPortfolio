@@ -904,12 +904,12 @@ HRESULT CImgui_Manager::Read_BoneData(aiNode* pAINode, _int iIndex, _int iParent
 
 HRESULT CImgui_Manager::Write_BoneData(string strFileName)
 {
-	string strFilePath = "../Bin/DataFiles/Model/";
-	string strEXT = ".bone";
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
+	string strEXT = ".Bone";
 
-	string strFileName1 = filesystem::path(strFileName).stem().string();
+	string strCreatePath = CheckOrCreatePath(strNoExtFileName) + "\\";
 
-	string strFullPath = strFilePath + strFileName1 + strEXT;
+	string strFullPath = strCreatePath + strNoExtFileName + strEXT;
 
 	HANDLE	hFile;
 
@@ -1069,12 +1069,12 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 
 HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 {
-	string strFilePath = "../Bin/DataFiles/Model/";
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
 	string strEXT = ".mesh";
 
-	string strFileName1 = filesystem::path(strFileName).stem().string();
+	string strCreatePath = CheckOrCreatePath(strNoExtFileName) + "\\";
 
-	string strFullPath = strFilePath + strFileName1 + strEXT;
+	string strFullPath = strCreatePath + strNoExtFileName + strEXT;
 
 	HANDLE	hFile;
 
@@ -1192,13 +1192,12 @@ HRESULT CImgui_Manager::Read_MaterialData()
 
 HRESULT CImgui_Manager::Write_MaterialData(string strFileName)
 {
-
-	string strFilePath = "../Bin/DataFiles/Model/";
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
 	string strEXT = ".mat";
 
-	string strFileName1 = filesystem::path(strFileName).stem().string();
+	string strCreatePath = CheckOrCreatePath(strNoExtFileName) + "\\";
 
-	string strFullPath = strFilePath + strFileName1 + strEXT;
+	string strFullPath = strCreatePath + strNoExtFileName + strEXT;
 
 	HANDLE	hFile;
 
@@ -1308,12 +1307,12 @@ HRESULT CImgui_Manager::Read_AnimationData()
 
 HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 {
-	string strFilePath = "../Bin/DataFiles/Model/";
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
 	string strEXT = ".anim";
 
-	string strFileName1 = filesystem::path(strFileName).stem().string();
+	string strCreatePath = CheckOrCreatePath(strNoExtFileName) + "\\";
 
-	string strFullPath = strFilePath + strFileName1 + strEXT;
+	string strFullPath = strCreatePath + strNoExtFileName + strEXT;
 
 	HANDLE	hFile;
 
@@ -1461,11 +1460,16 @@ vector<string> CImgui_Manager::Get_AllFolderNames(const string& strDirPath)
 	return folderNames;
 }
 
-void CImgui_Manager::CheckOrCreatePath(const string& strPath)
+string CImgui_Manager::CheckOrCreatePath(const string& strfileName)
 {
-	auto p = filesystem::path(strPath);
-	filesystem::create_directory(p.parent_path().parent_path());
-	filesystem::create_directory(p.parent_path());
+	string strFilePath = "../Bin/Resources/Models/";
+
+	string strCreateDirPath = filesystem::absolute(strFilePath).string() + strfileName;
+	if (filesystem::exists(strCreateDirPath))
+		filesystem::create_directory(strCreateDirPath);
+
+		return strCreateDirPath;
+	
 }
 
 void CImgui_Manager::Free()
