@@ -21,6 +21,17 @@ CAnimation::CAnimation(const CAnimation& rhs)
 		Safe_AddRef(pChannel);
 }
 
+CChannel* CAnimation::Get_SameName_Channel(CChannel* _pChannel)
+{
+	for (auto& pChannel : m_Channels)
+	{
+		if(_pChannel->Get_Name() == pChannel->Get_Name())
+			return pChannel;
+	}
+	
+	return nullptr;
+}
+
 HRESULT CAnimation::Initialize(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName)
 {
 	//!이름을 빼두면 디버깅할 때 좋겠지?
@@ -43,8 +54,11 @@ HRESULT CAnimation::Initialize(const _float& fDuration, const _float& fTickPerSe
 	return S_OK;
 }
 
-void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones)
+
+
+void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones, CAnimation* pPrevAnimation, CModel* pModel)
 {
+	
 	m_fTrackPosition += m_fTicksPerSecond * fTimeDelta;
 
 
@@ -60,6 +74,7 @@ void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta
 			m_fTrackPosition = 0.0f;
 			m_isFinished = false;
 		}
+		
 	}
 
 	//! 근데! 애니메이션의 프레임마다 속도가 재생속도가 달라야 하는 경우가 있어 .  틱스퍼세컨드를 말하는거겠지?
@@ -72,9 +87,30 @@ void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta
 	//! 내 애니메이션이 이용하는 전체 뼈의 상태를 갱신된 위치에 맞는 상태로 바꿔주자
 	
 	//! 애니메이션이 사용하는 전체뼈의 상태를 갱신하자며? 사용하는 전체 뼈 갯수 루프 돌아야지
+	//! 
+	//! 
+	
+
 	for (size_t i = 0; i < m_iNumChannels; i++)
+	{	
+		if (pPrevAnimation != nullptr)
+		{
+			CChannel* pChannel = nullptr;
+			pChannel = pPrevAnimation->Get_SameName_Channel(m_Channels[i]);
+			m_Channels[i]->Invalidate_TransformationMatrix(m_fTrackPosition, Bones, &m_CurrentKeyFrames[i], pChannel);
+		}
+		else
+		{
+			m_Channels[i]->Invalidate_TransformationMatrix(m_fTrackPosition, Bones, &m_CurrentKeyFrames[i]);
+		}
+	}
+
+
+	if (nullptr != pPrevAnimation && m_fTrackPosition > 0.2f)
 	{
-		m_Channels[i]->Invalidate_TransformationMatrix(m_fTrackPosition, Bones, &m_CurrentKeyFrames[i]);
+		pPrevAnimation = nullptr;
+		m_fTrackPosition = 0.f;
+		pModel->Finished_ChangeAnim();
 	}
 }
 

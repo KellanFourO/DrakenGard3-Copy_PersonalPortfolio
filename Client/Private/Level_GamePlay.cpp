@@ -78,8 +78,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const wstring& strLayerTag)
 {
 	//for (_int i = 0; i < 20; ++i)
 	//{
-		if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Monster"))))
-		return E_FAIL;
+		//if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Monster"))))
+		//return E_FAIL;
 	//f}
 	
 	return S_OK;

@@ -51,6 +51,7 @@ CModel::CModel(const CModel& rhs)
 	}
 }
 
+
 HRESULT CModel::Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix)
 {
 	//TODO m_Importer 객체가 가지고있는 ReadFile 함수를 호출한다
@@ -142,9 +143,24 @@ void CModel::Play_Animation(_float fTimeDelta, _bool isLoop)
 	if(m_iCurrentAnimIndex >= m_iNumAnimations)
 		return;
 
-	//! 현재 애니메이션이 사용하고 있는 뼈들의 TransformationMatrix를 갱신해준다.
-	m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(isLoop, fTimeDelta, m_Bones);
+	if (!m_bChangeAnim && m_iPrevAnimIndex != m_iCurrentAnimIndex)
+	{
+		m_pPrevAnimation = m_Animations[m_iPrevAnimIndex];
+		
+		m_iPrevAnimIndex = m_iCurrentAnimIndex;
+		m_bChangeAnim = true;
+	}
 	
+	//! 현재 애니메이션이 사용하고 있는 뼈들의 TransformationMatrix를 갱신해준다.
+	//_int test = m_Animations[m_iPrevAnimIndex]->m_CurrentKeyFrames;
+
+	//! 이전 애니메이션에게 다음 애니메이션을 준다.
+	if (m_bChangeAnim)
+	{
+		m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(isLoop, fTimeDelta, m_Bones, m_pPrevAnimation, this);
+	}
+	else
+		m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(isLoop, fTimeDelta, m_Bones);
 	//! 화면의 최종적인 상태로 그려내기위해서는 반드시, 뼈들의 CombindTransformationMatrix가 갱신된 이후여야 한다.
 	//! 모든 뼈들을 다 갱신하며 부모로부터 자식까지 순회하여 CombindTransformationMatrix를 갱신해주자.
 	
@@ -428,73 +444,35 @@ HRESULT CModel::Read_MaterialData(wstring& strPath)
 	ReadFile(hFile, &iNumMaterials, sizeof(size_t), &dwByte, nullptr);
 	m_Materials.reserve(iNumMaterials);
 	m_iNumMaterials = iNumMaterials;
+
 	for (size_t i = 0; i < iNumMaterials; i++)
 	{
 		MATERIAL_DESC		MaterialDesc;
 		ZeroMemory(&MaterialDesc, sizeof(MATERIAL_DESC));
 		
+		for (size_t j = 0; j < AI_TEXTURE_TYPE_MAX; j++)
+		{
 			string path;
-
-			// Read string length
 			size_t strLength;
 			if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
 				return E_FAIL;
 
-			// Read string content
-			string strDiffuseName(strLength, '\0');
-			if (!ReadFile(hFile, &strDiffuseName[0], strLength, &dwByte, nullptr))
+			string strPathName(strLength, '\0');
+			if (!ReadFile(hFile, &strPathName[0], strLength, &dwByte, nullptr))
 				return E_FAIL;
 
-			// Ensure null-termination
-			strDiffuseName.resize(strLength);
-
-			string newExtension = "dds";
-			string ddsFileName = ReplaceExtension(strDiffuseName, newExtension);
-			if (!strDiffuseName.empty())
+			if (strPathName != "")
 			{
-				path = ModifyPath(ConvertWstrToStr(strPath)) + ddsFileName;
-				
-				MaterialDesc.pMtrlTextures[aiTextureType_DIFFUSE] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
+				strPathName.resize(strLength);
+				string strNewExtension = "dds";
+				string strNewFileName = ReplaceExtension(strPathName, strNewExtension);
+
+				path = ModifyPath(ConvertWstrToStr(strPath)) + strNewFileName;
+				MaterialDesc.pMtrlTextures[aiTextureType(j)] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
 			}
-
-			if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
-				return E_FAIL;
-
-			// Read string content
-			string strSpecularName(strLength, '\0');
-			if (!ReadFile(hFile, &strSpecularName[0], strLength, &dwByte, nullptr))
-				return E_FAIL;
-
-			// Ensure null-termination
-			strSpecularName.resize(strLength);
-
-			 ddsFileName = ReplaceExtension(strSpecularName, newExtension);
-			if (!strSpecularName.empty())
-			{
-				path = ModifyPath(ConvertWstrToStr(strPath)) + ddsFileName;
-
-				MaterialDesc.pMtrlTextures[aiTextureType_SPECULAR] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
-			}
-
-			if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
-				return E_FAIL;
-
-			// Read string content
-			string strNormalName(strLength, '\0');
-			if (!ReadFile(hFile, &strNormalName[0], strLength, &dwByte, nullptr))
-				return E_FAIL;
-
-			// Ensure null-termination
-			strNormalName.resize(strLength);
-
-			ddsFileName = ReplaceExtension(strNormalName, newExtension);
-			if (!strNormalName.empty())
-			{
-				path = ModifyPath(ConvertWstrToStr(strPath)) + ddsFileName;
-
-				MaterialDesc.pMtrlTextures[aiTextureType_NORMALS] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
-			}
-		
+			else{ continue;}
+		}
+			
 		m_Materials.push_back(MaterialDesc);
 	}
 	

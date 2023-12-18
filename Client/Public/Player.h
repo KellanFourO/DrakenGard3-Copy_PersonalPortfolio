@@ -37,6 +37,9 @@ private:
 	CModel*				m_pModelCom = { nullptr };
 
 private:
+	_int				m_iCurrentAnimIndex = { 3 };
+
+private:
 	HRESULT Ready_Components();
 	HRESULT Bind_ShaderResources();
 

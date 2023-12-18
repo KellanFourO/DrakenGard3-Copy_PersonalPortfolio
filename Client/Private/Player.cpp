@@ -30,6 +30,7 @@ HRESULT CPlayer::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pModelCom->Set_Animation(3);
+	
 
 	
 
@@ -44,6 +45,15 @@ void CPlayer::Priority_Tick(_float fTimeDelta)
 void CPlayer::Tick(_float fTimeDelta)
 {
 	
+	if (m_pGameInstance->Key_Down(DIK_F3))
+	{
+		m_pModelCom->Set_Animation(--m_iCurrentAnimIndex);
+	}
+	if (m_pGameInstance->Key_Down(DIK_F4))
+	{
+		m_pModelCom->Set_Animation(++m_iCurrentAnimIndex);
+	}
+
 	if (GetKeyState(VK_DOWN) & 0x8000)
 	{
 		m_pTransformCom->Go_Backward(fTimeDelta);
@@ -63,6 +73,8 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 	else
 		m_pModelCom->Set_Animation(3);
+	
+	
 
 	
 	m_pModelCom->Play_Animation(fTimeDelta, true);

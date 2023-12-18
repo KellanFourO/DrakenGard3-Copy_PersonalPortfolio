@@ -23,9 +23,11 @@ private:
 
 public:
 	_uint Get_NumMeshes() const { return m_iNumMeshes; }
-	_uint Get_Animation() { return m_iCurrentAnimIndex; }
+	_uint Get_CurrentAnimIndex() { return m_iCurrentAnimIndex; }
+	_bool Get_ChangeAnim() { return m_bChangeAnim;}
 
-	void  Set_Animation(_uint iAnimIndex) { m_iCurrentAnimIndex = iAnimIndex; }
+	void  Set_Animation(_uint iAnimIndex) { m_iPrevAnimIndex = m_iCurrentAnimIndex; m_iCurrentAnimIndex = iAnimIndex;}
+	void  Finished_ChangeAnim() { m_bChangeAnim = false;}
 
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);
@@ -71,7 +73,14 @@ private:
 
 	_uint						m_iNumAnimations = { 0 }; //! AIScene으로 부터 읽어들일 애니메이션 개수
 	_uint						m_iCurrentAnimIndex = { 0 }; //! 현재 애니메이션의 인덱스를 미리 알아놓아야 편해.
+	_uint						m_iPrevAnimIndex = { 0 };
+	
+	
+	_bool						m_bChangeAnim = { false };
+
 	vector<class CAnimation*>	m_Animations;
+
+	class CAnimation*			m_pPrevAnimation = { nullptr };
 
 	ModelData					m_tDataFilePath;
 public:
@@ -87,8 +96,8 @@ private:
 
 	string	ConvertWstrToStr(const wstring& wstr);
 	wstring	ConvertStrToWstr(const string& str);
-	string ModifyPath(const string& originalPath);
-	string ReplaceExtension(const string& originalPath, const string& newExtension);
+	string	ModifyPath(const string& originalPath);
+	string	ReplaceExtension(const string& originalPath, const string& newExtension);
 	
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);
@@ -97,4 +106,5 @@ public:
 };
 
 END
+
 

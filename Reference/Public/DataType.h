@@ -53,9 +53,7 @@ namespace Engine
 	
 	struct asMaterial
 	{
-		string				strDiffuseFilePath;
-		string				strSpecularFilePath;
-		string				strNormalFilePath;
+		string			strTextureFilePath[AI_TEXTURE_TYPE_MAX];
 	};
 	
 	

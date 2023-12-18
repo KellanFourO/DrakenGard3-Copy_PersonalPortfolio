@@ -10,6 +10,7 @@ HRESULT CChannel::Initialize(const string strName, vector<KEYFRAME>& Keyframes, 
 	strcpy_s(m_szName, strName.c_str());
 
 	m_KeyFrames.reserve(Keyframes.size());
+
 	for (auto& iter : Keyframes)
 		m_KeyFrames.push_back(iter);
 
@@ -20,8 +21,12 @@ HRESULT CChannel::Initialize(const string strName, vector<KEYFRAME>& Keyframes, 
 
 }
 
-void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame)
+
+void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame, CChannel* pSameNameChannel)
 {
+	//! ÀÌÀü ¾Ö´Ï¸ÞÀÌ¼ÇÀÇ Å°ÇÁ·¹ÀÓ
+	
+
 	//! Ä¿·±Æ® Æ®·¢Æ÷Áö¼ÇÀÌ 0.0À¸·Î µé¾î¿À´Â °æ¿ì´Â ·çÇÁµ¹¸±¶§ ¸»°í´Â ¾ø¾î. ±×·¯´Ï±î ÀÎµ¦½º¸¦ 0À¸·Î ÃÊ±âÈ­ ½ÃÄÑÁÖÀÚ
 	if(0.0f == fCurrentTrackPosition)
 		*pCurrentKeyFrame = 0;
@@ -53,6 +58,7 @@ void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, con
 		//! ±×·¡¼­, ÇÁ·¹ÀÓ ÀÎµ¦½º°¡ ÇÑ¹ø¿¡ °Ç³Ê¶Ù¾î¹ö¸°°ÅÁö. ¿¹¸¦ µéÀÚ¸é 1¿¡¼­ ÇÑ¹ø¿¡ 3À¸·Î.
 		//! ¿©±â¼­ ´ÙÀ½ Å°ÇÁ·¹ÀÓÀº 2·Î ¸¸µé¾îÁ®¹ö¸°°Å¾ß. 4°¡¾Æ´Ï¶ó. ¿©±â¼­ Âü»ç°¡ ¹ß»ýÇÑ°Å¾ß ÀÌ°É ¸·±âÀ§ÇØ While¹®À» µ¹·ÁÁØ°ÅÁö.
 		
+		
 		while(fCurrentTrackPosition >= m_KeyFrames[*pCurrentKeyFrame + 1].fTrackPosition)
 			++*pCurrentKeyFrame;
 
@@ -61,23 +67,45 @@ void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, con
 		_float4		vSourRotation, vDestRotation;
 		_float3		vSourPosition, vDestPosition;
 
-		vSourScale		= m_KeyFrames[*pCurrentKeyFrame].vScale;
-		vSourRotation	= m_KeyFrames[*pCurrentKeyFrame].vRotation;
-		vSourPosition	= m_KeyFrames[*pCurrentKeyFrame].vPosition;
-						
-		vDestScale		= m_KeyFrames[*pCurrentKeyFrame + 1].vScale;
-		vDestRotation	= m_KeyFrames[*pCurrentKeyFrame + 1].vRotation;
-		vDestPosition	= m_KeyFrames[*pCurrentKeyFrame + 1].vPosition;
+		if (nullptr != pSameNameChannel)
+		{
+			vSourScale = pSameNameChannel->Get_KeyFrame().vScale;
+			vSourRotation = pSameNameChannel->Get_KeyFrame().vRotation;
+			vSourPosition = pSameNameChannel->Get_KeyFrame().vPosition;
+		}
+		else
+		{
+			vSourScale = m_KeyFrames[*pCurrentKeyFrame].vScale;
+			vSourRotation = m_KeyFrames[*pCurrentKeyFrame].vRotation;
+			vSourPosition = m_KeyFrames[*pCurrentKeyFrame].vPosition;
+		}
+		
+		
+		vDestScale = m_KeyFrames[*pCurrentKeyFrame + 1].vScale;
+		vDestRotation = m_KeyFrames[*pCurrentKeyFrame + 1].vRotation;
+		vDestPosition = m_KeyFrames[*pCurrentKeyFrame + 1].vPosition;
 
 
 		//! XMVectorLerp¶ó´Â ÇÔ¼ö´Â ¾ÆÁÖ ±âÆ¯ÇÏ°Ôµµ ºñÀ²¸¸ ³Ö¾îÁÖ¸é ¼±Çüº¸°£À» ¿¹»Ú°Ô ÇØÁØ´Ü¸»ÀÌÁö. ºñÀ² ±¸ÇÏÀÚ
-		//!  ÇöÀç¾Ö´Ï¸ÞÀÌ¼ÇÀ§Ä¡ ¿¡¼­ 
-		_float	fRatio = 
-		(fCurrentTrackPosition - m_KeyFrames[*pCurrentKeyFrame].fTrackPosition) /
-		(m_KeyFrames[*pCurrentKeyFrame + 1].fTrackPosition - m_KeyFrames[*pCurrentKeyFrame].fTrackPosition);
+		//!  fCurrentTrackPosition ÀÌ 0.5¿´´Ù°í Ä¡ÀÚ. ´ÙÀ½ ¾Ö´Ï¸ÞÀÌ¼ÇÀÇ CurrentTrackPosition 0ÀÏ°Å´Ù. ÀÌ¶§ 0°úÀÇ ºñÀ²À» ±¸ÇÒ¼ö¾øÀ¸´Ï. 0.2~0.3 À¸·Î ÀÓÀÇÀÇ º¸°£°ªÀ» Áà¼­ ±¸ÇÑ´Ù.
+		//! ´ÙÀ½ ¾Ö´Ï¸ÞÀÌ¼ÇÀÇ Ä¿·±Æ®Æ®·¢Æ÷Áö¼ÇÀº ³Ñ°Ü¹Þ¾Æ¾ßÁö.
+		_float	fRatio = 0.f;
+
+
+		if (nullptr != pSameNameChannel)
+		{
+			fRatio = (fCurrentTrackPosition) / 0.2f;
+			pSameNameChannel = nullptr;
+		}
+		else
+		{
+			fRatio = (fCurrentTrackPosition - m_KeyFrames[*pCurrentKeyFrame].fTrackPosition) /
+				(m_KeyFrames[*pCurrentKeyFrame + 1].fTrackPosition - m_KeyFrames[*pCurrentKeyFrame].fTrackPosition);
+		}
+
 
 		//! 1¹øÂ° ÀÎÀÚ¿Í 2¹øÂ° ÀÎÀÚ¸¦ ºñÀ²¸¸Å­ ¼±Çüº¸°£ÇØÁà¼­ ÃÖÁ¾ °á°úº¤ÅÍ¸¦ “Ê¹ñ¾îÁØ´Ü¸»ÀÌÁö ¾ÆÁÖ ¯„ÄªÂùÇØ
-		vScale = XMVectorLerp(XMLoadFloat3(&vSourScale), XMLoadFloat3(&vDestScale), fRatio);
+		vScale = XMVectorLerp(XMLoadFloat3(&vSourScale), XMLoadFloat3(&vDestScale), fRatio); 
 		//! Àã´ñ´Ù. ÄõÅÍ´Ï¾ðÀº ¾îÂ¼Áö? ÀÌ°Íµµ µû·Î ÇÔ¼öÀÖ´Ù °³²Ü?
 		vRotation = XMQuaternionSlerp(XMLoadFloat4(&vSourRotation), XMLoadFloat4(&vDestRotation), fRatio);
 		vPosition = XMVectorLerp(XMLoadFloat3(&vSourPosition), XMLoadFloat3(&vDestPosition), fRatio);
@@ -91,6 +119,7 @@ void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, con
 	//! ÀÌÁ¦ ÀÌ Ã¤³Î°ú °°Àº ÀÌ¸§À» °¡Áø »À¸¦ Ã£¾Æ¼­ ±× »ÀÀÇ TransformationMatrix °»½ÅÇØÁÙ°Å¾ß.
 	Bones[m_iBoneIndex]->Set_TransformationMatrix(TransformationMatrix);
 }
+
 
 CChannel* CChannel::Create(const string strName, vector<KEYFRAME>& Keyframes, _int iBoneIndex)
 {

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ #include "stdafx.h"
 #include "..\Public\Loader.h"
 #include "GameInstance.h"
 
@@ -126,9 +126,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	_matrix PivotMatrix; //#모델_초기행렬 
 	PivotMatrix = XMMatrixIdentity();
 
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	//! ./texconv.exe -m 0 -f R8G8B8A8_UNORM -o C:\Users\PC\Desktop\Jusin_Project\DrakenGard3_Project_Git\Client\Bin\Resources\Models\Player\ C:\Users\PC\Desktop\Jusin_Project\DrakenGard3_Project_Git\Client\Bin\Resources\Models\Player\*.png
+
+	PivotMatrix = /*XMMatrixScaling(0.01f, 0.01f, 0.01f) * */XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Fiona"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("EN00"), pFilePathData), PivotMatrix)));
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("Fiona"), pFilePathData), PivotMatrix)));
 	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Fiona"),
 	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, "../Bin/Resources/Models/Player/pl00.fbx", PivotMatrix)));
@@ -175,13 +177,14 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		return E_FAIL;
 
 
-	lstrcpy(m_szLoadingText, TEXT("원형객체를(을) 로드하는 중입니다."));
+	lstrcpy(m_szLoadingText, TEXT("플레이어를(을) 로드하는 중입니다."));
 
 	/* For.Prototype_GameObject_Player */
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
 		CPlayer::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	lstrcpy(m_szLoadingText, TEXT("원형객체(을)를 로드하는 중입니다."));
 	/* For.Prototype_GameObject_Terrain */
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext, eLevel))))

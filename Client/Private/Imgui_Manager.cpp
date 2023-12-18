@@ -1166,23 +1166,16 @@ HRESULT CImgui_Manager::Read_MaterialData()
 		aiString aifile;
 		string strName;
 
-		if (FAILED(pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aifile)))
-			return E_FAIL; //!Continue
+		for(size_t j = 1; j < AI_TEXTURE_TYPE_MAX; j++)
+		{
+			if (FAILED(pMaterial->GetTexture(aiTextureType(j), 0, &aifile)))
+					continue;
 
-		strName = aifile.data;
-		pMaterialData->strDiffuseFilePath = filesystem::path(strName).filename().string();
+			strName = aifile.data;
 
-		if (FAILED(pMaterial->GetTexture(aiTextureType_SPECULAR, 0, &aifile)))
-			return E_FAIL; //!Continue
-
-		strName = aifile.data;
-		pMaterialData->strSpecularFilePath = filesystem::path(strName).filename().string();
-
-		if (FAILED(pMaterial->GetTexture(aiTextureType_NORMALS, 0, &aifile)))
-			return E_FAIL; //!Continue
-
-		strName = aifile.data;
-		pMaterialData->strNormalFilePath = filesystem::path(strName).filename().string();
+			pMaterialData->strTextureFilePath[j] = filesystem::path(strName).filename().string();
+			//pMaterialData->
+		}
 
 		m_vecMaterial.push_back(pMaterialData);
 	}
@@ -1214,23 +1207,15 @@ HRESULT CImgui_Manager::Write_MaterialData(string strFileName)
 
 	for (asMaterial* pMaterialData : m_vecMaterial)
 	{
-		size_t strLength = pMaterialData->strDiffuseFilePath.size();
-		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
-		WriteFile(hFile, pMaterialData->strDiffuseFilePath.c_str(), strLength, &dwByte, nullptr);
-
-		strLength = pMaterialData->strSpecularFilePath.size();
-		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
-		WriteFile(hFile, pMaterialData->strSpecularFilePath.c_str(), strLength, &dwByte, nullptr);
-
-		strLength = pMaterialData->strNormalFilePath.size();
-		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
-		WriteFile(hFile, pMaterialData->strNormalFilePath.c_str(), strLength, &dwByte, nullptr);
+		for (string strPath : pMaterialData->strTextureFilePath)
+		{
+			size_t strLength = strPath.size();
+			WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
+			WriteFile(hFile, strPath.c_str(), strLength, &dwByte, nullptr);
+		}
 	}
 
-
 	CloseHandle(hFile);
-
-	//!WriteFile(hFile, &m_vecMesh[i]->strName, sizeof(m_vecMesh[i]->strName), &dwByte, nullptr);
 
 	return S_OK;
 }

@@ -14,7 +14,11 @@ private:
 
 public:
 	HRESULT Initialize(const string strName, vector<KEYFRAME>& Keyframes, _int iBoneIndex);
-	void Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame);
+	void	Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame, CChannel* pSameNameChannel = nullptr);
+	vector<KEYFRAME>& Get_KeyFrames() { return m_KeyFrames; }
+	KEYFRAME& Get_KeyFrame() { return m_KeyFrames[0]; }
+
+	string  Get_Name() { return m_szName; }
 
 private:
 	_char				m_szName[MAX_PATH] = ""; //! CBone에 저장된 뼈의 이름과 동일해.
@@ -33,7 +37,7 @@ private:
 	//_uint				m_iCurrentKeyFrameIndex = { 0 };
 
 	_uint				m_iBoneIndex = { 0 };
-	_float				m_fInterpolation = { 0.2f };
+	
 
 public:
 	//! Create 할때 인자로 뼈들이 있는 벡터는 왜 받아왔어?

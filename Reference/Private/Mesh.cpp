@@ -89,8 +89,11 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 	m_iNumVertexBuffers = 1;
 	m_iNumVertices = (_int)Vertices.size(); //! 정점의 개수는 읽어들인 개수다.
 
+
 	m_iNumIndices = iNumFace * 3; //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
 	m_iIndexStride = 4; //! 모델은 왠만해선 정점이 65535개를 넘어간다. 그러니까 그냥 4로 Default
+
+
 
 	m_eIndexFormat = m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
 	m_eTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
