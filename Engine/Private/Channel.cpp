@@ -21,8 +21,67 @@ HRESULT CChannel::Initialize(const string strName, vector<KEYFRAME>& Keyframes, 
 
 }
 
+_bool CChannel::Blend_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame, KEYFRAME& pPrevKeyFrame, const _float& fRatio)
+{
+	if (0.0f == fCurrentTrackPosition)
+		*pCurrentKeyFrame = 0;
 
-void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame, CChannel* pSameNameChannel)
+	_vector		vScale;
+	_vector		vRotation;
+	_vector		vPosition;
+
+	KEYFRAME	LastKeyFrame = m_KeyFrames.back();
+	
+	if (fCurrentTrackPosition >= LastKeyFrame.fTrackPosition)
+	{
+		vScale	  = XMLoadFloat3(&LastKeyFrame.vScale);
+		vRotation = XMLoadFloat4(&LastKeyFrame.vRotation);
+		vPosition = XMLoadFloat3(&LastKeyFrame.vPosition);
+	}
+
+	else 
+	{
+		while (fCurrentTrackPosition >= m_KeyFrames[*pCurrentKeyFrame + 1].fTrackPosition)
+			++*pCurrentKeyFrame;
+
+		_float3		vSourScale, vDestScale;
+		_float4		vSourRotation, vDestRotation;
+		_float3		vSourPosition, vDestPosition;
+
+		vSourScale	  = pPrevKeyFrame.vScale;
+		vSourRotation = pPrevKeyFrame.vRotation;
+		vSourPosition = pPrevKeyFrame.vPosition;
+
+		vDestScale = m_KeyFrames[*pCurrentKeyFrame].vScale;
+		vDestRotation = m_KeyFrames[*pCurrentKeyFrame].vRotation;
+		vDestPosition = m_KeyFrames[*pCurrentKeyFrame].vPosition;
+
+		_float	fRatio2 = 0.f;
+
+		fRatio2 = fCurrentTrackPosition / 0.2f;
+
+		if(fRatio2 >= 1.f)
+			return true;
+
+		vScale	  = XMVectorLerp(XMLoadFloat3(&vSourScale), XMLoadFloat3(&vDestScale), fRatio2);
+		vRotation = XMQuaternionSlerp(XMLoadFloat4(&vSourRotation), XMLoadFloat4(&vDestRotation), fRatio2);
+		vPosition = XMVectorLerp(XMLoadFloat3(&vSourPosition), XMLoadFloat3(&vDestPosition), fRatio2);
+	}
+
+	//! À§¿¡¼­ Àú »óÅÂµé·Î ¹¹ÇÏ·Á°íÇÑ°Å¾ß? ½Ã°£¿¡¸Â´Â TransformationMatrix ¸¸µé¾îÁÖ·Á°í Çß´ø°ÅÀİ¾Æ?
+	//! ¾î¶»°Ô ¸¸µé°Å¾ß? ·ÎÅ×ÀÌ¼ÇÀº ÄõÅÍ´Ï¾ğÀÎµ¥? ÀÌ°Íµµ ÇÔ¼öÀÖ¾î °³²Ü ¤»¤»
+	//! ÀÀ? ÀÎÀÚ°ªÀ¸·Î ·ÎÅ×ÀÌ¼Ç ¿øÁ¡À» ´Ş¶ó´Âµ¥? ¿øÁ¡ÀÌ¹¹Áö? 0,0,0,1 ÀÌÀİ¾Æ ÁÖ¸éµÇÁö ¤»¤»
+	_matrix	TransformationMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vPosition);
+
+	//! ÀÌÁ¦ ÀÌ Ã¤³Î°ú °°Àº ÀÌ¸§À» °¡Áø »À¸¦ Ã£¾Æ¼­ ±× »ÀÀÇ TransformationMatrix °»½ÅÇØÁÙ°Å¾ß.
+	Bones[m_iBoneIndex]->Set_TransformationMatrix(TransformationMatrix);
+
+	
+	return false;
+}
+
+
+void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame)
 {
 	//! ÀÌÀü ¾Ö´Ï¸ŞÀÌ¼ÇÀÇ Å°ÇÁ·¹ÀÓ
 	
@@ -67,19 +126,9 @@ void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, con
 		_float4		vSourRotation, vDestRotation;
 		_float3		vSourPosition, vDestPosition;
 
-		if (nullptr != pSameNameChannel)
-		{
-			vSourScale = pSameNameChannel->Get_KeyFrame().vScale;
-			vSourRotation = pSameNameChannel->Get_KeyFrame().vRotation;
-			vSourPosition = pSameNameChannel->Get_KeyFrame().vPosition;
-		}
-		else
-		{
-			vSourScale = m_KeyFrames[*pCurrentKeyFrame].vScale;
-			vSourRotation = m_KeyFrames[*pCurrentKeyFrame].vRotation;
-			vSourPosition = m_KeyFrames[*pCurrentKeyFrame].vPosition;
-		}
-		
+		vSourScale = m_KeyFrames[*pCurrentKeyFrame].vScale;
+		vSourRotation = m_KeyFrames[*pCurrentKeyFrame].vRotation;
+		vSourPosition = m_KeyFrames[*pCurrentKeyFrame].vPosition;
 		
 		vDestScale = m_KeyFrames[*pCurrentKeyFrame + 1].vScale;
 		vDestRotation = m_KeyFrames[*pCurrentKeyFrame + 1].vRotation;
@@ -90,17 +139,9 @@ void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, con
 		//!  fCurrentTrackPosition ÀÌ 0.5¿´´Ù°í Ä¡ÀÚ. ´ÙÀ½ ¾Ö´Ï¸ŞÀÌ¼ÇÀÇ CurrentTrackPosition 0ÀÏ°Å´Ù. ÀÌ¶§ 0°úÀÇ ºñÀ²À» ±¸ÇÒ¼ö¾øÀ¸´Ï. 0.2~0.3 À¸·Î ÀÓÀÇÀÇ º¸°£°ªÀ» Áà¼­ ±¸ÇÑ´Ù.
 		//! ´ÙÀ½ ¾Ö´Ï¸ŞÀÌ¼ÇÀÇ Ä¿·±Æ®Æ®·¢Æ÷Áö¼ÇÀº ³Ñ°Ü¹Ş¾Æ¾ßÁö.
 		_float	fRatio = 0.f;
-
-
-		if (nullptr != pSameNameChannel)
-		{
-			fRatio = (fCurrentTrackPosition) / 0.2f;
-		}
-		else
-		{
+			
 			fRatio = (fCurrentTrackPosition - m_KeyFrames[*pCurrentKeyFrame].fTrackPosition) /
 				(m_KeyFrames[*pCurrentKeyFrame + 1].fTrackPosition - m_KeyFrames[*pCurrentKeyFrame].fTrackPosition);
-		}
 
 
 		//! 1¹øÂ° ÀÎÀÚ¿Í 2¹øÂ° ÀÎÀÚ¸¦ ºñÀ²¸¸Å­ ¼±Çüº¸°£ÇØÁà¼­ ÃÖÁ¾ °á°úº¤ÅÍ¸¦ “Ê¹ñ¾îÁØ´Ü¸»ÀÌÁö ¾ÆÁÖ ¯„ÄªÂùÇØ

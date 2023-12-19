@@ -26,8 +26,21 @@ public:
 	_uint Get_CurrentAnimIndex() { return m_iCurrentAnimIndex; }
 	_bool Get_ChangeAnim() { return m_bChangeAnim;}
 
-	void  Set_Animation(_uint iAnimIndex) { m_iPrevAnimIndex = m_iCurrentAnimIndex; m_iCurrentAnimIndex = iAnimIndex;}
+	void  Set_Animation(_uint iAnimIndex) 
+	{ 
+		m_iPrevAnimIndex = m_iCurrentAnimIndex;  // ! 이전 인덱스에게 바뀌기 전 애니메이션의 인덱스를 넣어주자
+		m_iCurrentAnimIndex = iAnimIndex; // !현재 애니메이션의 인덱스를 바꾼 인덱스를 넣어주자
+
+		if( m_iPrevAnimIndex != m_iCurrentAnimIndex) //! 이전 인덱스와 현재 애니메이션의 인덱스가 다르다면 보간을 시작하자
+		{	
+			
+			m_pPrevAnimation = m_Animations[m_iPrevAnimIndex];
+			m_bChangeAnim = true;
+		}
+	}
+
 	void  Finished_ChangeAnim() { m_bChangeAnim = false;}
+	void  Set_PrevAnimToCurrentAniM() { m_iPrevAnimIndex = m_iCurrentAnimIndex;}
 
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);
@@ -75,7 +88,8 @@ private:
 	_uint						m_iCurrentAnimIndex = { 0 }; //! 현재 애니메이션의 인덱스를 미리 알아놓아야 편해.
 	_uint						m_iPrevAnimIndex = { 0 };
 	
-	
+	_float						m_fTimeAcc = { 0.f };
+
 	_bool						m_bChangeAnim = { false };
 
 	vector<class CAnimation*>	m_Animations;

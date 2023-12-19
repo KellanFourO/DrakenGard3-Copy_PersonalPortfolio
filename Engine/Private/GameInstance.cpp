@@ -84,7 +84,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pLevel_Manager->Tick(fTimeDelta);
 
-	m_pInput_Device->LateTick();
+	
 
 }
 
@@ -101,6 +101,8 @@ HRESULT CGameInstance::Render_Engine()
 #ifdef _DEBUG
 	m_pLevel_Manager->Render();
 #endif
+
+	m_pInput_Device->LateTick();
 
 	return S_OK;
 }

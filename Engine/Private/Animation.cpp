@@ -21,6 +21,25 @@ CAnimation::CAnimation(const CAnimation& rhs)
 		Safe_AddRef(pChannel);
 }
 
+KEYFRAME& CAnimation::Get_CurrentKeyFrame(class CChannel* _pChannel)
+{
+	// TODO 지금 나는 이전 애니메이션이다라고 생각해보자. 나는 현재 재생되고있는 위치에 맞는 키프레임을 넘겨줘야한다
+	//! 채널을 순회해보자.
+	if(nullptr == _pChannel)
+		return KEYFRAME();
+
+	
+	for (auto& KeyFrame : _pChannel->Get_KeyFrames())
+	{
+		if (KeyFrame.fTrackPosition == m_fTrackPosition)
+		{
+			KeyFrame.bTest = true;
+			return KeyFrame;
+		}
+	}
+	
+}
+
 CChannel* CAnimation::Get_SameName_Channel(CChannel* _pChannel)
 {
 	for (auto& pChannel : m_Channels)
@@ -54,9 +73,54 @@ HRESULT CAnimation::Initialize(const _float& fDuration, const _float& fTickPerSe
 	return S_OK;
 }
 
+void CAnimation::Blend_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones, CAnimation* pPrevAnimation, CModel* pModel, const float& fRatio)
+{
+	//TODO 이전 애니메이션이 진행중인 키프레임 위치를 받아주자 
+	
+	m_fTrackPosition += m_fTicksPerSecond * fTimeDelta;
+	
+	if (m_fTrackPosition >= m_fDuration)
+	{
+		m_isFinished = true; //! 끝났다는 것을 알리기위한 불변수야.
+		m_fTrackPosition = m_fDuration; //! isLoop가 False였다면 루프를 돌리지 않겠다는 거지. 총 길이의 마지막으로 유지시켜주자.
+
+		if (true == isLoop)
+		{
+			m_fTrackPosition = 0.0f;
+			m_isFinished = false;
+		}
+
+	}
+
+	for (size_t i = 0; i < m_iNumChannels; i++)
+	{
+
+		if (nullptr != pPrevAnimation)
+		{
+			
+			CChannel* pChannel = nullptr;
+			pChannel = pPrevAnimation->Get_SameName_Channel(m_Channels[i]); //! 현재 애니메이션의 채널과 이전 애니메이션의 채널중 같은 이름을 가진 채널을 찾아준다.
+
+			_bool Test = pPrevAnimation->Get_CurrentKeyFrame(pChannel).bTest;
+
+			//! 이전 키프레임의 진행중인 
+			if (Test && nullptr != pChannel)
+			{
+				if(m_Channels[i]->Blend_TransformationMatrix(m_fTrackPosition, Bones, &m_CurrentKeyFrames[i], pPrevAnimation->Get_CurrentKeyFrame(pChannel), fRatio))
+				{
+					pModel->Finished_ChangeAnim();
+					pPrevAnimation->Get_CurrentKeyFrame(pChannel).fTrackPosition = 0.f;
+				}
+			}
+		}
+	}
+
+	
+}
 
 
-void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones, CAnimation* pPrevAnimation, CModel* pModel)
+
+void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones)
 {
 	
 	m_fTrackPosition += m_fTicksPerSecond * fTimeDelta;
@@ -93,24 +157,7 @@ void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta
 
 	for (size_t i = 0; i < m_iNumChannels; i++)
 	{	
-		if (pPrevAnimation != nullptr)
-		{
-			CChannel* pChannel = nullptr;
-			pChannel = pPrevAnimation->Get_SameName_Channel(m_Channels[i]);
-			m_Channels[i]->Invalidate_TransformationMatrix(m_fTrackPosition, Bones, &m_CurrentKeyFrames[i], pChannel);
-		}
-		else
-		{
-			m_Channels[i]->Invalidate_TransformationMatrix(m_fTrackPosition, Bones, &m_CurrentKeyFrames[i]);
-		}
-	}
-
-
-	if (nullptr != pPrevAnimation && m_fTrackPosition > 0.2f)
-	{
-		pPrevAnimation = nullptr;
-		m_fTrackPosition = 0.f;
-		pModel->Finished_ChangeAnim();
+		m_Channels[i]->Invalidate_TransformationMatrix(m_fTrackPosition, Bones, &m_CurrentKeyFrames[i]);
 	}
 }
 
