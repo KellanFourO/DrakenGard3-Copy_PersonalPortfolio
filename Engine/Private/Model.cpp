@@ -144,6 +144,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool isLoop)
 		return;
 
 	//! 이전 키프레임과 현재 키프레임의 인덱스가 달랐다면
+
 	if (m_bChangeAnim) 
 	{
 		//! 현재 애니메이션에게 이전 애니메이션을 넘겨주자

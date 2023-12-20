@@ -1,3 +1,4 @@
+#include "Shader_Defines.hlsli"
 //TODO 셰이더에서의 Vector
 //!셰이더에서의 Vector는 float2, float3, float4 로 사용할 수 있다. 그 중에서도 float4 자료형이 vector와 같다.
 //! vector.x 는 vector.r과 같다.
@@ -96,7 +97,10 @@ technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우
 {
 	pass UI
 	{
-		//! 렌더스테이트가 올수도 있음.
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		HullShader = NULL;
@@ -107,6 +111,10 @@ technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우
 	/* 위와 다른 형태에 내가 원하는 특정 셰이더들을 그리는 모델에 적용한다. */
 	pass Particle
 	{
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
 		VertexShader = compile vs_5_0 VS_MAIN();
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}

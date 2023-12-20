@@ -68,9 +68,46 @@ HRESULT CVIBuffer_Cube::Initialize_Prototype()
 	Safe_Delete_Array(pVertices); //! 서브리소스 데이터에 정보 채워서 버텍스 버퍼 도 만들어줬으니 할당했던 정점들은 지워주자.
 
 //TODO INDEX_BUFFER
+	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc); 
+	m_BufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices; //! 인덱스 크기는 위에서 정점 개수에 따라 2냐 4로 정의된다고 했어. 인덱스 개수만큼 돌자 큐브의 면이 6개니까  36 이였엇지
+	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT; 
+	m_BufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER; //! 인덱스버퍼용 구조체야
+	m_BufferDesc.CPUAccessFlags = 0;
+	m_BufferDesc.MiscFlags = 0;
+	m_BufferDesc.StructureByteStride = 0;
 
+	_ushort* pIndices = new _ushort[m_iNumIndices];
 
+	/* +x */
+	pIndices[0] = 1; pIndices[1] = 5; pIndices[2] = 6;
+	pIndices[3] = 1; pIndices[4] = 6; pIndices[5] = 2;
 
+	/* -x */
+	pIndices[6] = 4; pIndices[7] = 0; pIndices[8] = 3;
+	pIndices[9] = 4; pIndices[10] = 3; pIndices[11] = 7;
+
+	/* +Y */
+	pIndices[12] = 4; pIndices[13] = 5; pIndices[14] = 1;
+	pIndices[15] = 4; pIndices[16] = 1; pIndices[17] = 0;
+
+	/* -y */
+	pIndices[18] = 3; pIndices[19] = 2; pIndices[20] = 6;
+	pIndices[21] = 3; pIndices[22] = 6; pIndices[23] = 7;
+
+	/* +z */
+	pIndices[24] = 5; pIndices[25] = 4; pIndices[26] = 7;
+	pIndices[27] = 5; pIndices[28] = 7; pIndices[29] = 6;
+
+	/* -z */
+	pIndices[30] = 0; pIndices[31] = 1; pIndices[32] = 2;
+	pIndices[33] = 0; pIndices[34] = 2; pIndices[35] = 3;
+
+	m_SubResourceData.pSysMem = pIndices;
+
+	if (FAILED(__super::Create_Buffer(&m_pIB)))
+		return E_FAIL;
+
+	Safe_Delete_Array(pIndices);
 	return S_OK;
 }
 

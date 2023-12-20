@@ -73,6 +73,9 @@
     <Filter Include="02. GameObjects\06. Player">
       <UniqueIdentifier>{fcad7db1-bfa0-4bd6-8780-e7e6f6bceb78}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\07. SkyBox">
+      <UniqueIdentifier>{37545faa-2817-411b-ae58-6edd100cdf2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -195,6 +198,9 @@
     <ClInclude Include="..\Public\Player.h">
       <Filter>02. GameObjects\06. Player</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\SkyBox.h">
+      <Filter>02. GameObjects\07. SkyBox</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -284,6 +290,9 @@
     <ClCompile Include="..\Private\Player.cpp">
       <Filter>02. GameObjects\06. Player</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\SkyBox.cpp">
+      <Filter>02. GameObjects\07. SkyBox</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -314,6 +323,9 @@
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimModel.hlsl">
+      <Filter>97. ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCube.hlsl">
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

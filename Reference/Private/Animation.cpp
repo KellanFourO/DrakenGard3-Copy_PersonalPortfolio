@@ -82,12 +82,9 @@ HRESULT CAnimation::Initialize(const _float& fDuration, const _float& fTickPerSe
 
 void CAnimation::Blend_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones, CAnimation* pPrevAnimation, CModel* pModel)
 {
-	_float fMyTicksPerSecond = m_fTicksPerSecond;
 	//TODO 이전 애니메이션이 진행중인 키프레임 위치를 받아주자 
-	if (fMyTicksPerSecond > 1)
-		fMyTicksPerSecond = 1;
 
-	m_fTrackPosition += fMyTicksPerSecond * fTimeDelta;
+	m_fTrackPosition += 1 * fTimeDelta;
 		 
 		 for (size_t i = 0; i < m_iNumChannels; i++)
 		 {
@@ -131,7 +128,7 @@ void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta
 
 	//! 트랙포지션이 듀레이션(애니메이션의 총 길이)보다 커졌다는 것은 애니메이션이 끝났다는 것과 같아.
 	//!  인자값으로 들어온 isLoop의 값에 땨따라 루프를 돌릴지 멈출지 처리할거야.
-	if(m_fTrackPosition >= m_fDuration)
+ 	if(m_fTrackPosition >= m_fDuration)
 	{
 		m_isFinished = true; //! 끝났다는 것을 알리기위한 불변수야.
 		m_fTrackPosition = m_fDuration; //! isLoop가 False였다면 루프를 돌리지 않겠다는 거지. 총 길이의 마지막으로 유지시켜주자.

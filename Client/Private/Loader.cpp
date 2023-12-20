@@ -5,6 +5,7 @@
 //TODO GameObject
 #include "Camera_Dynamic.h"
 #include "BackGround.h"
+#include "SkyBox.h"
 #include "Terrain.h"
 #include "Dynamic_Terrain.h"
 #include "Monster.h"
@@ -104,6 +105,12 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 {
 	/* 게임플레이 레벨에 필요한 자원을 로드하자. */
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로드하는 중입니다."));
+
+	//!  For.Prototype_Component_Texture_Sky  #스카이박스텍스처_AddPrototype
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Sky"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_%d.dds"), 4))))
+		return E_FAIL;
+
 	//!  For.Prototype_Component_Texture_Terrain_Mask  #터레인텍스처_AddPrototype
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Terrain"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Tile%d.dds"), 2))))
@@ -146,11 +153,17 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Tree"), pFilePathData), PivotMatrix)));
 
 	Safe_Delete(pFilePathData);
+	
+	//!For.Prototype_Component_VIBuffer_Cube #큐브_Add_ProtoType
+		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Cube"),
+			CVIBuffer_Cube::Create(m_pDevice, m_pContext))))
+			return E_FAIL;
 
 	//!For.Prototype_Component_VIBuffer_Terrain #터레인_Add_ProtoType
 		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Terrain"),
 				CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Height1.bmp")))))
 				return E_FAIL;
+
 	//!For.Prototype_Component_VIBuffer_Dynamic_Terrain #동적터레인_Add_ProtoType
 		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Dynamic_Terrain"),
 			CVIBuffer_Dynamic_Terrain::Create(m_pDevice, m_pContext))))
@@ -161,6 +174,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	//! For.Prototype_Component_Shader_VtxNorTex  #노말셰이더_AddPrototype
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_VtxNorTex"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
+		return E_FAIL;
+
+	//! For.Prototype_Component_Shader_VtxCube  #큐브셰이더_AddPrototype
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_VtxCube"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxCube.hlsl"), VTXCUBE::Elements, VTXCUBE::iNumElements))))
 		return E_FAIL;
 	
 	//! For.Prototype_Component_Shader_Model  #모델셰이더_AddPrototype
@@ -186,6 +204,12 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("원형객체(을)를 로드하는 중입니다."));
+
+	/* For.Protytype_GameObject_SkyBox */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Protytype_GameObject_SkyBox"),
+		CSkyBox::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	/* For.Prototype_GameObject_Terrain */
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext, eLevel))))
