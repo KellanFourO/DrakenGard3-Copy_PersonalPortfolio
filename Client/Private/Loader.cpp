@@ -206,7 +206,7 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	lstrcpy(m_szLoadingText, TEXT("원형객체(을)를 로드하는 중입니다."));
 
 	/* For.Protytype_GameObject_SkyBox */
-	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Protytype_GameObject_SkyBox"),
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SkyBox"),
 		CSkyBox::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 

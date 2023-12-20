@@ -18,10 +18,10 @@ HRESULT CSkyBox::Initialize_Prototype()
 
 HRESULT CSkyBox::Initialize(void* pArg)
 {
-	if(FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
-	
-	if(FAILED(Ready_Components()))
+
+	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
 	return S_OK;
@@ -47,7 +47,7 @@ void CSkyBox::Late_Tick(_float fTimeDelta)
 
 HRESULT CSkyBox::Render()
 {
-	if(FAILED(Bind_ShaderResources()))
+	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
 	m_pShaderCom->Begin(0);
