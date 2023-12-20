@@ -13,11 +13,13 @@ private:
 	virtual ~CChannel() = default;
 
 public:
-	HRESULT Initialize(const string strName, vector<KEYFRAME>& Keyframes, _int iBoneIndex);
-	void	Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame);
-	_bool	Blend_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame, KEYFRAME& pPrevKeyFrame, const _float& fRatio);
-	vector<KEYFRAME>& Get_KeyFrames() { return m_KeyFrames; }
-	KEYFRAME& Get_FrontKeyFrame() { return m_KeyFrames.front(); }
+	HRESULT			  Initialize(const string strName, vector<KEYFRAME>& Keyframes, _int iBoneIndex);
+	void			  Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame);
+	_bool			  Blend_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame, KEYFRAME& pPrevKeyFrame);
+	
+	vector<KEYFRAME>& Get_KeyFrames() { return m_KeyFrames; } 
+	KEYFRAME&		  Get_FrontKeyFrame() { return m_KeyFrames.front(); } //! ∏ÿ√· æ÷¥œ∏ﬁ¿Ãº«¿« ∏ÿ√·¿ßƒ°∏¶ πﬁæ∆¡‡æﬂ«ÿ.
+	
 
 	string  Get_Name() { return m_szName; }
 

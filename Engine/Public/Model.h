@@ -1,7 +1,10 @@
 #pragma once
 #include "Component.h"
 
+
+
 BEGIN(Engine)
+class CAnimation;
 
 class ENGINE_DLL CModel final : public CComponent
 {
@@ -28,7 +31,6 @@ public:
 
 	void  Set_Animation(_uint iAnimIndex) 
 	{ 
-
 		if( m_iPrevAnimIndex != m_iCurrentAnimIndex) //! 이전 인덱스와 현재 애니메이션의 인덱스가 다르다면 보간을 시작하자
 		{	
 			m_iPrevAnimIndex	= m_iCurrentAnimIndex;  // ! 이전 인덱스에게 바뀌기 전 애니메이션의 인덱스를 넣어주자
@@ -42,7 +44,6 @@ public:
 	}
 
 	void  Finished_ChangeAnim() { m_bChangeAnim = false;}
-	void  Set_PrevAnimToCurrentAniM() { m_iPrevAnimIndex = m_iCurrentAnimIndex;}
 
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);
@@ -96,7 +97,7 @@ private:
 
 	vector<class CAnimation*>	m_Animations;
 
-	class CAnimation*			m_pPrevAnimation = { nullptr };
+	CAnimation*			m_pPrevAnimation = { nullptr };
 
 	ModelData					m_tDataFilePath;
 public:

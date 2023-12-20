@@ -18,11 +18,12 @@ public:
 	vector<class CChannel*>&	Get_Channels() { return m_Channels;}
 	vector<_uint>&				Get_KeyFrames() { return m_CurrentKeyFrames; }
 	class CChannel*				Get_SameName_Channel(class CChannel* _pChannel);
+	KEYFRAME&					Get_CurrentKeyFrame(class CChannel* _pChannel);
 
 public:
 	HRESULT Initialize(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName);
 	void	Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones);
-	void	Blend_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones, CAnimation* pPrevAnimation, CModel* pModel, const float& fRatio);
+	void	Blend_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones, CAnimation* pPrevAnimation, CModel* pModel);
 	void	Reset_Animation();
 	//! 애니메이션 선형보간. 현재 내 키프레임과 다음 애니메이션의 키프레임을 받아서 선형보간을 해야하는데 다음 애니메이션의 키프레임은 0이니 차를 구할 수 없다. 이때 그래서 0.2라는 값을 주는 것이다.
 

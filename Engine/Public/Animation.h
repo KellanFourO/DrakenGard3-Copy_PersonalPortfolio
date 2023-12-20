@@ -18,6 +18,7 @@ public:
 	vector<class CChannel*>&	Get_Channels() { return m_Channels;}
 	vector<_uint>&				Get_KeyFrames() { return m_CurrentKeyFrames; }
 	class CChannel*				Get_SameName_Channel(class CChannel* _pChannel);
+	KEYFRAME&					Get_CurrentKeyFrame(class CChannel* _pChannel);
 
 public:
 	HRESULT Initialize(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName);

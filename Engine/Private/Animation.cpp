@@ -34,6 +34,30 @@ CChannel* CAnimation::Get_SameName_Channel(CChannel* _pChannel)
 	return nullptr;
 }
 
+KEYFRAME& CAnimation::Get_CurrentKeyFrame(CChannel* _pChannel)
+{
+
+	_int iSize = _pChannel->Get_KeyFrames().size();
+	
+	KEYFRAME returnKeyFrame;
+
+	vector<KEYFRAME> vecKeyFrames = _pChannel->Get_KeyFrames();
+
+
+	// 해당 채널의 시작과 앤드를 알아내라
+	for (size_t i = 0; i < iSize; ++i)
+	{
+		if (vecKeyFrames[i].fTrackPosition >= m_fTrackPosition)
+		{
+			returnKeyFrame = vecKeyFrames[i];
+			returnKeyFrame.bTest = true;
+			return returnKeyFrame;
+		}
+	}
+	
+	// TODO: 여기에 return 문을 삽입합니다.
+}
+
 HRESULT CAnimation::Initialize(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName)
 {
 	//!이름을 빼두면 디버깅할 때 좋겠지?
@@ -59,28 +83,38 @@ HRESULT CAnimation::Initialize(const _float& fDuration, const _float& fTickPerSe
 void CAnimation::Blend_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones, CAnimation* pPrevAnimation, CModel* pModel)
 {
 	//TODO 이전 애니메이션이 진행중인 키프레임 위치를 받아주자 
-	m_fTrackPosition += m_fTicksPerSecond * fTimeDelta;
 
-	for (size_t i = 0; i < m_iNumChannels; i++)
-	{
-		CChannel* pChannel = nullptr;
-		pChannel = pPrevAnimation->Get_SameName_Channel(m_Channels[i]); //! 현재 애니메이션의 채널과 이전 애니메이션의 채널중 같은 이름을 가진 채널을 찾아준다. 
+	m_fTrackPosition += 1 * fTimeDelta;
+		 
+		 for (size_t i = 0; i < m_iNumChannels; i++)
+		 {
+			 CChannel* pChannel = nullptr;
+			 pChannel = pPrevAnimation->Get_SameName_Channel(m_Channels[i]); //! 현재 애니메이션의 채널과 이전 애니메이션의 채널중 같은 이름을 가진 채널을 찾아준다. 
+			 
+			 KEYFRAME PrevKeyFrame = pPrevAnimation->Get_CurrentKeyFrame(pChannel);
 
-		//! 이전 키프레임의 진행중인 
-		if (nullptr != pChannel)
-		{
-			if(m_Channels[i]->Blend_TransformationMatrix(m_fTrackPosition, Bones, &m_CurrentKeyFrames[i], pChannel->Get_FrontKeyFrame()))
-			{
-				pModel->Finished_ChangeAnim();
-				pPrevAnimation->Reset_Animation();
-			}
+			 if (nullptr != pChannel)
+			 {
+				 //! 이전 애니메이션이 재생되고있는 위치의 키프레임
+				 //! 채널에게 이전 애니메이션의 채널들중 같은 이름을 가진 채널의 재생되고있는 위치에 키프레임을 넘겨줬다
+				 if (m_Channels[i]->Blend_TransformationMatrix(m_fTrackPosition, Bones, &m_CurrentKeyFrames[i], PrevKeyFrame))
+				 {
+					 pPrevAnimation->Reset_Animation(); //! 이전 애니메이션의 트랙포지션 0으로 돌려준다.
+					 //m_fTrackPosition = 0.f;
+					 pModel->Finished_ChangeAnim();
+				 }
+			 }
+		 
 		}
-	}
+	
 }
 
 void CAnimation::Reset_Animation()
 {
 	m_fTrackPosition = 0.f;
+
+	for(auto& iter : m_CurrentKeyFrames)
+		iter = 0.f;
 }
 
 
@@ -90,6 +124,7 @@ void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta
 	
 	m_fTrackPosition += m_fTicksPerSecond * fTimeDelta;
 
+	
 
 	//! 트랙포지션이 듀레이션(애니메이션의 총 길이)보다 커졌다는 것은 애니메이션이 끝났다는 것과 같아.
 	//!  인자값으로 들어온 isLoop의 값에 땨따라 루프를 돌릴지 멈출지 처리할거야.

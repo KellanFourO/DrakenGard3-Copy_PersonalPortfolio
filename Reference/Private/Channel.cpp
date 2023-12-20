@@ -21,28 +21,12 @@ HRESULT CChannel::Initialize(const string strName, vector<KEYFRAME>& Keyframes, 
 
 }
 
-_bool CChannel::Blend_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame, KEYFRAME& pPrevKeyFrame, const _float& fRatio)
+_bool CChannel::Blend_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame, KEYFRAME& pPrevKeyFrame)
 {
-	if (0.0f == fCurrentTrackPosition)
-		*pCurrentKeyFrame = 0;
-
-	_vector		vScale;
-	_vector		vRotation;
-	_vector		vPosition;
-
-	KEYFRAME	LastKeyFrame = m_KeyFrames.back();
-	
-	if (fCurrentTrackPosition >= LastKeyFrame.fTrackPosition)
-	{
-		vScale	  = XMLoadFloat3(&LastKeyFrame.vScale);
-		vRotation = XMLoadFloat4(&LastKeyFrame.vRotation);
-		vPosition = XMLoadFloat3(&LastKeyFrame.vPosition);
-	}
-
-	else 
-	{
-		while (fCurrentTrackPosition >= m_KeyFrames[*pCurrentKeyFrame + 1].fTrackPosition)
-			++*pCurrentKeyFrame;
+		
+		_vector		vScale;
+		_vector		vRotation;
+		_vector		vPosition;
 
 		_float3		vSourScale, vDestScale;
 		_float4		vSourRotation, vDestRotation;
@@ -52,13 +36,13 @@ _bool CChannel::Blend_TransformationMatrix(_float fCurrentTrackPosition, const C
 		vSourRotation = pPrevKeyFrame.vRotation;
 		vSourPosition = pPrevKeyFrame.vPosition;
 
-		vDestScale = m_KeyFrames[*pCurrentKeyFrame].vScale;
+		vDestScale	  = m_KeyFrames[*pCurrentKeyFrame].vScale;
 		vDestRotation = m_KeyFrames[*pCurrentKeyFrame].vRotation;
 		vDestPosition = m_KeyFrames[*pCurrentKeyFrame].vPosition;
 
-		_float	fRatio2 = 0.f;
+		_float	fRatio = 0.f;
 
-		fRatio2 = fCurrentTrackPosition / 0.2f;
+		fRatio = fCurrentTrackPosition / 0.2f;
 
 		if (fRatio >= 1.f)
 		{
@@ -68,7 +52,7 @@ _bool CChannel::Blend_TransformationMatrix(_float fCurrentTrackPosition, const C
 		vScale	  = XMVectorLerp(XMLoadFloat3(&vSourScale), XMLoadFloat3(&vDestScale), fRatio);
 		vRotation = XMQuaternionSlerp(XMLoadFloat4(&vSourRotation), XMLoadFloat4(&vDestRotation), fRatio);
 		vPosition = XMVectorLerp(XMLoadFloat3(&vSourPosition), XMLoadFloat3(&vDestPosition), fRatio);
-	}
+	
 
 	//! 위에서 저 상태들로 뭐하려고한거야? 시간에맞는 TransformationMatrix 만들어주려고 했던거잖아?
 	//! 어떻게 만들거야? 로테이션은 쿼터니언인데? 이것도 함수있어 개꿀 ㅋㅋ
@@ -122,6 +106,8 @@ void CChannel::Invalidate_TransformationMatrix(_float fCurrentTrackPosition, con
 		
 		while(fCurrentTrackPosition >= m_KeyFrames[*pCurrentKeyFrame + 1].fTrackPosition)
 			++*pCurrentKeyFrame;
+
+		//현재 키프레임 0
 
 		//! 소스와 데스트야. 소스는 현재 프레임인 0번 프레임이 가진 상태를 의미하고, 데스트는 다음 프레임인 1번 프레임의 상태를 의미해.
 		_float3		vSourScale, vDestScale;
