@@ -28,15 +28,17 @@ public:
 
 	void  Set_Animation(_uint iAnimIndex) 
 	{ 
-		m_iPrevAnimIndex = m_iCurrentAnimIndex;  // ! 이전 인덱스에게 바뀌기 전 애니메이션의 인덱스를 넣어주자
-		m_iCurrentAnimIndex = iAnimIndex; // !현재 애니메이션의 인덱스를 바꾼 인덱스를 넣어주자
 
 		if( m_iPrevAnimIndex != m_iCurrentAnimIndex) //! 이전 인덱스와 현재 애니메이션의 인덱스가 다르다면 보간을 시작하자
 		{	
-			
+			m_iPrevAnimIndex	= m_iCurrentAnimIndex;  // ! 이전 인덱스에게 바뀌기 전 애니메이션의 인덱스를 넣어주자
+			m_iCurrentAnimIndex = iAnimIndex; // !현재 애니메이션의 인덱스를 바꾼 인덱스를 넣어주자
+
 			m_pPrevAnimation = m_Animations[m_iPrevAnimIndex];
 			m_bChangeAnim = true;
 		}
+		else
+			m_iCurrentAnimIndex = iAnimIndex;
 	}
 
 	void  Finished_ChangeAnim() { m_bChangeAnim = false;}

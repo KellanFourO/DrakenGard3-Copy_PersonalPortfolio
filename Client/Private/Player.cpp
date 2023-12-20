@@ -71,8 +71,8 @@ void CPlayer::Tick(_float fTimeDelta)
 		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
 		m_pModelCom->Set_Animation(4);
 	}
-	//else
-	//	m_pModelCom->Set_Animation(3);
+	else
+		m_pModelCom->Set_Animation(3);
 	
 	
 

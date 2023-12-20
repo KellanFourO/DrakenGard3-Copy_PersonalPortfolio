@@ -21,7 +21,7 @@ HRESULT CChannel::Initialize(const string strName, vector<KEYFRAME>& Keyframes, 
 
 }
 
-_bool CChannel::Blend_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame, KEYFRAME& pPrevKeyFrame, const _float& fRatio)
+_bool CChannel::Blend_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame, KEYFRAME& pPrevKeyFrame)
 {
 	if (0.0f == fCurrentTrackPosition)
 		*pCurrentKeyFrame = 0;
@@ -56,16 +56,18 @@ _bool CChannel::Blend_TransformationMatrix(_float fCurrentTrackPosition, const C
 		vDestRotation = m_KeyFrames[*pCurrentKeyFrame].vRotation;
 		vDestPosition = m_KeyFrames[*pCurrentKeyFrame].vPosition;
 
-		_float	fRatio2 = 0.f;
+		_float	fRatio = 0.f;
 
-		fRatio2 = fCurrentTrackPosition / 0.2f;
+		fRatio = fCurrentTrackPosition / 0.2f;
 
-		if(fRatio2 >= 1.f)
+		if (fRatio >= 1.f)
+		{
 			return true;
+		}
 
-		vScale	  = XMVectorLerp(XMLoadFloat3(&vSourScale), XMLoadFloat3(&vDestScale), fRatio2);
-		vRotation = XMQuaternionSlerp(XMLoadFloat4(&vSourRotation), XMLoadFloat4(&vDestRotation), fRatio2);
-		vPosition = XMVectorLerp(XMLoadFloat3(&vSourPosition), XMLoadFloat3(&vDestPosition), fRatio2);
+		vScale	  = XMVectorLerp(XMLoadFloat3(&vSourScale), XMLoadFloat3(&vDestScale), fRatio);
+		vRotation = XMQuaternionSlerp(XMLoadFloat4(&vSourRotation), XMLoadFloat4(&vDestRotation), fRatio);
+		vPosition = XMVectorLerp(XMLoadFloat3(&vSourPosition), XMLoadFloat3(&vDestPosition), fRatio);
 	}
 
 	//! 위에서 저 상태들로 뭐하려고한거야? 시간에맞는 TransformationMatrix 만들어주려고 했던거잖아?

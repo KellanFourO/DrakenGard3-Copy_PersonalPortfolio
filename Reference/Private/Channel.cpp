@@ -34,7 +34,7 @@ _bool CChannel::Blend_TransformationMatrix(_float fCurrentTrackPosition, const C
 	
 	if (fCurrentTrackPosition >= LastKeyFrame.fTrackPosition)
 	{
-		vScale = XMLoadFloat3(&LastKeyFrame.vScale);
+		vScale	  = XMLoadFloat3(&LastKeyFrame.vScale);
 		vRotation = XMLoadFloat4(&LastKeyFrame.vRotation);
 		vPosition = XMLoadFloat3(&LastKeyFrame.vPosition);
 	}
@@ -42,7 +42,7 @@ _bool CChannel::Blend_TransformationMatrix(_float fCurrentTrackPosition, const C
 	else 
 	{
 		while (fCurrentTrackPosition >= m_KeyFrames[*pCurrentKeyFrame + 1].fTrackPosition)
-			++* pCurrentKeyFrame;
+			++*pCurrentKeyFrame;
 
 		_float3		vSourScale, vDestScale;
 		_float4		vSourRotation, vDestRotation;
@@ -60,15 +60,14 @@ _bool CChannel::Blend_TransformationMatrix(_float fCurrentTrackPosition, const C
 
 		fRatio2 = fCurrentTrackPosition / 0.2f;
 
-		//fRatio = (fCurrentTrackPosition - m_KeyFrames[*pCurrentKeyFrame].fTrackPosition) /
-		//	(m_KeyFrames[*pCurrentKeyFrame + 1].fTrackPosition - m_KeyFrames[*pCurrentKeyFrame].fTrackPosition);
-
-		if(fRatio2 >= 1.f)
+		if (fRatio >= 1.f)
+		{
 			return true;
+		}
 
-		vScale = XMVectorLerp(XMLoadFloat3(&vSourScale), XMLoadFloat3(&vDestScale), fRatio2);
-		vRotation = XMQuaternionSlerp(XMLoadFloat4(&vSourRotation), XMLoadFloat4(&vDestRotation), fRatio2);
-		vPosition = XMVectorLerp(XMLoadFloat3(&vSourPosition), XMLoadFloat3(&vDestPosition), fRatio2);
+		vScale	  = XMVectorLerp(XMLoadFloat3(&vSourScale), XMLoadFloat3(&vDestScale), fRatio);
+		vRotation = XMQuaternionSlerp(XMLoadFloat4(&vSourRotation), XMLoadFloat4(&vDestRotation), fRatio);
+		vPosition = XMVectorLerp(XMLoadFloat3(&vSourPosition), XMLoadFloat3(&vDestPosition), fRatio);
 	}
 
 	//! 위에서 저 상태들로 뭐하려고한거야? 시간에맞는 TransformationMatrix 만들어주려고 했던거잖아?

@@ -142,22 +142,19 @@ void CModel::Play_Animation(_float fTimeDelta, _bool isLoop)
 {
 	if(m_iCurrentAnimIndex >= m_iNumAnimations)
 		return;
-		
 	//! 현재 애니메이션이 사용하고 있는 뼈들의 TransformationMatrix를 갱신해준다.
 
-	m_fTimeAcc += fTimeDelta;
-
-	if(m_fTimeAcc >= 1.f)
-		m_fTimeAcc = 0.f;
-
-	_float fRatio = m_fTimeAcc / 0.2f;
-
 	//! 이전 키프레임과 현재 키프레임의 인덱스가 달랐다면
-	
 	if (m_bChangeAnim) 
 	{
+		m_fTimeAcc += fTimeDelta;
+
+		if (m_fTimeAcc >= 1.f)
+			m_fTimeAcc = 0.f;
+
+		_float fRatio = m_fTimeAcc / 0.2f;
 		//! 현재 애니메이션에게 이전 애니메이션을 넘겨주자
-		m_Animations[m_iCurrentAnimIndex]->Blend_TransformationMatrix(isLoop, fTimeDelta, m_Bones, m_pPrevAnimation, this, fRatio);
+		m_Animations[m_iCurrentAnimIndex]->Blend_TransformationMatrix(isLoop, fTimeDelta, m_Bones, m_pPrevAnimation, this);
 	}
 	else
 		m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(isLoop, fTimeDelta, m_Bones);

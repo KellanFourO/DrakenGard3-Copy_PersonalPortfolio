@@ -15,9 +15,9 @@ private:
 public:
 	HRESULT Initialize(const string strName, vector<KEYFRAME>& Keyframes, _int iBoneIndex);
 	void	Invalidate_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame);
-	_bool	Blend_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame, KEYFRAME& pPrevKeyFrame, const _float& fRatio);
+	_bool	Blend_TransformationMatrix(_float fCurrentTrackPosition, const CModel::BONES& Bones, _uint* pCurrentKeyFrame, KEYFRAME& pPrevKeyFrame);
 	vector<KEYFRAME>& Get_KeyFrames() { return m_KeyFrames; }
-	KEYFRAME& Get_KeyFrame() { return m_KeyFrames[0]; }
+	KEYFRAME& Get_FrontKeyFrame() { return m_KeyFrames.front(); }
 
 	string  Get_Name() { return m_szName; }
 
