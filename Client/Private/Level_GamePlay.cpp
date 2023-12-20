@@ -63,13 +63,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const wstring& strLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_Player(const wstring& strLayerTag)
 {
-	CPlayer::PLAYER_DESC		PlayerDesc = {};
 
-	PlayerDesc.a = 10;
-	PlayerDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-	PlayerDesc.fSpeedPerSec = 7.0f;
-
-	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Player"), &PlayerDesc)))
+	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Player"))))
 		return E_FAIL;
 
 	return S_OK;

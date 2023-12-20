@@ -1,8 +1,6 @@
 #pragma once
 #include "Component.h"
 
-
-
 BEGIN(Engine)
 class CAnimation;
 
@@ -28,6 +26,8 @@ public:
 	_uint Get_NumMeshes() const { return m_iNumMeshes; }
 	_uint Get_CurrentAnimIndex() { return m_iCurrentAnimIndex; }
 	_bool Get_ChangeAnim() { return m_bChangeAnim;}
+
+	class CBone* Get_BonePtr(const _char* pBoneName) const;
 
 	void  Set_Animation(_uint iAnimIndex) 
 	{ 

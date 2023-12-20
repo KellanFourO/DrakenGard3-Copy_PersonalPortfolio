@@ -2,7 +2,8 @@
 #include "..\Public\Player.h"
 
 #include "GameInstance.h"
-
+#include "PlayerPart_Body.h"
+#include "PlayerPart_Weapon.h"
 
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice, pContext)
@@ -23,13 +24,21 @@ HRESULT CPlayer::Initialize_Prototype()
 
 HRESULT CPlayer::Initialize(void* pArg)
 {	
-	if (FAILED(__super::Initialize(pArg)))
+	CGameObject::GAMEOBJECT_DESC PlayerDesc = {};
+
+	PlayerDesc.fRotationPerSec = XMConvertToRadians(90.0f);
+	PlayerDesc.fSpeedPerSec = 7.0f;
+
+	if (FAILED(__super::Initialize(&PlayerDesc)))
 		return E_FAIL;	
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pModelCom->Set_Animation(3);
+	if (FAILED(Ready_PartObjects()))
+		return E_FAIL;
+
+	//m_pModelCom->Set_Animation(3);
 
 	return S_OK;
 }
@@ -41,15 +50,8 @@ void CPlayer::Priority_Tick(_float fTimeDelta)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
-	
-	if (m_pGameInstance->Key_Down(DIK_F3))
-	{
-		m_pModelCom->Set_Animation(--m_iCurrentAnimIndex);
-	}
-	if (m_pGameInstance->Key_Down(DIK_F4))
-	{
-		m_pModelCom->Set_Animation(++m_iCurrentAnimIndex);
-	}
+	CPlayerPart_Body* pBody = dynamic_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
+	Safe_AddRef(pBody);
 
 	if (GetKeyState(VK_DOWN) & 0x8000)
 	{
@@ -66,15 +68,18 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (GetKeyState(VK_UP) & 0x8000)
 	{
 		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
-		m_pModelCom->Set_Animation(4);
+		pBody->SetUp_Animation(4);
 	}
-	//lse
-	//m_pModelCom->Set_Animation(3);
-	
-	
+	else
+		pBody->SetUp_Animation(3);
 
-	
-	m_pModelCom->Play_Animation(fTimeDelta, true);
+	for (auto& Pair : m_PartObjects)
+	{
+		if (nullptr != Pair.second)
+			Pair.second->Tick(fTimeDelta);
+	}
+
+	Safe_Release(pBody);
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -85,41 +90,26 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 HRESULT CPlayer::Render()
 {
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
-
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-	for (size_t i = 0; i < iNumMeshes; i++)
-	{
-		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
-
-		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-
-		m_pShaderCom->Begin(0);
-
-		m_pModelCom->Render(i);
-	}
 	
 	#ifdef _DEBUG
 		m_pNavigationCom->Render();
 	#endif
-	
 
 	return S_OK;
 }
 
+CPartObject* CPlayer::Find_PartObject(const wstring& strPartTag)
+{
+	auto iter = m_PartObjects.find(strPartTag);
+
+	if(iter == m_PartObjects.end())
+		return nullptr;
+	
+	return iter->second;
+}
+
 HRESULT CPlayer::Ready_Components()
 {
-	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_AnimModel"),
-		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
-		return E_FAIL;
-
-	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fiona"),
-		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
-		return E_FAIL;
 
 	/* For.Com_Navigation */
 	CNavigation::NAVI_DESC		NaviDesc = {};
@@ -133,19 +123,53 @@ HRESULT CPlayer::Ready_Components()
 	return S_OK;
 }
 
-HRESULT CPlayer::Bind_ShaderResources()
+HRESULT CPlayer::Ready_PartObjects()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	//! For.Part_Body 
+	CPartObject::PART_DESC BodyDesc = {};
+
+	BodyDesc.m_pParentTransform = m_pTransformCom;
+	if(FAILED(Add_PartObject(TEXT("Prototype_PartObject_PlayerBody"), TEXT("Part_Body"), &BodyDesc)))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW))))
+
+	//! For.Part_Weapon
+	CPartObject::PART_DESC WeaponDesc = {};
+
+	WeaponDesc.m_pParentTransform = m_pTransformCom;
+
+	CPlayerPart_Body* pBody = dynamic_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
+
+	//TODO  내 모델 뼈 이름 찾아서 수정하자
+
+	CBone* pSwordBone = pBody->Get_BonePtr("SWORD");
+
+	if(nullptr == pSwordBone)
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ))))
+
+	WeaponDesc.m_pSocketBone = pSwordBone;
+	WeaponDesc.m_pParentTransform = m_pTransformCom;
+
+
+	if (FAILED(Add_PartObject(TEXT("Prototype_PartObject_PlayerWeapon"), TEXT("Part_Weapon"), &WeaponDesc)))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+
+
+	return S_OK;
+}
+
+
+HRESULT CPlayer::Add_PartObject(const wstring& strPrototypeTag, const wstring& strPartTag, void* pArg)
+{
+	if(nullptr != Find_PartObject(strPartTag))
+		return E_FAIL;
+
+	CGameObject* pPartObject = m_pGameInstance->Get_CloneObject(strPrototypeTag, pArg);
+	
+	if(nullptr == pPartObject)
 		return E_FAIL;
 	
-	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
-	//	return E_FAIL;
+	m_PartObjects.emplace(strPartTag, dynamic_cast<CPartObject*>(pPartObject));
+	
 	return S_OK;
 }
 
@@ -180,7 +204,5 @@ void CPlayer::Free()
 	__super::Free();
 
 	Safe_Release(m_pNavigationCom);
-	Safe_Release(m_pModelCom);	
-	Safe_Release(m_pShaderCom);
 }
 

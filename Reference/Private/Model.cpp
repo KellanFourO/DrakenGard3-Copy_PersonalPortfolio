@@ -51,6 +51,21 @@ CModel::CModel(const CModel& rhs)
 	}
 }
 
+CBone* CModel::Get_BonePtr(const _char* pBoneName) const
+{
+	auto	iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone)
+		{
+			if (!strcmp(pBone->Get_Name(), pBoneName))
+				return true;
+			return false;
+		});
+
+	if (iter == m_Bones.end())
+		return nullptr;
+
+	return *iter;
+}
+
 
 HRESULT CModel::Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix)
 {

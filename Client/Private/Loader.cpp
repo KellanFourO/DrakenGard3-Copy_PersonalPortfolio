@@ -11,7 +11,11 @@
 #include "Monster.h"
 #include "TestTree.h"
 #include "ForkLift.h"
+
+//TODO Player
 #include "Player.h"
+#include "PlayerPart_Body.h"
+#include "PlayerPart_Weapon.h"
 
 
 //TODO Tool
@@ -136,17 +140,17 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	//! ./texconv.exe -m 0 -f R8G8B8A8_UNORM -o C:\Users\PC\Desktop\Jusin_Project\
 	\Client\Bin\Resources\Models\Player\ C:\Users\PC\Desktop\Jusin_Project\DrakenGard3_Project_Git\Client\Bin\Resources\Models\Player\*.png
 
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	PivotMatrix = /*XMMatrixScaling(0.01f, 0.01f, 0.01f) * */XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Fiona"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("Player"), pFilePathData), PivotMatrix)));
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("Fiona"), pFilePathData), PivotMatrix)));
 	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Fiona"),
 	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, "../Bin/Resources/Models/Player/pl00.fbx", PivotMatrix)));
 
-	////!For.Prototype_Component_Model_ForkLift #포크리프트_Add_ProtoType
-	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
-	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_ForkLift"),
-	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("ForkLift"), pFilePathData), PivotMatrix)));
+	//!For.Prototype_Component_Model_ForkLift #포크리프트_Add_ProtoType
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_ForkLift"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("ForkLift"), pFilePathData), PivotMatrix)));
 	//
 	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_TestTree"),
@@ -201,6 +205,16 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	/* For.Prototype_GameObject_Player */
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
 		CPlayer::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* For.Prototype_PartObject_PlayerBody */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_PlayerBody"),
+		CPlayerPart_Body::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+
+	/* For.Prototype_PartObject_PlayerWeapon */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_PlayerWeapon"),
+		CPlayerPart_Weapon::Create(m_pDevice, m_pContext, eLevel))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("원형객체(을)를 로드하는 중입니다."));

@@ -76,6 +76,15 @@
     <Filter Include="02. GameObjects\07. SkyBox">
       <UniqueIdentifier>{37545faa-2817-411b-ae58-6edd100cdf2c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\97. PartObject">
+      <UniqueIdentifier>{1d806d1d-c2ad-4023-9749-38b852409390}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\00. Body">
+      <UniqueIdentifier>{ce5bfef5-cc7d-406e-910b-5ad5e725eed1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\01. Weapon">
+      <UniqueIdentifier>{75bc0754-d80f-4d51-9264-ce1835c3f679}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -201,6 +210,15 @@
     <ClInclude Include="..\public\SkyBox.h">
       <Filter>02. GameObjects\07. SkyBox</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\PartObject.h">
+      <Filter>02. GameObjects\97. PartObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerPart_Body.h">
+      <Filter>02. GameObjects\06. Player\00. Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerPart_Weapon.h">
+      <Filter>02. GameObjects\06. Player\01. Weapon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -292,6 +310,15 @@
     </ClCompile>
     <ClCompile Include="..\private\SkyBox.cpp">
       <Filter>02. GameObjects\07. SkyBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PartObject.cpp">
+      <Filter>02. GameObjects\97. PartObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerPart_Body.cpp">
+      <Filter>02. GameObjects\06. Player\00. Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerPart_Weapon.cpp">
+      <Filter>02. GameObjects\06. Player\01. Weapon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
