@@ -106,6 +106,7 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmat
 	if(FAILED(Read_MaterialData(m_tDataFilePath.strMaterialDataPath)))
 		return E_FAIL;
 
+	if(eType == CModel::TYPE_ANIM)
 	if (FAILED(Read_AnimationData(m_tDataFilePath.strAnimationDataPath)))
 		return E_FAIL;
 
@@ -352,10 +353,13 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 
 				if (!ReadFile(hFile, &vertex.vPosition, sizeof(_float3), &dwByte, nullptr))
 					return E_FAIL;
+
 				if (!ReadFile(hFile, &vertex.vNormal, sizeof(_float3), &dwByte, nullptr))
 					return E_FAIL;
+
 				if (!ReadFile(hFile, &vertex.vTexcoord, sizeof(_float2), &dwByte, nullptr))
 					return E_FAIL;
+
 				if (!ReadFile(hFile, &vertex.vTangent, sizeof(_float3), &dwByte, nullptr))
 					return E_FAIL;
 

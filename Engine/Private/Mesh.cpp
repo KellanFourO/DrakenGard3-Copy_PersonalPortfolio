@@ -93,8 +93,6 @@ HRESULT CMesh::Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* 
 	m_iNumIndices = iNumFace * 3; //! mNumFaces가 삼각형 개수다. 즉, 읽어들인 삼각형 개수의 * 3
 	m_iIndexStride = 4; //! 모델은 왠만해선 정점이 65535개를 넘어간다. 그러니까 그냥 4로 Default
 
-
-
 	m_eIndexFormat = m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
 	m_eTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
@@ -252,7 +250,7 @@ HRESULT CMesh::Ready_Vertices_NonAnim(vector<VTXMESH>& Vertices, _fmatrix PivotM
 		//! 재질을 표현하는 텍스처.png 또는 확장자를 열어보았더니 같은 모양 이미지가 색깔이 다르게 되어있따면 같은 메시
 		//! 아니라면 다양한 UV좌표를 사용한다고 생각하고 작업해야한다.
 		
-		memcpy(&pVertices[i].vTexcoord, &Vertices[i].vTexcoord, sizeof(_float3));
+		memcpy(&pVertices[i].vTexcoord, &Vertices[i].vTexcoord, sizeof(_float2));
 		memcpy(&pVertices[i].vTangent, &Vertices[i].vTangent, sizeof(_float3));
 		//memcpy(&pVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float3));
 		//memcpy(&pVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));

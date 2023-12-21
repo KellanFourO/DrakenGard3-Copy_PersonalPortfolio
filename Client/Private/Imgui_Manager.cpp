@@ -848,6 +848,11 @@ HRESULT CImgui_Manager::BinaryConvert(string strFileName, string strFilePath, co
 		if (FAILED(Write_AnimationData(strFileName)))
 			return E_FAIL;
 	}
+	
+	m_vecBones.clear();
+	m_vecMesh.clear();
+	m_vecMaterial.clear();
+	m_vecAnimation.clear();
 
 	return S_OK;
 }
@@ -970,7 +975,7 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 			{
 				memcpy(&vertex.vPosition, &pAIMesh->mVertices[j], sizeof(_float3));
 				memcpy(&vertex.vNormal, &pAIMesh->mNormals[j], sizeof(_float3));
-				memcpy(&vertex.vTexcoord, &pAIMesh->mTextureCoords[j], sizeof(_float2));
+				memcpy(&vertex.vTexcoord, &pAIMesh->mTextureCoords[0][j], sizeof(_float2));
 				memcpy(&vertex.vTangent, &pAIMesh->mTangents[j], sizeof(_float3));
 
 				pMeshData->vecNonAnims.push_back(vertex);
@@ -1341,10 +1346,6 @@ HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 	}
 
 	CloseHandle(hFile);
-	m_vecBones.clear();
-	m_vecMesh.clear();
-	m_vecMaterial.clear();
-	m_vecAnimation.clear();
 
 	return S_OK;
 }

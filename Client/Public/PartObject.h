@@ -47,12 +47,12 @@ protected:
 
 protected:
 template <typename T>
-HRESULT ReleaseIfNotNull(T*& Pointer)
+HRESULT AddRefIfNotNull(T*& Pointer)
 {
 	if(nullptr == Pointer)
 		return E_FAIL;
 
-	Safe_Release(Pointer);
+	Safe_AddRef(Pointer);
 
 	return S_OK;
 }

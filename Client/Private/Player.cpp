@@ -26,8 +26,8 @@ HRESULT CPlayer::Initialize(void* pArg)
 {	
 	CGameObject::GAMEOBJECT_DESC PlayerDesc = {};
 
+	PlayerDesc.fSpeedPerSec = 10.0f;
 	PlayerDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-	PlayerDesc.fSpeedPerSec = 7.0f;
 
 	if (FAILED(__super::Initialize(&PlayerDesc)))
 		return E_FAIL;	
@@ -84,6 +84,12 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
+	for (auto& Pair : m_PartObjects)
+	{
+		if (nullptr != Pair.second)
+			Pair.second->Late_Tick(fTimeDelta);
+	}
+
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return ;
 }
@@ -160,7 +166,7 @@ HRESULT CPlayer::Ready_PartObjects()
 
 HRESULT CPlayer::Add_PartObject(const wstring& strPrototypeTag, const wstring& strPartTag, void* pArg)
 {
-	if(nullptr != Find_PartObject(strPartTag))
+	if(nullptr != Find_PartObject(strPrototypeTag))
 		return E_FAIL;
 
 	CGameObject* pPartObject = m_pGameInstance->Get_CloneObject(strPrototypeTag, pArg);
@@ -202,6 +208,11 @@ CGameObject * CPlayer::Clone(void* pArg)
 void CPlayer::Free()
 {
 	__super::Free();
+
+	for (auto& Pair : m_PartObjects)
+		Safe_Release(Pair.second);
+	
+		m_PartObjects.clear();
 
 	Safe_Release(m_pNavigationCom);
 }

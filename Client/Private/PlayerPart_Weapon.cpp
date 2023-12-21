@@ -26,12 +26,13 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	
 	m_pParentTransformCom = ((PART_DESC*)pArg)->m_pParentTransform;
 
-	if(FAILED(ReleaseIfNotNull(m_pParentTransformCom)))
+
+	if(FAILED(AddRefIfNotNull(m_pParentTransformCom)))
 		return E_FAIL;
 
 	m_pSocketBone = ((PART_DESC*)pArg)->m_pSocketBone;
 
-	if (FAILED(ReleaseIfNotNull(m_pSocketBone)))
+	if (FAILED(AddRefIfNotNull(m_pSocketBone)))
 		return E_FAIL;
 
 
@@ -79,7 +80,7 @@ HRESULT CPlayerPart_Weapon::Render()
 {
 	//#몬스터모델렌더
 
-	if (FAILED(Bind_ShaderResources()))
+	if (FAILED(__super::Bind_ShaderResources()))
 		return E_FAIL;
 
 	//TODO 클라에서 모델의 메시 개수를 받아와서 순회하면서 셰이더 바인딩해주자.
@@ -175,3 +176,4 @@ void CPlayerPart_Weapon::Free()
 	__super::Free();
 
 }
+

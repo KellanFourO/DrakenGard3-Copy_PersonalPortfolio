@@ -28,13 +28,13 @@ HRESULT CPlayerPart_Body::Initialize(void* pArg)
 
 	m_pParentTransformCom = ((PART_DESC*)pArg)->m_pParentTransform;
 
-	if (FAILED(ReleaseIfNotNull(m_pParentTransformCom)))
+	if (FAILED(AddRefIfNotNull(m_pParentTransformCom)))
 		return E_FAIL;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	if (FAILED(__super::Ready_Components(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_Model"), TEXT("Prototype_Component_Model_Fiona"))))
+	if (FAILED(__super::Ready_Components(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Prototype_Component_Model_Fiona"))))
 		return E_FAIL;
 
 	return S_OK;
@@ -60,8 +60,7 @@ void CPlayerPart_Body::Late_Tick(_float fTimeDelta)
 HRESULT CPlayerPart_Body::Render()
 {
 	//#몬스터모델렌더
-
-	if (FAILED(Bind_ShaderResources()))
+	if (FAILED(__super::Bind_ShaderResources()))
 		return E_FAIL;
 
 	//TODO 클라에서 모델의 메시 개수를 받아와서 순회하면서 셰이더 바인딩해주자.
