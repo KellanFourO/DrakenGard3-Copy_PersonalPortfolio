@@ -95,6 +95,9 @@ public:
 
 	void Set_Scaling(_float fScaleX, _float fScaleY, _float fScaleZ);
 
+	void Set_SpeedPerSec(_float fSpeedPerSec) { m_fSpeedPerSec = fSpeedPerSec; }
+	void Set_RotationPerSec(_float fRotationPerSec) { m_fRotationPerSec = fRotationPerSec; }
+
 public:
 	void	Go_Straight(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
 	void	Go_Left(_float fTimeDelta);

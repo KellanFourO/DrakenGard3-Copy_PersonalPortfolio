@@ -142,7 +142,7 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		
 	//PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Player"),
-	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("Fiona"), pFilePathData), PivotMatrix)));
+	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("BaseHumanSkeleton"), pFilePathData), PivotMatrix)));
 
 	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Player"),
@@ -150,9 +150,9 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	//TODO 플레이어
 
 	//! Player_Body
-	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
-	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Player"),
-	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("Player"), pFilePathData), PivotMatrix)));
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Player"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("Player"), pFilePathData), PivotMatrix)));
 
 	//! Player_Weapon1
 	PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅

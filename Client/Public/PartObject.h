@@ -45,18 +45,6 @@ protected:
 	class CShader*		m_pShaderCom			= { nullptr };
 	class CBone*		m_pSocketBone			= { nullptr };
 
-protected:
-template <typename T>
-HRESULT AddRefIfNotNull(T*& Pointer)
-{
-	if(nullptr == Pointer)
-		return E_FAIL;
-
-	Safe_AddRef(Pointer);
-
-	return S_OK;
-}
-
 public:
 	virtual void Free() override;
 };

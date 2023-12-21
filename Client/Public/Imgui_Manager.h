@@ -2,8 +2,6 @@
 #include "Base.h"
 #include "Client_Defines.h"
 
-
-
 BEGIN(Client)
 class CImgui_Manager final : public CBase
 {
