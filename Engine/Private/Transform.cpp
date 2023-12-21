@@ -215,6 +215,16 @@ void CTransform::Look_At_OnLand(_fvector vTargetPos)
 	Set_State(STATE_LOOK, vLook);
 }
 
+void CTransform::Translate(_fvector& _vTranslation)
+{
+	_vector vAddPostion = Get_State(CTransform::STATE_POSITION) += _vTranslation;
+	
+	Set_State(CTransform::STATE_POSITION, vAddPostion);
+
+	
+}
+
+
 void CTransform::Write_Json(json& Out_Json)
 {
 	Out_Json.clear();

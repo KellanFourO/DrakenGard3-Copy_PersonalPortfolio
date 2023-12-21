@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "PlayerPart_Body.h"
 #include "GameInstance.h"
+#include "RigidBody.h"
 
 CPlayerState_Jump::CPlayerState_Jump()
 {
@@ -24,6 +25,8 @@ HRESULT CPlayerState_Jump::Initialize(CPlayer* pPlayer)
 
 	m_pOwnerModelCom->Set_Animation(m_iAnimIndex);
 
+	
+
 	return S_OK;
 }
 
@@ -34,6 +37,14 @@ HRESULT CPlayerState_Jump::Priority_Tick(const _float& fTimeDelta)
 
 HRESULT CPlayerState_Jump::Tick(const _float& fTimeDelta)
 {
+	//!if(m_bJump)
+	//!{
+	//!	m_pPlayer->Get_RigidBody()->Add_Force(_float3(0.f, 10.f, 0.f));
+	//!   m_bJump = false;
+	//!}
+
+	KeyInput(fTimeDelta);
+
 
 	return S_OK;
 }
@@ -52,10 +63,9 @@ HRESULT CPlayerState_Jump::Transition()
 
 void CPlayerState_Jump::KeyInput(const _float& fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_SPACE))
+	if (m_pGameInstance->Key_Down(DIK_I))
 	{
-		
-		m_pPlayer->Set_CurrentState(TEXT("PlayerState_Jump"));	
+		m_pPlayer->Set_CurrentState(TEXT("PlayerState_Idle"));	
 	}
 
 	//TODO 점프 후 자신의 점프 최대거리가 닿은 후 땅과 닿을때까지 추락 모션 으로 바뀔것
@@ -67,6 +77,8 @@ void CPlayerState_Jump::ResetState()
 {
 	m_fLastInputTime = 0.f;
 	m_fAccTime = 0.f;
+	m_bJump = true;
+	
 }
 
 CPlayerState_Jump* CPlayerState_Jump::Create(CPlayer* pPlayer)

@@ -112,6 +112,9 @@ public:
 	void	Look_At(_fvector vTargetPos);
 	void	Look_At_OnLand(_fvector vTargetPos);
 
+	//TODO Translate
+	void			Translate(_fvector& _vTranslation);
+
 public:
 	virtual void Write_Json(json& Out_Json) override;
 	virtual void Load_FromJson(const json& In_Json) override;

@@ -20,6 +20,9 @@ private:
 	virtual void   KeyInput(const _float& fTimeDelta) override;
 	virtual void   ResetState() override;
 
+private:
+	_bool			m_bJump = true;
+
 public:
 	static CPlayerState_Jump* Create(CPlayer* pPlayer);
 	virtual void Free() override;

@@ -1466,19 +1466,19 @@ _uint CImgui_Manager::Get_BoneIndex(const char* szName)
 	return 0;
 }
 
-string CImgui_Manager::ConvertWstrToStr(const wstring& str)
-{
-	wstring_convert<codecvt_utf8<_tchar>> converter;
-	string ChangeStr = converter.to_bytes(str);
-	return ChangeStr;
-}
-
-wstring CImgui_Manager::ConvertStrToWstr(const string& str)
-{
-	wstring_convert<codecvt_utf8<wchar_t>> converter;
-	wstring wideStr = converter.from_bytes(str);
-	return wideStr;
-}
+//string CImgui_Manager::ConvertWstrToStr(const wstring& str)
+//{
+//	wstring_convert<codecvt_utf8<_tchar>> converter;
+//	string ChangeStr = converter.to_bytes(str);
+//	return ChangeStr;
+//}
+//
+//wstring CImgui_Manager::ConvertStrToWstr(const string& str)
+//{
+//	wstring_convert<codecvt_utf8<wchar_t>> converter;
+//	wstring wideStr = converter.from_bytes(str);
+//	return wideStr;
+//}
 
 wstring CImgui_Manager::SliceObjectTag(const wstring& strObjectTag)
 {

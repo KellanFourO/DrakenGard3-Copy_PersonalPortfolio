@@ -91,6 +91,6 @@ void CStateMachine::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pOwnerModelCom);
 	Safe_Release(m_pGameInstance);
+	Safe_Release(m_pOwnerModelCom);
 }

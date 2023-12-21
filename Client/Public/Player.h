@@ -7,12 +7,13 @@
 BEGIN(Engine)
 class CCollider;
 class CNavigation;
+class CRigidBody;
 END
 
 BEGIN(Client)
 
 class CPartObject;
-
+class CPlayerPart_Body;
 
 class CPlayer final : public CAnimObject
 {
@@ -24,8 +25,8 @@ private:
 
 
 public:
-	HRESULT			Set_CurrentState(const wstring& strStateTag);
-	
+	HRESULT				Set_CurrentState(const wstring& strStateTag);
+	class CRigidBody*	Get_RigidBody() { return m_pRigidBodyCom; }
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -51,11 +52,13 @@ private:
 private:
 	CNavigation*		m_pNavigationCom = { nullptr };
 	CCollider*			m_pColliderCom = { nullptr };
+	CRigidBody*			m_pRigidBodyCom = { nullptr };
 	CStateMachine*		m_pCurrentState = { nullptr };
 
 private:
 	_int				m_iCurrentAnimIndex = { 0 };
 	_bool				m_bAdmin = false;
+	_float				m_fAccTime = 0.f;
 	
 
 private:

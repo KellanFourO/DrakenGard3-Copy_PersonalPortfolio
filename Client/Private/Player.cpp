@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "..\Public\Player.h"
 #include "GameInstance.h"
-
+#include "RigidBody.h"
+#include "Engine_Function.h"
 //TODO 파츠
 #include "PlayerPart_Body.h"
 #include "PlayerPart_Weapon.h"
@@ -31,8 +32,8 @@ HRESULT CPlayer::Set_CurrentState(const wstring& strStateTag)
 		return E_FAIL;
 
 
-	if(nullptr != m_pCurrentState && FAILED(m_pCurrentState->Replaceability(pStateMachine)))
-		return S_OK;
+	//if(nullptr != m_pCurrentState && FAILED(m_pCurrentState->Replaceability(pStateMachine)))
+	//	return S_OK;
 
 	if(nullptr != m_pCurrentState)
 		static_cast<CPlayerState_Base*>(m_pCurrentState)->ResetState();
@@ -48,7 +49,6 @@ HRESULT CPlayer::Set_CurrentState(const wstring& strStateTag)
 
 	return S_OK;
 }
-
 
 HRESULT CPlayer::Initialize_Prototype()
 {	
@@ -86,6 +86,8 @@ void CPlayer::Priority_Tick(_float fTimeDelta)
 	{
 		m_pCurrentState->Priority_Tick(fTimeDelta);
 	}
+
+	//m_pRigidBodyCom->Tick(fTimeDelta);
 }
 
 void CPlayer::Tick(_float fTimeDelta)
@@ -95,6 +97,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		m_pCurrentState->Tick(fTimeDelta);
 	}
+	
 
 	for (auto& Pair : m_PartObjects)
 	{
@@ -103,6 +106,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 
 	Key_Input(fTimeDelta);
+
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -118,6 +122,15 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 			Pair.second->Late_Tick(fTimeDelta);
 	}
 
+	m_fAccTime += fTimeDelta;
+
+	if (m_fAccTime > 0.2f)
+	{
+		printf(Engine::ConvertWstrToStr(m_pCurrentState->Get_Name()).c_str());
+		printf("\n\n");
+		m_fAccTime = 0.f;
+	}
+
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return ;
 }
@@ -129,6 +142,7 @@ HRESULT CPlayer::Render()
 		m_pNavigationCom->Render();
 		m_pColliderCom->Render();
 	#endif
+
 
 	return S_OK;
 }
@@ -173,6 +187,11 @@ HRESULT CPlayer::Ready_Components()
 
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"),
 		TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
+		return E_FAIL;
+
+	//TODO 리지드바디
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_RigidBody"),
+		TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), m_pTransformCom)))
 		return E_FAIL;
 
 	return S_OK;
@@ -343,6 +362,7 @@ void CPlayer::Free()
 	
 		m_PartObjects.clear();
 
+	Safe_Release(m_pRigidBodyCom);
 	Safe_Release(m_pNavigationCom);
 }
 

@@ -72,5 +72,6 @@ void CPlayerState_Base::Free()
 
 	Safe_Release(m_pOwnerNavigationCom);
 	Safe_Release(m_pOwnerTransformCom);
+	Safe_Release(m_pPlayer);
 	
 }

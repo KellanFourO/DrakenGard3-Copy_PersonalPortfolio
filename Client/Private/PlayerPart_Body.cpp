@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "Bone.h"
 
+
 CPlayerPart_Body::CPlayerPart_Body(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CPartObject(pDevice,pContext)
 {
@@ -37,6 +38,8 @@ HRESULT CPlayerPart_Body::Initialize(void* pArg)
 	if (FAILED(__super::Ready_Components(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Prototype_Component_Model_Player"))))
 		return E_FAIL;
 
+	
+
 	return S_OK;
 }
 
@@ -47,6 +50,7 @@ void CPlayerPart_Body::Priority_Tick(_float fTimeDelta)
 void CPlayerPart_Body::Tick(_float fTimeDelta)
 {
 	m_pModelCom->Play_Animation(fTimeDelta, true);
+
 }
 
 void CPlayerPart_Body::Late_Tick(_float fTimeDelta)
@@ -153,5 +157,6 @@ CGameObject* CPlayerPart_Body::Clone(void* pArg)
 void CPlayerPart_Body::Free()
 {
 	__super::Free();
+
 
 }

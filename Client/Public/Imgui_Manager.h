@@ -168,8 +168,8 @@ private:
 	
 
 private: //TODO 문자열 #문자열함수
-	string					ConvertWstrToStr(const wstring& str);
-	wstring					ConvertStrToWstr(const string& str);
+	//!string					ConvertWstrToStr(const wstring& str);
+	//!wstring					ConvertStrToWstr(const string& str);
 	wstring					SliceObjectTag(const wstring& strObjectTag);
 	void					Replace(string& str, string comp, string rep);
 	vector<string>			Get_AllFolderNames(const string& strDirPath);

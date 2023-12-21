@@ -35,7 +35,7 @@ HRESULT CPartObject::Ready_Components(LEVEL eLevel, const wstring& strShaderTag,
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(eLevel, strModelTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
-	
+
 	return S_OK;
 }
 

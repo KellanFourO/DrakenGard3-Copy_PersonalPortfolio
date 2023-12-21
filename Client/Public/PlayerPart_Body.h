@@ -2,7 +2,6 @@
 #include "Client_Defines.h"
 #include "PartObject.h"
 
-
 BEGIN(Client)
 
 class CPlayerPart_Body final : public CPartObject

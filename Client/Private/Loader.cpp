@@ -212,6 +212,12 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/DataFiles/Navigation.dat")))))
 		return E_FAIL;
 
+	lstrcpy(m_szLoadingText, TEXT("리지드바디를(을) 로드하는 중입니다."));
+	//! For.Prototype_Component_RigidBody
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_RigidBody"),
+		CRigidBody::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	lstrcpy(m_szLoadingText, TEXT("콜라이더를(을) 로드하는 중입니다."));
 
 	//! For.Prototype_Component_Collider_AABB
