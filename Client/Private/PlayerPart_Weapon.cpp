@@ -39,12 +39,12 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	if (FAILED(__super::Ready_Components(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_Model"), TEXT("Prototype_Component_Model_ForkLift"))))
+	if (FAILED(__super::Ready_Components(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_Model"), TEXT("Prototype_Component_Model_Weapon1"))))
 		return E_FAIL;
 
-	m_pTransformCom->Set_Scaling(0.1f, 0.1f, 0.1f);
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(90.0f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.7f, 0.f, 0.f, 1.f));
+	//m_pTransformCom->Set_Scaling(10.f, 10.f, 10.f);
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(70.0f));
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.7f, 0.f, 0.f, 1.f));
 
 	return S_OK;
 }
@@ -61,11 +61,11 @@ void CPlayerPart_Weapon::Late_Tick(_float fTimeDelta)
 {
 	_matrix		SocketMatrix = m_pSocketBone->Get_CombinedTransformationMatrix();
 
-	//TODO 기존 스케일값을 강제로 1값으로 만드는 코드.
-	//!for (size_t i = 0; i < 3; i++)
-	//!{
-	//!	SocketMatrix.r[i] = XMVector3Normalize(SocketMatrix.r[i]);
-	//!}
+	////TODO 기존 스케일값을 강제로 1값으로 만드는 코드.
+	//for (size_t i = 0; i < 3; i++)
+	//{
+	//	SocketMatrix.r[i] = XMVector3Normalize(SocketMatrix.r[i]);
+	//}
 
 
 	//TODO 아래 코드가 파츠 오브젝트의 꽃

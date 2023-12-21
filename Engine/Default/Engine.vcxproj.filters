@@ -127,6 +127,24 @@
     <Filter Include="01. Utility\03. Components\00. VIBuffer\Cube">
       <UniqueIdentifier>{0fb9bcb5-b069-4251-8df4-17e38985fcdb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\03. Components\06. Collider">
+      <UniqueIdentifier>{7e716c8f-a13e-4669-93bb-f5ca431d970f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\06. Collider\99. DebugDraw">
+      <UniqueIdentifier>{93007462-b820-47f8-b9ce-c0e1793e305b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\06. Collider\00. BoundingType">
+      <UniqueIdentifier>{c0c27c28-8309-4af3-b0e8-caf4dfb60170}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\06. Collider\00. BoundingType\00. AABB">
+      <UniqueIdentifier>{c83b8c94-5faa-40d3-a02a-4dee3613a10a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\06. Collider\00. BoundingType\01. OBB">
+      <UniqueIdentifier>{834f1232-88de-4bde-bd1d-df62e9e7189e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\06. Collider\00. BoundingType\02. SPHERE">
+      <UniqueIdentifier>{c40aba33-322d-43c4-abcd-c86b30c018d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -255,6 +273,24 @@
     <ClInclude Include="..\public\VIBuffer_Cube.h">
       <Filter>01. Utility\03. Components\00. VIBuffer\Cube</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\DebugDraw\DebugDraw.h">
+      <Filter>01. Utility\03. Components\06. Collider\99. DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Collider.h">
+      <Filter>01. Utility\03. Components\06. Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BoundParent.h">
+      <Filter>01. Utility\03. Components\06. Collider\00. BoundingType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BoundingBox_AABB.h">
+      <Filter>01. Utility\03. Components\06. Collider\00. BoundingType\00. AABB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BoundingBox_OBB.h">
+      <Filter>01. Utility\03. Components\06. Collider\00. BoundingType\01. OBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BoundingBox_Sphere.h">
+      <Filter>01. Utility\03. Components\06. Collider\00. BoundingType\02. SPHERE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -364,6 +400,24 @@
     </ClCompile>
     <ClCompile Include="..\private\VIBuffer_Cube.cpp">
       <Filter>01. Utility\03. Components\00. VIBuffer\Cube</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Collider.cpp">
+      <Filter>01. Utility\03. Components\06. Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DebugDraw\DebugDraw.cpp">
+      <Filter>01. Utility\03. Components\06. Collider\99. DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BoundParent.cpp">
+      <Filter>01. Utility\03. Components\06. Collider\00. BoundingType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BoundingBox_AABB.cpp">
+      <Filter>01. Utility\03. Components\06. Collider\00. BoundingType\00. AABB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BoundingBox_OBB.cpp">
+      <Filter>01. Utility\03. Components\06. Collider\00. BoundingType\01. OBB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BoundingBox_Sphere.cpp">
+      <Filter>01. Utility\03. Components\06. Collider\00. BoundingType\02. SPHERE</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

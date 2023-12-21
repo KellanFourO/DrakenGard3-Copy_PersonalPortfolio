@@ -10,18 +10,26 @@ namespace Engine
 
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include <DirectXCollision.h>
+
+#define DIRECTINPUT_VERSION 0x0800
+#include <dinput.h>
+
 #include "Effects11/d3dx11effect.h"
 #include "DirectXTK/DDSTextureLoader.h" //TODO DDS 텍스처 로드전용
 #include "DirectXTK/WICTextureLoader.h" //TODO 윈도우 텍스처 로드전용 ( bmp, jpg, png 등등 )
 #include "DirectXTK/ScreenGrab.h"
-#include <DirectXCollision.h>
+#include "DirectXTK/VertexTypes.h"
+#include "DirectXTK/PrimitiveBatch.h"
+#include "DirectXTK/Effects.h"
+#include "DirectXTK/SpriteBatch.h"
+#include "DirectXTK/SpriteFont.h"
 
 #include "Assimp\scene.h"
 #include "Assimp\postprocess.h"
 #include "Assimp\Importer.hpp"
 
-#define DIRECTINPUT_VERSION 0x0800
-#include <dinput.h>
+
 
 #include <d3dcompiler.h> //TODO 셰이더 컴파일용
 

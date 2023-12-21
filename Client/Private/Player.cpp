@@ -53,25 +53,45 @@ void CPlayer::Tick(_float fTimeDelta)
 	CPlayerPart_Body* pBody = dynamic_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
 	Safe_AddRef(pBody);
 
-	if (GetKeyState(VK_DOWN) & 0x8000)
+	if (m_pGameInstance->Key_Down(DIK_F3))
 	{
-		m_pTransformCom->Go_Backward(fTimeDelta);
+		--m_iCurrentAnimIndex;
+		pBody->SetUp_Animation(m_iCurrentAnimIndex);
 	}
-	if (GetKeyState(VK_LEFT) & 0x8000)
+
+	if (m_pGameInstance->Key_Down(DIK_F4))
 	{
-		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
+		++m_iCurrentAnimIndex;
+		pBody->SetUp_Animation(m_iCurrentAnimIndex);
 	}
-	if (GetKeyState(VK_RIGHT) & 0x8000)
+
+	if(m_pGameInstance->Key_Down(DIK_F5))
+		m_bAdmin = true;
+
+	if (m_pGameInstance->Key_Down(DIK_F6))
+		m_bAdmin = false;
+
+
+	if (!m_bAdmin)
 	{
-		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+		if (GetKeyState(VK_DOWN) & 0x8000)
+		{
+			m_pTransformCom->Go_Backward(fTimeDelta);
+		}
+		if (GetKeyState(VK_LEFT) & 0x8000)
+		{
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
+		}
+		if (GetKeyState(VK_RIGHT) & 0x8000)
+		{
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+		}
+		if (GetKeyState(VK_UP) & 0x8000)
+		{
+			m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
+		}
 	}
-	if (GetKeyState(VK_UP) & 0x8000)
-	{
-		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
-		pBody->SetUp_Animation(4);
-	}
-	else
-		pBody->SetUp_Animation(3);
+	
 
 	for (auto& Pair : m_PartObjects)
 	{
@@ -99,6 +119,7 @@ HRESULT CPlayer::Render()
 	
 	#ifdef _DEBUG
 		m_pNavigationCom->Render();
+		m_pColliderCom->Render();
 	#endif
 
 	return S_OK;
@@ -125,6 +146,15 @@ HRESULT CPlayer::Ready_Components()
 		TEXT("Com_Navigation"), reinterpret_cast<CComponent**>(&m_pNavigationCom), &NaviDesc)))
 		return E_FAIL;
 
+	/* For.Com_Collider */
+	CBoundingBox_AABB::BOUNDING_AABB_DESC		BoundingDesc = {};
+
+	BoundingDesc.vExtents = _float3(0.5f, 0.7f, 0.5f);
+	BoundingDesc.vCenter = _float3(0.f, BoundingDesc.vExtents.y, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"),
+		TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -147,7 +177,7 @@ HRESULT CPlayer::Ready_PartObjects()
 
 	//TODO  내 모델 뼈 이름 찾아서 수정하자
 
-	CBone* pSwordBone = pBody->Get_BonePtr("SWORD");
+	CBone* pSwordBone = pBody->Get_BonePtr("R_FINGER52");
 
 	if(nullptr == pSwordBone)
 		return E_FAIL;

@@ -31,6 +31,7 @@ private:
 private:
 	_float			m_fMouseSensitivity = { 0.0f };
 	LEVEL			m_eCurrentLevelID = { LEVEL_END };
+	_bool			m_bAdmin = false;
 
 public:
 	static CCamera_Dynamic*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel);

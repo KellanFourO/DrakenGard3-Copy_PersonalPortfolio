@@ -5,6 +5,7 @@
 #include "PartObject.h"
 
 BEGIN(Engine)
+class CCollider;
 class CNavigation;
 END
 
@@ -29,10 +30,12 @@ public:
 	CPartObject*		Find_PartObject(const wstring& strPartTag);
 
 private:
-	CNavigation*		m_pNavigationCom = { nullptr };
+	CNavigation*		m_pNavigationCom	= { nullptr };
+	CCollider*			m_pColliderCom		= { nullptr };
 
 private:
-	_int				m_iCurrentAnimIndex = { 3 };
+	_int				m_iCurrentAnimIndex = { 0 };
+	_bool				m_bAdmin = false;
 
 private:
 	map<const wstring, class CPartObject*>	m_PartObjects;

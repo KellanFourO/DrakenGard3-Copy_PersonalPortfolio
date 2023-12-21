@@ -39,8 +39,17 @@ void CCamera_Dynamic::Priority_Tick(_float fTimeDelta)
 
 void CCamera_Dynamic::Tick(_float fTimeDelta)
 {
-	KeyInput(fTimeDelta);
-	MouseInput(fTimeDelta);
+	if (m_pGameInstance->Key_Down(DIK_F5))
+		m_bAdmin = true;
+
+	if (m_pGameInstance->Key_Down(DIK_F6))
+		m_bAdmin = false;
+
+	if (!m_bAdmin)
+	{
+		KeyInput(fTimeDelta);
+		MouseInput(fTimeDelta);
+	}
 
 	//TODO 부모의 Tick함수를 호출해줘야 뷰투영행렬을 파이프라인 객체에게 던져준다.
 	__super::Tick(fTimeDelta);

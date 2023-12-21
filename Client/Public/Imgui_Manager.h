@@ -137,12 +137,8 @@ private: //TODO 오브젝트툴 #오브젝트툴
 	HRESULT					Read_AnimationData();
 	HRESULT					Write_AnimationData(string strFileName);
 
-	HRESULT					Bake_Character();
-	HRESULT					Bake_Env_NonAnim();
-	HRESULT					Bake_Env_Anim();
-	HRESULT					Bake_Weapon();
-	HRESULT					Bake_Select(string strFilePath, const MODEL_TYPE& eModelType);
 
+	HRESULT					CreateModelInfo(const MODEL_TYPE& eModelType, string strFileName);
 
 	_uint					Get_BoneIndex(const char* szName);
 

@@ -13,6 +13,8 @@
 #include <regex>
 #include <codecvt>
 #include <filesystem>
+#include <iostream>
+#include <fstream>
 
 
 ImGuiIO g_io;
@@ -848,6 +850,9 @@ HRESULT CImgui_Manager::BinaryConvert(string strFileName, string strFilePath, co
 		if (FAILED(Write_AnimationData(strFileName)))
 			return E_FAIL;
 	}
+
+	if(FAILED(CreateModelInfo(eModelType, strFileName)))
+		return E_FAIL;
 	
 	m_vecBones.clear();
 	m_vecMesh.clear();
@@ -909,12 +914,15 @@ HRESULT CImgui_Manager::Read_BoneData(aiNode* pAINode, _int iIndex, _int iParent
 
 HRESULT CImgui_Manager::Write_BoneData(string strFileName)
 {
+
 	string strNoExtFileName = filesystem::path(strFileName).stem().string();
 	string strEXT = ".Bone";
-
+	
 	string strCreatePath = CheckOrCreatePath(strNoExtFileName) + "\\";
+	
 
 	string strFullPath = strCreatePath + strNoExtFileName + strEXT;
+	
 
 	HANDLE	hFile;
 
@@ -932,13 +940,14 @@ HRESULT CImgui_Manager::Write_BoneData(string strFileName)
 		size_t strLength = pBone->strName.size();
 		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
 		WriteFile(hFile, pBone->strName.c_str(), strLength, &dwByte, nullptr);
-
 		WriteFile(hFile, &pBone->matTransformation, sizeof(XMFLOAT4X4), &dwByte, nullptr);
 		WriteFile(hFile, &pBone->matOffset, sizeof(XMFLOAT4X4), &dwByte, nullptr);
 		WriteFile(hFile, &pBone->iIndex, sizeof(_int), &dwByte, nullptr);
 		WriteFile(hFile, &pBone->iParent, sizeof(_int), &dwByte, nullptr);
 		WriteFile(hFile, &pBone->iDepth, sizeof(_uint), &dwByte, nullptr);
 	}
+
+	
 
 	CloseHandle(hFile);
 
@@ -1350,30 +1359,99 @@ HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 	return S_OK;
 }
 
-HRESULT CImgui_Manager::Bake_Character()
+HRESULT CImgui_Manager::CreateModelInfo(const MODEL_TYPE& eModelType, string strFileName)
 {
-	return S_OK;
-}
+	
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
+	
+	string strBone = "_INFO_Bone.txt";
+	string strMesh = "_INFO_Mesh.txt";
+	string strAnimation = "_INFO_Animation.txt";
+	string strMaterial = "_INFO_Material.txt";
 
-HRESULT CImgui_Manager::Bake_Env_NonAnim()
-{
-	return S_OK;
-}
+	string strCreatePath = CheckOrCreatePath(strNoExtFileName + "\\Info") + "\\";
+	string strTest;
 
-HRESULT CImgui_Manager::Bake_Env_Anim()
-{
-	return S_OK;
-}
-
-HRESULT CImgui_Manager::Bake_Weapon()
-{
-	return S_OK;
-}
-
-HRESULT CImgui_Manager::Bake_Select(string strFilePath, const MODEL_TYPE& eModelType)
-{
+	string strBoneInfoPath = strCreatePath + strNoExtFileName + strBone;
+	string strMeshInfoPath = strCreatePath + strNoExtFileName + strMesh;
+	string strAnimationInfoPath = strCreatePath + strNoExtFileName + strAnimation;
+	string strMaterialInfoPath = strCreatePath + strNoExtFileName + strMaterial;
 
 
+	ofstream OutBoneFile(strBoneInfoPath.c_str());
+	ofstream OutMeshFile(strMeshInfoPath.c_str());
+	ofstream OutAnimationFile(strAnimationInfoPath.c_str());
+	ofstream OutMaterialFile(strMaterialInfoPath.c_str());
+
+	if (OutBoneFile.is_open())
+	{
+		OutBoneFile << " =========== " << strNoExtFileName << " 정보 " << " =========== " << endl;
+
+		OutBoneFile << " ----------- " << " 뼈 " << " 정보 " << " ----------- " << endl;
+		
+		for (auto& pAsBone : m_vecBones)
+		{
+			OutBoneFile << " 이름 : " << pAsBone->strName << endl;
+			OutBoneFile << " 부모 인덱스 : " << pAsBone->iParent << endl;
+			OutBoneFile << " 자신 인덱스 : " << pAsBone->iIndex  << endl;
+
+			OutBoneFile << endl << endl;
+		}
+
+		OutBoneFile.close();
+	}
+
+	if (OutMeshFile.is_open())
+	{
+		OutMeshFile << " ----------- " << " 메쉬 " << " 정보 " << " ----------- " << endl;
+
+		for (auto& pAsMesh : m_vecMesh)
+		{
+			OutMeshFile << " 이름 : " << pAsMesh->strName << endl;
+
+			//!m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+			string strType = pAsMesh->isAnim == 0 ? " 논 애님 " : " 애님 ";
+
+
+			OutMeshFile << " 타입 " << strType << endl;
+
+			OutMeshFile << " ============== 구분선 ============== " << endl;
+		}
+
+		OutMeshFile.close();
+	}
+
+	if (OutAnimationFile.is_open() && eModelType == TYPE_ANIM)
+	{
+		OutAnimationFile << " ----------- " << " 애니메이션 " << " 정보 " << " ----------- " << endl;
+
+		_int iIndex = 0;
+
+		for (auto& pAsAnimation : m_vecAnimation)
+		{
+			OutAnimationFile << " 이름 : " << pAsAnimation->strName << endl;
+			OutAnimationFile << " 인덱스 : " << iIndex << endl;
+			OutAnimationFile << " 틱 : " << pAsAnimation->fTicksPerSecond << endl;
+			OutAnimationFile << " 총 재생 길이 : " << pAsAnimation->fDuration << endl;
+
+			++iIndex;
+		}
+
+		OutAnimationFile.close();
+	}
+
+	if (OutMaterialFile.is_open())
+	{
+		OutMaterialFile << " ----------- " << " 머터리얼 " << " 정보 " << " ----------- " << endl;
+
+		for (auto& pAsMaterial : m_vecMaterial)
+		{
+			OutMaterialFile << " 파일 경로 : " << pAsMaterial->strTextureFilePath << endl << endl;
+		}
+
+		OutMaterialFile.close();
+	}
+		
 	return S_OK;
 }
 
@@ -1451,7 +1529,7 @@ string CImgui_Manager::CheckOrCreatePath(const string& strfileName)
 	string strFilePath = "../Bin/Resources/Models/";
 
 	string strCreateDirPath = filesystem::absolute(strFilePath).string() + strfileName;
-	if (filesystem::exists(strCreateDirPath))
+	if (!filesystem::exists(strCreateDirPath))
 		filesystem::create_directory(strCreateDirPath);
 
 		return strCreateDirPath;

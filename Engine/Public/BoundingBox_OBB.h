@@ -1,0 +1,37 @@
+#pragma once
+
+#include "BoundParent.h"
+
+BEGIN(Engine)
+
+class CBoundingBox_OBB final : public CBoundParent
+{
+public:
+	typedef struct : public BOUNDING_DESC
+	{
+		_float3		vExtents;
+		_float3		vRotation;
+	}BOUNDING_OBB_DESC;
+private:
+	CBoundingBox_OBB(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);	
+	virtual ~CBoundingBox_OBB() = default;
+
+public:
+	HRESULT Initialize(BOUNDING_DESC* pBoundingDesc);
+
+#ifdef _DEBUG	
+	virtual HRESULT Render(PrimitiveBatch<VertexPositionColor>* pBatch) override;
+#endif
+
+private:
+	BoundingOrientedBox*			m_pOriginBoundingOriented	= { nullptr };
+	BoundingOrientedBox*			m_pBoundingOriented			= { nullptr };
+
+
+
+public:
+	static CBoundingBox_OBB* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, BOUNDING_DESC* pBoundingDesc);
+	virtual void Free() override;
+};
+
+END
