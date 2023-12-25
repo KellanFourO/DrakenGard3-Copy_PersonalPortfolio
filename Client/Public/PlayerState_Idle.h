@@ -1,6 +1,10 @@
 #pragma once
 #include "PlayerState_Base.h"
 
+//BEGIN(Engine)
+//class CStateMachine;
+//END
+
 BEGIN(Client)
 
 class CPlayerState_Idle final : public CPlayerState_Base 
@@ -10,18 +14,17 @@ private:
 virtual ~CPlayerState_Idle() = default;
 
 public:
-	virtual HRESULT Initialize(CPlayer* pPlayer);
-	virtual HRESULT Priority_Tick(const _float& fTimeDelta) override;
-	virtual HRESULT Tick(const _float& fTimeDelta) override;
-	virtual HRESULT Late_Tick(const _float& fTimeDelta) override;
-	virtual HRESULT Transition() override;
+	virtual HRESULT Initialize(CStateMachine* pStateMachine) override;
+	virtual HRESULT StartState() override;
+	virtual HRESULT EndState() override;
+
+	virtual void	Tick(const _float& fTimeDelta) override;
 
 private:
-	virtual void   KeyInput(const _float& fTimeDelta) override;
-	virtual void   ResetState() override;
+	virtual void	KeyInput(const _float& fTimeDelta) override;
 
 public:
-	static CPlayerState_Idle* Create(CPlayer* pPlayer);
+	static CPlayerState_Idle* Create(CStateMachine* pStateMachine);
 	virtual void Free() override;
 };
 

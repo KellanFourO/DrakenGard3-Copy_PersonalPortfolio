@@ -218,6 +218,13 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CRigidBody::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	lstrcpy(m_szLoadingText, TEXT("상태머신(을) 로드하는 중입니다."));
+
+	//! For.Prototype_Component_StateMachine
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_StateMachine"),
+		CStateMachine::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	lstrcpy(m_szLoadingText, TEXT("콜라이더를(을) 로드하는 중입니다."));
 
 	//! For.Prototype_Component_Collider_AABB

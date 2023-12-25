@@ -8,7 +8,6 @@ CBoundParent::CBoundParent(ID3D11Device * pDevice, ID3D11DeviceContext * pContex
 	Safe_AddRef(m_pContext);
 }
 
-
 void CBoundParent::Free()
 {
 	Safe_Release(m_pDevice);

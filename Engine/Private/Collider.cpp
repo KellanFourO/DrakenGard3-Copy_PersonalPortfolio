@@ -70,10 +70,20 @@ HRESULT CCollider::Initialize(void* pArg)
 	return S_OK;
 }
 
+void CCollider::Update(_fmatrix TransformMatrix)
+{
+	m_pBounding->Update(TransformMatrix);
+}
+
+_bool CCollider::Collision(CCollider* pTargetCollider)
+{
+	return m_pBounding->Collision(pTargetCollider, &m_isCollision);
+}
+
 #ifdef _DEBUG
 HRESULT CCollider::Render()
 {
-	if(nullptr == m_pBounding || nullptr == m_pBatch || nullptr == m_pEffect)
+	if (nullptr == m_pBounding)
 		return E_FAIL;
 
 	m_pBatch->Begin();
@@ -86,7 +96,7 @@ HRESULT CCollider::Render()
 
 	m_pEffect->Apply(m_pContext);
 
-	m_pBounding->Render(m_pBatch);
+	m_pBounding->Render(m_pBatch, m_isCollision == true ? XMVectorSet(1.f, 0.f, 0.f, 1.f) : XMVectorSet(0.f, 1.f, 0.f, 1.f));
 
 	m_pBatch->End();
 
@@ -125,5 +135,17 @@ void CCollider::Free()
 {
 	__super::Free();
 
+#ifdef _DEBUG
+
+	if (false == m_isCloned)
+	{
+		Safe_Delete(m_pBatch);
+		Safe_Delete(m_pEffect);
+	}
+
 	Safe_Release(m_pInputLayout);
+
+#endif
+
+	Safe_Release(m_pBounding);
 }

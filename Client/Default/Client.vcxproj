@@ -43,7 +43,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <EnableUnitySupport>true</EnableUnitySupport>
+    <EnableUnitySupport>false</EnableUnitySupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -205,12 +205,8 @@
     <ClInclude Include="..\Public\PlayerPart_Body.h" />
     <ClInclude Include="..\Public\PlayerPart_Weapon.h" />
     <ClInclude Include="..\Public\PlayerState_Base.h" />
-    <ClInclude Include="..\public\PlayerState_Idle.h" />
-    <ClInclude Include="..\Public\PlayerState_Jump.h" />
-    <ClInclude Include="..\Public\PlayerState_Run.h" />
-    <ClInclude Include="..\Public\PlayerState_Walk.h" />
+    <ClInclude Include="..\Public\PlayerState_Idle.h" />
     <ClInclude Include="..\public\SkyBox.h" />
-    <ClInclude Include="..\Public\StateMachine.h" />
     <ClInclude Include="..\Public\TestTree.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
@@ -250,12 +246,8 @@
     <ClCompile Include="..\Private\PlayerPart_Body.cpp" />
     <ClCompile Include="..\Private\PlayerPart_Weapon.cpp" />
     <ClCompile Include="..\Private\PlayerState_Base.cpp" />
-    <ClCompile Include="..\private\PlayerState_Idle.cpp" />
-    <ClCompile Include="..\Private\PlayerState_Jump.cpp" />
-    <ClCompile Include="..\Private\PlayerState_Run.cpp" />
-    <ClCompile Include="..\Private\PlayerState_Walk.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
     <ClCompile Include="..\private\SkyBox.cpp" />
-    <ClCompile Include="..\Private\StateMachine.cpp" />
     <ClCompile Include="..\Private\TestTree.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />

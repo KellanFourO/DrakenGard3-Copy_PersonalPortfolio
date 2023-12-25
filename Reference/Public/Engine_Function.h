@@ -66,21 +66,6 @@ namespace Engine
 		return S_OK;
 	}
 
-	string ConvertWstrToStr(const wstring& wstr)
-	{
-		int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), nullptr, 0, nullptr, nullptr);
-		std::string str(size_needed, 0);
-		WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), &str[0], size_needed, nullptr, nullptr);
-		return str;
-	}
-
-	wstring ConvertStrToWstr(const string& str)
-	{
-		int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), nullptr, 0);
-		std::wstring wstr(size_needed, 0);
-		MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), &wstr[0], size_needed);
-		return wstr;
-	}
 }
 
 #endif // Engine_Function_h__

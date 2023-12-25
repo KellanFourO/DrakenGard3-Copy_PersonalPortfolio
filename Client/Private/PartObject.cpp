@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "PartObject.h"
 #include "GameInstance.h"
+#include "Transform.h"
 #include "Shader.h"
+#include "Model.h"
+#include "Bone.h"
 
 CPartObject::CPartObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext)

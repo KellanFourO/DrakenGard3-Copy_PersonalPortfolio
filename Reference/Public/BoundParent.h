@@ -2,10 +2,6 @@
 
 #include "Base.h"
 
-#ifdef _DEBUG
-#include "./DebugDraw/DebugDraw.h"
-#endif
-
 BEGIN(Engine)
 
 class CBoundParent abstract : public CBase
@@ -20,9 +16,13 @@ protected:
 	CBoundParent(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual ~CBoundParent() = default;
 
+public:
+	virtual void Update(_fmatrix TransformMatrix) = 0;
+	virtual _bool Collision(class CCollider* pTargetCollider, _bool* pisCollision) = 0;
+
 #ifdef _DEBUG
 public:
-	virtual HRESULT Render(PrimitiveBatch<VertexPositionColor>* pBatch) = 0;
+	virtual HRESULT Render(PrimitiveBatch<VertexPositionColor>* pBatch, _vector vColor) = 0;
 #endif
 
 

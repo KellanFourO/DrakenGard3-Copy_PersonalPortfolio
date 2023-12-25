@@ -111,10 +111,10 @@ private:
 
 	_uint	Get_BoneIndex(const char* szName);
 
-	string	ConvertWstrToStr(const wstring& wstr);
-	wstring	ConvertStrToWstr(const string& str);
 	string	ModifyPath(const string& originalPath);
 	string	ReplaceExtension(const string& originalPath, const string& newExtension);
+	string	ConvertWstrToStrModel(const wstring& wstr);
+	wstring ConvertStrToWstrModel(const string& str);
 	
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);

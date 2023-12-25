@@ -1,18 +1,21 @@
 #include "stdafx.h"
 #include "..\Public\Player.h"
 #include "GameInstance.h"
-#include "RigidBody.h"
 #include "Engine_Function.h"
+
+//TODO 컴포넌트
+#include "RigidBody.h"
+#include "StateMachine.h"
+
 //TODO 파츠
 #include "PlayerPart_Body.h"
 #include "PlayerPart_Weapon.h"
 
 //TODO 상태
-#include "StateMachine.h"
-#include "PlayerState_Idle.h"
-#include "PlayerState_Walk.h"
-#include "PlayerState_Run.h"
-#include "PlayerState_Jump.h"
+//#include "PlayerState_Idle.h"
+//#include "PlayerState_Walk.h"
+//#include "PlayerState_Run.h"
+//#include "PlayerState_Jump.h"
 
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice, pContext)
@@ -22,32 +25,6 @@ CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 CPlayer::CPlayer(const CPlayer & rhs)
 	: CAnimObject(rhs)
 {
-}
-
-HRESULT CPlayer::Set_CurrentState(const wstring& strStateTag)
-{
-	CStateMachine* pStateMachine = Find_States(strStateTag);
-
-	if(nullptr == pStateMachine)
-		return E_FAIL;
-
-
-	//if(nullptr != m_pCurrentState && FAILED(m_pCurrentState->Replaceability(pStateMachine)))
-	//	return S_OK;
-
-	if(nullptr != m_pCurrentState)
-		static_cast<CPlayerState_Base*>(m_pCurrentState)->ResetState();
-
-	m_pCurrentState = pStateMachine;
-
-	CPlayerPart_Body* pBody = static_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
-	Safe_AddRef(pBody);
-	
-	pBody->SetUp_Animation(m_pCurrentState->Get_AnimIndex());
-
-	Safe_Release(pBody);
-
-	return S_OK;
 }
 
 HRESULT CPlayer::Initialize_Prototype()
@@ -82,28 +59,20 @@ HRESULT CPlayer::Initialize(void* pArg)
 
 void CPlayer::Priority_Tick(_float fTimeDelta)
 {
-	if (!m_bAdmin)
-	{
-		m_pCurrentState->Priority_Tick(fTimeDelta);
-	}
 
 	//m_pRigidBodyCom->Tick(fTimeDelta);
+	m_pStateCom->Priority_Tick(fTimeDelta);
 }
 
 void CPlayer::Tick(_float fTimeDelta)
 {
-
-	if (!m_bAdmin)
-	{
-		m_pCurrentState->Tick(fTimeDelta);
-	}
-	
-
 	for (auto& Pair : m_PartObjects)
 	{
 		if (nullptr != Pair.second)
 			Pair.second->Tick(fTimeDelta);
 	}
+
+	m_pStateCom->Tick(fTimeDelta);
 
 	Key_Input(fTimeDelta);
 
@@ -111,25 +80,21 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
-	if (!m_bAdmin)
-	{
-		m_pCurrentState->Late_Tick(fTimeDelta);
-	}
-
 	for (auto& Pair : m_PartObjects)
 	{
 		if (nullptr != Pair.second)
 			Pair.second->Late_Tick(fTimeDelta);
 	}
 
-	m_fAccTime += fTimeDelta;
+	m_pStateCom->Late_Tick(fTimeDelta);
+	//m_fAccTime += fTimeDelta;
 
-	if (m_fAccTime > 0.2f)
-	{
-		printf(Engine::ConvertWstrToStr(m_pCurrentState->Get_Name()).c_str());
-		printf("\n\n");
-		m_fAccTime = 0.f;
-	}
+	//if (m_fAccTime > 0.2f)
+	//{
+	//	printf(Engine::ConvertWstrToStr(m_pCurrentState->Get_Name()).c_str());
+	//	printf("\n\n");
+	//	m_fAccTime = 0.f;
+	//}
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return ;
@@ -157,17 +122,6 @@ CPartObject* CPlayer::Find_PartObject(const wstring& strPartTag)
 	return iter->second;
 }
 
-CStateMachine* CPlayer::Find_States(const wstring& strStateTag)
-{
-	auto iter = m_States.find(strStateTag);
-
-	if (iter == m_States.end())
-		return nullptr;
-
-	return iter->second;
-}
-
-
 HRESULT CPlayer::Ready_Components()
 {
 
@@ -193,6 +147,12 @@ HRESULT CPlayer::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_RigidBody"),
 		TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), m_pTransformCom)))
 		return E_FAIL;
+
+	//TODO 상태머신
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_StateMachine"),
+		TEXT("Com_StateMachine"), reinterpret_cast<CComponent**>(&m_pStateCom))))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -234,21 +194,21 @@ HRESULT CPlayer::Ready_PartObjects()
 HRESULT CPlayer::Ready_States()
 {
 
-	if(FAILED(Add_State(TEXT("PlayerState_Idle"), CPlayerState_Idle::Create(this))))
-		return E_FAIL;
+	//if(FAILED(Add_State(TEXT("PlayerState_Idle"), CPlayerState_Idle::Create(this))))
+	//	return E_FAIL;
+	//
+	//if (FAILED(Add_State(TEXT("PlayerState_Walk"), CPlayerState_Walk::Create(this))))
+	//	return E_FAIL;
+	//
+	//if (FAILED(Add_State(TEXT("PlayerState_Run"), CPlayerState_Run::Create(this))))
+	//	return E_FAIL;
+	//
+	//if (FAILED(Add_State(TEXT("PlayerState_Jump"), CPlayerState_Jump::Create(this))))
+	//	return E_FAIL;
 
-	if (FAILED(Add_State(TEXT("PlayerState_Walk"), CPlayerState_Walk::Create(this))))
-		return E_FAIL;
 
-	if (FAILED(Add_State(TEXT("PlayerState_Run"), CPlayerState_Run::Create(this))))
-		return E_FAIL;
-
-	if (FAILED(Add_State(TEXT("PlayerState_Jump"), CPlayerState_Jump::Create(this))))
-		return E_FAIL;
-
-
-	if(FAILED(Set_CurrentState(TEXT("PlayerState_Idle"))))
-		return E_FAIL;
+	//if(FAILED(Set_CurrentState(TEXT("PlayerState_Idle"))))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -269,56 +229,11 @@ HRESULT CPlayer::Add_PartObject(const wstring& strPrototypeTag, const wstring& s
 	return S_OK;
 }
 
-HRESULT CPlayer::Add_State(const wstring& strStateTag, CStateMachine* pStateMachine)
-{
-	if(nullptr == pStateMachine)
-		return E_FAIL;
-
-	if(nullptr != Find_PartObject(strStateTag))
-		return E_FAIL;
-
-	m_States.emplace(strStateTag, pStateMachine);
-	
-	return S_OK;
-}
-
 void CPlayer::Key_Input(const _float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_TAB))
 		m_bAdmin = !m_bAdmin;
 
-	if (!m_bAdmin)
-	{
-		if (m_pGameInstance->Key_Down(DIK_F3))
-		{
-			m_iCurrentAnimIndex++;
-			m_pCurrentState->Set_CompulsionChangeAnim(m_iCurrentAnimIndex);
-		}
-
-		if (m_pGameInstance->Key_Down(DIK_F4))
-		{
-			m_iCurrentAnimIndex--;
-			m_pCurrentState->Set_CompulsionChangeAnim(m_iCurrentAnimIndex);
-		}
-			
-
-		if (GetKeyState(VK_DOWN) & 0x8000)
-		{
-			m_pTransformCom->Go_Backward(fTimeDelta);
-		}
-		if (GetKeyState(VK_LEFT) & 0x8000)
-		{
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
-		}
-		if (GetKeyState(VK_RIGHT) & 0x8000)
-		{
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
-		}
-		if (GetKeyState(VK_UP) & 0x8000)
-		{
-			m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
-		}
-	}
 }
 
 
@@ -352,16 +267,12 @@ void CPlayer::Free()
 {
 	__super::Free();
 
-	for(auto& Pair : m_States)
-		Safe_Release(Pair.second);
-
-	m_States.clear();
-
 	for (auto& Pair : m_PartObjects)
 		Safe_Release(Pair.second);
 	
 		m_PartObjects.clear();
 
+	Safe_Release(m_pColliderCom);
 	Safe_Release(m_pRigidBodyCom);
 	Safe_Release(m_pNavigationCom);
 }

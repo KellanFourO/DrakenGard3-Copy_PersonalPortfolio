@@ -16,11 +16,15 @@ private:
 	virtual ~CBoundingBox_AABB() = default;
 
 public:
-	HRESULT Initialize(BOUNDING_DESC* pBoundingDesc);
+	const BoundingBox* Get_Bounding() { return m_pBoundingBox;}
 
-#ifdef _DEBUG	
-	virtual HRESULT Render(PrimitiveBatch<VertexPositionColor>* pBatch) override;
-#endif
+public:
+	HRESULT Initialize(BOUNDING_DESC* pBoundingDesc);
+	virtual HRESULT Render(PrimitiveBatch<VertexPositionColor>* pBatch, _vector vColor) override;
+	virtual void Update(_fmatrix TransformMatrix);
+
+public:
+	virtual _bool Collision(class CCollider* pTargetCollider, _bool* pisCollision) override;
 
 private:
 	BoundingBox*			m_pOriginBoundingBox	= { nullptr };

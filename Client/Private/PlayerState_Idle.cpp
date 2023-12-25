@@ -1,97 +1,54 @@
+#include "stdafx.h"
 #include "PlayerState_Idle.h"
 
-#include "Model.h"
-#include "Player.h"
-#include "PlayerPart_Body.h"
-#include "GameInstance.h"
 
 CPlayerState_Idle::CPlayerState_Idle()
 {
 }
 
-HRESULT CPlayerState_Idle::Initialize(CPlayer* pPlayer)
+HRESULT CPlayerState_Idle::Initialize(CStateMachine* pStateMachine)
 {
-	m_isGround = true;
-	m_iAnimIndex = 73;
+	//m_pOwnerStateCom = pStateMachine;
 
-	m_eStateType = CStateMachine::STATE_GROUND;
+	//if(FAILED(AddRefIfNotNull(m_pOwnerStateCom)))
+	//	return E_FAIL;
+	
 
-	m_strName = TEXT("PlayerState_Idle");
+	return S_OK;
+}
 
-	if(FAILED(__super::Initialize(pPlayer)))
-		return E_FAIL;
-
-	m_pOwnerModelCom->Set_Animation(m_iAnimIndex);
-
+HRESULT CPlayerState_Idle::StartState()
+{
+	//pStateMachine->Set_StateTag(TEXT("PlayerState_Idle"));
+	//pStateMachine->Set_StateType(CStateMachine::STATE_GROUND);
+	//
+	//pStateMachine->Set_AnimIndex(73);
 
 
 	return S_OK;
 }
 
-HRESULT CPlayerState_Idle::Priority_Tick(const _float& fTimeDelta)
+HRESULT CPlayerState_Idle::EndState()
 {
 	return S_OK;
 }
 
-HRESULT CPlayerState_Idle::Tick(const _float& fTimeDelta)
-{
-	KeyInput(fTimeDelta);
-
-	return S_OK;
-}
-
-HRESULT CPlayerState_Idle::Late_Tick(const _float& fTimeDelta)
-{
-	return S_OK;
-}
-
-HRESULT CPlayerState_Idle::Transition()
+void CPlayerState_Idle::Tick(const _float& fTimeDelta)
 {
 	
-	
-	return S_OK;
 }
 
 void CPlayerState_Idle::KeyInput(const _float& fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_W))
-	{
-		m_pPlayer->Set_CurrentState(TEXT("PlayerState_Walk"));
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_A))
-	{
-		m_pPlayer->Set_CurrentState(TEXT("PlayerState_Walk"));
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_S))
-	{
-		m_pPlayer->Set_CurrentState(TEXT("PlayerState_Walk"));
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_D))
-	{
-		m_pPlayer->Set_CurrentState(TEXT("PlayerState_Walk"));
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_SPACE))
-	{
-		m_pPlayer->Set_CurrentState(TEXT("PlayerState_Jump"));	
-	}
+	
 }
 
-void CPlayerState_Idle::ResetState()
-{
-	m_fLastInputTime = 0.f;
-	m_fAccTime = 0.f;
-}
-
-CPlayerState_Idle* CPlayerState_Idle::Create(CPlayer* pPlayer)
+CPlayerState_Idle* CPlayerState_Idle::Create(CStateMachine* pStateMachine)
 {
 	CPlayerState_Idle* pInstance = new CPlayerState_Idle();
 
 	/* 원형객체를 초기화한다.  */
-	if (FAILED(pInstance->Initialize(pPlayer)))
+	if (FAILED(pInstance->Initialize(pStateMachine)))
 	{
 		MSG_BOX("Failed to Created : CPlayerState_Idle");
 		Safe_Release(pInstance);
@@ -101,5 +58,4 @@ CPlayerState_Idle* CPlayerState_Idle::Create(CPlayer* pPlayer)
 
 void CPlayerState_Idle::Free()
 {
-	__super::Free();
 }

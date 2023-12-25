@@ -1,3 +1,5 @@
+#include "..\..\Engine\Public\StateMachine.h"
+#include "..\..\Engine\Public\StateMachine.h"
 #include "stdafx.h"
 #include "StateMachine.h"
 #include "GameInstance.h"
@@ -85,6 +87,16 @@ HRESULT CStateMachine::Replaceability(CStateMachine* pNextState)
 
 
 	return E_FAIL;
+}
+
+CStateMachine* CStateMachine::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+{
+	return nullptr;
+}
+
+CComponent* CStateMachine::Clone(void* pArg)
+{
+	return nullptr;
 }
 
 void CStateMachine::Free()

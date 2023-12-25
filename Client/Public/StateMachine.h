@@ -3,6 +3,7 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
+
 BEGIN(Engine)
 class CModel;
 class CGameObject;
@@ -27,7 +28,7 @@ public:
 
 	void			Set_CompulsionUse() { m_isUsing = false; } //! 혹시나 하는 상황에 대비해 강제로 사용가능한 상태로 만들어버리는 함수
 	void			Set_CompulsionDead() { m_isDead = false; } //! 마찬가지로 강제로 데드상태로 만들어버리는 함수
-	void			Set_CompulsionChangeAnim(_int iIndex) { m_pOwnerModelCom->Set_Animation(iIndex); }
+	
 
 public:
 	virtual HRESULT Initialize();

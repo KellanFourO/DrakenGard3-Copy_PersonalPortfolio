@@ -9,6 +9,7 @@
 #include "Animation.h"
 #include "Channel.h"
 
+#include "GameInstance.h"
 #include <regex>
 #include <codecvt>
 
@@ -475,8 +476,9 @@ HRESULT CModel::Read_MaterialData(wstring& strPath)
 				string strNewExtension = "dds";
 				string strNewFileName = ReplaceExtension(strPathName, strNewExtension);
 
-				path = ModifyPath(ConvertWstrToStr(strPath)) + strNewFileName;
-				MaterialDesc.pMtrlTextures[aiTextureType(j)] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(path));
+
+				path = ModifyPath(ConvertWstrToStrModel(strPath)) + strNewFileName;
+				MaterialDesc.pMtrlTextures[aiTextureType(j)] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstrModel(path));
 			}
 			else{ continue;}
 		}
@@ -588,21 +590,6 @@ _uint CModel::Get_BoneIndex(const char* szName)
 	return 0;
 }
 
-string CModel::ConvertWstrToStr(const wstring& wstr)
-{
-	int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), nullptr, 0, nullptr, nullptr);
-	std::string str(size_needed, 0);
-	WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), &str[0], size_needed, nullptr, nullptr);
-	return str;
-}
-
-wstring CModel::ConvertStrToWstr(const string& str)
-{
-	int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), nullptr, 0);
-	std::wstring wstr(size_needed, 0);
-	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), &wstr[0], size_needed);
-	return wstr;
-}
 
 string CModel::ModifyPath(const string& originalPath)
 {
@@ -630,7 +617,21 @@ string CModel::ReplaceExtension(const string& originalPath, const string& newExt
 	return originalPath;
 }
 
+string CModel::ConvertWstrToStrModel(const wstring& wstr)
+{
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), nullptr, 0, nullptr, nullptr);
+	string str(size_needed, 0);
+	WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), &str[0], size_needed, nullptr, nullptr);
+	return str;
+}
 
+wstring CModel::ConvertStrToWstrModel(const string& str)
+{
+	int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), nullptr, 0);
+	wstring wstr(size_needed, 0);
+	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), &wstr[0], size_needed);
+	return wstr;
+}
 
 CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix)
 {

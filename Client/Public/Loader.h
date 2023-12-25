@@ -2,6 +2,7 @@
 
 #include "Client_Defines.h"
 #include "Base.h"
+#include "Model.h"
 
 /* 스레드를 생성한다. */
 /* 생성한 스레드로 필요한 레벨의 자원을 로딩한다. */

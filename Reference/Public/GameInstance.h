@@ -89,8 +89,6 @@ public: /* For.Input_Device */
 	_bool	Mouse_Down(MOUSEKEYSTATE eMouse);
 	_bool	Mouse_Up(MOUSEKEYSTATE eMouse);
 
-
-
 private:
 	class CGraphic_Device*			m_pGraphic_Device = { nullptr };
 	class CTimer_Manager*			m_pTimer_Manager = { nullptr };

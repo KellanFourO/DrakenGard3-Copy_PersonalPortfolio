@@ -7,6 +7,7 @@
 #include "Transform.h"
 #include "RigidBody.h"
 #include "Navigation.h"
+#include "StateMachine.h"
 
 #include "VIBuffer_Rect.h"
 #include "VIBuffer_Cube.h"

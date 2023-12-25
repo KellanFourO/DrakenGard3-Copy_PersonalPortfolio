@@ -88,29 +88,11 @@
     <Filter Include="03. StateMachine">
       <UniqueIdentifier>{456c0b3a-87e4-48e9-89b8-0f946ee4390e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. StateMachine">
+    <Filter Include="02. GameObjects\06. Player\02. States">
       <UniqueIdentifier>{7c36e6bb-ad3f-4a5b-bd5f-431563f7b19a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. StateMachine\99. PlayerStateBase">
-      <UniqueIdentifier>{4ff7d8a1-f96e-43ae-83f2-03f4b55801ae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. StateMachine\00. Ground">
-      <UniqueIdentifier>{e190d614-9f80-4ca4-832f-54bac5302827}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. StateMachine\00. Ground\00. Idle">
-      <UniqueIdentifier>{6cd73d90-0569-4b66-9f3c-0ff475dcc9d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. StateMachine\01. Air">
-      <UniqueIdentifier>{d96ab2e2-062e-4667-906c-1def9f69658b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. StateMachine\01. Air\00. Jump">
-      <UniqueIdentifier>{809b0619-91f0-4afc-8a69-2c99b83a8bb1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. StateMachine\00. Ground\01. Walk">
-      <UniqueIdentifier>{ca47b3ed-4f76-4c2b-a7d3-61455f364fbd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. StateMachine\00. Ground\02. Run">
-      <UniqueIdentifier>{a4d3afbc-148c-4381-9a8e-d581126ed7b1}</UniqueIdentifier>
+    <Filter Include="02. GameObjects\06. Player\02. States\00. Idle">
+      <UniqueIdentifier>{893a29b7-eef4-4fef-8029-0afd549de15d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -246,23 +228,11 @@
     <ClInclude Include="..\Public\PlayerPart_Weapon.h">
       <Filter>02. GameObjects\06. Player\01. Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\StateMachine.h">
-      <Filter>03. StateMachine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\PlayerState_Idle.h">
-      <Filter>02. GameObjects\06. Player\02. StateMachine\00. Ground\00. Idle</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Base.h">
-      <Filter>02. GameObjects\06. Player\02. StateMachine\99. PlayerStateBase</Filter>
+      <Filter>02. GameObjects\06. Player\02. States</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\PlayerState_Jump.h">
-      <Filter>02. GameObjects\06. Player\02. StateMachine\01. Air\00. Jump</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\PlayerState_Walk.h">
-      <Filter>02. GameObjects\06. Player\02. StateMachine\00. Ground\01. Walk</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\PlayerState_Run.h">
-      <Filter>02. GameObjects\06. Player\02. StateMachine\00. Ground\02. Run</Filter>
+    <ClInclude Include="..\Public\PlayerState_Idle.h">
+      <Filter>02. GameObjects\06. Player\02. States\00. Idle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -365,23 +335,11 @@
     <ClCompile Include="..\Private\PlayerPart_Weapon.cpp">
       <Filter>02. GameObjects\06. Player\01. Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\StateMachine.cpp">
-      <Filter>03. StateMachine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\PlayerState_Idle.cpp">
-      <Filter>02. GameObjects\06. Player\02. StateMachine\00. Ground\00. Idle</Filter>
+    <ClCompile Include="..\Private\PlayerState_Idle.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\00. Idle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Base.cpp">
-      <Filter>02. GameObjects\06. Player\02. StateMachine\99. PlayerStateBase</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\PlayerState_Jump.cpp">
-      <Filter>02. GameObjects\06. Player\02. StateMachine\01. Air\00. Jump</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\PlayerState_Walk.cpp">
-      <Filter>02. GameObjects\06. Player\02. StateMachine\00. Ground\01. Walk</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\PlayerState_Run.cpp">
-      <Filter>02. GameObjects\06. Player\02. StateMachine\00. Ground\02. Run</Filter>
+      <Filter>02. GameObjects\06. Player\02. States</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

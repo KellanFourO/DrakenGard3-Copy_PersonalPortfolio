@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "CustomFont.h"
 
 static const char IGFD_compressed_data_base85[3950 + 1] =

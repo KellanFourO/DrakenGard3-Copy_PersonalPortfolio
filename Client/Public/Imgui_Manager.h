@@ -1,6 +1,7 @@
 #pragma once
 #include "Base.h"
 #include "Client_Defines.h"
+#include "GameObject.h"
 
 BEGIN(Client)
 class CImgui_Manager final : public CBase
@@ -79,7 +80,6 @@ private: //TODO ImguiDialog #다이얼로그
 
 private:
 		
-		ImGuiFileDialog*		m_pFileDialog;
 		string						m_strCurrentDialogTag;
 		DIALOGID					m_eDialogMode = { DIALOG_END };
 		MODEL_TYPE					m_eModelType = { MODEL_TYPE::TYPE_END };
@@ -174,6 +174,8 @@ private: //TODO 문자열 #문자열함수
 	void					Replace(string& str, string comp, string rep);
 	vector<string>			Get_AllFolderNames(const string& strDirPath);
 	string					CheckOrCreatePath(const string& strPath);
+	string					ConvertWstrToStr(const wstring& wstr);
+	wstring					ConvertStrToWstr(const string& str);
 		 
 
 public:

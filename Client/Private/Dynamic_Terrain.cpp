@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 
 
+
 CDynamic_Terrain::CDynamic_Terrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CGameObject(pDevice, pContext)
 {

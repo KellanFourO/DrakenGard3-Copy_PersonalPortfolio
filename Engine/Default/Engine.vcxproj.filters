@@ -148,6 +148,12 @@
     <Filter Include="01. Utility\03. Components\07. RigidBody">
       <UniqueIdentifier>{021909ed-042d-4200-918b-2704512c014e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\03. Components\08. StateMachine">
+      <UniqueIdentifier>{51e78cb9-4cae-4369-904c-e5165416e9fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\08. StateMachine\00. StateBase">
+      <UniqueIdentifier>{deb5e7c1-ee4b-47d7-82d4-680dc27ddf02}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -297,6 +303,12 @@
     <ClInclude Include="..\public\RigidBody.h">
       <Filter>01. Utility\03. Components\07. RigidBody</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\StateMachine.h">
+      <Filter>01. Utility\03. Components\08. StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\StateBase.h">
+      <Filter>01. Utility\03. Components\08. StateMachine\00. StateBase</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -427,6 +439,12 @@
     </ClCompile>
     <ClCompile Include="..\private\RigidBody.cpp">
       <Filter>01. Utility\03. Components\07. RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\StateMachine.cpp">
+      <Filter>01. Utility\03. Components\08. StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\StateBase.cpp">
+      <Filter>01. Utility\03. Components\08. StateMachine\00. StateBase</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

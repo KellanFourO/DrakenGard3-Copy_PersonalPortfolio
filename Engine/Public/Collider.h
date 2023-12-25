@@ -21,8 +21,17 @@ private:
 	virtual ~CCollider() = default;
 
 public:
+	TYPE Get_ColliderType() const {	return m_eType;	}
+
+	class CBoundParent* Get_Bounding() { return m_pBounding; }
+
+public:
 	virtual HRESULT Initialize_Prototype(TYPE eType);
 	virtual HRESULT Initialize(void* pArg);
+
+public:
+	void	Update(_fmatrix TransformMatrix);
+	_bool	Collision(CCollider* pTargetCollider);
 
 #ifdef _DEBUG
 public:
@@ -32,13 +41,12 @@ public:
 private:
 	TYPE					m_eType = { TYPE_END };
 	class CBoundParent*		m_pBounding = { nullptr };
+	_bool					m_isCollision = { false };
 
 #ifdef _DEBUG
 private:
 	PrimitiveBatch<VertexPositionColor>*	m_pBatch = { nullptr };
 	BasicEffect*							m_pEffect = { nullptr };
-
-private:
 	ID3D11InputLayout*						m_pInputLayout = { nullptr };
 #endif
 
