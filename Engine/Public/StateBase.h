@@ -23,7 +23,7 @@ protected:
 	class CModel*		 m_pOwnerModelCom = nullptr; //! 상태에 따른 애니메이션 교체를 위한 소유자의 모델 컴포넌트
 	class CGameInstance* m_pGameInstance = nullptr;
 public:
-	virtual void Free();
+	virtual void Free() override;
 };
 
 END

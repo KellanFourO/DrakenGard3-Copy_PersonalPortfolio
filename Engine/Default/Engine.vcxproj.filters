@@ -154,6 +154,9 @@
     <Filter Include="01. Utility\03. Components\08. StateMachine\00. StateBase">
       <UniqueIdentifier>{deb5e7c1-ee4b-47d7-82d4-680dc27ddf02}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\03. Components\08. StateMachine\99. StateMachine">
+      <UniqueIdentifier>{5cf93a94-0898-4d3b-b0ae-8630c94fa4b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -303,11 +306,11 @@
     <ClInclude Include="..\public\RigidBody.h">
       <Filter>01. Utility\03. Components\07. RigidBody</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\StateMachine.h">
-      <Filter>01. Utility\03. Components\08. StateMachine</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\StateBase.h">
       <Filter>01. Utility\03. Components\08. StateMachine\00. StateBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\StateMachine.h">
+      <Filter>01. Utility\03. Components\08. StateMachine\99. StateMachine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -440,11 +443,11 @@
     <ClCompile Include="..\private\RigidBody.cpp">
       <Filter>01. Utility\03. Components\07. RigidBody</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\StateMachine.cpp">
-      <Filter>01. Utility\03. Components\08. StateMachine</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\StateBase.cpp">
       <Filter>01. Utility\03. Components\08. StateMachine\00. StateBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\StateMachine.cpp">
+      <Filter>01. Utility\03. Components\08. StateMachine\99. StateMachine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

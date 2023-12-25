@@ -51,7 +51,7 @@ HRESULT CBoundingBox_AABB::Render(PrimitiveBatch<VertexPositionColor>* pBatch, _
 		return E_FAIL;
 
 	/* m_pAABB가 월드스페이스 상의 정보다. */
-	DX::Draw(pBatch, *m_pBoundingBox);
+	DX::Draw(pBatch, *m_pBoundingBox, vColor);
 
 	return S_OK;
 }

@@ -1,28 +1,28 @@
 #include "stdafx.h"
-#include "PlayerPart_Weapon.h"
+#include "MonsterPart_EN00_Weapon.h"
 #include "GameInstance.h"
 #include "Bone.h"
 
-CPlayerPart_Weapon::CPlayerPart_Weapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CMonsterPart_EN00_Weapon::CMonsterPart_EN00_Weapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CPartObject(pDevice,pContext)
 {
 }
 
-CPlayerPart_Weapon::CPlayerPart_Weapon(const CPlayerPart_Weapon& rhs)
+CMonsterPart_EN00_Weapon::CMonsterPart_EN00_Weapon(const CMonsterPart_EN00_Weapon& rhs)
 	: CPartObject(rhs)
 {
 }
 
-HRESULT CPlayerPart_Weapon::Initialize_Prototype(LEVEL eLevel)
+HRESULT CMonsterPart_EN00_Weapon::Initialize_Prototype(LEVEL eLevel)
 {
 	m_eCurrentLevelID = eLevel;
-	m_strName = "CPlayerPart_Weapon";
+	m_strName = "CMonsterPart_EN00_Weapon";
 	return S_OK;
 }
 
-HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
+HRESULT CMonsterPart_EN00_Weapon::Initialize(void* pArg)
 {
-	m_strName = "CPlayerPart_Weapon";
+	m_strName = "CMonsterPart_EN00_Weapon";
 	
 	m_pParentTransformCom = ((PART_DESC*)pArg)->m_pParentTransform;
 
@@ -39,7 +39,7 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	if (FAILED(__super::Ready_Components(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_Model"), TEXT("Prototype_Component_Model_Weapon1"))))
+	if (FAILED(__super::Ready_Components(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_Model"), TEXT("Prototype_Component_Model_Monster_EN00_Weapon"))))
 		return E_FAIL;
 
 	/* For.Com_Collider */
@@ -59,16 +59,16 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CPlayerPart_Weapon::Priority_Tick(_float fTimeDelta)
+void CMonsterPart_EN00_Weapon::Priority_Tick(_float fTimeDelta)
 {
 }
 
-void CPlayerPart_Weapon::Tick(_float fTimeDelta)
+void CMonsterPart_EN00_Weapon::Tick(_float fTimeDelta)
 {
 	
 }
 
-void CPlayerPart_Weapon::Late_Tick(_float fTimeDelta)
+void CMonsterPart_EN00_Weapon::Late_Tick(_float fTimeDelta)
 {
 	_matrix		SocketMatrix = m_pSocketBone->Get_CombinedTransformationMatrix();
 
@@ -89,7 +89,7 @@ void CPlayerPart_Weapon::Late_Tick(_float fTimeDelta)
 		return;
 }
 
-HRESULT CPlayerPart_Weapon::Render()
+HRESULT CMonsterPart_EN00_Weapon::Render()
 {
 	//#몬스터모델렌더
 
@@ -120,7 +120,7 @@ HRESULT CPlayerPart_Weapon::Render()
 	return S_OK;
 }
 
-void CPlayerPart_Weapon::Write_Json(json& Out_Json)
+void CMonsterPart_EN00_Weapon::Write_Json(json& Out_Json)
 {
 	__super::Write_Json(Out_Json);
 	
@@ -134,7 +134,7 @@ void CPlayerPart_Weapon::Write_Json(json& Out_Json)
 	Out_Json["Component"].erase(iter);
 }
 
-void CPlayerPart_Weapon::Load_FromJson(const json& In_Json)
+void CMonsterPart_EN00_Weapon::Load_FromJson(const json& In_Json)
 {
 	__super::Load_FromJson(In_Json);
 
@@ -157,39 +157,39 @@ void CPlayerPart_Weapon::Load_FromJson(const json& In_Json)
 	//Init_Desc();
 }
 
-void CPlayerPart_Weapon::Init_Desc()
+void CMonsterPart_EN00_Weapon::Init_Desc()
 {
 	//m_pStatus.lock()->Init_Status(&m_tLinkStateDesc);
 }
 
 
-CPlayerPart_Weapon* CPlayerPart_Weapon::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel)
+CMonsterPart_EN00_Weapon* CMonsterPart_EN00_Weapon::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel)
 {
-	CPlayerPart_Weapon* pInstance = new CPlayerPart_Weapon(pDevice, pContext);
+	CMonsterPart_EN00_Weapon* pInstance = new CMonsterPart_EN00_Weapon(pDevice, pContext);
 
 	/* 원형객체를 초기화한다.  */
 	if (FAILED(pInstance->Initialize_Prototype(eLevel)))
 	{
-		MSG_BOX("Failed to Created : CPlayerPart_Weapon");
+		MSG_BOX("Failed to Created : CMonsterPart_EN00_Weapon");
 		Safe_Release(pInstance);
 	}
 	return pInstance;
 }
 
-CGameObject* CPlayerPart_Weapon::Clone(void* pArg)
+CGameObject* CMonsterPart_EN00_Weapon::Clone(void* pArg)
 {
-	CPlayerPart_Weapon* pInstance = new CPlayerPart_Weapon(*this);
+	CMonsterPart_EN00_Weapon* pInstance = new CMonsterPart_EN00_Weapon(*this);
 
 	/* 원형객체를 초기화한다.  */
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Cloned : CPlayerPart_Weapon");
+		MSG_BOX("Failed to Cloned : CMonsterPart_EN00_Weapon");
 		Safe_Release(pInstance);
 	}
 	return pInstance;
 }
 
-void CPlayerPart_Weapon::Free()
+void CMonsterPart_EN00_Weapon::Free()
 {
 	__super::Free();
 

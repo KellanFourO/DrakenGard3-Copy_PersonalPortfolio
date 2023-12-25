@@ -42,7 +42,7 @@ private:
 	HRESULT			Add_PartObject(const wstring& strPrototypeTag, const wstring& strPartTag, void* pArg);
 	void			Key_Input(const _float fTimeDelta);
 
-	string	ConvertWstrToStrTest(const wstring& wstr);
+	string			ConvertWstrToStrTest(const wstring& wstr);
 private:
 	CNavigation*		m_pNavigationCom = { nullptr };
 	CCollider*			m_pColliderCom	 = { nullptr };

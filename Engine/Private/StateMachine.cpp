@@ -9,7 +9,13 @@ CStateMachine::CStateMachine(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 
 CStateMachine::CStateMachine(const CStateMachine& rhs)
 	: CComponent(rhs)
+	, m_States(rhs.m_States)
+	, m_pCurrentState(rhs.m_pCurrentState)
 {
+	for(auto& Pair : m_States)
+		Safe_AddRef(Pair.second);
+
+	Safe_AddRef(m_pCurrentState);
 }
 
 HRESULT CStateMachine::Initialize_Prototype()
@@ -26,7 +32,8 @@ HRESULT CStateMachine::Initialize(void* pArg)
 	
 	m_pOwner = pOwner;
 	
-	AddRefIfNotNull(m_pOwner);
+	if(FAILED(AddRefIfNotNull(m_pOwner)))
+		return E_FAIL;
 
 
 	return S_OK;
@@ -196,13 +203,13 @@ void CStateMachine::Free()
 {
 	__super::Free();
 
-	if (true == m_isCloned)
-	{
-		for (auto& Pair : m_States)
-			Safe_Release(Pair.second);
+	Safe_Release(m_pCurrentState);
+	Safe_Release(m_pOwner);
 
-		m_States.clear();
-	}
+	for (auto& Pair : m_States)
+		Safe_Release(Pair.second);
+
+	m_States.clear();
 	
 
 	

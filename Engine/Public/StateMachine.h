@@ -55,7 +55,7 @@ private:
 	STATETYPE		m_eCurrentStateType = { STATE_END };
 
 private:
-	CStateBase*		m_pCurrentState = { nullptr };
+	CStateBase*		m_pCurrentState = { nullptr }; 
 	_bool			m_isGround = { true };
 	_bool			m_isFinished = { true };
 	_bool			m_isDead = { false };

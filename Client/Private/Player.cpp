@@ -37,7 +37,7 @@ HRESULT CPlayer::Initialize_Prototype()
 
 	return S_OK;
 }
-
+ 
 HRESULT CPlayer::Initialize(void* pArg)
 {	
 	CGameObject::GAMEOBJECT_DESC PlayerDesc = {};
@@ -309,10 +309,10 @@ void CPlayer::Free()
 		m_PartObjects.clear();
 
 
+	Safe_Release(m_pStateCom);
 	Safe_Release(m_pColliderCom);
 	Safe_Release(m_pRigidBodyCom);
 	Safe_Release(m_pNavigationCom);
-	Safe_Release(m_pStateCom);
 
 }
 

@@ -52,7 +52,7 @@ HRESULT CBoundingBox_Sphere::Render(PrimitiveBatch<VertexPositionColor>* pBatch,
 		return E_FAIL;
 
 	/* m_pAABB가 월드스페이스 상의 정보다. */
-	DX::Draw(pBatch, *m_pBoundingSphere);
+	DX::Draw(pBatch, *m_pBoundingSphere, vColor);
 
 	return S_OK;
 }
