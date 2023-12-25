@@ -20,6 +20,8 @@ public:
 	class CChannel*				Get_SameName_Channel(class CChannel* _pChannel);
 	KEYFRAME&					Get_CurrentKeyFrame(class CChannel* _pChannel);
 
+	_float						Get_Duration(){ return m_fDuration;}
+
 public:
 	HRESULT Initialize(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName);
 	void	Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones);

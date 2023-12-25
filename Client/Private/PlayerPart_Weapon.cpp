@@ -42,8 +42,18 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	if (FAILED(__super::Ready_Components(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_Model"), TEXT("Prototype_Component_Model_Weapon1"))))
 		return E_FAIL;
 
+	/* For.Com_Collider */
+	CBoundingBox_OBB::BOUNDING_OBB_DESC		BoundingDesc = {};
+
+	BoundingDesc.vExtents = _float3(0.5f, 0.7f, 0.5f);
+	BoundingDesc.vCenter = _float3(0.f, BoundingDesc.vExtents.y, 0.f);
+	BoundingDesc.vRotation = _float3(0.f, XMConvertToRadians(45.0f), 0.f);
+
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
+		return E_FAIL;
+
 	//m_pTransformCom->Set_Scaling(10.f, 10.f, 10.f);
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(70.0f));
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-180.0f));
 	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.7f, 0.f, 0.f, 1.f));
 
 	return S_OK;
@@ -55,6 +65,7 @@ void CPlayerPart_Weapon::Priority_Tick(_float fTimeDelta)
 
 void CPlayerPart_Weapon::Tick(_float fTimeDelta)
 {
+	
 }
 
 void CPlayerPart_Weapon::Late_Tick(_float fTimeDelta)
@@ -71,6 +82,8 @@ void CPlayerPart_Weapon::Late_Tick(_float fTimeDelta)
 	//TODO 아래 코드가 파츠 오브젝트의 꽃
 	//! 파츠 오브젝트의 월드매트릭스는 부모의 월드행렬기준으로 움직여줘야한다. 만약 파츠오브젝트의 월드매트릭스가 항등일 경우에도 부모기준에 붙어있을 것.
 	XMStoreFloat4x4(&m_WorldMatrix, m_pTransformCom->Get_WorldMatrix() * SocketMatrix * m_pParentTransformCom->Get_WorldMatrix());
+
+	//!m_pColliderCom->Update(XMLoadFloat4x4(&m_WorldMatrix));
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return;
@@ -98,6 +111,11 @@ HRESULT CPlayerPart_Weapon::Render()
 
 		m_pModelCom->Render(i);
 	}
+
+
+#ifdef _DEBUG
+	m_pColliderCom->Render();
+#endif // _DEBUG
 
 	return S_OK;
 }

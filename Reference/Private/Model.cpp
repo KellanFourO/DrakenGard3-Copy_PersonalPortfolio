@@ -52,6 +52,11 @@ CModel::CModel(const CModel& rhs)
 	}
 }
 
+_float CModel::Get_CurrentDuration()
+{
+	 return m_Animations[m_iCurrentAnimIndex]->Get_Duration();
+}
+
 CBone* CModel::Get_BonePtr(const _char* pBoneName) const
 {
 	auto	iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone)
@@ -165,7 +170,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool isLoop)
 	if (m_bChangeAnim) 
 	{
 		//! 현재 애니메이션에게 이전 애니메이션을 넘겨주자
-		m_Animations[m_iCurrentAnimIndex]->Blend_TransformationMatrix(isLoop, fTimeDelta, m_Bones, m_pPrevAnimation, this);
+			m_Animations[m_iCurrentAnimIndex]->Blend_TransformationMatrix(isLoop, fTimeDelta, m_Bones, m_pPrevAnimation, this);
 	}
 	else
 		m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(isLoop, fTimeDelta, m_Bones);

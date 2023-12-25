@@ -17,6 +17,11 @@
 #include "PlayerState_Run.h"
 #include "PlayerState_Jump.h"
 
+#include "PlayerState_Attack1.h"
+#include "PlayerState_Attack2.h"
+#include "PlayerState_Attack3.h"
+#include "PlayerState_Attack4.h"
+
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice, pContext)
 {
@@ -59,20 +64,26 @@ HRESULT CPlayer::Initialize(void* pArg)
 
 void CPlayer::Priority_Tick(_float fTimeDelta)
 {
-
-	//m_pRigidBodyCom->Tick(fTimeDelta);
 	m_pStateCom->Priority_Tick(fTimeDelta);
+
+	for (auto& Pair : m_PartObjects)
+	{
+		if (nullptr != Pair.second)
+			Pair.second->Priority_Tick(fTimeDelta);
+	}
 }
 
 void CPlayer::Tick(_float fTimeDelta)
 {
+	m_pStateCom->Tick(fTimeDelta);
+	
 	for (auto& Pair : m_PartObjects)
 	{
 		if (nullptr != Pair.second)
 			Pair.second->Tick(fTimeDelta);
 	}
 
-	m_pStateCom->Tick(fTimeDelta);
+	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
 
 	Key_Input(fTimeDelta);
 
@@ -80,21 +91,24 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
+	m_pStateCom->Late_Tick(fTimeDelta);
+	
 	for (auto& Pair : m_PartObjects)
 	{
 		if (nullptr != Pair.second)
 			Pair.second->Late_Tick(fTimeDelta);
 	}
 
-	m_pStateCom->Late_Tick(fTimeDelta);
-	//m_fAccTime += fTimeDelta;
 
-	//if (m_fAccTime > 0.2f)
-	//{
-	//	printf(Engine::ConvertWstrToStr(m_pCurrentState->Get_Name()).c_str());
-	//	printf("\n\n");
-	//	m_fAccTime = 0.f;
-	//}
+	m_fAccTime += fTimeDelta;
+
+	if (m_fAccTime > 0.2f)
+	{
+		//printf(m_pStateCom->Get_aNI);
+		printf(ConvertWstrToStrTest(m_pStateCom->Get_StateTag()).c_str());
+		printf("\n\n");
+		m_fAccTime = 0.f;
+	}
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return ;
@@ -134,12 +148,13 @@ HRESULT CPlayer::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Collider */
-	CBoundingBox_AABB::BOUNDING_AABB_DESC		BoundingDesc = {};
+	CBoundingBox_OBB::BOUNDING_OBB_DESC		BoundingDesc = {};
 
 	BoundingDesc.vExtents = _float3(0.5f, 0.7f, 0.5f);
 	BoundingDesc.vCenter = _float3(0.f, BoundingDesc.vExtents.y, 0.f);
+	BoundingDesc.vRotation = _float3(0.f, XMConvertToRadians(45.0f), 0.f);
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"),
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"),
 		TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
 		return E_FAIL;
 
@@ -175,7 +190,7 @@ HRESULT CPlayer::Ready_PartObjects()
 
 	//TODO  내 모델 뼈 이름 찾아서 수정하자
 
-	CBone* pSwordBone = pBody->Get_BonePtr("R_FINGER52");
+	CBone* pSwordBone = pBody->Get_BonePtr("M_WP1");
 	
 	if(nullptr == pSwordBone)
 		return E_FAIL;
@@ -204,6 +219,18 @@ HRESULT CPlayer::Ready_States()
 		return E_FAIL;
 
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Jump"), CPlayerState_Jump::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack1"), CPlayerState_Attack1::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack2"), CPlayerState_Attack2::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack3"), CPlayerState_Attack3::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack4"), CPlayerState_Attack4::Create(this))))
 		return E_FAIL;
 
 	
@@ -235,6 +262,14 @@ void CPlayer::Key_Input(const _float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_TAB))
 		m_bAdmin = !m_bAdmin;
 
+}
+
+string CPlayer::ConvertWstrToStrTest(const wstring& wstr)
+{
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), nullptr, 0, nullptr, nullptr);
+	string str(size_needed, 0);
+	WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), &str[0], size_needed, nullptr, nullptr);
+	return str;
 }
 
 

@@ -204,6 +204,10 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\PlayerPart_Body.h" />
     <ClInclude Include="..\Public\PlayerPart_Weapon.h" />
+    <ClInclude Include="..\Public\PlayerState_Attack1.h" />
+    <ClInclude Include="..\Public\PlayerState_Attack2.h" />
+    <ClInclude Include="..\Public\PlayerState_Attack3.h" />
+    <ClInclude Include="..\Public\PlayerState_Attack4.h" />
     <ClInclude Include="..\public\PlayerState_Base.h" />
     <ClInclude Include="..\Public\PlayerState_Idle.h" />
     <ClInclude Include="..\Public\PlayerState_Jump.h" />
@@ -248,6 +252,10 @@
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\PlayerPart_Body.cpp" />
     <ClCompile Include="..\Private\PlayerPart_Weapon.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Attack1.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Attack2.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Attack3.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Attack4.cpp" />
     <ClCompile Include="..\Private\PlayerState_Base.cpp" />
     <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
     <ClCompile Include="..\Private\PlayerState_Jump.cpp" />

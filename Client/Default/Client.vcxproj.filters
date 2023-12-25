@@ -91,17 +91,41 @@
     <Filter Include="02. GameObjects\06. Player\02. States">
       <UniqueIdentifier>{7c36e6bb-ad3f-4a5b-bd5f-431563f7b19a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\00. Idle">
-      <UniqueIdentifier>{893a29b7-eef4-4fef-8029-0afd549de15d}</UniqueIdentifier>
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground">
+      <UniqueIdentifier>{8119e7d1-dbe9-4a50-a7c5-917e76947ea7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\01. Walk">
-      <UniqueIdentifier>{196dd11c-220b-44fe-9bb7-4a3f0283cdc4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\02. Run">
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground\02. Run">
       <UniqueIdentifier>{2dc1b869-c23d-425f-8f0a-b5643b706970}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\03. Jump">
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground\01. Walk">
+      <UniqueIdentifier>{196dd11c-220b-44fe-9bb7-4a3f0283cdc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground\00. Idle">
+      <UniqueIdentifier>{893a29b7-eef4-4fef-8029-0afd549de15d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack">
+      <UniqueIdentifier>{acee4c7a-4f18-4c9c-a501-24456e15e354}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\Air">
       <UniqueIdentifier>{8d25e29b-0a8e-4376-b248-fb40f3f1ed46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\Air\00. Jump">
+      <UniqueIdentifier>{e581d527-8655-4324-8606-a8ec9109036d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack">
+      <UniqueIdentifier>{5aaac1eb-aa62-42f4-aebc-c0df1f680a04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1">
+      <UniqueIdentifier>{31841d56-8617-49fb-9046-6873df4d2473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2">
+      <UniqueIdentifier>{9352a632-64a2-492d-8388-a52eef89b721}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3">
+      <UniqueIdentifier>{d93d0331-8b3e-4e33-a7c3-d44d632f38a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4">
+      <UniqueIdentifier>{f64a63e0-7d5b-4d15-a9fc-463410c33455}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -241,16 +265,28 @@
       <Filter>02. GameObjects\06. Player\02. States</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Idle.h">
-      <Filter>02. GameObjects\06. Player\02. States\00. Idle</Filter>
+      <Filter>02. GameObjects\06. Player\02. States\Ground\00. Idle</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Walk.h">
-      <Filter>02. GameObjects\06. Player\02. States\01. Walk</Filter>
+      <Filter>02. GameObjects\06. Player\02. States\Ground\01. Walk</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Run.h">
-      <Filter>02. GameObjects\06. Player\02. States\02. Run</Filter>
+      <Filter>02. GameObjects\06. Player\02. States\Ground\02. Run</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Jump.h">
-      <Filter>02. GameObjects\06. Player\02. States\03. Jump</Filter>
+      <Filter>02. GameObjects\06. Player\02. States\Air\00. Jump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack1.h">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack2.h">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack3.h">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack4.h">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -357,16 +393,28 @@
       <Filter>02. GameObjects\06. Player\02. States</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Idle.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\00. Idle</Filter>
+      <Filter>02. GameObjects\06. Player\02. States\Ground\00. Idle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Walk.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\01. Walk</Filter>
+      <Filter>02. GameObjects\06. Player\02. States\Ground\01. Walk</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Run.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\02. Run</Filter>
+      <Filter>02. GameObjects\06. Player\02. States\Ground\02. Run</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Jump.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\03. Jump</Filter>
+      <Filter>02. GameObjects\06. Player\02. States\Air\00. Jump</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack1.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack2.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack3.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack4.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -71,26 +71,35 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
 	if (m_pGameInstance->Key_Pressing(DIK_W))
 	{
 		m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
+		m_fLastInputTime = fTimeDelta;
 	}
 
 	if (m_pGameInstance->Key_Pressing(DIK_A))
 	{
 		m_pOwnerTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
+		m_fLastInputTime = fTimeDelta;
 	}
 
 	if (m_pGameInstance->Key_Pressing(DIK_S))
 	{
 		m_pOwnerTransform->Go_Backward(fTimeDelta);
+		m_fLastInputTime = fTimeDelta;
 	}
 
 	if (m_pGameInstance->Key_Pressing(DIK_D))
 	{
 		m_pOwnerTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * 1.f);
+		m_fLastInputTime = fTimeDelta;
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_SPACE))
 	{
 		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_AIR, TEXT("PlayerState_Jump"));
+	}
+
+	if (m_pGameInstance->Mouse_Down(DIM_LB))
+	{
+		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
 	}
 }
 

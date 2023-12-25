@@ -2,6 +2,9 @@
 #include "Client_Defines.h"
 #include "PartObject.h"
 
+BEGIN(Engine)
+class CCollider;
+END
 
 BEGIN(Client)
 
@@ -24,6 +27,10 @@ public:
 	virtual void Write_Json(json& Out_Json) override;
 	virtual void Load_FromJson(const json& In_Json) override;
 	virtual void Init_Desc();
+
+
+private:
+	CCollider*			m_pColliderCom = { nullptr };
 
 public:
 	/* 원형객체를 생성한다. */

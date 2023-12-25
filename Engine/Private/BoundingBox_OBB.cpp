@@ -17,7 +17,7 @@ HRESULT CBoundingBox_OBB::Initialize(BOUNDING_DESC * pBoundingDesc)
 	XMStoreFloat4(&vQuaternion, XMQuaternionRotationRollPitchYaw(pDesc->vRotation.x, pDesc->vRotation.y, pDesc->vRotation.z));
 
 	m_pOriginBoundingOriented = new BoundingOrientedBox(pDesc->vCenter, pDesc->vExtents, vQuaternion);
-
+	m_pBoundingOriented = new BoundingOrientedBox(*m_pOriginBoundingOriented);
 	return S_OK;
 }
 

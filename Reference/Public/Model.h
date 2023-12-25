@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 
+
 BEGIN(Engine)
 class CAnimation;
 
@@ -23,9 +24,10 @@ private:
 	virtual ~CModel() = default;
 
 public:
-	_uint Get_NumMeshes() const { return m_iNumMeshes; }
-	_uint Get_CurrentAnimIndex() { return m_iCurrentAnimIndex; }
-	_bool Get_ChangeAnim() { return m_bChangeAnim;}
+	_uint	Get_NumMeshes() const { return m_iNumMeshes; }
+	_uint	Get_CurrentAnimIndex() { return m_iCurrentAnimIndex; }
+	_bool	Get_ChangeAnim() { return m_bChangeAnim;}
+	_float	Get_CurrentDuration();
 
 	class CBone* Get_BonePtr(const _char* pBoneName) const;
 
@@ -95,9 +97,9 @@ private:
 
 	_bool						m_bChangeAnim = { false };
 
-	vector<class CAnimation*>	m_Animations;
+	vector<CAnimation*>			m_Animations;
 
-	CAnimation*			m_pPrevAnimation = { nullptr };
+	CAnimation*					m_pPrevAnimation = { nullptr };
 
 	ModelData					m_tDataFilePath;
 public:

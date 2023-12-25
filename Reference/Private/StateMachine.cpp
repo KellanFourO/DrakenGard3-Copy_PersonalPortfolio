@@ -10,7 +10,6 @@ CStateMachine::CStateMachine(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 CStateMachine::CStateMachine(const CStateMachine& rhs)
 	: CComponent(rhs)
 {
-	m_isCloned = true;
 }
 
 HRESULT CStateMachine::Initialize_Prototype()

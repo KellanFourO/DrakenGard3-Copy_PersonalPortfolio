@@ -13,7 +13,7 @@ HRESULT CBoundingBox_AABB::Initialize(BOUNDING_DESC * pBoundingDesc)
 	BOUNDING_AABB_DESC* pDesc = (BOUNDING_AABB_DESC*)pBoundingDesc;
 
 	m_pOriginBoundingBox = new BoundingBox(pDesc->vCenter, pDesc->vExtents);
-
+	m_pBoundingBox = new BoundingBox(*m_pOriginBoundingBox);
 	return S_OK;
 }
 
