@@ -12,10 +12,10 @@
 #include "PlayerPart_Weapon.h"
 
 //TODO 상태
-//#include "PlayerState_Idle.h"
-//#include "PlayerState_Walk.h"
-//#include "PlayerState_Run.h"
-//#include "PlayerState_Jump.h"
+#include "PlayerState_Idle.h"
+#include "PlayerState_Walk.h"
+#include "PlayerState_Run.h"
+#include "PlayerState_Jump.h"
 
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice, pContext)
@@ -150,7 +150,7 @@ HRESULT CPlayer::Ready_Components()
 
 	//TODO 상태머신
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_StateMachine"),
-		TEXT("Com_StateMachine"), reinterpret_cast<CComponent**>(&m_pStateCom))))
+		TEXT("Com_StateMachine"), reinterpret_cast<CComponent**>(&m_pStateCom), this)))
 		return E_FAIL;
 
 
@@ -194,19 +194,20 @@ HRESULT CPlayer::Ready_PartObjects()
 HRESULT CPlayer::Ready_States()
 {
 
-	//if(FAILED(Add_State(TEXT("PlayerState_Idle"), CPlayerState_Idle::Create(this))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(Add_State(TEXT("PlayerState_Walk"), CPlayerState_Walk::Create(this))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(Add_State(TEXT("PlayerState_Run"), CPlayerState_Run::Create(this))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(Add_State(TEXT("PlayerState_Jump"), CPlayerState_Jump::Create(this))))
-	//	return E_FAIL;
+	if(FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Idle"), CPlayerState_Idle::Create(this))))
+		return E_FAIL;
+	
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Walk"), CPlayerState_Walk::Create(this))))
+		return E_FAIL;
 
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Run"), CPlayerState_Run::Create(this))))
+		return E_FAIL;
 
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Jump"), CPlayerState_Jump::Create(this))))
+		return E_FAIL;
+
+	
+	m_pStateCom->Set_InitState(TEXT("PlayerState_Idle"));
 	//if(FAILED(Set_CurrentState(TEXT("PlayerState_Idle"))))
 	//	return E_FAIL;
 
@@ -272,8 +273,11 @@ void CPlayer::Free()
 	
 		m_PartObjects.clear();
 
+
 	Safe_Release(m_pColliderCom);
 	Safe_Release(m_pRigidBodyCom);
 	Safe_Release(m_pNavigationCom);
+	Safe_Release(m_pStateCom);
+
 }
 

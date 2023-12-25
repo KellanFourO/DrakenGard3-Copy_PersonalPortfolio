@@ -5,6 +5,16 @@ CLayer::CLayer()
 {
 }
 
+CComponent* CLayer::Get_Component(const wstring& strComponentTag, _uint iIndex)
+{
+	auto	iter = m_GameObjects.begin();
+
+	for (size_t i = 0; i < iIndex; i++)
+		++iter;
+
+	return (*iter)->Find_Component(strComponentTag);
+}
+
 HRESULT CLayer::Add_GameObject(CGameObject* pGameObject)
 {
 	if(nullptr == pGameObject)

@@ -10,6 +10,7 @@ CStateMachine::CStateMachine(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 CStateMachine::CStateMachine(const CStateMachine& rhs)
 	: CComponent(rhs)
 {
+	m_isCloned = true;
 }
 
 HRESULT CStateMachine::Initialize_Prototype()
@@ -19,39 +20,72 @@ HRESULT CStateMachine::Initialize_Prototype()
 
 HRESULT CStateMachine::Initialize(void* pArg)
 {
+	CGameObject* pOwner = static_cast<CGameObject*>(pArg);
+	
+	if(nullptr == pOwner)
+		return E_FAIL;
+	
+	m_pOwner = pOwner;
+	
+	AddRefIfNotNull(m_pOwner);
+
+
 	return S_OK;
 }
 
-void CStateMachine::Set_State(CStateMachine* pNextState)
-{
-	//!CStateMachine* pStateMachine = Find_States(strStateTag);
-	//!
-	//!if (nullptr == pStateMachine)
-	//!	return E_FAIL;
-	//!
-	//!
-	//!//if(nullptr != m_pCurrentState && FAILED(m_pCurrentState->Replaceability(pStateMachine)))
-	//!//	return S_OK;
-	//!
-	//!if (nullptr != m_pCurrentState)
-	//!	static_cast<CPlayerState_Base*>(m_pCurrentState)->ResetState();
-	//!
-	//!m_pCurrentState = pStateMachine;
-	//!
-	//!CPlayerPart_Body* pBody = static_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
-	//!Safe_AddRef(pBody);
-	//!
-	//!pBody->SetUp_Animation(m_pCurrentState->Get_AnimIndex());
-	//!
-	//!Safe_Release(pBody);
-	//!
-	//!return S_OK;
+void CStateMachine::Priority_Tick(_float fTimeDelta)
+{	
+	if (nullptr != m_pCurrentState)
+	{
+		m_pCurrentState->Priority_Tick(fTimeDelta);
+	}
 }
 
-HRESULT CStateMachine::Replaceability(CStateMachine* pNextState)
+void CStateMachine::Tick(_float fTimeDelta)
+{
+	if (nullptr != m_pCurrentState)
+	{
+		m_pCurrentState->Tick(fTimeDelta);
+	}
+}
+
+void CStateMachine::Late_Tick(_float fTimeDelta)
+{
+	if (nullptr != m_pCurrentState)
+	{
+		m_pCurrentState->Late_Tick(fTimeDelta);
+	}
+
+	
+}
+
+
+HRESULT CStateMachine::Transition(STATETYPE eStateType, const wstring& strStateTag)
+{
+
+	auto iter = m_States.find(strStateTag);
+
+	if(iter == m_States.end())
+		return E_FAIL;
+
+	//if(FAILED(Replaceability(eStateType)))
+	//	return E_FAIL;
+	if(iter->second == nullptr)
+		return E_FAIL;
+
+	m_pCurrentState->EndState();
+
+	m_pCurrentState = iter->second;
+	m_strCurrentStateTag = strStateTag;
+	m_eCurrentStateType = eStateType;
+	m_pCurrentState->StartState();
+}
+
+
+HRESULT CStateMachine::Replaceability(STATETYPE eStateType)
 {
 	//TODO 다음상태가 DEAD 타입이었다면
-	if (pNextState->Get_StateType() == CStateMachine::STATE_DEAD)
+	if (eStateType == CStateMachine::STATE_DEAD)
 	{
 		m_isDead = true;
 
@@ -59,7 +93,7 @@ HRESULT CStateMachine::Replaceability(CStateMachine* pNextState)
 	}
 
 
-	switch (pNextState->Get_StateType())
+	switch (eStateType)
 	{
 		case STATE_GROUND:
 		{
@@ -109,6 +143,18 @@ HRESULT CStateMachine::Add_State(const wstring& strStateTag, CStateBase* pAddSta
 	return S_OK;
 }
 
+HRESULT CStateMachine::Set_InitState(const wstring& strStateTag)
+{
+	auto iter = m_States.find(strStateTag);
+
+	if(iter == m_States.end())
+		return E_FAIL;
+
+	m_pCurrentState = iter->second;
+	
+	return S_OK;
+}
+
 HRESULT CStateMachine::Find_Exist(const wstring& strStateTag)
 {
 	auto iter = m_States.find(strStateTag);
@@ -150,4 +196,15 @@ CComponent* CStateMachine::Clone(void* pArg)
 void CStateMachine::Free()
 {
 	__super::Free();
+
+	if (true == m_isCloned)
+	{
+		for (auto& Pair : m_States)
+			Safe_Release(Pair.second);
+
+		m_States.clear();
+	}
+	
+
+	
 }

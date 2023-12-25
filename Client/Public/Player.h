@@ -8,6 +8,7 @@ class CCollider;
 class CNavigation;
 class CRigidBody;
 class CStateMachine;
+class CStateBase;
 END
 
 BEGIN(Client)
@@ -22,9 +23,6 @@ private:
 	CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CPlayer(const CPlayer& rhs);
 	virtual ~CPlayer() = default;
-
-public:
-	class CRigidBody*	Get_RigidBody() { return m_pRigidBodyCom; }
 
 public:
 	virtual HRESULT Initialize_Prototype() override;

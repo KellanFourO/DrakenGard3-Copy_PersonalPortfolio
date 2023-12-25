@@ -1,54 +1,84 @@
 #include "stdafx.h"
+#include "Player.h"
 #include "PlayerState_Idle.h"
+#include "PlayerPart_Body.h"
 
+#include "GameInstance.h"
+#include "StateMachine.h"
+#include "Model.h"
+#include "Transform.h"
+#include "Navigation.h"
+#include "RigidBody.h"
 
 CPlayerState_Idle::CPlayerState_Idle()
 {
 }
 
-HRESULT CPlayerState_Idle::Initialize(CStateMachine* pStateMachine)
+HRESULT CPlayerState_Idle::Initialize(CPlayer* pPlayer)
 {
-	//m_pOwnerStateCom = pStateMachine;
+	if(FAILED(__super::Initialize(pPlayer)))
+		return E_FAIL;
 
-	//if(FAILED(AddRefIfNotNull(m_pOwnerStateCom)))
-	//	return E_FAIL;
-	
 
 	return S_OK;
 }
 
 HRESULT CPlayerState_Idle::StartState()
 {
-	//pStateMachine->Set_StateTag(TEXT("PlayerState_Idle"));
-	//pStateMachine->Set_StateType(CStateMachine::STATE_GROUND);
-	//
-	//pStateMachine->Set_AnimIndex(73);
-
+	m_pOwnerModelCom->Set_Animation(73);
 
 	return S_OK;
 }
 
 HRESULT CPlayerState_Idle::EndState()
 {
+	
+	m_fAccTime = 0.f;
+	m_fLastInputTime = 0.f;
+
 	return S_OK;
 }
 
 void CPlayerState_Idle::Tick(const _float& fTimeDelta)
 {
-	
+	KeyInput(fTimeDelta);
 }
 
 void CPlayerState_Idle::KeyInput(const _float& fTimeDelta)
 {
-	
+	if (m_pGameInstance->Key_Down(DIK_W))
+	{
+		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Walk"));
+			
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_A))
+	{
+		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Walk"));
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_S))
+	{
+		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Walk"));
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_D))
+	{
+		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Walk"));
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_SPACE))
+	{
+		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_AIR, TEXT("PlayerState_Jump"));
+	}
 }
 
-CPlayerState_Idle* CPlayerState_Idle::Create(CStateMachine* pStateMachine)
+CPlayerState_Idle* CPlayerState_Idle::Create(CPlayer* pPlayer)
 {
 	CPlayerState_Idle* pInstance = new CPlayerState_Idle();
 
 	/* 원형객체를 초기화한다.  */
-	if (FAILED(pInstance->Initialize(pStateMachine)))
+	if (FAILED(pInstance->Initialize(pPlayer)))
 	{
 		MSG_BOX("Failed to Created : CPlayerState_Idle");
 		Safe_Release(pInstance);
@@ -58,4 +88,5 @@ CPlayerState_Idle* CPlayerState_Idle::Create(CStateMachine* pStateMachine)
 
 void CPlayerState_Idle::Free()
 {
+	__super::Free();
 }

@@ -27,6 +27,7 @@ protected:
 
 
 public:
+	class CModel* Get_ModelCom() { return m_pModelCom; }
 	void		 SetUp_Animation(_uint iAnimIndex);
 	class CBone* Get_BonePtr(const _char* pBoneName);
 

@@ -1,14 +1,15 @@
 #pragma once
 #include "PlayerState_Base.h"
 
+
 BEGIN(Client)
 class CPlayer;
 
-class CPlayerState_Idle final : public CPlayerState_Base 
+class CPlayerState_Run final : public CPlayerState_Base 
 {
 private:
-		 CPlayerState_Idle();
-virtual ~CPlayerState_Idle() = default;
+		 CPlayerState_Run();
+virtual ~CPlayerState_Run() = default;
 
 public:
 	virtual HRESULT Initialize(CPlayer* pPlayer) override;
@@ -16,12 +17,16 @@ public:
 	virtual HRESULT EndState() override;
 
 	virtual void	Tick(const _float& fTimeDelta) override;
+	virtual void	Late_Tick(const _float& fTimeDelta) override;
 
 private:
 	virtual void	KeyInput(const _float& fTimeDelta) override;
 
+private:
+	_bool	m_bKeyPressing = false;
+
 public:
-	static CPlayerState_Idle* Create(CPlayer* pPlayer);
+	static CPlayerState_Run* Create(CPlayer* pPlayer);
 	virtual void Free() override;
 };
 

@@ -53,6 +53,7 @@ public: /* For.Object_Manager */
 	HRESULT				Add_Prototype(const wstring& strPrototypeTag, class CGameObject* pPrototype, _bool bAddData = false);
 	HRESULT				Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr, CGameObject **ppOut = nullptr);
 	class CGameObject*  Get_CloneObject(const wstring& strPrototypeTag, void* pArg = nullptr);
+	class CComponent*	Get_Component(_uint iLevelIndex, const wstring & strLayerTag, const wstring & strComponentTag, _uint iIndex = 0);
 
 public: /* For.Component_Manager */
 	HRESULT Add_Prototype(_uint iLevelIndex, const wstring & strPrototypeTag, class CComponent* pPrototype);

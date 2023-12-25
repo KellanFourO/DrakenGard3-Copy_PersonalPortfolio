@@ -94,6 +94,15 @@
     <Filter Include="02. GameObjects\06. Player\02. States\00. Idle">
       <UniqueIdentifier>{893a29b7-eef4-4fef-8029-0afd549de15d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\01. Walk">
+      <UniqueIdentifier>{196dd11c-220b-44fe-9bb7-4a3f0283cdc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\02. Run">
+      <UniqueIdentifier>{2dc1b869-c23d-425f-8f0a-b5643b706970}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\03. Jump">
+      <UniqueIdentifier>{8d25e29b-0a8e-4376-b248-fb40f3f1ed46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -228,11 +237,20 @@
     <ClInclude Include="..\Public\PlayerPart_Weapon.h">
       <Filter>02. GameObjects\06. Player\01. Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\PlayerState_Base.h">
+    <ClInclude Include="..\public\PlayerState_Base.h">
       <Filter>02. GameObjects\06. Player\02. States</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Idle.h">
       <Filter>02. GameObjects\06. Player\02. States\00. Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Walk.h">
+      <Filter>02. GameObjects\06. Player\02. States\01. Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Run.h">
+      <Filter>02. GameObjects\06. Player\02. States\02. Run</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Jump.h">
+      <Filter>02. GameObjects\06. Player\02. States\03. Jump</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -335,11 +353,20 @@
     <ClCompile Include="..\Private\PlayerPart_Weapon.cpp">
       <Filter>02. GameObjects\06. Player\01. Weapon</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Base.cpp">
+      <Filter>02. GameObjects\06. Player\02. States</Filter>
+    </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Idle.cpp">
       <Filter>02. GameObjects\06. Player\02. States\00. Idle</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\PlayerState_Base.cpp">
-      <Filter>02. GameObjects\06. Player\02. States</Filter>
+    <ClCompile Include="..\Private\PlayerState_Walk.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\01. Walk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Run.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\02. Run</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Jump.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\03. Jump</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

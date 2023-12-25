@@ -1,9 +1,11 @@
-
 #include "StateBase.h"
+#include "GameInstance.h"
 #include "Model.h"
 
 CStateBase::CStateBase()
+	: m_pGameInstance(CGameInstance::GetInstance())
 {
+	Safe_AddRef(m_pGameInstance);
 }
 
 HRESULT CStateBase::Initialize()
@@ -26,6 +28,10 @@ void CStateBase::Priority_Tick(const _float& fTimeDelta)
 	
 }
 
+void CStateBase::Tick(const _float& fTimeDelta)
+{
+}
+
 void CStateBase::Late_Tick(const _float& fTimeDelta)
 {
 	
@@ -33,5 +39,8 @@ void CStateBase::Late_Tick(const _float& fTimeDelta)
 
 void CStateBase::Free()
 {
+	__super::Free();
+
 	Safe_Release(m_pOwnerModelCom);
+	Safe_Release(m_pGameInstance);
 }
