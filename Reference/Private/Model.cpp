@@ -68,34 +68,92 @@ CBone* CModel::Get_BonePtr(const _char* pBoneName) const
 	return *iter;
 }
 
+CBone* CModel::Get_BonePtr(const _int& iIndex)
+{
+	/* 인덱스에 해당하는 Bone 찾기 */
+
+	if (m_Bones.size() < iIndex || iIndex < 0)
+		return nullptr;
+
+	return m_Bones[iIndex];
+}
+
+CAnimation* CModel::Get_CurrentAnimation(const _int& iIndex)
+{
+	if (iIndex >= m_Animations.size() ||
+		iIndex < 0)
+		return nullptr;
+
+	return m_Animations[iIndex];
+}
+
+_uint CModel::Get_CurrentAnimationKeyIndex() const
+{
+	/* TrackPosition단위로 애니메이션을 조정할때 사용 */
+	return m_Animations[m_iCurrentAnimIndex]->Get_CurrentChannelKeyIndex();
+}
+
+_int CModel::Get_IndexFromAnimName(const _char* In_szAnimName)
+{
+	for (_uint i(0); i < m_iNumAnimations; ++i)
+	{
+		if (strcmp(m_Animations[i]->Get_Name(), In_szAnimName) == 0)
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+void CModel::Set_Animation(_uint iAnimIndex, _uint iStartKeyIndex, _float fBlendTime)
+{
+	if (iAnimIndex >= m_Animations.size())
+		return;
+
+	if (m_iPrevAnimIndex != -1)
+	{
+		m_Animations[iAnimIndex]->Reset_Animation();
+	}
+
+	/* 재생중이던 애니메이션 = Pre, 새로 재생할 애니메이션 = Curr*/
+	m_iPrevAnimIndex = m_iCurrentAnimIndex;
+	m_iCurrentAnimIndex = iAnimIndex;
+
+	/* StartKey로 트렉포지션 설정 = 중간 애니메이션으로 재생하는것 */
+	m_Animations[m_iCurrentAnimIndex]->Set_StartAnimationKey(iStartKeyIndex);
+
+	/* 애니메이션 재생할 TrackPosition 가져오기 */
+	m_fStartBlendTime = m_Animations[m_iCurrentAnimIndex]->Get_TrackPosition();
+
+	/* 중간애니메이션으로 넣는다면 앞에 더미시간 넣어서 초기시작시간 다르게 셋팅 */
+	m_fMaxBlendTime = fBlendTime + m_fStartBlendTime;
+	m_fCurrentBlendTime = m_fStartBlendTime;
+
+	m_isBlend = true;
+
+	/* 이전키프레임 저장 */
+	for (size_t i = 0; i < m_Bones.size(); i++)
+	{
+		m_Bones[i]->Setup_PreKeyFrame();
+	}
+}
+
+void CModel::Set_AnimationSpeed(_float fAnimationSpeed)
+{
+	for (size_t i = 0; i < m_Animations.size(); i++)
+	{
+		m_Animations[i]->Set_AnimationSpeed(fAnimationSpeed);
+	}
+}
+
 
 HRESULT CModel::Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix)
 {
-	//TODO m_Importer 객체가 가지고있는 ReadFile 함수를 호출한다
-	
-	//! ReadFile 함수는 모델의 정보를 담고있는 AiScene*을 리턴해준다.
-	//! 추후 설명 : aiProcess_PreTransformVertices | aiProcess_GlobalScale
-	
-	//! aiProcess_PreTransformVertices == 정점을 미리 변환시키겠다. 이거 사용하면 애니메이션 정보날아간다. 반드시 애님모델이 아닌경우에만 사용하자
-	//! 원래는 최초 로컬 좌표상태에서 뼈가 움직일때마다 스워드 메시에게 행렬을 곱해주는 게맞다. 위 옵션을 주면 애니정보가 날아가서 처리하기가 까다로워진다.
-	//! 애님모델인 경우에는 위 옵션을 주지않고 우리가 직접 작업해주자. 열거체로 구분해줄것이다.
-	
-	//! aiProcess_GlobalScale == 기존에 로드했던 모델이 작은 상태에서 스케일을 많이 키우다보면 재질이 이상해진다. 
-	//! 그래서 디자이너 분들이 애초에 100배 스케일링 해놓은 상태로 넘겨준다. 이미 큰 스케일을 작게 만드는게 좀 더 낫기 때문인가보다.
-	//! GlobalScale을 주게된다면 로드할때부터 0.01 스케일링을 해주는데, 혹시 100배 스케일링이 안되있는 상태의 모델도 있을수 있기 때문에 추천하지 않는다.
-
-	//! aiProcess_ConvertToLeftHanded == 왼손좌표계를 사용할께
-	//! aiProcessPreset_TargetRealtime_Fast == 퀄리티는 조금 떨어지더라도 가장 빠른 방식을 선택해서 읽어들일게
 	
 	m_eModelType = eType;
 	m_tDataFilePath = tDataFilePath;
 
-	//!  엵애니메이션이 없는모델이면 PreTransformVertices 더 해주자
-
-	//#PivotMatrix
-	//! 피봇매트리스는 디자이너들이 보통 우리의 환경에 맞게 완벽하게 셋팅해주지않는다. 그래서 180도 돌아가있는 상태로 로드시키면 룩과 다르게 모델이 반대를 바라보는 참사가 일어난다.
-	//! 로드 이후는 이미 정점이 끝까지 변환된것과 마찬가지이니 로드할때부터 180도 돌려놓고 시작하기 위해 주는 행렬
-	
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 
 	if (FAILED(Read_BoneData(m_tDataFilePath.strBoneDataPath))) //! 최초 노드는 당연히 루트노드일거고, 최상위 부모이기에 부모인덱스는 없으니 -1로 채워주자
@@ -167,23 +225,37 @@ HRESULT CModel::Render(_uint iMeshIndex)
 
 void CModel::Play_Animation(_float fTimeDelta)
 {
-	if(m_iCurrentAnimIndex >= m_iNumAnimations)
+	if (m_iCurrentAnimIndex >= m_iNumAnimations)
 		return;
 
-	//! 이전 키프레임과 현재 키프레임의 인덱스가 달랐다면
-
-	if (m_bChangeAnim) 
+	if (m_isBlend)
 	{
-		//! 현재 애니메이션에게 이전 애니메이션을 넘겨주자
-		m_Animations[m_iCurrentAnimIndex]->Blend_TransformationMatrix(fTimeDelta, m_Bones, m_pPrevAnimation, this);
+		/* 애니메이션 끝까지 재생함 */
+		if (m_fMaxBlendTime < DBL_EPSILON || m_fCurrentBlendTime >= m_fMaxBlendTime)
+		{
+			/* DBL_EPSILON : 부동 소수점 연산에서 표현 가능한 가장 작은 양의 값 (거의 0 근사) || 애니메이션이 한번 수행함 */
+			m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(m_isLoop, fTimeDelta, m_Bones);
+			m_isBlend = false;
+			m_Animations[m_iCurrentAnimIndex]->Set_TrackPosition(m_fCurrentBlendTime);
+		}
+
+		else
+		{
+			/* 선형보간 수행 */
+			_float fRatio = (m_fCurrentBlendTime - m_fStartBlendTime) / (m_fMaxBlendTime - m_fStartBlendTime);
+
+			m_Animations[m_iCurrentAnimIndex]->Blend_TransformationMatrix(m_fMaxBlendTime, fRatio, m_Bones);
+
+			m_fCurrentBlendTime += fTimeDelta;
+		}
 	}
 	else
-		m_isFinished = m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(m_isLoop, fTimeDelta, m_Bones);
-	
-	for (auto& pBone : m_Bones)
 	{
-		pBone->Invalidate_CombinedTransformationMatrix(m_Bones, XMLoadFloat4x4(&m_PivotMatrix));
+		m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(m_isLoop, fTimeDelta, m_Bones);
 	}
+
+	for (auto& pBone : m_Bones)
+		pBone->Invalidate_CombinedTransformationMatrix(m_Bones, XMLoadFloat4x4(&m_PivotMatrix));
 }
 
 HRESULT CModel::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, _uint iMeshIndex)
@@ -697,8 +769,8 @@ void CModel::Free()
 
 	m_Meshes.clear();
 
-	if(false == m_isCloned)
-		m_Importer.FreeScene(); //! 원형객체일때만 임포터에 프리신 호출해서 정리해주자
+	//if(false == m_isCloned)
+	//	m_Importer.FreeScene(); //! 원형객체일때만 임포터에 프리신 호출해서 정리해주자
 
 	
 }
