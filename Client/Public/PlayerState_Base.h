@@ -39,6 +39,8 @@ protected:
 	_float			m_fLastInputTime = { 0.0f };
 	_float			m_fEndTime = 0.0f;
 	_float			m_fAccTime = 0.0f;
+	
+	_bool			m_bInput = false; //! End에 해당하는 스테이트에서 키입력(선입력)을 받았다면 다음 콤보로 연계시키기위함.
 
 public:
 	virtual void Free() override;

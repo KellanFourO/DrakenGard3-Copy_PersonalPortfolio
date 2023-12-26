@@ -571,6 +571,7 @@ HRESULT CModel::Read_MaterialData(wstring& strPath)
 	return S_OK;
 }
 
+ 
 HRESULT CModel::Read_AnimationData(const wstring& strPath)
 {
 	/* 모든 애니메이션 순회 */

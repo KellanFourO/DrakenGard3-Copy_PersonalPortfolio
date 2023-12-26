@@ -9,6 +9,7 @@
 #include "Transform.h"
 #include "Navigation.h"
 #include "RigidBody.h"
+#include "Animation.h"
 
 CPlayerState_Attack1::CPlayerState_Attack1()
 {
@@ -46,19 +47,11 @@ void CPlayerState_Attack1::Tick(const _float& fTimeDelta)
 void CPlayerState_Attack1::Late_Tick(const _float& fTimeDelta)
 {
 	
-	if (true == m_pOwnerModelCom->Get_FinishedAnim())
+	if (true == m_pOwnerModelCom->Get_CurrentAnimation()->Get_Finished())
 	{
 		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1_End"));
 	}
 
-}
-
-void CPlayerState_Attack1::KeyInput(const _float& fTimeDelta)
-{
-	if (m_pGameInstance->Mouse_Down(DIM_LB))
-	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack2"));
-	}
 }
 
 CPlayerState_Attack1* CPlayerState_Attack1::Create(CPlayer* pPlayer)

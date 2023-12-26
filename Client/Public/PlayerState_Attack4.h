@@ -18,13 +18,6 @@ public:
 	virtual void	Tick(const _float& fTimeDelta) override;
 	virtual void	Late_Tick(const _float& fTimeDelta) override;
 
-private:
-	virtual void	KeyInput(const _float& fTimeDelta) override;
-
-private:
-	_bool			m_bChange = false;
-	_float			m_fDuration = 0.f;
-
 public:
 	static CPlayerState_Attack4* Create(CPlayer* pPlayer);
 	virtual void Free() override;

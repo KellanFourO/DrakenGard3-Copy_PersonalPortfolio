@@ -75,13 +75,16 @@ void CAnimation::Reset_Animation()
 	m_fTrackPosition = 0.f;
 	m_iPrevChannelIndex = -1;
 
+	m_isFinished = false;
+	m_fAnimationSpeed = 1.f;
+
 	for (_uint i = 0; i < m_iNumChannels; ++i)
 		m_Channels[i]->Reset_KeyFrame();
 }
 
 
 
-void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones)
+_bool CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones)
 {
 	
 	/* 애니메이션 지속증가 */
@@ -101,7 +104,7 @@ void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta
 			m_fTrackPosition = 0.f;
 		}
 		else if (false == isLoop)
-		{
+		{	
 			m_isFinished = true;
 			m_fTrackPosition = m_fDuration;
 		}
@@ -117,6 +120,8 @@ void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta
 		for (_uint i = m_iPrevChannelIndex + 1; i <= (_uint)iCurrentKey; ++i)
 			m_iPrevChannelIndex = iCurrentKey;
 	}
+
+	return m_isFinished;
 }
 
 CAnimation* CAnimation::Create(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName)

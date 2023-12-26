@@ -12,17 +12,7 @@
 #include "PlayerPart_Weapon.h"
 
 //TODO ป๓ลย
-#include "PlayerState_Idle.h"
-#include "PlayerState_Walk.h"
-#include "PlayerState_Run.h"
-#include "PlayerState_Jump.h"
-
-#include "PlayerState_Attack1.h"
-#include "PlayerState_Attack1_End.h"
-
-#include "PlayerState_Attack2.h"
-#include "PlayerState_Attack3.h"
-#include "PlayerState_Attack4.h"
+#include "PlayerGroundStates.h"
 
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice, pContext)
@@ -58,8 +48,6 @@ HRESULT CPlayer::Initialize(void* pArg)
 
 	if (FAILED(Ready_States()))
 		return E_FAIL;
-
-	//m_pModelCom->Set_Animation(3);
 
 	return S_OK;
 }
@@ -232,16 +220,24 @@ HRESULT CPlayer::Ready_States()
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack2"), CPlayerState_Attack2::Create(this))))
 		return E_FAIL;
 
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack2_End"), CPlayerState_Attack2_End::Create(this))))
+		return E_FAIL;
+
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack3"), CPlayerState_Attack3::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack3_End"), CPlayerState_Attack3_End::Create(this))))
 		return E_FAIL;
 
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack4"), CPlayerState_Attack4::Create(this))))
 		return E_FAIL;
 
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack4_End"), CPlayerState_Attack4_End::Create(this))))
+		return E_FAIL;
+
 	
 	m_pStateCom->Set_InitState(TEXT("PlayerState_Idle"));
-	//if(FAILED(Set_CurrentState(TEXT("PlayerState_Idle"))))
-	//	return E_FAIL;
+	
 
 	return S_OK;
 }

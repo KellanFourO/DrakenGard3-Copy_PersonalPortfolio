@@ -34,7 +34,7 @@ public:
 	HRESULT Initialize(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName);
 
 public:
-	void	Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones);
+	_bool	Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones);
 	void	Blend_TransformationMatrix(_float fMaxBlendTime, _float fRatio, const CModel::BONES& Bones);
 	void	Reset_Animation();
 

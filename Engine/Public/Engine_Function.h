@@ -66,6 +66,50 @@ namespace Engine
 		return S_OK;
 	}
 
+#pragma region 컴파일러용 캐스팅 함수
+	// static_cast
+	template<typename Return, typename T>
+	constexpr Return Cast(T value)
+	{
+		return static_cast<Return>(value);
+	}
+
+	// 다이나믹 캐스트
+	template<typename Return, typename T>
+	constexpr Return DynCast(T value)
+	{
+		return dynamic_cast<Return>(value);
+	}
+
+	// reinterpret_cast
+	template<typename Return, typename T>
+	constexpr Return ReCast(T value)
+	{
+		return reinterpret_cast<Return>(value);
+	}
+
+	// const_cast
+	template<typename Return, typename T>
+	constexpr Return ConCast(T value)
+	{
+		return const_cast<Return>(value);
+	}
+
+	// Default Enum 타입 변환기
+	template<typename T, typename = enable_if_t<is_enum<T>::value>,
+		typename Return = underlying_type_t<T>>
+		constexpr Return ECast(T value)
+	{
+		return static_cast<Return>(value);
+	}
+
+	// void* 변환기
+	template<typename T>
+	constexpr void* VPCast(T value)
+	{
+		return static_cast<void*>(value);
+	}
+#pragma endregion
 }
 
 #endif // Engine_Function_h__

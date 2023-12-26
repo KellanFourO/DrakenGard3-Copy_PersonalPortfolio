@@ -76,6 +76,7 @@ HRESULT CStateMachine::Transition(STATETYPE eStateType, const wstring& strStateT
 
 	//if(FAILED(Replaceability(eStateType)))
 	//	return E_FAIL;
+
 	if(iter->second == nullptr)
 		return E_FAIL;
 

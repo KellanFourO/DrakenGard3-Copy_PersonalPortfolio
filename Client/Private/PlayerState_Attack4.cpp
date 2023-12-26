@@ -9,6 +9,7 @@
 #include "Transform.h"
 #include "Navigation.h"
 #include "RigidBody.h"
+#include "Animation.h"
 
 CPlayerState_Attack4::CPlayerState_Attack4()
 {
@@ -25,8 +26,8 @@ HRESULT CPlayerState_Attack4::Initialize(CPlayer* pPlayer)
 
 HRESULT CPlayerState_Attack4::StartState()
 {
-	//m_pOwnerModelCom->Set_Animation(96);
-	//m_fDuration = m_pOwnerModelCom->Get_CurrentDuration();
+	m_pOwnerModelCom->Set_Animation(96);
+	m_pOwnerModelCom->Set_Loop(false);
 	return S_OK;
 }
 
@@ -35,44 +36,19 @@ HRESULT CPlayerState_Attack4::EndState()
 
 	m_fAccTime = 0.f;
 	m_fLastInputTime = 0.f;
-	m_bChange = false;
-	m_fDuration = 0.f;
 	return S_OK;
 }
 
 void CPlayerState_Attack4::Tick(const _float& fTimeDelta)
 {
-	KeyInput(fTimeDelta);
 }
 
 void CPlayerState_Attack4::Late_Tick(const _float& fTimeDelta)
 {
-	m_fAccTime += 30 * fTimeDelta;
-
-	if (m_fDuration < m_fAccTime && !m_bChange)
+	if (true == m_pOwnerModelCom->Get_CurrentAnimation()->Get_Finished())
 	{
-		m_pOwnerModelCom->Set_Animation(91);
-		m_bChange = true;
-		m_fAccTime = 0;
+		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack4_End"));
 	}
-
-	//if (m_bChange)
-	//{
-	//	m_fDuration = m_pOwnerModelCom->Get_CurrentDuration();
-	//
-	//	if (m_fDuration < m_fAccTime)
-	//	{
-	//		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Idle"));
-	//	}
-	//}
-}
-
-void CPlayerState_Attack4::KeyInput(const _float& fTimeDelta)
-{
-	//if (m_pGameInstance->Mouse_Down(DIM_LB))
-	//{
-	//	m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack5"));
-	//}
 }
 
 CPlayerState_Attack4* CPlayerState_Attack4::Create(CPlayer* pPlayer)

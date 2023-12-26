@@ -324,6 +324,18 @@
     <ClInclude Include="..\Public\PlayerState_Attack1_End.h">
       <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack2_End.h">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack3_End.h">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack4_End.h">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerGroundStates.h">
+      <Filter>02. GameObjects\06. Player\02. States\Ground</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -469,6 +481,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Attack1_End.cpp">
       <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack2_End.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack3_End.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack4_End.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
