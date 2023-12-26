@@ -21,10 +21,6 @@ public:
 private:
 	virtual void	KeyInput(const _float& fTimeDelta) override;
 
-private:
-	_float			m_fDuration = 0.f;
-	_bool			m_bChange = false;
-
 public:
 	static CPlayerState_Attack1* Create(CPlayer* pPlayer);
 	virtual void Free() override;

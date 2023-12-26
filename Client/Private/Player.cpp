@@ -18,6 +18,8 @@
 #include "PlayerState_Jump.h"
 
 #include "PlayerState_Attack1.h"
+#include "PlayerState_Attack1_End.h"
+
 #include "PlayerState_Attack2.h"
 #include "PlayerState_Attack3.h"
 #include "PlayerState_Attack4.h"
@@ -222,6 +224,9 @@ HRESULT CPlayer::Ready_States()
 		return E_FAIL;
 
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack1"), CPlayerState_Attack1::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack1_End"), CPlayerState_Attack1_End::Create(this))))
 		return E_FAIL;
 
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack2"), CPlayerState_Attack2::Create(this))))

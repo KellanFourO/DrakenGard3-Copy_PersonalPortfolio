@@ -83,7 +83,7 @@ _bool CAIState_Base::Search()
 	return false;
 }
 
-_bool CAIState_Base::Chase()
+_bool CAIState_Base::Chase(const _float& fTimeDelta)
 {
 	if (nullptr == m_pOwner || nullptr == m_pPlayerTransform)
 		return false;
@@ -95,6 +95,8 @@ _bool CAIState_Base::Chase()
 
 	vPlayerPos = m_pPlayerTransform->Get_State(CTransform::STATE_POSITION);
 	vOwnerPos = pOwnerTransform->Get_State(CTransform::STATE_POSITION);
+
+	pOwnerTransform->Go_Target(vPlayerPos, fTimeDelta);
 
 	_vector vDistance = XMVector3Length(vPlayerPos - vOwnerPos);
 

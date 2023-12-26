@@ -199,6 +199,7 @@
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\CustomFont.h" />
     <ClInclude Include="..\public\Dynamic_Terrain.h" />
+    <ClInclude Include="..\Public\EN00State_Chase.h" />
     <ClInclude Include="..\Public\EN00State_Idle.h" />
     <ClInclude Include="..\Public\ForkLift.h" />
     <ClInclude Include="..\Public\Imgui_Manager.h" />
@@ -209,6 +210,7 @@
     <ClInclude Include="..\Public\PlayerPart_Body.h" />
     <ClInclude Include="..\Public\PlayerPart_Weapon.h" />
     <ClInclude Include="..\Public\PlayerState_Attack1.h" />
+    <ClInclude Include="..\Public\PlayerState_Attack1_End.h" />
     <ClInclude Include="..\Public\PlayerState_Attack2.h" />
     <ClInclude Include="..\Public\PlayerState_Attack3.h" />
     <ClInclude Include="..\Public\PlayerState_Attack4.h" />
@@ -251,6 +253,7 @@
     <ClCompile Include="..\Private\Camera_MapTool.cpp" />
     <ClCompile Include="..\Private\CustomFont.cpp" />
     <ClCompile Include="..\Private\Dynamic_Terrain.cpp" />
+    <ClCompile Include="..\Private\EN00State_Chase.cpp" />
     <ClCompile Include="..\Private\EN00State_Idle.cpp" />
     <ClCompile Include="..\Private\ForkLift.cpp" />
     <ClCompile Include="..\Private\Imgui_Manager.cpp" />
@@ -261,6 +264,7 @@
     <ClCompile Include="..\Private\PlayerPart_Body.cpp" />
     <ClCompile Include="..\Private\PlayerPart_Weapon.cpp" />
     <ClCompile Include="..\Private\PlayerState_Attack1.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Attack1_End.cpp" />
     <ClCompile Include="..\Private\PlayerState_Attack2.cpp" />
     <ClCompile Include="..\Private\PlayerState_Attack3.cpp" />
     <ClCompile Include="..\Private\PlayerState_Attack4.cpp" />

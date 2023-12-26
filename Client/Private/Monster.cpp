@@ -40,7 +40,7 @@ void CMonster::Priority_Tick(_float fTimeDelta)
 
 void CMonster::Tick(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta, true);
+	m_pModelCom->Play_Animation(fTimeDelta);
 }
 
 void CMonster::Late_Tick(_float fTimeDelta)

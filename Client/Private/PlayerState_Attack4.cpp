@@ -25,8 +25,8 @@ HRESULT CPlayerState_Attack4::Initialize(CPlayer* pPlayer)
 
 HRESULT CPlayerState_Attack4::StartState()
 {
-	m_pOwnerModelCom->Set_Animation(96);
-	m_fDuration = m_pOwnerModelCom->Get_CurrentDuration();
+	//m_pOwnerModelCom->Set_Animation(96);
+	//m_fDuration = m_pOwnerModelCom->Get_CurrentDuration();
 	return S_OK;
 }
 
@@ -56,15 +56,15 @@ void CPlayerState_Attack4::Late_Tick(const _float& fTimeDelta)
 		m_fAccTime = 0;
 	}
 
-	if (m_bChange)
-	{
-		m_fDuration = m_pOwnerModelCom->Get_CurrentDuration();
-
-		if (m_fDuration < m_fAccTime)
-		{
-			m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Idle"));
-		}
-	}
+	//if (m_bChange)
+	//{
+	//	m_fDuration = m_pOwnerModelCom->Get_CurrentDuration();
+	//
+	//	if (m_fDuration < m_fAccTime)
+	//	{
+	//		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Idle"));
+	//	}
+	//}
 }
 
 void CPlayerState_Attack4::KeyInput(const _float& fTimeDelta)

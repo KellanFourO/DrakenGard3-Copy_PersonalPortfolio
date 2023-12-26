@@ -28,7 +28,7 @@ CPartObject* CMonster_EN00::Find_PartObject(const wstring& strPartTag)
 HRESULT CMonster_EN00::Initialize_Prototype(LEVEL eLevel)
 {
 	m_eCurrentLevelID = eLevel;
-
+	m_pModelCom->Set_Loop(true);
 	return S_OK;
 }
 
@@ -75,7 +75,7 @@ void CMonster_EN00::Tick(_float fTimeDelta)
 			Pair.second->Tick(fTimeDelta);
 	}
 
-	m_pModelCom->Play_Animation(fTimeDelta, true);
+	m_pModelCom->Play_Animation(fTimeDelta);
 
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
 }
@@ -91,7 +91,7 @@ void CMonster_EN00::Late_Tick(_float fTimeDelta)
 	}
 
 	CCollider* pTargetCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_Collider")));
-
+	
 	if (m_pColliderCom->Collision(pTargetCollider))
 	{
 		int i = 0;

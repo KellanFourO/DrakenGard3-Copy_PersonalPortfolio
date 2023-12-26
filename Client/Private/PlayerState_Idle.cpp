@@ -26,7 +26,7 @@ HRESULT CPlayerState_Idle::Initialize(CPlayer* pPlayer)
 HRESULT CPlayerState_Idle::StartState()
 {
 	m_pOwnerModelCom->Set_Animation(73);
-
+	m_pOwnerModelCom->Set_Loop(true);
 	return S_OK;
 }
 

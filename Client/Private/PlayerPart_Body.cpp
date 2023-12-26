@@ -49,7 +49,7 @@ void CPlayerPart_Body::Priority_Tick(_float fTimeDelta)
 
 void CPlayerPart_Body::Tick(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta, true);
+	m_pModelCom->Play_Animation(fTimeDelta);
 
 }
 

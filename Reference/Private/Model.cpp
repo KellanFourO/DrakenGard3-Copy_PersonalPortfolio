@@ -52,10 +52,6 @@ CModel::CModel(const CModel& rhs)
 	}
 }
 
-_float CModel::Get_CurrentDuration()
-{
-	 return m_Animations[m_iCurrentAnimIndex]->Get_Duration();
-}
 
 CBone* CModel::Get_BonePtr(const _char* pBoneName) const
 {
@@ -116,6 +112,15 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmat
 	if (FAILED(Read_AnimationData(m_tDataFilePath.strAnimationDataPath)))
 		return E_FAIL;
 
+	if (!m_tDataFilePath.strHitAnimationDataPath.empty()) //! HitAnimationPath가 공백이 아니었다면
+	{
+		if (FAILED(Read_AnimationData(m_tDataFilePath.strHitAnimationDataPath)))
+		{
+			return E_FAIL;
+		}
+	}
+	
+
 	return S_OK;
 }
 
@@ -160,7 +165,7 @@ HRESULT CModel::Render(_uint iMeshIndex)
 	return S_OK;
 }
 
-void CModel::Play_Animation(_float fTimeDelta, _bool isLoop)
+void CModel::Play_Animation(_float fTimeDelta)
 {
 	if(m_iCurrentAnimIndex >= m_iNumAnimations)
 		return;
@@ -170,10 +175,10 @@ void CModel::Play_Animation(_float fTimeDelta, _bool isLoop)
 	if (m_bChangeAnim) 
 	{
 		//! 현재 애니메이션에게 이전 애니메이션을 넘겨주자
-			m_Animations[m_iCurrentAnimIndex]->Blend_TransformationMatrix(isLoop, fTimeDelta, m_Bones, m_pPrevAnimation, this);
+		m_Animations[m_iCurrentAnimIndex]->Blend_TransformationMatrix(fTimeDelta, m_Bones, m_pPrevAnimation, this);
 	}
 	else
-		m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(isLoop, fTimeDelta, m_Bones);
+		m_isFinished = m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(m_isLoop, fTimeDelta, m_Bones);
 	
 	for (auto& pBone : m_Bones)
 	{

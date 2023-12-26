@@ -32,7 +32,7 @@ public:
 
 protected:
 	_bool	Search();
-	_bool	Chase();
+	_bool	Chase(const _float& fTimeDelta);
 
 protected:
 	CGameObject*	m_pOwner = { nullptr };

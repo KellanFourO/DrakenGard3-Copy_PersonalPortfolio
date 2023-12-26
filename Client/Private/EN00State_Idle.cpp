@@ -1,5 +1,7 @@
 #include "EN00State_Idle.h"
 #include "GameObject.h"
+#include "Model.h"
+#include "StateMachine.h"
 
 CEN00State_Idle::CEN00State_Idle()
 {
@@ -22,7 +24,7 @@ HRESULT CEN00State_Idle::Initialize(CGameObject* pOwner)
 
 HRESULT CEN00State_Idle::StartState()
 {
-	
+	m_pOwnerModelCom->Set_Animation(0);
 	
 	return S_OK;
 }
@@ -38,6 +40,11 @@ void CEN00State_Idle::Priority_Tick(const _float& fTimeDelta)
 
 void CEN00State_Idle::Tick(const _float& fTimeDelta)
 {
+	if (true == Search())
+	{
+		m_pOwnerStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("EN00State_Chase"));
+	}
+
 }
 
 void CEN00State_Idle::Late_Tick(const _float& fTimeDelta)

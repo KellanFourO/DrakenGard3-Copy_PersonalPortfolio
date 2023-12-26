@@ -16,6 +16,7 @@ public:
 		wstring strMeshDataPath;
 		wstring strMaterialDataPath;
 		wstring strAnimationDataPath;
+		wstring strHitAnimationDataPath;
 	};
 
 private:
@@ -27,12 +28,17 @@ public:
 	_uint	Get_NumMeshes() const { return m_iNumMeshes; }
 	_uint	Get_CurrentAnimIndex() { return m_iCurrentAnimIndex; }
 	_bool	Get_ChangeAnim() { return m_bChangeAnim;}
-	_float	Get_CurrentDuration();
+	_bool	Get_FinishedAnim() { return m_isFinished; }
+
+	void	Set_Loop(_bool bLoop) { m_isLoop = bLoop; }
 
 	class CBone* Get_BonePtr(const _char* pBoneName) const;
 
-	void  Set_Animation(_uint iAnimIndex) 
+	void  Set_Animation(_uint iAnimIndex, _uint iStartKeyIndex = 0, _float fBlendTime = 0.1f) 
 	{ 
+		if(iAnimIndex >= m_Animations.size())
+			return;
+
 		if( m_iPrevAnimIndex != m_iCurrentAnimIndex) //! 이전 인덱스와 현재 애니메이션의 인덱스가 다르다면 보간을 시작하자
 		{	
 			m_iPrevAnimIndex	= m_iCurrentAnimIndex;  // ! 이전 인덱스에게 바뀌기 전 애니메이션의 인덱스를 넣어주자
@@ -54,7 +60,7 @@ public:
 	virtual HRESULT Render(_uint iMeshIndex); //! virtual은 의미가없다. 자기 자신이 가지고잇는 메시들을 렌더링 시키기위한 함수이다.
 
 public:
-	void	Play_Animation(_float fTimeDelta, _bool isLoop = true);
+	void	Play_Animation(_float fTimeDelta);
 
 public:
 	//! 셰이더에 던질 뼈행렬은 특정매시에게 영향을 주는 뼈행렬을 던질 거라고했다. 모델에서 던지는것이아닌 매쉬 클래스를 통해 현재 클래스를 거쳐서 던져주는 행위를 하는 것이다.
@@ -93,9 +99,13 @@ private:
 	_uint						m_iCurrentAnimIndex = { 0 }; //! 현재 애니메이션의 인덱스를 미리 알아놓아야 편해.
 	_uint						m_iPrevAnimIndex = { 0 };
 	
-	_float						m_fTimeAcc = { 0.f };
-
 	_bool						m_bChangeAnim = { false };
+	_float						m_fStartBlendTime;
+	_float						m_fCurrentBlendTime = { 0.f };
+	_float						m_fMaxBlendTime;
+
+	_bool						m_isFinished = { false };
+	_bool						m_isLoop = { true };
 
 	vector<CAnimation*>			m_Animations;
 

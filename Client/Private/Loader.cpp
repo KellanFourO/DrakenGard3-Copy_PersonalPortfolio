@@ -146,12 +146,12 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	
 	//TODO 플레이어
 
-	lstrcpy(m_szLoadingText, TEXT("플레이어 모델(을) 로드하는 중입니다."));
-	//! Player_Body
+	//lstrcpy(m_szLoadingText, TEXT("플레이어 모델(을) 로드하는 중입니다."));
+	////! Player_Body
 	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Player"),
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("Player"), pFilePathData), PivotMatrix)));
-
+	
 	//! Player_Weapon1
 	PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Weapon1"),
@@ -160,15 +160,15 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 
 	lstrcpy(m_szLoadingText, TEXT("몬스터 모델(을) 로드하는 중입니다."));
 
-	//!Prototype_Component_Model_Monster_EN00
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
-	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("EN00"), pFilePathData), PivotMatrix)));
-
-	//!Prototype_Component_Model_Monster_EN00
-	PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
-	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00_Weapon"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("EN00_Weapon"), pFilePathData), PivotMatrix)));
+	////!Prototype_Component_Model_Monster_EN00
+	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00"),
+	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("EN00"), pFilePathData, true), PivotMatrix)));
+	//
+	////!Prototype_Component_Model_Monster_EN00
+	//PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00_Weapon"),
+	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("EN00_Weapon"), pFilePathData), PivotMatrix)));
 
 
 	//!For.Prototype_Component_Model_ForkLift #포크리프트_Add_ProtoType
@@ -274,14 +274,14 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 
 	lstrcpy(m_szLoadingText, TEXT("몬스터 원형(을) 로드하는 중입니다."));
 
-	/* For.Prototype_GameObject_Monster_EN00 */
-	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_EN00"),
-		CMonster_EN00::Create(m_pDevice, m_pContext, eLevel))))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_Monster_EN00_Weapon"),
-		CMonsterPart_EN00_Weapon::Create(m_pDevice, m_pContext, eLevel))))
-		return E_FAIL;
+	///* For.Prototype_GameObject_Monster_EN00 */
+	//if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_EN00"),
+	//	CMonster_EN00::Create(m_pDevice, m_pContext, eLevel))))
+	//	return E_FAIL;
+	//
+	//if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_Monster_EN00_Weapon"),
+	//	CMonsterPart_EN00_Weapon::Create(m_pDevice, m_pContext, eLevel))))
+	//	return E_FAIL;
 
 
 	/* For.Protytype_GameObject_SkyBox */
@@ -375,13 +375,15 @@ HRESULT CLoader::Loading_For_Tool_Level()
 	return Loading_For_Level(LEVEL_TOOL);
 }
 
-CModel::ModelData* CLoader::CreateDataPath(wstring strModelName, CModel::ModelData* pModelData)
+CModel::ModelData* CLoader::CreateDataPath(wstring strModelName, CModel::ModelData* pModelData, _bool bHitAnim)
 {
 	wstring strDataPath = TEXT("../Bin/Resources/Models/") + strModelName + TEXT("/");
 	wstring strBoneEXT = TEXT(".bone");
 	wstring strMeshEXT = TEXT(".mesh");
 	wstring strMaterialEXT = TEXT(".mat");
 	wstring strAnimationEXT = TEXT(".anim");
+	wstring strHitAnimationEXT = TEXT(".hitanim");
+	
 
 	
 
@@ -389,6 +391,11 @@ CModel::ModelData* CLoader::CreateDataPath(wstring strModelName, CModel::ModelDa
 	pModelData->strMeshDataPath = strDataPath + strModelName + strMeshEXT;
 	pModelData->strMaterialDataPath = strDataPath + strModelName + strMaterialEXT;
 	pModelData->strAnimationDataPath = strDataPath + strModelName + strAnimationEXT;
+
+	if (true == bHitAnim)
+	{
+		pModelData->strHitAnimationDataPath = strDataPath + strModelName + strHitAnimationEXT;
+	}
 
 	return pModelData;
 }

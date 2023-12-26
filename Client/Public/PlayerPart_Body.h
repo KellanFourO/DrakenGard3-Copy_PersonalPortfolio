@@ -11,6 +11,11 @@ private:
 	CPlayerPart_Body(const CPlayerPart_Body& rhs);
 	virtual ~CPlayerPart_Body() = default;
 
+
+public:
+	void	Set_Loop(_bool bLoop) { m_bLoop = bLoop; }
+
+
 public:
 	virtual HRESULT Initialize_Prototype(LEVEL eLevel);
 	virtual HRESULT Initialize(void* pArg) override;
@@ -23,6 +28,9 @@ public:
 	virtual void Write_Json(json& Out_Json) override;
 	virtual void Load_FromJson(const json& In_Json) override;
 	virtual void Init_Desc();
+
+
+_bool			m_bLoop = true;
 
 public:
 	/* 원형객체를 생성한다. */

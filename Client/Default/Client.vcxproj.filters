@@ -133,11 +133,17 @@
     <Filter Include="02. GameObjects\03. Monster\01. AIState">
       <UniqueIdentifier>{f2106f62-feee-4e6d-92ff-72dbe6d5b4b6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. Idle">
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State">
+      <UniqueIdentifier>{e32fc78c-733b-4735-9972-01f0e972266c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\00. Idle">
       <UniqueIdentifier>{965338b2-4991-45eb-b8e7-34b2b8c3cc99}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\03. Monster\00. EN00\01. Weapon">
       <UniqueIdentifier>{7e3eb02d-aa44-4cb1-995a-e598e2b1c3ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\01. Chase">
+      <UniqueIdentifier>{f786ba05-abdf-43dc-a565-58262c8b0df0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -307,10 +313,16 @@
       <Filter>02. GameObjects\03. Monster\01. AIState</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00State_Idle.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. Idle</Filter>
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\00. Idle</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MonsterPart_EN00_Weapon.h">
       <Filter>02. GameObjects\03. Monster\00. EN00\01. Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00State_Chase.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Chase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack1_End.h">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -447,10 +459,16 @@
       <Filter>02. GameObjects\03. Monster\01. AIState</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00State_Idle.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. Idle</Filter>
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\00. Idle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MonsterPart_EN00_Weapon.cpp">
       <Filter>02. GameObjects\03. Monster\00. EN00\01. Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00State_Chase.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Chase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack1_End.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
