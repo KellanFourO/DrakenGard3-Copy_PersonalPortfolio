@@ -8,8 +8,13 @@ CStateBase::CStateBase()
 	Safe_AddRef(m_pGameInstance);
 }
 
-HRESULT CStateBase::Initialize()
+HRESULT CStateBase::Initialize(class CModel* pOwnerModel)
 {
+	m_pOwnerModelCom = pOwnerModel;
+
+	if(AddRefIfNotNull(m_pOwnerModelCom))
+		return E_FAIL;
+
 	return S_OK;
 }
 

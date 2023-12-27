@@ -49,6 +49,7 @@ void CPlayerState_Idle::KeyInput(const _float& fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_W))
 	{
 		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Walk"));
+			
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_A))

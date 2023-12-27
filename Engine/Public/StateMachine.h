@@ -12,7 +12,6 @@ public:
 	enum STATETYPE { STATE_GROUND, STATE_AIR, STATE_DEAD, STATE_NONE,  STATE_END };
 
 public:
-	CGameObject*	Get_Owner() { return m_pOwner;}
 
 	STATETYPE		Get_StateType() { return m_eCurrentStateType; }
 	void			Set_StateType(STATETYPE eStateType) { m_eCurrentStateType = eStateType; }
@@ -38,19 +37,17 @@ private:
 public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize(void* pArg) override;
-	virtual void Priority_Tick(_float fTimeDelta) override;
-	virtual void Tick(_float fTimeDelta) override;
-	virtual void Late_Tick(_float fTimeDelta) override;
+	virtual void	Priority_Tick(_float fTimeDelta) override;
+	virtual void	Tick(_float fTimeDelta) override;
+	virtual void	Late_Tick(_float fTimeDelta) override;
 
 	
 	HRESULT			Find_Exist(const wstring& strStateTag);
+	HRESULT			Clear();
 
 private:
 	HRESULT			Replaceability(STATETYPE eStateType); //! 현재 상태에서 다음 상태로 교체가 가능한지의 대한 여부를 체크하는 함수
 	
-private:
-	CGameObject*	m_pOwner = { nullptr };
-
 private:
 	wstring			m_strCurrentStateTag;
 	_int			m_iCurrentAnimIndex = { 0 };

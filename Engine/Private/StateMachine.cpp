@@ -19,16 +19,6 @@ HRESULT CStateMachine::Initialize_Prototype()
 
 HRESULT CStateMachine::Initialize(void* pArg)
 {
-	CGameObject* pOwner = static_cast<CGameObject*>(pArg);
-	
-	if(nullptr == pOwner)
-		return E_FAIL;
-	
-	m_pOwner = pOwner;
-	
-	if(FAILED(AddRefIfNotNull(m_pOwner)))
-		return E_FAIL;
-
 
 	return S_OK;
 }
@@ -178,6 +168,14 @@ HRESULT CStateMachine::Find_Exist(const wstring& strStateTag)
 	return E_FAIL;
 }
 
+HRESULT CStateMachine::Clear()
+{
+	for (auto& Pair : m_States)
+		Safe_Release(Pair.second);
+	
+	return S_OK;
+}
+
 CStateMachine* CStateMachine::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CStateMachine* pInstance = new CStateMachine(pDevice, pContext);
@@ -208,14 +206,6 @@ void CStateMachine::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pCurrentState);
-	Safe_Release(m_pOwner);
-
-	for (auto& Pair : m_States)
-		Safe_Release(Pair.second);
-
 	m_States.clear();
-	
-
 	
 }

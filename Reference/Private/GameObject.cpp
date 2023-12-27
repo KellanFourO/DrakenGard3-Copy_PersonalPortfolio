@@ -135,7 +135,7 @@ HRESULT CGameObject::Add_Component(_uint iLevelIndex, const wstring& strPrototyp
 		return E_FAIL;
 
 	//! 원형객체를 복사한 사본객체를 만들어낸다.
-	CComponent*	pComponent = m_pGameInstance->Clone_Component(iLevelIndex, strPrototypeTag, pArg);
+  	CComponent*	pComponent = m_pGameInstance->Clone_Component(iLevelIndex, strPrototypeTag, pArg);
 	if(nullptr == pComponent)
 		return E_FAIL;
 

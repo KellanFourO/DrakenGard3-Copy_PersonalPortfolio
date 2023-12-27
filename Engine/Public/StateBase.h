@@ -3,6 +3,7 @@
 
 BEGIN(Engine)
 class CGameInstance;
+class CModel;
 
 class ENGINE_DLL CStateBase abstract : public CBase
 {
@@ -11,7 +12,7 @@ protected:
 virtual ~CStateBase() = default;
 
 public:
-	virtual HRESULT Initialize(); //! 최초 생성시 셋팅 해야하는 값을 정의하자
+	virtual HRESULT Initialize(class CModel* pOwnerModel); //! 최초 생성시 셋팅 해야하는 값을 정의하자
 	virtual HRESULT StartState(); //! 다시 자기 자신이 호출 될 때의 행동을 정의하자
 	virtual HRESULT EndState();   //! 자기 자신이 호출이 종료 될 때의 행동을 정의하자. ex) Reset
 

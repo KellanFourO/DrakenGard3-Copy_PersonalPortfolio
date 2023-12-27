@@ -25,9 +25,9 @@ HRESULT CPlayerState_Base::Initialize(CPlayer* pPlayer)
 	m_pOwnerRigidBody = dynamic_cast<CRigidBody*>(pPlayer->Find_Component(TEXT("Com_RigidBody")));
 	m_pOwnerModelCom = dynamic_cast<CModel*>(pPlayer->Find_PartObject(TEXT("Part_Body"))->Find_Component(TEXT("Com_Model")));
 
-	if (FAILED(AddRefIfNotNull(m_pOwnerStateCom)))
+	if(__super::Initialize(m_pOwnerModelCom))
 		return E_FAIL;
-	if (FAILED(AddRefIfNotNull(m_pOwnerModelCom)))
+	if (FAILED(AddRefIfNotNull(m_pOwnerStateCom)))
 		return E_FAIL;
 	if (FAILED(AddRefIfNotNull(m_pOwnerTransform)))
 		return E_FAIL;

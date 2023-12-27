@@ -4,8 +4,7 @@
 #include "Engine_Function.h"
 
 //TODO 컴포넌트
-#include "RigidBody.h"
-#include "StateMachine.h"
+
 
 //TODO 파츠
 #include "PlayerPart_Body.h"
@@ -128,7 +127,6 @@ CPartObject* CPlayer::Find_PartObject(const wstring& strPartTag)
 
 HRESULT CPlayer::Ready_Components()
 {
-
 	/* For.Com_Navigation */
 	CNavigation::NAVI_DESC		NaviDesc = {};
 	NaviDesc.iCurrentIndex = 0;
@@ -153,11 +151,15 @@ HRESULT CPlayer::Ready_Components()
 		TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), m_pTransformCom)))
 		return E_FAIL;
 
+	///TODO 상태머신
+	//f (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_StateMachine"),
+	//	TEXT("Com_StateMachine"), reinterpret_cast<CComponent**>(&m_pStateCom), this)))
+	//	return E_FAIL;
+	
 	//TODO 상태머신
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_StateMachine"),
 		TEXT("Com_StateMachine"), reinterpret_cast<CComponent**>(&m_pStateCom), this)))
 		return E_FAIL;
-
 
 	return S_OK;
 }
@@ -309,6 +311,10 @@ void CPlayer::Free()
 	
 		m_PartObjects.clear();
 
+	if (nullptr != m_pStateCom)
+	{
+		m_pStateCom->Clear();
+	}
 
 	Safe_Release(m_pStateCom);
 	Safe_Release(m_pColliderCom);
