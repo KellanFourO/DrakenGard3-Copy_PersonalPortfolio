@@ -4,6 +4,8 @@
 
 BEGIN(Engine)
 class CAnimation;
+class CTransform;
+
 
 class ENGINE_DLL CModel final : public CComponent
 {
@@ -34,6 +36,7 @@ public:
 
 	_uint	Get_NumMeshes() const { return m_iNumMeshes; }
 	_uint	Get_CurrentAnimationIndex() const { return m_iCurrentAnimIndex; }
+
 	
 	_int	Get_IndexFromAnimName(const _char* In_szAnimName);
 	_uint	Get_CurrentAnimationKeyIndex() const;
@@ -49,6 +52,10 @@ public:
 	void	Set_Animation(_uint iAnimIndex, _uint iStartKeyIndex = 0, _float fBlendTime = 0.1f);
 	void	Set_AnimationSpeed(_float fAnimationSpeed);
 	_bool	Get_FinishedAnim() { return m_isFinished; }
+
+	void	Root_MotionStart() { m_bRootMotionStart = true;}
+	void	Root_MotionEnd() { m_isRootAnim = false; }
+	void	Root_Motion(CTransform* pTransform);
 
 public:
 	//! 셰이더에 던질 뼈행렬은 특정매시에게 영향을 주는 뼈행렬을 던질 거라고했다. 모델에서 던지는것이아닌 매쉬 클래스를 통해 현재 클래스를 거쳐서 던져주는 행위를 하는 것이다.
@@ -85,6 +92,15 @@ private:
 	_bool						m_isLoop = { true };
 	_bool						m_isFinished = { false };
 
+
+	_float3						m_vPrevRootPosition = { 0.f, 0.f, 0.f };
+	_float3						m_vCurrentRootPosition = { 0.f, 0.f, 0.f };
+
+	_bool						m_bRootMotionStart = { false };
+	_bool						m_isRootAnim = false;
+
+	class CBone*				m_pRootTranslateBone = { nullptr };
+
 	ModelData					m_tDataFilePath;
 public:
 	typedef vector<class CBone*>	BONES;
@@ -101,6 +117,7 @@ private:
 	string	ReplaceExtension(const string& originalPath, const string& newExtension);
 	string	ConvertWstrToStrModel(const wstring& wstr);
 	wstring ConvertStrToWstrModel(const string& str);
+	_float3 QuaternionToEuler(const _float4& quaternion);
 	
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);

@@ -28,6 +28,7 @@ public:
 
 protected:
 	virtual void	KeyInput(const _float& fTimeDelta);
+	void			RootMotion();
 
 protected:
 	CStateMachine*	m_pOwnerStateCom = { nullptr };

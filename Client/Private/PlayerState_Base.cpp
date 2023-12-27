@@ -5,12 +5,14 @@
 #include "PlayerPart_Body.h"
 
 #include "GameInstance.h"
-#include "StateMachine.h"
+#include "Bone.h"
 #include "Model.h"
+#include "Animation.h"
 #include "RigidBody.h"
 #include "Transform.h"
 #include "Navigation.h"
-#include "RigidBody.h"
+#include "StateMachine.h"
+
 
 CPlayerState_Base::CPlayerState_Base()
 {
@@ -41,6 +43,11 @@ HRESULT CPlayerState_Base::Initialize(CPlayer* pPlayer)
 
 void CPlayerState_Base::KeyInput(const _float& fTimeDelta)
 {
+}
+
+void CPlayerState_Base::RootMotion()
+{
+	m_pOwnerModelCom->Root_Motion(m_pOwnerTransform);
 }
 
 void CPlayerState_Base::Free()

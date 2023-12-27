@@ -15,12 +15,14 @@ public:
 	_int		 Get_Index() const { return m_iIndex; }
 
 	_matrix		Get_CombinedTransformationMatrix() const { return XMLoadFloat4x4(&m_CombinedTransformationMatrix); }
+	void		Set_Position(_float3 vPosition) { memcpy(&m_TransformationMatrix.m[3], &vPosition, sizeof(_float3)); }
 	_float4x4	Get_OffsetFloat4x4() const { return m_OffsetMatrix; }
 
 	void		Set_TransformationMatrix(_fmatrix TransformationMatrix) { XMStoreFloat4x4(&m_TransformationMatrix, TransformationMatrix); }
 	void		BlendAnimation(const KEYFRAME& tCurKey, _float fRatio);
 	void		Setup_PreKeyFrame();
 	void		Reset_Bone();
+
 
 
 public:

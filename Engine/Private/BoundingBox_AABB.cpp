@@ -19,6 +19,12 @@ HRESULT CBoundingBox_AABB::Initialize(BOUNDING_DESC * pBoundingDesc)
 
 void CBoundingBox_AABB::Update(_fmatrix TransformMatrix)
 {
+	_matrix		Matrix = TransformMatrix;
+
+	Matrix.r[0] = XMVectorSet(1.f, 0.f, 0.f, 0.f) * XMVectorGetX(XMVector3Length(Matrix.r[0]));
+	Matrix.r[1] = XMVectorSet(0.f, 1.f, 0.f, 0.f) * XMVectorGetX(XMVector3Length(Matrix.r[1]));
+	Matrix.r[2] = XMVectorSet(0.f, 0.f, 1.f, 0.f) * XMVectorGetX(XMVector3Length(Matrix.r[2]));
+
 	m_pOriginBoundingBox->Transform(*m_pBoundingBox, TransformMatrix);
 }
 

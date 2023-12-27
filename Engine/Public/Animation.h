@@ -49,6 +49,9 @@ private:
 
 	//TODO 애니메이션 변수
 	_float					m_fAnimationSpeed = 1.f;
+	_float4					m_RootMotionPos;
+	_float4					m_vBeginRootBonePos = _float4(0.f, 0.f, 0.f, 1.f);
+	_double					m_RootMotionValue = 1.0;
 
 	//TODO 블랜딩 변수
 	_int					m_iPrevChannelIndex = { -1 };
