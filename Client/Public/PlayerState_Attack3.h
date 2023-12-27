@@ -1,10 +1,10 @@
 #pragma once
-#include "PlayerState_Base.h"
+#include "PlayerState_NormalAttackBase.h"
 
 BEGIN(Client)
 class CPlayer;
 
-class CPlayerState_Attack3 final : public CPlayerState_Base 
+class CPlayerState_Attack3 final : public CPlayerState_NormalAttackBase
 {
 private:
 		 CPlayerState_Attack3();

@@ -36,6 +36,8 @@ HRESULT CPlayerState_Attack3::EndState()
 
 	m_fAccTime = 0.f;
 	m_fLastInputTime = 0.f;
+	m_isEnd = false;
+	m_bInput = false;
 	return S_OK;
 }
 
@@ -46,11 +48,7 @@ void CPlayerState_Attack3::Tick(const _float& fTimeDelta)
 
 void CPlayerState_Attack3::Late_Tick(const _float& fTimeDelta)
 {
-	if (true == m_pOwnerModelCom->Get_CurrentAnimation()->Get_Finished())
-	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack3_End"));
-	}
-
+	NextComboOrIdle(m_pOwnerModelCom, m_pOwnerStateCom, TEXT("PlayerState_Attack4"), 95);
 }
 
 CPlayerState_Attack3* CPlayerState_Attack3::Create(CPlayer* pPlayer)
