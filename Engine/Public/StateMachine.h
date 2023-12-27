@@ -25,6 +25,8 @@ public:
 	HRESULT			Add_State(const wstring& strStateTag, CStateBase* pAddState);
 	HRESULT			Set_InitState(const wstring& strStateTag);
 	HRESULT			Transition(STATETYPE eStateType, const wstring& strStateTag);
+
+	void			Set_ActionDelay(_float fDelay) { m_fActionDelay = fDelay;  m_isActionSwitch = false; }
 	
 	
 
@@ -61,6 +63,9 @@ private:
 	_bool			m_isDead = { false };
 
 	_bool			m_isStart = { true } ; //! 최초 한번
+	
+	_float			m_fActionDelay = { 0.f };
+	_bool			m_isActionSwitch = true;
 
 private:
 	map<const wstring, CStateBase*>		m_States;

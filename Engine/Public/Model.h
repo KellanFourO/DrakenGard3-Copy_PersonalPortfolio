@@ -34,7 +34,7 @@ public:
 
 	_uint	Get_NumMeshes() const { return m_iNumMeshes; }
 	_uint	Get_CurrentAnimationIndex() const { return m_iCurrentAnimIndex; }
-
+	
 	_int	Get_IndexFromAnimName(const _char* In_szAnimName);
 	_uint	Get_CurrentAnimationKeyIndex() const;
 

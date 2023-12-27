@@ -48,7 +48,7 @@ void CPlayerState_Attack4::Tick(const _float& fTimeDelta)
 
 void CPlayerState_Attack4::Late_Tick(const _float& fTimeDelta)
 {
-	NextComboOrIdle(m_pOwnerModelCom, m_pOwnerStateCom, TEXT("PlayerState_Idle"), 97);
+	NextComboOrIdle(m_pOwnerModelCom, m_pOwnerStateCom, TEXT("PlayerState_Attack5"), 97);
 }
 
 CPlayerState_Attack4* CPlayerState_Attack4::Create(CPlayer* pPlayer)

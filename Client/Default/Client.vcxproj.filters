@@ -145,6 +145,18 @@
     <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\01. Chase">
       <UniqueIdentifier>{f786ba05-abdf-43dc-a565-58262c8b0df0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\04. Attack5">
+      <UniqueIdentifier>{2c14b647-6041-4e36-b7cb-6b126bb16716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\05. Attack6">
+      <UniqueIdentifier>{d8f0d604-6c81-4f91-98c5-7c4544f915b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\06. Attack7">
+      <UniqueIdentifier>{56f98632-ca43-4d26-aa5b-0371e517a7b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8">
+      <UniqueIdentifier>{89521753-c263-4bd2-a1ba-ab0fbfd5bc51}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -321,23 +333,26 @@
     <ClInclude Include="..\Public\EN00State_Chase.h">
       <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Chase</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\PlayerState_Attack1_End.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\PlayerState_Attack2_End.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Attack3_End.h">
       <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\PlayerState_Attack4_End.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerGroundStates.h">
       <Filter>02. GameObjects\06. Player\02. States\Ground</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_NormalAttackBase.h">
       <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack5.h">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\04. Attack5</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack6.h">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\05. Attack6</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack7.h">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\06. Attack7</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack8.h">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -482,20 +497,23 @@
     <ClCompile Include="..\Private\EN00State_Chase.cpp">
       <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Chase</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\PlayerState_Attack1_End.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\PlayerState_Attack2_End.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Attack3_End.cpp">
       <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\PlayerState_Attack4_End.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\PlayerState_NormalAttackBase.cpp">
       <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack5.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\04. Attack5</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack6.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\05. Attack6</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack7.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\06. Attack7</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack8.cpp">
+      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

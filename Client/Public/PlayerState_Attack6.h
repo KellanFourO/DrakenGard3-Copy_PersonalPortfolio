@@ -1,14 +1,14 @@
 #pragma once
-#include "PlayerState_Base.h"
+#include "PlayerState_NormalAttackBase.h"
 
 BEGIN(Client)
 class CPlayer;
 
-class CPlayerState_Attack1_End final : public CPlayerState_Base 
+class CPlayerState_Attack6 final : public CPlayerState_NormalAttackBase
 {
 private:
-		 CPlayerState_Attack1_End();
-virtual ~CPlayerState_Attack1_End() = default;
+		 CPlayerState_Attack6();
+virtual ~CPlayerState_Attack6() = default;
 
 public:
 	virtual HRESULT Initialize(CPlayer* pPlayer) override;
@@ -18,11 +18,8 @@ public:
 	virtual void	Tick(const _float& fTimeDelta) override;
 	virtual void	Late_Tick(const _float& fTimeDelta) override;
 
-private:
-	virtual void	KeyInput(const _float& fTimeDelta) override;
-
 public:
-	static CPlayerState_Attack1_End* Create(CPlayer* pPlayer);
+	static CPlayerState_Attack6* Create(CPlayer* pPlayer);
 	virtual void Free() override;
 };
 

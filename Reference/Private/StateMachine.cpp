@@ -9,13 +9,13 @@ CStateMachine::CStateMachine(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 
 CStateMachine::CStateMachine(const CStateMachine& rhs)
 	: CComponent(rhs)
-	, m_States(rhs.m_States)
-	, m_pCurrentState(rhs.m_pCurrentState)
+	//m_States(rhs.m_States)
+	//m_pCurrentState(rhs.m_pCurrentState)
 {
-	for(auto& Pair : m_States)
-		Safe_AddRef(Pair.second);
-
-	Safe_AddRef(m_pCurrentState);
+	//for(auto& Pair : m_States)
+	//	Safe_AddRef(Pair.second);
+	//
+	//Safe_AddRef(m_pCurrentState);
 }
 
 HRESULT CStateMachine::Initialize_Prototype()
@@ -41,7 +41,7 @@ HRESULT CStateMachine::Initialize(void* pArg)
 
 void CStateMachine::Priority_Tick(_float fTimeDelta)
 {	
-	if (nullptr != m_pCurrentState)
+	if (nullptr != m_pCurrentState && m_isActionSwitch)
 	{
 		m_pCurrentState->Priority_Tick(fTimeDelta);
 	}
@@ -49,7 +49,17 @@ void CStateMachine::Priority_Tick(_float fTimeDelta)
 
 void CStateMachine::Tick(_float fTimeDelta)
 {
-	if (nullptr != m_pCurrentState)
+	if (false == m_isActionSwitch)
+	{
+		m_fActionDelay -= fTimeDelta;
+
+		if (m_fActionDelay < 0)
+		{
+			m_isActionSwitch = true;
+		}
+	}
+	
+	if (nullptr != m_pCurrentState && m_isActionSwitch)
 	{
 		m_pCurrentState->Tick(fTimeDelta);
 	}
@@ -57,7 +67,7 @@ void CStateMachine::Tick(_float fTimeDelta)
 
 void CStateMachine::Late_Tick(_float fTimeDelta)
 {
-	if (nullptr != m_pCurrentState)
+	if (nullptr != m_pCurrentState && m_isActionSwitch)
 	{
 		m_pCurrentState->Late_Tick(fTimeDelta);
 	}

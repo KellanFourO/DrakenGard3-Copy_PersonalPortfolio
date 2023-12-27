@@ -27,7 +27,6 @@ protected:
 
 protected:
 	_bool	m_isEnd = false;
-	_bool	m_isChange = false;
 
 public:
 	virtual void Free() override;

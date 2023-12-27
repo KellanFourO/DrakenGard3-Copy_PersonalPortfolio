@@ -214,26 +214,26 @@ HRESULT CPlayer::Ready_States()
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack1"), CPlayerState_Attack1::Create(this))))
 		return E_FAIL;
 
-	//if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack1_End"), CPlayerState_Attack1_End::Create(this))))
-	//	return E_FAIL;
-
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack2"), CPlayerState_Attack2::Create(this))))
 		return E_FAIL;
-
-	//if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack2_End"), CPlayerState_Attack2_End::Create(this))))
-	//	return E_FAIL;
 
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack3"), CPlayerState_Attack3::Create(this))))
 		return E_FAIL;
 
-	//if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack3_End"), CPlayerState_Attack3_End::Create(this))))
-	//	return E_FAIL;
-
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack4"), CPlayerState_Attack4::Create(this))))
 		return E_FAIL;
 
-	//if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack4_End"), CPlayerState_Attack4_End::Create(this))))
-	//	return E_FAIL;
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack5"), CPlayerState_Attack5::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack6"), CPlayerState_Attack6::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack7"), CPlayerState_Attack7::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack8"), CPlayerState_Attack8::Create(this))))
+		return E_FAIL;
 
 	
 	m_pStateCom->Set_InitState(TEXT("PlayerState_Idle"));
