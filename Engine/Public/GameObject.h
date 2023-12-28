@@ -25,6 +25,9 @@ protected:
 
 public:
 	class CTransform*		Get_Transform() { return m_pTransformCom; }
+	_bool					Is_Player() { return m_isPlayer; }
+	_bool					Is_Dead()	{ return m_isDead; }
+	void					Die() { m_isDead = true; }
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -56,7 +59,8 @@ protected:
 
 protected:
 	_bool						m_isCloned = { false };
-
+	_bool						m_isPlayer = { false };
+	_bool						m_isDead = { false };
 
 protected:
 	HRESULT Add_Component(_uint iLevelIndex, const wstring& strPrototypeTag,

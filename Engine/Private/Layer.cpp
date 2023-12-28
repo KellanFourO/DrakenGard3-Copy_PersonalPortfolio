@@ -15,6 +15,18 @@ CComponent* CLayer::Get_Component(const wstring& strComponentTag, _uint iIndex)
 	return (*iter)->Find_Component(strComponentTag);
 }
 
+CGameObject* CLayer::Get_Player()
+{
+	
+	for (auto& pGameObject : m_GameObjects)
+	{
+		if(true == pGameObject->Is_Player())
+			return pGameObject;
+	}
+	
+	return nullptr;
+}
+
 HRESULT CLayer::Add_GameObject(CGameObject* pGameObject)
 {
 	if(nullptr == pGameObject)

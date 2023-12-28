@@ -9,6 +9,7 @@ class CShader;
 class CCollider;
 class CTransform;
 class CRigidBody;
+class CGameObject;
 class CGameInstance;
 END
 
@@ -21,12 +22,15 @@ public:
 	BrainTree::Node::Status update() override;
 
 protected:
-	_bool		Detect();
-	_bool		Chase();
+	void		SetAnimation(_int iAnimIndex);
+	_bool		Detect(CGameObject* pTarget, const string& strDetectRangeKey);
+	_vector		Chase(CGameObject* pTarget);
+	_bool		AttackEnable(_float3 vDistance, const string& strAttackRangeKey);
 
 
 protected:
 	_float	fConsoleDebugAcc = 0.f;
+	_float3	m_vDistance = { 0.f, 0.f, 0.f };
 
 };
 

@@ -246,6 +246,14 @@ CComponent* CGameInstance::Get_Component(_uint iLevelIndex, const wstring& strLa
 	return m_pObject_Manager->Get_Component(iLevelIndex, strLayerTag, strComponentTag, iIndex);
 }
 
+CGameObject* CGameInstance::Get_Player(_uint iLevelIndex)
+{
+	if (nullptr == m_pObject_Manager)
+		return nullptr;
+
+	return m_pObject_Manager->Get_Player(iLevelIndex);
+}
+
 HRESULT CGameInstance::Add_Prototype(_uint iLevelIndex, const wstring& strPrototypeTag, CComponent* pPrototype)
 {
 	if (nullptr == m_pComponent_Manager)

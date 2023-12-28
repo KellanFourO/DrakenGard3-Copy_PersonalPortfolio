@@ -102,6 +102,20 @@ HRESULT CObject_Manager::Remove_CloneObject(_uint iLevelIndex, const wstring& st
 	return S_OK;
 }
 
+CGameObject* CObject_Manager::Get_Player(_uint iLevelIndex)
+{
+	CLayer* pLayer = Find_Layer(iLevelIndex, TEXT("Layer_Player"));
+
+	CGameObject* pPlayer = pLayer->Get_Player();
+
+	if(nullptr != pPlayer)
+		return pPlayer;
+
+	return nullptr;
+	
+	
+}
+
 
 //! Tick을 따로 함수로 따로 나눈이유 : 모든 객체들의 Priority_Tick을 순회 후 Tick 순회 후 Late_Tick을 순회하고 싶었다.
 //! 그렇다면 한 함수에서 폴문을 단계별로 돌리면 되지 않았냐 : 다른 셋팅을 해주고 싶었다. 예를들어 Priority_Tick을 수행 후 그래픽디바이스의 셋팅값을 바꾸고 Tick을 하고싶었다 같은 경우에 제어하고싶어서.

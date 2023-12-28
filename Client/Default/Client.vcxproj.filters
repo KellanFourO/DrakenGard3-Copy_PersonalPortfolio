@@ -136,14 +136,8 @@
     <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State">
       <UniqueIdentifier>{e32fc78c-733b-4735-9972-01f0e972266c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\00. Idle">
-      <UniqueIdentifier>{965338b2-4991-45eb-b8e7-34b2b8c3cc99}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\03. Monster\00. EN00\01. Weapon">
       <UniqueIdentifier>{7e3eb02d-aa44-4cb1-995a-e598e2b1c3ec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\01. Chase">
-      <UniqueIdentifier>{f786ba05-abdf-43dc-a565-58262c8b0df0}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\04. Attack5">
       <UniqueIdentifier>{2c14b647-6041-4e36-b7cb-6b126bb16716}</UniqueIdentifier>
@@ -157,8 +151,77 @@
     <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8">
       <UniqueIdentifier>{89521753-c263-4bd2-a1ba-ab0fbfd5bc51}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\03. Monster\01. AIState\00. Sequence">
-      <UniqueIdentifier>{9a89756c-2ea4-4f6d-88b7-41b78af614d5}</UniqueIdentifier>
+    <Filter Include="02. GameObjects\03. Monster\01. AIState\00. Control">
+      <UniqueIdentifier>{35022697-288f-48e8-8101-57889c20b2a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\01. AIState\01. Task">
+      <UniqueIdentifier>{25e47424-5c35-4db9-88b8-c09749a9a9a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\01. Hit">
+      <UniqueIdentifier>{f76f510d-4816-41c0-bbb0-f5d012ae39f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\00. Dead">
+      <UniqueIdentifier>{e8dec557-c06d-4eeb-a522-182f18994927}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\00. Dead\Control">
+      <UniqueIdentifier>{234b89cb-162d-4ef3-83d7-a6ead8abb599}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\00. Dead\Task">
+      <UniqueIdentifier>{6ee1a372-498a-4331-8af0-b0b96002348a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\02. Ground">
+      <UniqueIdentifier>{fd10fa7a-8ef7-4e6a-8c4b-d4c982723566}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\03. AttackRange">
+      <UniqueIdentifier>{29dd23f1-964d-40de-818c-f8c567469a3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye">
+      <UniqueIdentifier>{0ff53118-f569-4097-9424-be10281f4a2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye\Control">
+      <UniqueIdentifier>{c2798c11-7374-4404-aaa2-6bc594650427}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye\Task">
+      <UniqueIdentifier>{f496c32d-f2d6-4dbe-ae31-7b344db531f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack">
+      <UniqueIdentifier>{d55364be-b99d-45f5-a1d4-8aa4fc93919f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack\Control">
+      <UniqueIdentifier>{9c6bdc52-bce4-4617-ae26-2b6263e3d9e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack\Task">
+      <UniqueIdentifier>{2a332382-b5ad-4fac-adfb-9314778fe77f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\01. Hit\Control">
+      <UniqueIdentifier>{ab1df332-7e42-4564-9221-404efd5cadf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\01. Hit\Task">
+      <UniqueIdentifier>{7648780f-152d-4ea1-8df5-0e18aa882a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\06. UpperAttack">
+      <UniqueIdentifier>{87c5d452-fca7-4185-9680-217a5669f731}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\07. ChargeAttack">
+      <UniqueIdentifier>{fcf93137-3027-44e7-a32f-23ea23dcbe9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\08. PlayerDead">
+      <UniqueIdentifier>{cde11872-bd30-46c9-980e-319d9b0c03f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\09. DetectRange">
+      <UniqueIdentifier>{559f5faf-337a-4ac8-baca-ffb3f0ac5613}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\10. Arrival">
+      <UniqueIdentifier>{929a4500-cd23-4e05-9a80-bda58cb0b2b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\11. Idle">
+      <UniqueIdentifier>{2ef5d98e-8ee3-432f-9ee3-6f886284dab4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\12. SetTargetPosition">
+      <UniqueIdentifier>{f3cf2f9f-90c5-4ec2-94be-af1c1c2e8091}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\13. MoveToTarget">
+      <UniqueIdentifier>{e52c758d-6a85-4b66-96eb-e44da6407349}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -327,14 +390,8 @@
     <ClInclude Include="..\public\AIState_Base.h">
       <Filter>02. GameObjects\03. Monster\01. AIState</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\EN00State_Idle.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\00. Idle</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\MonsterPart_EN00_Weapon.h">
       <Filter>02. GameObjects\03. Monster\00. EN00\01. Weapon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\EN00State_Chase.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Chase</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Attack3_End.h">
       <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
@@ -356,6 +413,78 @@
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Attack8.h">
       <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AIControl_Base.h">
+      <Filter>02. GameObjects\03. Monster\01. AIState\00. Control</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AITask_Base.h">
+      <Filter>02. GameObjects\03. Monster\01. AIState\01. Task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\EN00_Task_Dead.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\00. Dead\Task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Control_Dead.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\00. Dead\Control</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00States.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Control_Ground.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\02. Ground</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Control_AttackRange.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\03. AttackRange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Control_KeepEye.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye\Control</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Task_KeepEye.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye\Task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Control_NormalAttack.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack\Control</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Task_NormalAttack.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack\Task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Control_Hit.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Hit\Control</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Task_Hit.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Hit\Task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Control_UpperAttack.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\06. UpperAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Task_UpperAttack.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\06. UpperAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Control_ChargeAttack.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\07. ChargeAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Task_ChargeAttack.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\07. ChargeAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Control_PlayerDead.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\08. PlayerDead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Control_DetectRange.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\09. DetectRange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Task_DetectRange.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\09. DetectRange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Control_Arrival.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\10. Arrival</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Task_Idle.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\11. Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Control_SetTargetPosition.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\12. SetTargetPosition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN00_Task_MoveToTarget.h">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\13. MoveToTarget</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -491,14 +620,8 @@
     <ClCompile Include="..\Private\AIState_Base.cpp">
       <Filter>02. GameObjects\03. Monster\01. AIState</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\EN00State_Idle.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\00. Idle</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\MonsterPart_EN00_Weapon.cpp">
       <Filter>02. GameObjects\03. Monster\00. EN00\01. Weapon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\EN00State_Chase.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Chase</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Attack3_End.cpp">
       <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
@@ -517,6 +640,75 @@
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Attack8.cpp">
       <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AIControl_Base.cpp">
+      <Filter>02. GameObjects\03. Monster\01. AIState\00. Control</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AITask_Base.cpp">
+      <Filter>02. GameObjects\03. Monster\01. AIState\01. Task</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Task_Dead.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\00. Dead\Task</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\EN00_Control_Dead.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\00. Dead\Control</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Control_Ground.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\02. Ground</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Control_AttackRange.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\03. AttackRange</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Control_KeepEye.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye\Control</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Task_KeepEye.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye\Task</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Control_NormalAttack.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack\Control</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Task_NormalAttack.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack\Task</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Control_Hit.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Hit\Control</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Task_Hit.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Hit\Task</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Control_UpperAttack.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\06. UpperAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Task_UpperAttack.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\06. UpperAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Control_ChargeAttack.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\07. ChargeAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Task_ChargeAttack.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\07. ChargeAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Control_PlayerDead.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\08. PlayerDead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Control_DetectRange.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\09. DetectRange</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Task_DetectRange.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\09. DetectRange</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Control_Arrival.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\10. Arrival</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Task_Idle.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\11. Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Control_SetTargetPosition.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\12. SetTargetPosition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN00_Task_MoveToTarget.cpp">
+      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\13. MoveToTarget</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

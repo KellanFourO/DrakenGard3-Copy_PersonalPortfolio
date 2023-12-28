@@ -41,6 +41,8 @@ private:
 	
 	HRESULT			Bind_ShaderResources();
 
+	void			Debug_KeyInput();
+
 private:
 	map<const wstring, class CPartObject*>	m_PartObjects;
 	

@@ -12,22 +12,30 @@
 BrainTree::Node::Status CEN00State_Chase::update()
 {
 
-	//fConsoleDebugAcc += blackboard->GetTimeDelta();
-	//
-	//if (fConsoleDebugAcc > 2.f)
-	//{
-	//	cout << "EN00 - BrainTree - Chase " << endl;
-	//	fConsoleDebugAcc = 0.f;
-	//}
+	SetAnimation(3);
+	
 
-
-	if (blackboard->GetGameInstance()->Key_Down(DIK_P))
+	fConsoleDebugAcc += blackboard->GetTimeDelta();
+	
+	if (fConsoleDebugAcc > 2.f)
 	{
-		
+		cout << "EN00 - BrainTree - Chase " << endl;
+		fConsoleDebugAcc = 0.f;
+	}
+
+	XMStoreFloat3(&m_vDistance, Chase(blackboard->GetTarget()));
+
+	if (true == Detect(blackboard->GetTarget(), "Detect_Range") && true == AttackEnable(m_vDistance, "Attack_Range"))
+	{
+		cout << "EN00 - BrainTree - Attack " << endl;
 
 		return BrainTree::Node::Status::Success;
 	}
 
+	else if (false == Detect(blackboard->GetTarget(), "Detect_Range"))
+	{
 
-	return BrainTree::Node::Status::Failure;
+		return BrainTree::Node::Status::Failure;
+	}
+	
 }

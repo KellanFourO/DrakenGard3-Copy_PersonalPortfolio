@@ -23,6 +23,8 @@ public:
 	class CGameObject* Get_CloneObject(const wstring& strProtoTypeTag, void* pArg = nullptr);
 	HRESULT	Remove_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg);
 
+	class CGameObject* Get_Player(_uint iLevelIndex);
+
 public:
 	void	Priority_Tick(_float fTimeDelta);
 	void	Tick(_float fTimeDelta);

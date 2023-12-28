@@ -24,6 +24,8 @@ private:
 	CPlayer(const CPlayer& rhs);
 	virtual ~CPlayer() = default;
 
+
+
 public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize(void* pArg) override;

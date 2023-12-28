@@ -28,6 +28,7 @@ public:
 	void			Set_ActionDelay(_float fDelay) { m_fActionDelay = fDelay;  m_isActionSwitch = false; }
 	
 	
+	_bool			isDead() { return m_isDead; }
 
 private:
 	CStateMachine(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

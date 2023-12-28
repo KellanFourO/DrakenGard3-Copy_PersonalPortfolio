@@ -234,6 +234,7 @@ xcopy "$(SolutionDir)Engine\Bin\ShaderFiles\*.*" "$(SolutionDir)Client\Bin\Shade
     <ClInclude Include="..\Public\VIBuffer_Dynamic_Terrain.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
+    <ClInclude Include="그라운드 AI설계.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Reference\Private\Json\Json_Utility.cpp" />

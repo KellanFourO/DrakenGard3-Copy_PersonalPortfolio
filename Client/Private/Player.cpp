@@ -20,11 +20,13 @@ CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 CPlayer::CPlayer(const CPlayer & rhs)
 	: CAnimObject(rhs)
+	
 {
 }
 
 HRESULT CPlayer::Initialize_Prototype()
 {	
+	m_isPlayer = true;
 
 	return S_OK;
 }

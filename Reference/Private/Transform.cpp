@@ -179,6 +179,8 @@ void CTransform::Go_Target(_fvector vTargetPos, _float fTimeDelta, _float fSpare
 	if(fDistance >= fSpare)
 		vPosition += XMVector3Normalize(vDir) * m_fSpeedPerSec * fTimeDelta;
 
+
+	Look_At(vTargetPos);
 	Set_State(STATE_POSITION, vPosition);
 }
 
@@ -213,6 +215,18 @@ void CTransform::Look_At_OnLand(_fvector vTargetPos)
 	Set_State(STATE_RIGHT, vRight);
 	Set_State(STATE_UP, vUp);
 	Set_State(STATE_LOOK, vLook);
+}
+
+_bool CTransform::HasArrived(const DirectX::XMFLOAT3& _vCurrentPos, const DirectX::XMFLOAT3& _vTargetPos, _float fArrivalThreshold)
+{
+	DirectX::XMVECTOR vCurrentPos = DirectX::XMLoadFloat3(&_vCurrentPos);
+	DirectX::XMVECTOR vTargetPos = DirectX::XMLoadFloat3(&_vTargetPos);
+
+	// 두 지점 간의 거리를 계산
+	DirectX::XMVECTOR vDistance = DirectX::XMVector3Length(DirectX::XMVectorSubtract(vTargetPos, vCurrentPos));
+
+	// 거리가 arrivalThreshold 이하이면 도착으로 간주
+	return DirectX::XMVectorGetX(vDistance) <= fArrivalThreshold;
 }
 
 void CTransform::Translate(_fvector& _vTranslation)

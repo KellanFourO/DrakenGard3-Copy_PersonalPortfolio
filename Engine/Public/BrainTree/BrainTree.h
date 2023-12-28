@@ -17,6 +17,7 @@ class CShader;
 class CCollider;
 class CTransform;
 class CRigidBody;
+class CGameObject;
 class CGameInstance;
 END
 
@@ -48,12 +49,20 @@ public:
     bool hasInt(std::string key) const  { return ints.find(key) != ints.end(); }
 
     void setFloat(std::string key, float value)  { floats[key] = value; }
+    void setFloat3(std::string key, _float3 value) { float3s[key] = value; }
     float getFloat(std::string key)
     {
         if (floats.find(key) == floats.end()) {
             floats[key] = 0.0f;
         }
         return floats[key];
+    }
+    _float3 getFloat3(std::string key)
+    {
+        if (float3s.find(key) == float3s.end()) {
+            float3s[key] = {};
+        }
+        return float3s[key];
     }
     bool hasFloat(std::string key) const  { return floats.find(key) != floats.end(); }
 
@@ -83,6 +92,8 @@ public:
     
     Engine::CModel* GetModel() { return pModel; }
     Engine::CShader* GetShader() { return pShader; }
+    Engine::CGameObject* GetTarget() { return pTarget; }
+    Engine::CGameObject* GetOwner() { return pOwner; }
     Engine::CCollider* GetCollider() { return pCollider; }
     Engine::CTransform* GetTransform() { return pTransform; }
     Engine::CRigidBody* GetRigidBody() { return pRigidBody; }
@@ -92,6 +103,8 @@ public:
 
     void setModel(Engine::CModel* _pModel) { pModel = _pModel;}
     void setShader(Engine::CShader* _pShader) { pShader = _pShader; }
+    void setTarget(Engine::CGameObject* _pTarget) { pTarget = _pTarget;}
+    void setOwner(Engine::CGameObject* _pOwner) { pOwner = _pOwner; }
     void setCollider(Engine::CCollider* _pCollider) { pCollider = _pCollider; }
     void setTransform(Engine::CTransform* _pTransform) { pTransform = _pTransform; }
     void setRigidBody(Engine::CRigidBody* _pRigidBody) { pRigidBody = _pRigidBody; }
@@ -103,14 +116,19 @@ protected:
     std::unordered_map<std::string, bool> bools;
     std::unordered_map<std::string, int> ints;
     std::unordered_map<std::string, float> floats;
+    std::unordered_map<std::string, _float3> float3s;
     std::unordered_map<std::string, double> doubles;
     std::unordered_map<std::string, std::string> strings;
+
 
     //TODO Ãß°¡
     //!std::unordered_map<std::string, class CModel*> pModel;
     float                   fTimeDelta = { 0.f };
 
+    
     Engine::CModel*           pModel = { nullptr };
+    Engine::CGameObject*      pTarget = { nullptr };
+    Engine::CGameObject*      pOwner = { nullptr };
     Engine::CShader*          pShader = { nullptr };
     Engine::CCollider*        pCollider = { nullptr };
     Engine::CTransform*       pTransform = { nullptr };

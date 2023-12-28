@@ -382,8 +382,6 @@ CModel::ModelData* CLoader::CreateDataPath(wstring strModelName, CModel::ModelDa
 	wstring strHitAnimationEXT = TEXT(".hitanim");
 	
 
-	
-
 	pModelData->strBoneDataPath = strDataPath + strModelName + strBoneEXT;
 	pModelData->strMeshDataPath = strDataPath + strModelName + strMeshEXT;
 	pModelData->strMaterialDataPath = strDataPath + strModelName + strMaterialEXT;

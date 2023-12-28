@@ -17,6 +17,7 @@ HRESULT CPlayerPart_Weapon::Initialize_Prototype(LEVEL eLevel)
 {
 	m_eCurrentLevelID = eLevel;
 	m_strName = "CPlayerPart_Weapon";
+
 	return S_OK;
 }
 
@@ -65,7 +66,6 @@ void CPlayerPart_Weapon::Priority_Tick(_float fTimeDelta)
 
 void CPlayerPart_Weapon::Tick(_float fTimeDelta)
 {
-	
 }
 
 void CPlayerPart_Weapon::Late_Tick(_float fTimeDelta)

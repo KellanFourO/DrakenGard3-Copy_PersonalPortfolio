@@ -3,6 +3,10 @@
 #include "GameInstance.h"
 #include "EN00State_Idle.h"
 #include "EN00State_Chase.h"
+#include "EN00State_Attack.h"
+
+#include "EN00States.h"
+
 #include "PartObject.h"
 #include "Bone.h"
 
@@ -69,6 +73,8 @@ void CMonster_EN00::Tick(_float fTimeDelta)
 {
 	m_BehaviorTree->getBlackboard()->setTimeDelta(fTimeDelta);
 	BrainTree::Node::Status TreeStatus = m_BehaviorTree->update();
+
+	Debug_KeyInput();
 
 	for (auto& Pair : m_PartObjects)
 	{
@@ -228,7 +234,20 @@ HRESULT CMonster_EN00::Ready_BehaviorTree()
 	BrainTree::Blackboard::Ptr EN00_BlackBoard = m_BehaviorTree->getBlackboard();
 	
 	EN00_BlackBoard->setString("Name", "EN00");
-	EN00_BlackBoard->setFloat("Test", 5.f);
+	EN00_BlackBoard->setFloat("Max_HP", 100.f);
+	EN00_BlackBoard->setFloat("Current_HP", 100.f);
+	EN00_BlackBoard->setFloat("Attack_Range", 2.f);
+	EN00_BlackBoard->setFloat("Detect_Range", 5.f);
+	EN00_BlackBoard->setFloat3("TargetPostion", _float3(0.f, 0.f, 0.f));
+	
+
+	EN00_BlackBoard->setBool("Is_Hit", false); //! 피격중인가
+	EN00_BlackBoard->setBool("Is_Ground", true);
+	EN00_BlackBoard->setBool("Is_Dead", false);
+	EN00_BlackBoard->setBool("Is_TargetPosition", false); //! 목표로 하는 지점이 있는가
+
+
+	EN00_BlackBoard->setOwner(this);
 	EN00_BlackBoard->setModel(m_pModelCom);
 	EN00_BlackBoard->setShader(m_pShaderCom);
 	EN00_BlackBoard->setCollider(m_pColliderCom);
@@ -236,16 +255,99 @@ HRESULT CMonster_EN00::Ready_BehaviorTree()
 	EN00_BlackBoard->setGameInstance(m_pGameInstance);
 
 	
+
+
+	CGameObject* pTarget = nullptr;
+
+	pTarget = m_pGameInstance->Get_Player(m_eCurrentLevelID);
+
+	if (nullptr != pTarget)
+	{
+		EN00_BlackBoard->setTarget(pTarget);
+	}
+
+
+	
 	/* BrainTree 최상위 생성 */
 	BrainTree::Builder EN00_Builder(EN00_BlackBoard);
 	
-	/* 루트 설정 */
-	m_BehaviorTree->setRoot(EN00_Builder.composite<BrainTree::Sequence>()
-		.leaf<CEN00State_Idle>()
-		.leaf<CEN00State_Chase>()
+	//// 셀렉터를 루트로 설정
+	auto selectorBuilder = EN00_Builder.composite<BrainTree::Selector>(); 
+
+	//TODO  첫 번째 시퀀스 추가 
+	//!	( 죽었는가, 죽는 액션 및 소멸 처리 )
+	selectorBuilder.composite<BrainTree::Sequence>() 
+		.leaf<CEN00_Control_Dead>()  // 첫 번째 리프 노드 추가
+		.leaf<CEN00_Task_Dead>() // 두 번째 리프 노드 추가
+		.end() 
+
+
+		.composite<BrainTree::Sequence>() 
+		.leaf<CEN00_Control_Ground>()
+		.composite<BrainTree::Selector>()  //! 셀렉터 4
+		.composite<BrainTree::Sequence>()
+		.leaf<CEN00_Control_Hit>()
+		.leaf<CEN00_Task_Hit>()
 		.end()
-		.build()
-	);
+		
+		.composite<BrainTree::Sequence>()  //! 시퀀스 5
+		.leaf< CEN00_Control_AttackRange>()
+		.composite<BrainTree::Selector>() //! 셀렉터 6
+
+		.composite<BrainTree::Sequence>() //! 시퀀스 7
+		.leaf< CEN00_Control_KeepEye>()
+		.leaf< CEN00_Task_KeepEye>()
+		.end()
+		
+
+		.composite<BrainTree::Selector>()//! 셀렉터 8
+
+		.composite<BrainTree::Sequence>()//! 시퀀스 9
+		.leaf<CEN00_Control_NormalAttack>()
+		.leaf<CEN00_Task_NormalAttack>()
+		.end()
+
+		.composite<BrainTree::Sequence>() //! 시퀀스 10
+		.leaf<CEN00_Control_UpperAttack>()
+		.leaf<CEN00_Task_UpperAttack>()
+		.end()
+
+		.composite<BrainTree::Sequence>()//! 시퀀스 11
+		.leaf<CEN00_Control_ChargeAttack>()
+		.leaf<CEN00_Task_ChargeAttack>()
+		.end()
+		.end()
+		.end()
+		.end()
+		
+
+		.composite<BrainTree::Sequence>() //! 시퀀스 12
+		.leaf<CEN00_Control_DetectRange>()
+		.leaf<CEN00_Task_DetectRange>()
+		.end()
+
+		.composite<BrainTree::Sequence>() //! 시퀀스 13
+		.leaf<CEN00_Control_PlayerDead>()
+		.composite<BrainTree::Selector>() //! 셀렉터 14
+
+		.composite<BrainTree::Sequence>() //! 시퀀스 15
+		.leaf<CEN00_Control_Arrival>()
+		.leaf<CEN00_Task_Idle>()
+		.end()
+
+		.composite<BrainTree::Sequence>()//! 시퀀스 16
+		.leaf<CEN00_Control_SetTargetPosition>()
+		.leaf<CEN00_Task_MoveToTarget>()
+		.end()
+		.end()
+		.end()
+		.end()
+		.end()
+		.end();
+
+	BrainTree::Node::Ptr RootNode = EN00_Builder.build();
+
+	m_BehaviorTree->setRoot(RootNode);
 
 	
 	return S_OK;
@@ -291,6 +393,47 @@ HRESULT CMonster_EN00::Bind_ShaderResources()
 	
 	return S_OK;
 }
+
+void CMonster_EN00::Debug_KeyInput()
+{
+	BrainTree::Blackboard::Ptr pBlackBoard = m_BehaviorTree->getBlackboard();
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
+	{
+		pBlackBoard->setBool("Is_Dead", true);
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD8))
+	{
+		pBlackBoard->setBool("Is_Dead", false);
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
+	{
+		pBlackBoard->setBool("Is_Hit", true);
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
+	{
+		pBlackBoard->setBool("Is_Hit", false);
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+	{
+		pBlackBoard->setBool("Is_TargetPosition", true);
+		_float3 vTargetPos;
+		XMStoreFloat3(&vTargetPos, pBlackBoard->GetTarget()->Get_Transform()->Get_State(CTransform::STATE_POSITION));
+		pBlackBoard->setFloat3("TargetPostion", vTargetPos);
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+	{
+		pBlackBoard->setBool("Is_TargetPosition", false);
+
+		pBlackBoard->setFloat3("TargetPostion", _float3(0.f, 0.f, 0.f));
+	}
+}
+
 
 CMonster_EN00* CMonster_EN00::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel)
 {
