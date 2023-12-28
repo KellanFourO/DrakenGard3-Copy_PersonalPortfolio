@@ -9,6 +9,17 @@
 #include <string>
 #include <unordered_map>
 #include <cassert>
+#include "Engine_Defines.h"
+
+BEGIN(Engine)
+class CModel;
+class CShader;
+class CCollider;
+class CTransform;
+class CRigidBody;
+class CGameInstance;
+END
+
 
 namespace BrainTree
 {
@@ -66,6 +77,26 @@ public:
     }
     bool hasString(std::string key) const  { return strings.find(key) != strings.end(); }
 
+    //TODO 추가
+    float&      GetTimeDelta() { return fTimeDelta;}
+
+    
+    Engine::CModel* GetModel() { return pModel; }
+    Engine::CShader* GetShader() { return pShader; }
+    Engine::CCollider* GetCollider() { return pCollider; }
+    Engine::CTransform* GetTransform() { return pTransform; }
+    Engine::CRigidBody* GetRigidBody() { return pRigidBody; }
+    Engine::CGameInstance* GetGameInstance() { return pGameInstance; }
+
+    void setTimeDelta(float& _fTimeDelta) { fTimeDelta = _fTimeDelta; }
+
+    void setModel(Engine::CModel* _pModel) { pModel = _pModel;}
+    void setShader(Engine::CShader* _pShader) { pShader = _pShader; }
+    void setCollider(Engine::CCollider* _pCollider) { pCollider = _pCollider; }
+    void setTransform(Engine::CTransform* _pTransform) { pTransform = _pTransform; }
+    void setRigidBody(Engine::CRigidBody* _pRigidBody) { pRigidBody = _pRigidBody; }
+    void setGameInstance(Engine::CGameInstance* _pGameInstance) { pGameInstance = _pGameInstance; }
+
     using Ptr = std::shared_ptr<Blackboard>;
 
 protected:
@@ -74,6 +105,18 @@ protected:
     std::unordered_map<std::string, float> floats;
     std::unordered_map<std::string, double> doubles;
     std::unordered_map<std::string, std::string> strings;
+
+    //TODO 추가
+    //!std::unordered_map<std::string, class CModel*> pModel;
+    float                   fTimeDelta = { 0.f };
+
+    Engine::CModel*           pModel = { nullptr };
+    Engine::CShader*          pShader = { nullptr };
+    Engine::CCollider*        pCollider = { nullptr };
+    Engine::CTransform*       pTransform = { nullptr };
+    Engine::CRigidBody*       pRigidBody = { nullptr };
+    Engine::CGameInstance*    pGameInstance = { nullptr };
+    //std::unordered_map<std::string, Engine::CPartObject*> pParts;
 };
 
 class Node
@@ -272,8 +315,10 @@ private:
 class Builder
 {
 public:
-    Builder() {
+    Builder(const BrainTree::Blackboard::Ptr& blackboard)
+    {
         tree = std::make_shared<BehaviorTree>();
+        tree->setBlackboard(blackboard);
     }
     template <class NodeType, typename... Args>
     Builder leaf(Args... args)

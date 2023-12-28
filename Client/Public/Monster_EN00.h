@@ -1,5 +1,5 @@
 #pragma once
-#include "AnimObject.h"
+#include "Monster.h"
 
 BEGIN(Engine)
 class CShader;
@@ -9,7 +9,7 @@ END
 
 BEGIN(Client)
 
-class CMonster_EN00 final : public CAnimObject
+class CMonster_EN00 final : public CMonster
 {
 private:
 	CMonster_EN00(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -20,7 +20,7 @@ public:
 	CPartObject* Find_PartObject(const wstring& strPartTag);
 
 public:
-	virtual HRESULT Initialize_Prototype(LEVEL eLevel);
+	virtual HRESULT Initialize_Prototype(LEVEL eLevel) override;
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Priority_Tick(_float fTimeDelta) override;
 	virtual void Tick(_float fTimeDelta) override;
@@ -30,21 +30,16 @@ public:
 public:
 	virtual void Write_Json(json& Out_Json) override;
 	virtual void Load_FromJson(const json& In_Json) override;
-	virtual void Init_Desc();
+	virtual void Init_Desc() override;
 	
 private:
-	HRESULT Ready_Components();
-	HRESULT Ready_PartObjects();
-	HRESULT	Ready_States();
-	HRESULT	Add_PartObject(const wstring& strPrototypeTag, const wstring& strPartTag, void* pArg);
-	
-	HRESULT Bind_ShaderResources();
+	HRESULT			Ready_Components();
+	HRESULT			Ready_PartObjects();
+	virtual HRESULT	Ready_BehaviorTree() override;
 
-private:
-	CShader*		m_pShaderCom = { nullptr };
-	CModel*			m_pModelCom = { nullptr }; //#버퍼컴에서_모델컴으로_변경됨
-	CCollider*		m_pColliderCom = { nullptr };
-	CStateMachine*	m_pStateCom = { nullptr };
+	HRESULT			Add_PartObject(const wstring& strPrototypeTag, const wstring& strPartTag, void* pArg);
+	
+	HRESULT			Bind_ShaderResources();
 
 private:
 	map<const wstring, class CPartObject*>	m_PartObjects;

@@ -151,6 +151,7 @@ private:
 	vector<string>				m_vecCreateObjectTag;
 	vector<class CGameObject*>	m_vecObjects;
 	class CGameObject*			m_PickingObject = nullptr;
+	class CGameObject*			m_PartObject = nullptr;
 	_int						m_iPickingObjectIndex = 0;
 	_float3						m_fPickingPos = { 0.f, 0.f, 0.f };
 

@@ -187,12 +187,12 @@ xcopy "$(SolutionDir)Engine\Bin\ShaderFiles\*.*" "$(SolutionDir)Client\Bin\Shade
     <ClInclude Include="..\..\..\..\쥬신 스터디\참고자료\DX11_TeamProject_Thymesia-main\DX11_TeamProject_Thymesia-main\DX11_Thymesia_Framework\Engine\Public\Json\Json_Utility.h" />
     <ClInclude Include="..\public\Animation.h" />
     <ClInclude Include="..\public\Base.h" />
-    <ClInclude Include="..\Public\BehaviorTree.h" />
     <ClInclude Include="..\public\Bone.h" />
     <ClInclude Include="..\Public\BoundParent.h" />
     <ClInclude Include="..\Public\BoundingBox_AABB.h" />
     <ClInclude Include="..\Public\BoundingBox_OBB.h" />
     <ClInclude Include="..\Public\BoundingBox_Sphere.h" />
+    <ClInclude Include="..\Public\BrainTree\BrainTree.h" />
     <ClInclude Include="..\Public\Camera.h" />
     <ClInclude Include="..\Public\Cell.h" />
     <ClInclude Include="..\public\Channel.h" />
@@ -239,7 +239,6 @@ xcopy "$(SolutionDir)Engine\Bin\ShaderFiles\*.*" "$(SolutionDir)Client\Bin\Shade
     <ClCompile Include="..\..\Reference\Private\Json\Json_Utility.cpp" />
     <ClCompile Include="..\private\Animation.cpp" />
     <ClCompile Include="..\private\Base.cpp" />
-    <ClCompile Include="..\Private\BehaviorTree.cpp" />
     <ClCompile Include="..\Private\Bone.cpp" />
     <ClCompile Include="..\Private\BoundParent.cpp" />
     <ClCompile Include="..\Private\BoundingBox_AABB.cpp" />

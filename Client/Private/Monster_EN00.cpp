@@ -2,16 +2,17 @@
 #include "Monster_EN00.h"
 #include "GameInstance.h"
 #include "EN00State_Idle.h"
+#include "EN00State_Chase.h"
 #include "PartObject.h"
 #include "Bone.h"
 
 CMonster_EN00::CMonster_EN00(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CAnimObject(pDevice,pContext)
+	: CMonster(pDevice,pContext)
 {
 }
 
 CMonster_EN00::CMonster_EN00(const CMonster_EN00& rhs)
-	: CAnimObject(rhs)
+	: CMonster(rhs)
 {
 }
 
@@ -28,7 +29,7 @@ CPartObject* CMonster_EN00::Find_PartObject(const wstring& strPartTag)
 HRESULT CMonster_EN00::Initialize_Prototype(LEVEL eLevel)
 {
 	m_eCurrentLevelID = eLevel;
-	m_pModelCom->Set_Loop(true);
+	
 	return S_OK;
 }
 
@@ -43,10 +44,10 @@ HRESULT CMonster_EN00::Initialize(void* pArg)
 	if (FAILED(Ready_PartObjects()))
 		return E_FAIL;
 
-	if (FAILED(Ready_States()))
+	if (FAILED(Ready_BehaviorTree()))
 		return E_FAIL;
 
-	m_pModelCom->Set_Animation(rand() % 20);
+	//m_pModelCom->Set_Animation(rand() % 20);
 
 	// 클라 테스트용 m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 20, 3.f, rand() % 20, 1.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 20, 0.f, rand() % 20, 1.f));
@@ -56,7 +57,6 @@ HRESULT CMonster_EN00::Initialize(void* pArg)
 
 void CMonster_EN00::Priority_Tick(_float fTimeDelta)
 {
-	m_pStateCom->Priority_Tick(fTimeDelta);
 
 	for (auto& Pair : m_PartObjects)
 	{
@@ -67,7 +67,8 @@ void CMonster_EN00::Priority_Tick(_float fTimeDelta)
 
 void CMonster_EN00::Tick(_float fTimeDelta)
 {
-	m_pStateCom->Tick(fTimeDelta);
+	m_BehaviorTree->getBlackboard()->setTimeDelta(fTimeDelta);
+	BrainTree::Node::Status TreeStatus = m_BehaviorTree->update();
 
 	for (auto& Pair : m_PartObjects)
 	{
@@ -82,7 +83,6 @@ void CMonster_EN00::Tick(_float fTimeDelta)
 
 void CMonster_EN00::Late_Tick(_float fTimeDelta)
 {
-	m_pStateCom->Late_Tick(fTimeDelta);
 
 	for (auto& Pair : m_PartObjects)
 	{
@@ -90,12 +90,12 @@ void CMonster_EN00::Late_Tick(_float fTimeDelta)
 			Pair.second->Late_Tick(fTimeDelta);
 	}
 
-	CCollider* pTargetCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_Collider")));
-	
-	if (m_pColliderCom->Collision(pTargetCollider))
-	{
-		int i = 0;
-	}
+	//CCollider* pTargetCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_Collider")));
+	//
+	//if (m_pColliderCom->Collision(pTargetCollider))
+	//{
+	//	int i = 0;
+	//}
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return;
@@ -190,15 +190,11 @@ HRESULT CMonster_EN00::Ready_Components()
 	/* For.Com_Collider */
 	CBoundingBox_AABB::BOUNDING_AABB_DESC		BoundingDesc = {};
 
-	BoundingDesc.vExtents = _float3(0.5f, 0.7f, 0.5f);
+	BoundingDesc.vExtents = _float3(0.4f, 0.7f, 0.4f);
 	BoundingDesc.vCenter = _float3(0.f, BoundingDesc.vExtents.y, 0.f);
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"),
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Collider_AABB"),
 		TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
-		return E_FAIL;
-
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_StateMachine"),
-		TEXT("Com_StateMachine"), reinterpret_cast<CComponent**>(&m_pStateCom), this)))
 		return E_FAIL;
 	
 	return S_OK;
@@ -225,13 +221,47 @@ HRESULT CMonster_EN00::Ready_PartObjects()
 	return S_OK;
 }
 
-HRESULT CMonster_EN00::Ready_States()
+HRESULT CMonster_EN00::Ready_BehaviorTree()
 {
-	if (FAILED(m_pStateCom->Add_State(TEXT("EN00State_Idle"), CEN00State_Idle::Create(this))))
-		return E_FAIL;
+	m_BehaviorTree = std::make_shared<BrainTree::BehaviorTree>();
+	
+	BrainTree::Blackboard::Ptr EN00_BlackBoard = m_BehaviorTree->getBlackboard();
+	
+	EN00_BlackBoard->setString("Name", "EN00");
+	EN00_BlackBoard->setFloat("Test", 5.f);
+	EN00_BlackBoard->setModel(m_pModelCom);
+	EN00_BlackBoard->setShader(m_pShaderCom);
+	EN00_BlackBoard->setCollider(m_pColliderCom);
+	EN00_BlackBoard->setTransform(m_pTransformCom);
+	EN00_BlackBoard->setGameInstance(m_pGameInstance);
+
+	
+	/* BrainTree 최상위 생성 */
+	BrainTree::Builder EN00_Builder(EN00_BlackBoard);
+	
+	/* 루트 설정 */
+	m_BehaviorTree->setRoot(EN00_Builder.composite<BrainTree::Sequence>()
+		.leaf<CEN00State_Idle>()
+		.leaf<CEN00State_Chase>()
+		.end()
+		.build()
+	);
+
 	
 	return S_OK;
 }
+
+
+//HRESULT CMonster_EN00::Ready_States()
+//{
+//	if (FAILED(m_pStateCom->Add_State(TEXT("EN00State_Idle"), CEN00State_Idle::Create(this))))
+//		return E_FAIL;
+//	
+//	if(FAILED(m_pStateCom->Set_InitState(TEXT("EN00State_Idle"))))
+//		return E_FAIL;
+//
+//	return S_OK;
+//}
 
 HRESULT CMonster_EN00::Add_PartObject(const wstring& strPrototypeTag, const wstring& strPartTag, void* pArg)
 {
@@ -292,7 +322,8 @@ void CMonster_EN00::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pColliderCom);
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pShaderCom);
+	for (auto& Pair : m_PartObjects)
+		Safe_Release(Pair.second);
+
+		m_PartObjects.clear();
 }

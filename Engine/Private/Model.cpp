@@ -152,11 +152,9 @@ void CModel::Set_AnimationSpeed(_float fAnimationSpeed)
 void CModel::Root_Motion(CTransform* pTransform)
 {
 	
-	if (true == m_isRootAnim && false == m_bRootMotionStart)
+	if (true == m_isRootAnim)
 	{
 		//TODO 위치가 갱신되나 다시 이전 위치로 돌아가는 현상.
-
-
 		//! 현재 루트 본의 위치를 구하자
 		_float3 vCurrentRootPosition;
 		XMStoreFloat3(&vCurrentRootPosition, m_pRootTranslateBone->Get_CombinedTransformationMatrix().r[3]);
@@ -168,27 +166,33 @@ void CModel::Root_Motion(CTransform* pTransform)
 		//! 이전 루트본의 위치가 3, 현재 루트본의 위치가 7 이었다면  4
 		//! 이전 위치가 7이고 현재위치가 10이었다면 3
 		//!  이전 위치가 10이고 현재위치가 3이었따면 -7
-		XMStoreFloat3(&vDeltaPosition, (XMLoadFloat3(&m_vPrevRootPosition) - XMLoadFloat3(&vCurrentRootPosition)));
+		XMStoreFloat3(&vDeltaPosition, (XMLoadFloat3(&vCurrentRootPosition) - XMLoadFloat3(&m_vPrevRootPosition)));
 		
 
 		//!기존에 월드 위치를 구해주자
 		_float3 vCurrentWorldPosition;
 		XMStoreFloat3(&vCurrentWorldPosition, pTransform->Get_State(CTransform::STATE_POSITION));
 		
-		//! 기존에 월드 위치에 이동량을 더해주자.
-		XMStoreFloat3(&vCurrentWorldPosition, (XMLoadFloat3(&vCurrentWorldPosition) + XMLoadFloat3(&vDeltaPosition)));
+		//!TODO X,Z를 구해서 vLook에 곱해줘서 그걸 더해준다.
+
+		if (false == Get_CurrentAnimation()->Get_Finished())
+		{
+			//! 기존에 월드 위치에 이동량을 더해주자.
+			XMStoreFloat3(&vCurrentWorldPosition, (XMLoadFloat3(&vCurrentWorldPosition) + XMLoadFloat3(&vDeltaPosition)));
 
 
-		//! 기존 월드 행렬에 이동량이 더해진 월드위치로 바꿔주자
-		_float4x4 vCurrentWorldMatrix;
+			//! 기존 월드 행렬에 이동량이 더해진 월드위치로 바꿔주자
+			_float4x4 vCurrentWorldMatrix;
+
+			XMStoreFloat4x4(&vCurrentWorldMatrix, pTransform->Get_WorldMatrix());
+
+			vCurrentWorldMatrix._41 = vCurrentWorldPosition.x;
+			vCurrentWorldMatrix._42 = vCurrentWorldPosition.y;
+			vCurrentWorldMatrix._43 = vCurrentWorldPosition.z;
+
+			pTransform->Set_WorldFloat4x4(vCurrentWorldMatrix);
+		}
 		
-		XMStoreFloat4x4(&vCurrentWorldMatrix, pTransform->Get_WorldMatrix());
-
-		vCurrentWorldMatrix._41 = vCurrentWorldPosition.x;
-		vCurrentWorldMatrix._42 = vCurrentWorldPosition.y;
-		vCurrentWorldMatrix._43 = vCurrentWorldPosition.z;
-				
-		pTransform->Set_WorldFloat4x4(vCurrentWorldMatrix);
 
 		//! 이전 위치는 현재 위치가 된다.
 		m_vPrevRootPosition = vCurrentRootPosition;
@@ -196,6 +200,13 @@ void CModel::Root_Motion(CTransform* pTransform)
 	}
 	else 
 		return;
+}
+
+void CModel::Reset_RootMotion()
+{
+	m_vPrevRootPosition = {};
+	m_bRootMotionStart = false;
+	m_isRootAnim = false;
 }
 
 

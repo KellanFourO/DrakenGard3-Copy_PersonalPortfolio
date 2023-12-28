@@ -15,6 +15,7 @@ public:
 	virtual HRESULT StartState() override;
 	virtual HRESULT EndState() override;
 
+	virtual	void	Priority_Tick(const _float& fTimeDelta) override;
 	virtual void	Tick(const _float& fTimeDelta) override;
 	virtual void	Late_Tick(const _float& fTimeDelta) override;
 

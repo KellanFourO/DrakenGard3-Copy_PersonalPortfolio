@@ -157,6 +157,9 @@
     <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8">
       <UniqueIdentifier>{89521753-c263-4bd2-a1ba-ab0fbfd5bc51}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\03. Monster\01. AIState\00. Sequence">
+      <UniqueIdentifier>{9a89756c-2ea4-4f6d-88b7-41b78af614d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">

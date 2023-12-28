@@ -1,57 +1,33 @@
 #pragma once
-#include "StateBase.h"
 #include "Client_Defines.h"
-
+#include "BrainTree/BrainTree.h"
+#include <iostream>
 
 BEGIN(Engine)
-class CGameObject;
-class CGameInstance;
+class CModel;
+class CShader;
+class CCollider;
 class CTransform;
-class CStateMachine;
-class CNavigation;
 class CRigidBody;
+class CGameInstance;
 END
-
 
 BEGIN(Client)
 
-class CAIState_Base abstract : public CStateBase
+class CAIState_Base abstract : public BrainTree::Node
 {
-protected:
-		 CAIState_Base();
-virtual ~CAIState_Base() = default;
 
 public:
-	virtual HRESULT Initialize(CGameObject* pOwner); //! 최초 생성시 셋팅 해야하는 값을 정의하자
-	virtual HRESULT StartState() override; //! 다시 자기 자신이 호출 될 때의 행동을 정의하자
-	virtual HRESULT EndState() override;   //! 자기 자신이 호출이 종료 될 때의 행동을 정의하자. ex) Reset
-
-	virtual void Priority_Tick(const _float& fTimeDelta) override;
-	virtual void Tick(const _float& fTimeDelta) override;
-	virtual void Late_Tick(const _float& fTimeDelta) override;
+	BrainTree::Node::Status update() override;
 
 protected:
-	_bool	Search();
-	_bool	Chase(const _float& fTimeDelta);
-
-protected:
-	CGameObject*	m_pOwner = { nullptr };
-
-	CTransform*		m_pPlayerTransform = { nullptr };
-	CGameInstance*	m_pGameInstance = { nullptr };
-
-	CStateMachine*	m_pOwnerStateCom = { nullptr };
-	CTransform*		m_pOwnerTransform = { nullptr };
-	CNavigation*	m_pOwnerNavagation = { nullptr };
-	CRigidBody*		m_pOwnerRigidBody = { nullptr };
+	_bool		Detect();
+	_bool		Chase();
 
 
 protected:
-	_float			m_fSearchRange = 0.f;
-	_float			m_fAttackRange = 0.f;
+	_float	fConsoleDebugAcc = 0.f;
 
-public:
-	virtual void Free();
 };
 
 END

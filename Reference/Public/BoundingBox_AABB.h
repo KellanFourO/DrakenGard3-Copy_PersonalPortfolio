@@ -16,7 +16,7 @@ private:
 	virtual ~CBoundingBox_AABB() = default;
 
 public:
-	const BoundingBox* Get_Bounding() { return m_pBoundingBox;}
+	BoundingBox* Get_Bounding() { return m_pBoundingBox;}
 
 public:
 	HRESULT Initialize(BOUNDING_DESC* pBoundingDesc);

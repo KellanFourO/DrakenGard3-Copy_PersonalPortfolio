@@ -6,6 +6,11 @@
 #include "GameInstance.h"
 #include "Dynamic_Terrain.h"
 #include "Camera_MapTool.h"
+#include "Bone.h"
+#include "Model.h"
+#include "MonsterPart_EN00_Weapon.h"
+#include "Monster_EN00.h"
+#include "BoundingBox_AABB.h"
 
 #include <regex>
 #include <codecvt>
@@ -245,6 +250,7 @@ void CImgui_Manager::ImGui_ObjectToolTick()
 
 		if (iObjectToolMode == 0)
 		{
+
 			ObjectModeTick();
 		}
 
@@ -729,9 +735,9 @@ void CImgui_Manager::CreateObjectFunction()
 
 			wstring wstr = ConvertStrToWstr(m_vecObjectProtoTags[m_iSelectTagIndex]);
 
-			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), wstr, nullptr, reinterpret_cast<CGameObject**>(&pGameObject))))
-				return;
-
+			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_Monster"), wstr, nullptr, reinterpret_cast<CGameObject**>(&pGameObject))))
+					return;
+			
 
 
 			string SliceTag = ConvertWstrToStr(wstr);
@@ -753,8 +759,48 @@ void CImgui_Manager::SelectObjectFunction()
 	Set_GuizmoCamView(); //! 기즈모 뷰 투영 셋팅해주기.
 	Set_GuizmoCamProj();	//! 기즈모 뷰 투영 셋팅해주기.
 
+
+	
+
+	static bool bPartDebug = true;
+
+	ImGui::Text(u8"현재 EN00파츠");
+	ImGui::Checkbox(u8"테스트", &bPartDebug);
+
+	
+
 	if (nullptr != m_PickingObject)
+	{
 		Set_Guizmo();
+
+		if (true == bPartDebug)
+		{
+			static _float TestInput[3];
+			static _float TestCenter[3];
+
+			m_PartObject = dynamic_cast<CMonster_EN00*>(m_PickingObject)->Find_PartObject(TEXT("Part_Weapon"));
+
+
+			ImGui::InputFloat3(u8"테스트Extents", TestInput);
+			ImGui::InputFloat3(u8"테스트Center", TestCenter);
+
+			CBoundParent* pBound = dynamic_cast<CMonsterPart_EN00_Weapon*>(m_PartObject)->Get_Collider()->Get_Bounding();
+
+			CBoundingBox_AABB* pAABBBox = dynamic_cast<CBoundingBox_AABB*>(pBound);
+
+			
+
+			_float3 vTest = { TestInput[0],TestInput[1], TestInput[2] };
+			_float3 vTestCenter = { TestCenter[0], TestCenter[1], TestCenter[2] };
+
+			BoundingBox* pBox = pAABBBox->Get_Bounding();
+
+			pBox->Extents = vTest;
+			pBox->Center = vTestCenter;
+			
+
+		}
+	}
 
 	//_int iObjectListSize = m_vecCreateObjectTag.size();
 	_int iObjectListSize = m_vecCreateObjectTag.size();

@@ -48,14 +48,16 @@ void CPlayerState_NormalAttackBase::NextComboOrIdle(CModel* pOwnerModel, class C
        //! 선입력이 있었다면
         if (true == m_bInput)
         {
+            
             pOwnerStateMachine->Transition(CStateMachine::STATE_GROUND, strNextComboStateTag);
         }
         //! 선입력이 없었다면
-        else
+        else if(false == m_bInput)
         {
             pOwnerModel->Set_Animation(iEndAnimIndex);
             m_isEnd = true;
         }
+            
     }
 
     //! 현재 재생중인 애니메이션이 바뀐상태다. 바뀐 애니메이션이 끝났다면 Idel상태로 돌아가자

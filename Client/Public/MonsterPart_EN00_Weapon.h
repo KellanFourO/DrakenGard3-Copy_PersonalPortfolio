@@ -24,6 +24,9 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+	CCollider*		Get_Collider() { return m_pColliderCom; }
+
+public:
 	virtual void Write_Json(json& Out_Json) override;
 	virtual void Load_FromJson(const json& In_Json) override;
 	virtual void Init_Desc();

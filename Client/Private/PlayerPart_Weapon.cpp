@@ -45,15 +45,15 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	/* For.Com_Collider */
 	CBoundingBox_OBB::BOUNDING_OBB_DESC		BoundingDesc = {};
 
-	BoundingDesc.vExtents = _float3(0.5f, 0.7f, 0.5f);
-	BoundingDesc.vCenter = _float3(0.f, BoundingDesc.vExtents.y, 0.f);
-	BoundingDesc.vRotation = _float3(0.f, XMConvertToRadians(45.0f), 0.f);
+	BoundingDesc.vExtents = _float3(0.2f, 0.5f, 0.2f);
+	BoundingDesc.vCenter = _float3(0.f, 0.f, -0.6f);
+	BoundingDesc.vRotation = _float3(XMConvertToRadians(90.f), 0.f, 0.f);
 
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
 		return E_FAIL;
 
-	//m_pTransformCom->Set_Scaling(10.f, 10.f, 10.f);
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-180.0f));
+	m_pTransformCom->Set_Scaling(1.f, 1.f, 1.f);
+	//m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-180.0f));
 	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.7f, 0.f, 0.f, 1.f));
 
 	return S_OK;
@@ -73,10 +73,10 @@ void CPlayerPart_Weapon::Late_Tick(_float fTimeDelta)
 	_matrix		SocketMatrix = m_pSocketBone->Get_CombinedTransformationMatrix();
 
 	////TODO 기존 스케일값을 강제로 1값으로 만드는 코드.
-	//for (size_t i = 0; i < 3; i++)
-	//{
-	//	SocketMatrix.r[i] = XMVector3Normalize(SocketMatrix.r[i]);
-	//}
+	for (size_t i = 0; i < 3; i++)
+	{
+		SocketMatrix.r[i] = XMVector3Normalize(SocketMatrix.r[i]);
+	}
 
 
 	//TODO 아래 코드가 파츠 오브젝트의 꽃

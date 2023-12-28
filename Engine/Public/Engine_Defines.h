@@ -41,11 +41,6 @@ using namespace DirectX; //! XMFLOAT등등의 자료형을 사용하기위함.
 #include "rapidjson/stringbuffer.h"
 using namespace rapidjson;
 
-#include "BrainTree/BrainTree.h"
-
-namespace BT = BrainTree;
-
-using namespace BT;
 
 #include <unordered_map>
 #include <algorithm>

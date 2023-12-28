@@ -1,72 +1,35 @@
 #include "EN00State_Idle.h"
-#include "GameObject.h"
-#include "Model.h"
-#include "StateMachine.h"
+#include "GameInstance.h"
 
-CEN00State_Idle::CEN00State_Idle()
-{
-}
+//!m_pOwnerModelCom->Set_Animation(0);
+//! m_fSearchRange = 10.f;
+//!m_fAttackRange = 10.f;
+//!m_pOwner = pOwner;
+//!
+//!m_pOwnerTransform->Set_SpeedPerSec(3.f);
+//!m_pOwnerTransform->Set_RotationPerSec(XMConvertToRadians(70.0f));
 
-HRESULT CEN00State_Idle::Initialize(CGameObject* pOwner)
+
+BrainTree::Node::Status CEN00State_Idle::update()
 {
-	if(FAILED(__super::Initialize(pOwner)))
-		return E_FAIL;
 	
-	m_fSearchRange = 10.f;
+	fConsoleDebugAcc += blackboard->GetTimeDelta();
 
-	m_pOwner = pOwner;
-
-	if(FAILED(AddRefIfNotNull(m_pOwner)))
-		return E_FAIL;
-	
-	return S_OK;
-}
-
-HRESULT CEN00State_Idle::StartState()
-{
-	m_pOwnerModelCom->Set_Animation(0);
-	
-	return S_OK;
-}
-
-HRESULT CEN00State_Idle::EndState()
-{
-	return S_OK;
-}
-
-void CEN00State_Idle::Priority_Tick(const _float& fTimeDelta)
-{
-}
-
-void CEN00State_Idle::Tick(const _float& fTimeDelta)
-{
-	if (true == Search())
+	if (fConsoleDebugAcc > 2.f)
 	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("EN00State_Chase"));
+		cout << "EN00 - BrainTree - Idle " << endl;
+		fConsoleDebugAcc = 0.f;
 	}
 
-}
 
-void CEN00State_Idle::Late_Tick(const _float& fTimeDelta)
-{
-}
-
-CEN00State_Idle* CEN00State_Idle::Create(CGameObject* pOwner)
-{
-	CEN00State_Idle* pInstance = new CEN00State_Idle();
-
-	/* 원형객체를 초기화한다.  */
-	if (FAILED(pInstance->Initialize(pOwner)))
+	if (blackboard->GetGameInstance()->Key_Down(DIK_P))
 	{
-		MSG_BOX("Failed to Created : CEN00State_Idle");
-		Safe_Release(pInstance);
+		cout << "EN00 - BrainTree - Chase " << endl;
+		
+		return BrainTree::Node::Status::Success;
 	}
-	return pInstance;
-}
 
-void CEN00State_Idle::Free()
-{
-	__super::Free();
+	
 
-	Safe_Release(m_pOwner);
+	return BrainTree::Node::Status::Failure;
 }
