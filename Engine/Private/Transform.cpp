@@ -56,13 +56,12 @@ void CTransform::Set_Scaling(_float fScaleX, _float fScaleY, _float fScaleZ)
 
 void CTransform::Add_LookPos(_float3& _vAddPos) //! 바라보는 방향으로 위치값을 더해주자
 {
-	_float3 vTest;
 
-	XMStoreFloat3(&vTest, XMVector3TransformNormal(XMLoadFloat3(&_vAddPos), XMLoadFloat4x4(&m_WorldMatrix)));
+	XMStoreFloat3(&_vAddPos, XMVector3TransformNormal(XMLoadFloat3(&_vAddPos), XMLoadFloat4x4(&m_WorldMatrix)));
 
-	m_WorldMatrix._41 += vTest.x;
-	m_WorldMatrix._42 += vTest.y;
-	m_WorldMatrix._43 += vTest.z;
+	m_WorldMatrix._41 += _vAddPos.x;
+	m_WorldMatrix._42 += _vAddPos.y;
+	m_WorldMatrix._43 += _vAddPos.z;
 	
 }
 
