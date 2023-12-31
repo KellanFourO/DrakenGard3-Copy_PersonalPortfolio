@@ -39,6 +39,7 @@ HRESULT CPlayerPart_Body::Initialize(void* pArg)
 		return E_FAIL;
 
 	
+	m_pModelCom->Root_MotionStart();
 
 	return S_OK;
 }
@@ -49,8 +50,16 @@ void CPlayerPart_Body::Priority_Tick(_float fTimeDelta)
 
 void CPlayerPart_Body::Tick(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
+	_float3 vPos = { 0.f, 0.f, 0.f };
 
+	
+	m_pModelCom->Play_Animation(fTimeDelta, vPos);
+
+
+	_float3 vTest = vPos;
+	_int i = 0;
+
+	m_pParentTransformCom->Add_LookPos(vPos);
 }
 
 void CPlayerPart_Body::Late_Tick(_float fTimeDelta)

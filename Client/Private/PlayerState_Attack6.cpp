@@ -28,7 +28,7 @@ HRESULT CPlayerState_Attack6::StartState()
 {
 	m_pOwnerModelCom->Set_Animation(100);
 	m_pOwnerModelCom->Set_Loop(false);
-	m_pOwnerModelCom->Root_MotionChange();
+
 	return S_OK;
 }
 
@@ -40,16 +40,12 @@ HRESULT CPlayerState_Attack6::EndState()
 	m_isEnd = false;
 	m_bInput = false;
 
-	m_pOwnerModelCom->Reset_RootMotion();
 	return S_OK;
 }
 
 void CPlayerState_Attack6::Priority_Tick(const _float& fTimeDelta)
 {
-// 	if (false == m_isEnd)
-// 	{
-		RootMotion();
-/*	}*/
+
 }
 
 void CPlayerState_Attack6::Tick(const _float& fTimeDelta)

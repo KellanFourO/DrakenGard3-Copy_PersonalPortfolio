@@ -82,7 +82,9 @@ void CMonster_EN00::Tick(_float fTimeDelta)
 			Pair.second->Tick(fTimeDelta);
 	}
 
-	m_pModelCom->Play_Animation(fTimeDelta);
+	_float3 vPos = {};
+
+	m_pModelCom->Play_Animation(fTimeDelta, vPos);
 
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
 }

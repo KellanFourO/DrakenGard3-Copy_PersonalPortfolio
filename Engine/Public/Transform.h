@@ -98,6 +98,8 @@ public:
 	void Set_SpeedPerSec(_float fSpeedPerSec) { m_fSpeedPerSec = fSpeedPerSec; }
 	void Set_RotationPerSec(_float fRotationPerSec) { m_fRotationPerSec = fRotationPerSec; }
 
+	void    Add_LookPos(_float3& _vAddPos);
+
 public:
 	void	Go_Straight(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
 	void	Go_Left(_float fTimeDelta);

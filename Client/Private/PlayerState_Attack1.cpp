@@ -28,8 +28,7 @@ HRESULT CPlayerState_Attack1::StartState()
 {
 	m_pOwnerModelCom->Set_Animation(90);
 	m_pOwnerModelCom->Set_Loop(false);
-	
-	m_pOwnerModelCom->Root_MotionStart();
+
 	return S_OK;
 }
 
@@ -40,7 +39,7 @@ HRESULT CPlayerState_Attack1::EndState()
 	m_fLastInputTime = 0.f;
 	m_isEnd = false;
 	m_bInput = false;
-	m_pOwnerModelCom->Reset_RootMotion();
+
 	return S_OK;
 }
 
@@ -51,12 +50,6 @@ void CPlayerState_Attack1::Priority_Tick(const _float& fTimeDelta)
 
 void CPlayerState_Attack1::Tick(const _float& fTimeDelta)
 {
-	//if (false == m_isEnd)
-	//{
-		RootMotion();
-
-	//! 여기서 이전 루트본의 위치를 구해서 혅 현재 루트본의 위치를 구하고있었다.
-	//}
 }
 
 void CPlayerState_Attack1::Late_Tick(const _float& fTimeDelta)

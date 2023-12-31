@@ -28,7 +28,7 @@ public:
 
 public:
 	HRESULT Initialize(string strName, _float4x4 matTransformation, _float4x4 matOffset, _int iBoneIndex, _int iParentIndex, _uint iDepth);
-	void	Invalidate_CombinedTransformationMatrix(CModel::BONES& Bones, _fmatrix PivotMatrix);
+	void	Invalidate_CombinedTransformationMatrix(CModel::BONES& Bones, _fmatrix PivotMatrix, _float3& vRootOutPos);
 
 private:
 	_char			m_szName[MAX_PATH] = "";//! ª¿ ¿Ã∏ß

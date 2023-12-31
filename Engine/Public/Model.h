@@ -47,7 +47,7 @@ public:
 	virtual HRESULT Render(_uint iMeshIndex); //! virtual은 의미가없다. 자기 자신이 가지고잇는 메시들을 렌더링 시키기위한 함수이다.
 
 public:
-	void	Play_Animation(_float fTimeDelta);
+	void	Play_Animation(_float fTimeDelta, _float3& vRootOutPos);
 	void	Set_Loop(_bool bLoop) { m_isLoop = bLoop; }
 	void	Set_Animation(_uint iAnimIndex, _uint iStartKeyIndex = 0, _float fBlendTime = 0.1f);
 	void	Set_AnimationSpeed(_float fAnimationSpeed);
@@ -55,7 +55,7 @@ public:
 
 	void	Root_MotionStart() { m_bRootMotionStart = true;}
 	void	Root_MotionChange() { m_isRootAnim = true; }
-	void	Root_MotionEnd() { m_isRootAnim = false; }
+	void	Root_MotionEnd() { m_bRootMotionStart = false; }
 	void	Root_Motion(CTransform* pTransform);
 	void	Reset_RootMotion();
 
@@ -101,11 +101,11 @@ private:
 	_bool						m_bRootMotionStart = { false };
 	_bool						m_isRootAnim = false;
 
-	class CBone*				m_pRootTranslateBone = { nullptr };
+	CBone*				m_pRootTranslateBone = { nullptr };
 
 	ModelData					m_tDataFilePath;
 public:
-	typedef vector<class CBone*>	BONES;
+	typedef vector<CBone*>	BONES;
 
 private:
 	HRESULT Read_BoneData(const wstring& strPath);

@@ -23,7 +23,7 @@ HRESULT CBone::Initialize(string strName, _float4x4 matTransformation, _float4x4
 	return S_OK;
 }
 
-void CBone::Invalidate_CombinedTransformationMatrix(CModel::BONES& Bones, _fmatrix PivotMatrix)
+void CBone::Invalidate_CombinedTransformationMatrix(CModel::BONES& Bones, _fmatrix PivotMatrix, _float3& vRootOutPos)
 {
 
 	if (-1 == m_iParentIndex) //!  Unsigned가 아닌 Signed로 줬었던 이유가 부모행렬이 없는 노드의 경우에는 인덱스를 -1로 표현하기위해서였다. 그걸 이용해서 분기쳐주자
@@ -33,6 +33,18 @@ void CBone::Invalidate_CombinedTransformationMatrix(CModel::BONES& Bones, _fmatr
 	{
 	//! 컴바인 행렬은 내 상태행렬과 부모의 컴바인행렬을 곱해줘야 한다고 했었다. 진행하자.
 		XMStoreFloat4x4(&m_CombinedTransformationMatrix, XMLoadFloat4x4(&m_TransformationMatrix) * XMLoadFloat4x4(&Bones[m_iParentIndex]->m_CombinedTransformationMatrix));
+	}
+
+	if (!strcmp(m_szName, "M_ROOT_$AssimpFbx$_Translation"))
+	{
+		
+		vRootOutPos.x = m_CombinedTransformationMatrix._41;
+		vRootOutPos.y = m_CombinedTransformationMatrix._42;
+		vRootOutPos.z = m_CombinedTransformationMatrix._43;
+
+		m_CombinedTransformationMatrix._41 = 0;
+		m_CombinedTransformationMatrix._42 = 0;
+		m_CombinedTransformationMatrix._43 = 0;
 	}
 
 }
@@ -100,3 +112,4 @@ CBone* CBone::Clone()
 void CBone::Free()
 {
 }
+

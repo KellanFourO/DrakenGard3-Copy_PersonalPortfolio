@@ -29,9 +29,6 @@ HRESULT CPlayerState_Attack2::StartState()
 	m_pOwnerModelCom->Set_Animation(92);
 	m_pOwnerModelCom->Set_Loop(false);
 
-	//! 루트 모션이 필요한 애니메이션이다. 모델에게 루트모션을 시작하기 위한 이전 위치의 루트 본 위치를 구하라고 하자.
-	m_pOwnerModelCom->Root_MotionChange();
-	//m_pOwnerModelCom->Root_MotionStart();
 	return S_OK;
 }
 
@@ -42,9 +39,7 @@ HRESULT CPlayerState_Attack2::EndState()
 	m_fLastInputTime = 0.f;
 	m_isEnd = false;
 	m_bInput = false;
-	m_pOwnerModelCom->Reset_RootMotion();
-	//! 현재 콤보공격 애니메이션이 종료 되었다. 루트 모션을 종료하자.
-	
+
 	return S_OK;
 }
 
@@ -55,10 +50,6 @@ void CPlayerState_Attack2::Priority_Tick(const _float& fTimeDelta)
 
 void CPlayerState_Attack2::Tick(const _float& fTimeDelta)
 {
-	//if (false == m_isEnd)
-	//{
-		RootMotion();
-	//}
 }
 
 void CPlayerState_Attack2::Late_Tick(const _float& fTimeDelta)

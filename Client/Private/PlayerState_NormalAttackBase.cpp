@@ -51,12 +51,12 @@ void CPlayerState_NormalAttackBase::NextComboOrIdle(CModel* pOwnerModel, class C
             pOwnerStateMachine->Transition(CStateMachine::STATE_GROUND, strNextComboStateTag);
         }
         ////! 선입력이 없었다면
-        //else if(false == m_bInput)
-        //{
-        //    pOwnerModel->Reset_RootMotion();
-        //    pOwnerModel->Set_Animation(iEndAnimIndex);
-        //    m_isEnd = true;
-        //}
+        else if(false == m_bInput)
+        {
+            pOwnerModel->Set_Animation(iEndAnimIndex);
+            m_pOwnerModelCom->Root_MotionEnd();
+            m_isEnd = true;
+        }
             
     }
 
@@ -64,6 +64,7 @@ void CPlayerState_NormalAttackBase::NextComboOrIdle(CModel* pOwnerModel, class C
     if (true == m_isEnd && true == m_pOwnerModelCom->Get_CurrentAnimation()->Get_Finished())
     {
         pOwnerStateMachine->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_Idle"));
+        m_pOwnerModelCom->Root_MotionStart();
     }
 
     

@@ -292,7 +292,7 @@ HRESULT CModel::Render(_uint iMeshIndex)
 	return S_OK;
 }
 
-void CModel::Play_Animation(_float fTimeDelta)
+void CModel::Play_Animation(_float fTimeDelta, _float3& vRootOutPos)
 {
 	if (m_iCurrentAnimIndex >= m_iNumAnimations)
 		return;
@@ -323,27 +323,25 @@ void CModel::Play_Animation(_float fTimeDelta)
 		m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(m_isLoop, fTimeDelta, m_Bones);
 	}
 
-	//if (true == m_bRootMotionStart)
-	//{
-		m_pRootTranslateBone = Get_BonePtr("M_ROOT_$AssimpFbx$_Translation");
 
-		XMStoreFloat3(&m_vPrevRootPosition, m_pRootTranslateBone->Get_CombinedTransformationMatrix().r[3]);
-		
-	
-		if (true == m_bRootMotionStart)
-		{
-			m_isRootAnim = true;
-			m_bRootMotionStart = false;
-		}
-	//}
+	_float3 vPos = {};
 
 	for (auto& pBone : m_Bones)
-		pBone->Invalidate_CombinedTransformationMatrix(m_Bones, XMLoadFloat4x4(&m_PivotMatrix));
+		pBone->Invalidate_CombinedTransformationMatrix(m_Bones, XMLoadFloat4x4(&m_PivotMatrix), vPos);
+
+	if (true == m_bRootMotionStart && false == m_isBlend && false == Get_CurrentAnimation()->Get_Finished())
+	{
+		_float3 vCalcPos;
+		XMStoreFloat3(&vCalcPos, (XMLoadFloat3(&vPos) - XMLoadFloat3(&m_vPrevRootPosition)));
+		
+
+		vRootOutPos = vCalcPos;
+
+	}
+		m_vPrevRootPosition = vPos;
+	
 
 	
-	_float3 vZeroPosition = { 0.f, 0.f, 0.f };
-	m_pRootTranslateBone->Set_Position(vZeroPosition);
-
 }
 
 HRESULT CModel::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, _uint iMeshIndex)
@@ -855,6 +853,7 @@ CComponent* CModel::Clone(void* pArg)
 void CModel::Free()
 {
 	__super::Free();
+
 
 	for(auto& pAnimation : m_Animations)
 		Safe_Release(pAnimation);

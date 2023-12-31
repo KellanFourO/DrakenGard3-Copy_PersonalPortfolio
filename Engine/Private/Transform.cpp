@@ -54,6 +54,39 @@ void CTransform::Set_Scaling(_float fScaleX, _float fScaleY, _float fScaleZ)
 	Set_State(STATE_LOOK,  XMVector3Normalize(Get_State(CTransform::STATE_LOOK)) * fScaleZ);
 }
 
+void CTransform::Add_LookPos(_float3& _vAddPos) //! 바라보는 방향으로 위치값을 더해주자
+{
+	//!기존에 월드 위치를 구해주자
+	_float3 vCurrentWorldPosition;
+	XMStoreFloat3(&vCurrentWorldPosition, Get_State(CTransform::STATE_POSITION));
+
+
+	_float3 vTargetLook;
+	XMStoreFloat3(&vTargetLook, Get_State(CTransform::STATE_LOOK));
+
+	//! 기존에 객체가 바라보고있던	방향으로 이동량을 더할 수있게 이동량에다가 기존 바라보고있던 방향을 곱해주자
+	_float3 vMoveDirection;
+	XMStoreFloat3(&vMoveDirection, (XMLoadFloat3(&_vAddPos) * XMLoadFloat3(&vTargetLook)));
+
+	//! 위에서 구한 방향 이동량으로 갱신해주자
+
+	XMStoreFloat3(&vCurrentWorldPosition, (XMLoadFloat3(&vCurrentWorldPosition) + XMLoadFloat3(&vMoveDirection)));
+
+
+	//! 기존 월드 행렬에 이동량이 더해진 월드위치로 바꿔주자
+	_float4x4 vCurrentWorldMatrix;
+
+	XMStoreFloat4x4(&vCurrentWorldMatrix, Get_WorldMatrix());
+
+
+	vCurrentWorldMatrix._41 = vCurrentWorldPosition.x;
+	vCurrentWorldMatrix._42 = vCurrentWorldPosition.y;
+	vCurrentWorldMatrix._43 = vCurrentWorldPosition.z;
+
+	Set_WorldFloat4x4(vCurrentWorldMatrix);
+	
+}
+
 void CTransform::Go_Straight(_float fTimeDelta, class CNavigation* pNavigation)
 {
 	//TODO 방향벡터를 만들어서 가게하면된다.
@@ -135,7 +168,6 @@ void CTransform::Go_Down(_float fTimeDelta)
 void CTransform::Turn(_fvector vAxis, _float fTimeDelta)
 {
 	//TODO 임의의축으로 회전하게 하는 함수이다.
-	
 	_vector vRight = Get_State(STATE_RIGHT);
 	_vector vUp	   = Get_State(STATE_UP);
 	_vector vLook  = Get_State(STATE_LOOK);
