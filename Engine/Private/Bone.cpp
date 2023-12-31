@@ -39,14 +39,13 @@ void CBone::Invalidate_CombinedTransformationMatrix(CModel::BONES& Bones, _fmatr
 	{
 		
 		vRootOutPos.x = m_CombinedTransformationMatrix._41;
-		vRootOutPos.y = m_CombinedTransformationMatrix._42;
+		vRootOutPos.y = m_CombinedTransformationMatrix._42; 
 		vRootOutPos.z = m_CombinedTransformationMatrix._43;
 
 		m_CombinedTransformationMatrix._41 = 0;
 		m_CombinedTransformationMatrix._42 = 0;
 		m_CombinedTransformationMatrix._43 = 0;
 	}
-
 }
 
 void CBone::BlendAnimation(const KEYFRAME& tCurKey, _float fRatio)
