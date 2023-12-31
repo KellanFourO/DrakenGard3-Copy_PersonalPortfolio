@@ -48,15 +48,15 @@ void CPlayerState_NormalAttackBase::NextComboOrIdle(CModel* pOwnerModel, class C
        //! 선입력이 있었다면
         if (true == m_bInput)
         {
-            
             pOwnerStateMachine->Transition(CStateMachine::STATE_GROUND, strNextComboStateTag);
         }
-        //! 선입력이 없었다면
-        else if(false == m_bInput)
-        {
-            pOwnerModel->Set_Animation(iEndAnimIndex);
-            m_isEnd = true;
-        }
+        ////! 선입력이 없었다면
+        //else if(false == m_bInput)
+        //{
+        //    pOwnerModel->Reset_RootMotion();
+        //    pOwnerModel->Set_Animation(iEndAnimIndex);
+        //    m_isEnd = true;
+        //}
             
     }
 

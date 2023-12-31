@@ -47,10 +47,10 @@ HRESULT CPlayerState_Attack8::EndState()
 
 void CPlayerState_Attack8::Priority_Tick(const _float& fTimeDelta)
 {
-	if (false == m_isEnd)
-	{
+	//if (false == m_isEnd)
+	//{
 		RootMotion();
-	}
+	//}
 }
 
 void CPlayerState_Attack8::Tick(const _float& fTimeDelta)

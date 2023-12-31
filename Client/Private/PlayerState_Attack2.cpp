@@ -50,20 +50,21 @@ HRESULT CPlayerState_Attack2::EndState()
 
 void CPlayerState_Attack2::Priority_Tick(const _float& fTimeDelta)
 {
-	if (false == m_isEnd)
-	{
-		RootMotion();
-	}
+	
 }
 
 void CPlayerState_Attack2::Tick(const _float& fTimeDelta)
 {
-	//RootMotion();
+	//if (false == m_isEnd)
+	//{
+		RootMotion();
+	//}
 }
 
 void CPlayerState_Attack2::Late_Tick(const _float& fTimeDelta)
 {
 	NextComboOrIdle(m_pOwnerModelCom, m_pOwnerStateCom, TEXT("PlayerState_Attack3"), 93);
+	
 }
 
 

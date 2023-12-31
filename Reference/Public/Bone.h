@@ -14,6 +14,7 @@ public:
 	const _char* Get_Name() const { return m_szName; }
 	_int		 Get_Index() const { return m_iIndex; }
 
+	_matrix		Get_TransformationMatrix() const { return XMLoadFloat4x4(&m_TransformationMatrix); }
 	_matrix		Get_CombinedTransformationMatrix() const { return XMLoadFloat4x4(&m_CombinedTransformationMatrix); }
 	void		Set_Position(_float3 vPosition) { memcpy(&m_TransformationMatrix.m[3], &vPosition, sizeof(_float3)); }
 	_float4x4	Get_OffsetFloat4x4() const { return m_OffsetMatrix; }

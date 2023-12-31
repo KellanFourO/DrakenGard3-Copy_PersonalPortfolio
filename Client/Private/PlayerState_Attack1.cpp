@@ -46,20 +46,23 @@ HRESULT CPlayerState_Attack1::EndState()
 
 void CPlayerState_Attack1::Priority_Tick(const _float& fTimeDelta)
 {
-	if (false == m_isEnd)
-	{
-		RootMotion();
-	}
+	
 }
 
 void CPlayerState_Attack1::Tick(const _float& fTimeDelta)
 {
-	
+	//if (false == m_isEnd)
+	//{
+		RootMotion();
+
+	//! 여기서 이전 루트본의 위치를 구해서 혅 현재 루트본의 위치를 구하고있었다.
+	//}
 }
 
 void CPlayerState_Attack1::Late_Tick(const _float& fTimeDelta)
 {
 	NextComboOrIdle(m_pOwnerModelCom, m_pOwnerStateCom, TEXT("PlayerState_Attack2"), 91);
+	//! 여기서 다음 애니메이션으로 변경되고있다.
 }
 
 CPlayerState_Attack1* CPlayerState_Attack1::Create(CPlayer* pPlayer)
