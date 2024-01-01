@@ -198,6 +198,7 @@
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\public\Camera_Dynamic.h" />
     <ClInclude Include="..\Public\Camera_MapTool.h" />
+    <ClInclude Include="..\Public\Camera_Target.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\CustomFont.h" />
     <ClInclude Include="..\public\Dynamic_Terrain.h" />
@@ -281,6 +282,7 @@
     <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="..\Private\Camera_Dynamic.cpp" />
     <ClCompile Include="..\Private\Camera_MapTool.cpp" />
+    <ClCompile Include="..\Private\Camera_Target.cpp" />
     <ClCompile Include="..\Private\CustomFont.cpp" />
     <ClCompile Include="..\Private\Dynamic_Terrain.cpp" />
     <ClCompile Include="..\Private\EN00_Control_Arrival.cpp" />

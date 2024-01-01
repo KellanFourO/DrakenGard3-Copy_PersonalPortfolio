@@ -51,6 +51,8 @@ HRESULT CMonster_EN00::Initialize(void* pArg)
 	if (FAILED(Ready_BehaviorTree()))
 		return E_FAIL;
 
+	m_pModelCom->Root_MotionStart();
+
 	//m_pModelCom->Set_Animation(rand() % 20);
 
 	// 클라 테스트용 m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 20, 3.f, rand() % 20, 1.f));
@@ -82,11 +84,15 @@ void CMonster_EN00::Tick(_float fTimeDelta)
 			Pair.second->Tick(fTimeDelta);
 	}
 
+
+
 	_float3 vPos = {};
 
 	m_pModelCom->Play_Animation(fTimeDelta, vPos);
 
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
+
+	m_pTransformCom->Add_LookPos(vPos);
 }
 
 void CMonster_EN00::Late_Tick(_float fTimeDelta)
@@ -241,7 +247,6 @@ HRESULT CMonster_EN00::Ready_BehaviorTree()
 	EN00_BlackBoard->setFloat("Attack_Range", 2.f);
 	EN00_BlackBoard->setFloat("Detect_Range", 5.f);
 	EN00_BlackBoard->setFloat3("TargetPostion", _float3(0.f, 0.f, 0.f));
-	
 
 	EN00_BlackBoard->setBool("Is_Hit", false); //! 피격중인가
 	EN00_BlackBoard->setBool("Is_Ground", true);
@@ -274,7 +279,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree()
 	BrainTree::Builder EN00_Builder(EN00_BlackBoard);
 	
 	//// 셀렉터를 루트로 설정
-	auto selectorBuilder = EN00_Builder.composite<BrainTree::Selector>(); 
+	auto selectorBuilder = EN00_Builder.composite<BrainTree::Selector>();  //! 
 
 	//TODO  첫 번째 시퀀스 추가 
 	//!	( 죽었는가, 죽는 액션 및 소멸 처리 )
@@ -282,7 +287,6 @@ HRESULT CMonster_EN00::Ready_BehaviorTree()
 		.leaf<CEN00_Control_Dead>()  // 첫 번째 리프 노드 추가
 		.leaf<CEN00_Task_Dead>() // 두 번째 리프 노드 추가
 		.end() 
-
 
 		.composite<BrainTree::Sequence>() 
 		.leaf<CEN00_Control_Ground>()

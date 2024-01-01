@@ -3,6 +3,7 @@
 
 #include "GameInstance.h"
 #include "Camera_Dynamic.h"
+#include "Camera_Target.h"
 //#include "SkyBox.h"
 #include "Dynamic_Terrain.h"
 #include "Player.h"
@@ -14,12 +15,12 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_GamePlay::Initialize()
 {
+	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
+		return E_FAIL;
 	
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
-		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;
@@ -43,7 +44,7 @@ HRESULT CLevel_GamePlay::Render()
 
 HRESULT CLevel_GamePlay::Ready_Layer_Camera(const wstring& strLayerTag)
 {
-	CCamera_Dynamic::DYNAMIC_CAMERA_DESC	Desc = {};
+	CCamera_Target::TARGET_CAMERA_DESC Desc = {};
 
 	Desc.fMouseSensitivity = 0.05f;
 	Desc.vEye = _float4(0.f, 20.f, -15.f, 1.f);
@@ -52,11 +53,14 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const wstring& strLayerTag)
 	Desc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
 	Desc.fNear = 0.1f;
 	Desc.fFar = 1000.f;
-	Desc.fSpeedPerSec = 20.f;
+	Desc.fSpeedPerSec = 10.f;
 	Desc.fRotationPerSec = XMConvertToRadians(180.0f);
+	Desc.pTarget = m_pGameInstance->Get_Player(LEVEL_GAMEPLAY);
 
-	if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY,strLayerTag,TEXT("Prototype_GameObject_Camera_Dynamic"), &Desc)))
+	if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY,strLayerTag,TEXT("Prototype_GameObject_Camera_Target"), &Desc)))
 		return E_FAIL;
+
+	
 
 	return S_OK;
 }

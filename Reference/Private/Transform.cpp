@@ -56,14 +56,12 @@ void CTransform::Set_Scaling(_float fScaleX, _float fScaleY, _float fScaleZ)
 
 void CTransform::Add_LookPos(_float3& _vAddPos) //! 바라보는 방향으로 위치값을 더해주자
 {
-	_float3 vTest;
 
+	XMStoreFloat3(&_vAddPos, XMVector3TransformNormal(XMLoadFloat3(&_vAddPos), XMLoadFloat4x4(&m_WorldMatrix)));
 
-	XMStoreFloat3(&vTest, XMVector3TransformNormal(XMLoadFloat3(&_vAddPos), XMLoadFloat4x4(&m_WorldMatrix)));
-
-	m_WorldMatrix._41 += vTest.x;
-	m_WorldMatrix._42 += vTest.y;
-	m_WorldMatrix._43 += vTest.z;
+	m_WorldMatrix._41 += _vAddPos.x;
+	m_WorldMatrix._42 += _vAddPos.y;
+	m_WorldMatrix._43 += _vAddPos.z;
 	
 }
 
@@ -161,6 +159,33 @@ void CTransform::Turn(_fvector vAxis, _float fTimeDelta)
 	Set_State(STATE_LOOK, XMVector3TransformNormal(vLook, RotationMatrix));
 }
 
+_float CTransform::CalculateAngleBetweenVectors(const _vector& v1, const _vector& v2)
+{
+	// 두 벡터 사이의 각도를 계산
+	return acos(XMVectorGetX(XMVector3Dot(XMVector3Normalize(v1), XMVector3Normalize(v2))));
+}
+
+void CTransform::RotateTowards(_vector vTarget, _float fTimeDelta)
+{
+	// 현재 방향 벡터 가져오기
+	_vector vLook = Get_State(STATE_LOOK);
+
+	// 현재 방향과 목표 방향 사이의 각도 계산
+	_float fAngle = CalculateAngleBetweenVectors(vLook, vTarget);
+
+	// 회전할 각도 계산 (여기서는 각 프레임당 회전 속도와 시간 간격을 사용)
+	_float fRotation = min(m_fRotationPerSec * fTimeDelta, fAngle);
+
+	// 회전 축 계산
+	_vector vRotationAxis = XMVector3Cross(vLook, vTarget);
+
+	// 회전 행렬 계산
+	_matrix RotationMatrix = XMMatrixRotationAxis(vRotationAxis, fRotation);
+
+	// 현재 방향 벡터를 회전시켜 새로운 방향으로 설정
+	Set_State(STATE_LOOK, XMVector3TransformNormal(vLook, RotationMatrix));
+}
+
 void CTransform::Rotation(_fvector vAxis, _float fRadian)
 {
 	//TODO 특정 각도로 바라보게 하는 함수이다.
@@ -178,6 +203,8 @@ void CTransform::Rotation(_fvector vAxis, _float fRadian)
 	Set_State(STATE_UP, XMVector3TransformNormal(vUp, RotationMatrix));
 	Set_State(STATE_LOOK, XMVector3TransformNormal(vLook, RotationMatrix));
 }
+
+
 
 void CTransform::Go_Target(_fvector vTargetPos, _float fTimeDelta, _float fSpare)
 {

@@ -18,6 +18,10 @@ public:
 	virtual ~CTransform() = default;
 
 public:
+	_float	Get_Speed() { return m_fSpeedPerSec; }
+	_float  Get_RotationSpeed() { return m_fRotationPerSec; }
+
+
 	//! 행렬 행 정보 교체
 	void Set_State(STATE eState, const _float4& vState)
 	{
@@ -109,6 +113,8 @@ public:
 	void	Go_Down(_float fTimeDelta);
 
 	void	Turn(_fvector vAxis, _float fTimeDelta);
+	_float  CalculateAngleBetweenVectors(const _vector& v1, const _vector& v2);
+	void	RotateTowards(_vector vTarget, _float fTimeDelta);
 	void	Rotation(_fvector vAxis, _float fRadian);
 	void	Go_Target(_fvector vTargetPos, _float fTimeDelta, _float fSpare = 0.1f);
 	void	Look_At(_fvector vTargetPos);

@@ -3,12 +3,14 @@
 #include "Camera.h"
 
 BEGIN(Engine)
+class CGameObject;
+
 
 class CCamera_Dynamic final : public CCamera
 {
 public:
 	typedef struct tagDynamicCameraDesc : public CCamera::tagCameraDesc
-	{
+	{			
 		_float fMouseSensitivity = 0.0f;
 	}DYNAMIC_CAMERA_DESC;
 
@@ -16,6 +18,8 @@ private:
 	CCamera_Dynamic(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CCamera_Dynamic(const CCamera_Dynamic& rhs);
 	virtual ~CCamera_Dynamic() = default;
+
+	void	Set_Target(CGameObject* pTarget) { m_pTarget = pTarget; }
 
 public:
 	virtual HRESULT Initialize_Prototype(LEVEL eLevel);
@@ -27,11 +31,20 @@ public:
 private:
 	void	KeyInput(_float fTimeDelta);
 	void	MouseInput(_float fTimeDelta);
+	
 
 private:
 	_float			m_fMouseSensitivity = { 0.0f };
 	LEVEL			m_eCurrentLevelID = { LEVEL_END };
 	_bool			m_bAdmin = false;
+	CGameObject*	m_pTarget = { nullptr };
+	_float			m_fDampConst = 1.5f;
+	_float			m_fSpringConst = 3.f;
+	_float			m_fSpringLen = 10.f;
+	_bool			m_bTest = true;
+
+	_float3			m_vPrevTargetPos, m_vTargetPos;
+
 
 public:
 	static CCamera_Dynamic*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel);

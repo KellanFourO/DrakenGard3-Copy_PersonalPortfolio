@@ -11,6 +11,7 @@
 #include "Monster.h"
 #include "TestTree.h"
 #include "ForkLift.h"
+#include "Camera_Target.h"
 
 //TODO Player
 #include "Player.h"
@@ -315,6 +316,10 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	case Client::LEVEL_GAMEPLAY:
 		if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Dynamic"),
 			CCamera_Dynamic::Create(m_pDevice, m_pContext, eLevel))))
+			return E_FAIL;
+
+		if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Target"),
+			CCamera_Target::Create(m_pDevice, m_pContext, eLevel))))
 			return E_FAIL;
 		break;
 	/* For.Prototype_GameObject_Camera_MapTool */

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Camera_Dynamic.h"
 #include "GameInstance.h"
+#include "GameObject.h"
 
 CCamera_Dynamic::CCamera_Dynamic(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CCamera(pDevice,pContext)
@@ -41,6 +42,7 @@ void CCamera_Dynamic::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_TAB))
 		m_bAdmin = !m_bAdmin;
+	
 
 	if (!m_bAdmin)
 	{

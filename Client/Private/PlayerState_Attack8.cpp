@@ -38,7 +38,6 @@ HRESULT CPlayerState_Attack8::EndState()
 	m_fLastInputTime = 0.f;
 	m_isEnd = false;
 	m_bInput = false;
-	
 
 	return S_OK;
 }

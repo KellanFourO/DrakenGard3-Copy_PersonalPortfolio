@@ -76,8 +76,11 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
 
 	if (m_pGameInstance->Key_Pressing(DIK_A))
 	{
-		m_pOwnerTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
+		m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
 		m_fLastInputTime = fTimeDelta;
+
+		//m_pOwnerTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
+		//m_fLastInputTime = fTimeDelta;
 	}
 
 	if (m_pGameInstance->Key_Pressing(DIK_S))
@@ -88,8 +91,10 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
 
 	if (m_pGameInstance->Key_Pressing(DIK_D))
 	{
-		m_pOwnerTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * 1.f);
+		m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
 		m_fLastInputTime = fTimeDelta;
+		//m_pOwnerTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * 1.f);
+		//m_fLastInputTime = fTimeDelta;
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_SPACE))
