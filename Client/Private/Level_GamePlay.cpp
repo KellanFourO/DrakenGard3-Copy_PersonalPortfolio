@@ -3,10 +3,10 @@
 
 #include "GameInstance.h"
 #include "Camera_Dynamic.h"
-#include "Camera_Target.h"
 //#include "SkyBox.h"
 #include "Dynamic_Terrain.h"
 #include "Player.h"
+#include "Camera_Target.h"
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -17,10 +17,9 @@ HRESULT CLevel_GamePlay::Initialize()
 {
 	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
 		return E_FAIL;
-	
-	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-		return E_FAIL;
 
+	//if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+	//	return E_FAIL;
 
 	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;
@@ -55,12 +54,21 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const wstring& strLayerTag)
 	Desc.fFar = 1000.f;
 	Desc.fSpeedPerSec = 10.f;
 	Desc.fRotationPerSec = XMConvertToRadians(180.0f);
-	Desc.pTarget = m_pGameInstance->Get_Player(LEVEL_GAMEPLAY);
 
-	if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY,strLayerTag,TEXT("Prototype_GameObject_Camera_Target"), &Desc)))
+	CPlayer* pPlayer = dynamic_cast<CPlayer*>(m_pGameInstance->Get_Player(LEVEL_GAMEPLAY));
+
+	if (nullptr == pPlayer)
+		return E_FAIL;
+
+	Desc.pTarget = pPlayer;
+
+	CGameObject* pTarget = nullptr;
+
+	if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY,strLayerTag,TEXT("Prototype_GameObject_Camera_Target"), &Desc, &pTarget)))
 		return E_FAIL;
 
 	
+	//pPlayer->Set_Cam(dynamic_cast<CCamera_Target*>(pTarget));
 
 	return S_OK;
 }

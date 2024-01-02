@@ -9,6 +9,7 @@
 #include "Transform.h"
 #include "Navigation.h"
 #include "RigidBody.h"
+#include "Camera_Target.h"
 
 CPlayerState_Walk::CPlayerState_Walk()
 {
@@ -63,49 +64,98 @@ void CPlayerState_Walk::Late_Tick(const _float& fTimeDelta)
 
 void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_LSHIFT))
-	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Run"));
-	}
+    if (m_pGameInstance->Key_Down(DIK_LSHIFT))
+    {
+        m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Run"));
+    }
 
-	if (m_pGameInstance->Key_Pressing(DIK_W))
-	{
-		m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
-		m_fLastInputTime = fTimeDelta;
-	}
+    _matrix RotationMatrix = XMMatrixIdentity();
 
-	if (m_pGameInstance->Key_Pressing(DIK_A))
-	{
-		m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
-		m_fLastInputTime = fTimeDelta;
+    if (m_pGameInstance->Key_Pressing(DIK_W))
+    {
+        if (true == m_bNoTurn)
+        {
+            
+            RotationMatrix = XMMatrixRotationY(XMConvertToRadians(-m_fTurnAngle));
+            
+            m_bLeftTurn = false;
+            m_bRightTurn = false;
+            m_bNoTurn = false;
+        }
 
-		//m_pOwnerTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
-		//m_fLastInputTime = fTimeDelta;
-	}
+        m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
+        m_fLastInputTime = fTimeDelta;
+    }
 
-	if (m_pGameInstance->Key_Pressing(DIK_S))
-	{
-		m_pOwnerTransform->Go_Backward(fTimeDelta);
-		m_fLastInputTime = fTimeDelta;
-	}
+    if (m_pGameInstance->Key_Pressing(DIK_A))
+    {
+        if (false == m_bLeftTurn)
+        {
+            if (true == m_bRightTurn)
+                m_fTurnAngle = -180.0f;
+            else
+                m_fTurnAngle = -90.0f;
 
-	if (m_pGameInstance->Key_Pressing(DIK_D))
-	{
-		m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
-		m_fLastInputTime = fTimeDelta;
-		//m_pOwnerTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * 1.f);
-		//m_fLastInputTime = fTimeDelta;
-	}
+            RotationMatrix = XMMatrixRotationY(XMConvertToRadians(m_fTurnAngle));
 
-	if (m_pGameInstance->Key_Down(DIK_SPACE))
-	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_AIR, TEXT("PlayerState_Jump"));
-	}
+            m_bLeftTurn = true;
+            m_bRightTurn = false;
+            m_bNoTurn = true;
+        }
+        
 
-	if (m_pGameInstance->Mouse_Down(DIM_LB))
-	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
-	}
+        m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
+        m_fLastInputTime = fTimeDelta;
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_S))
+    {
+        if (true == m_bRightTurn)
+            RotationMatrix = XMMatrixRotationY(XMConvertToRadians(-90.0f));
+        else if (true == m_bLeftTurn)
+            RotationMatrix = XMMatrixRotationY(XMConvertToRadians(90.0f));
+
+        //m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
+        m_pOwnerTransform->Go_Backward(fTimeDelta);
+        m_fLastInputTime = fTimeDelta;
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_D))
+    {
+        if (false == m_bRightTurn)
+        {
+            if (true == m_bLeftTurn)
+                m_fTurnAngle = 180.0f;
+            else
+                m_fTurnAngle = 90.0f;
+
+            RotationMatrix = XMMatrixRotationY(XMConvertToRadians(m_fTurnAngle));
+
+            m_bRightTurn = true;
+            m_bLeftTurn = false;
+            m_bNoTurn = true;
+        }
+        
+
+        m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
+        m_fLastInputTime = fTimeDelta;
+    }
+
+    if (m_pGameInstance->Key_Down(DIK_SPACE))
+    {
+        m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_AIR, TEXT("PlayerState_Jump"));
+    }
+
+    if (m_pGameInstance->Mouse_Down(DIM_LB))
+    {
+        m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
+    }
+
+    // 새로운 회전 행렬을 적용
+    _float4x4 CurrentMatrix = m_pOwnerTransform->Get_WorldFloat4x4();
+    XMMATRIX newRotation = XMMatrixMultiply(XMLoadFloat4x4(&CurrentMatrix), RotationMatrix);
+    XMStoreFloat4x4(&CurrentMatrix, newRotation);
+    m_pOwnerTransform->Set_WorldFloat4x4(CurrentMatrix);
 }
 
 CPlayerState_Walk* CPlayerState_Walk::Create(CPlayer* pPlayer)

@@ -25,6 +25,7 @@ private:
 private:
 	_bool			m_bKeyPressing = false;
 
+
 public:
 	static CPlayerState_Walk* Create(CPlayer* pPlayer);
 	virtual void Free() override;

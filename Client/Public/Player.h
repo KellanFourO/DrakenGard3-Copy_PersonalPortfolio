@@ -16,6 +16,7 @@ BEGIN(Client)
 class CPartObject;
 class CPlayerPart_Body;
 
+
 class CPlayer final : public CAnimObject
 {
 
@@ -27,7 +28,7 @@ private:
 
 
 public:
-	virtual HRESULT Initialize_Prototype() override;
+	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void	Priority_Tick(_float fTimeDelta) override;
 	virtual void	Tick(_float fTimeDelta) override;
@@ -35,12 +36,15 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+	class CCamera_Target*	Get_Cam() { return m_pCamera; }
+	void			Set_Cam(class CCamera_Target* pCam);
 	CPartObject*	Find_PartObject(const wstring& strPartTag);
 
 private:
 	HRESULT			Ready_Components();
 	HRESULT			Ready_PartObjects();
 	HRESULT			Ready_States();
+	HRESULT			Ready_Camera();
 	HRESULT			Add_PartObject(const wstring& strPrototypeTag, const wstring& strPartTag, void* pArg);
 	void			Key_Input(const _float fTimeDelta);
 
@@ -51,6 +55,7 @@ private:
 	CRigidBody*			m_pRigidBodyCom  = { nullptr };
 	CStateMachine*		m_pStateCom		 = { nullptr };
 
+	class CCamera_Target*		m_pCamera		= { nullptr };
 private:
 	_bool				m_bAdmin = false;
 	_float				m_fAccTime = 0.f;

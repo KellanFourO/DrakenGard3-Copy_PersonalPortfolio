@@ -46,7 +46,7 @@ private:
 
 	_float3			m_vVelocity; //! º”µµ∫§≈Õ
 
-	_float			m_fMouseX = 0, m_fMouseY = 0, m_fRotationPersec = 0.f;
+	_float			m_fMouseX = 0, m_fMouseY = 0;
 
 	_float3			m_vStartOffset;
 	_float3			m_vOffset;

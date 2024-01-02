@@ -3,8 +3,8 @@
 #include "GameInstance.h"
 #include "Engine_Function.h"
 
-//TODO ÄÄÆ÷³ÍÆ®
 
+//TODO ÄÄÆ÷³ÍÆ®
 
 //TODO ÆÄÃ÷
 #include "PlayerPart_Body.h"
@@ -13,6 +13,8 @@
 //TODO »óÅÂ
 #include "PlayerGroundStates.h"
 
+#include "Camera_Target.h"
+
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice, pContext)
 {
@@ -20,23 +22,26 @@ CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 CPlayer::CPlayer(const CPlayer & rhs)
 	: CAnimObject(rhs)
-	
 {
 }
 
 HRESULT CPlayer::Initialize_Prototype()
 {	
 	m_isPlayer = true;
+	
 
 	return S_OK;
 }
  
 HRESULT CPlayer::Initialize(void* pArg)
 {	
-	CGameObject::GAMEOBJECT_DESC PlayerDesc = {};
+	
 
+	CGameObject::GAMEOBJECT_DESC PlayerDesc = {};
+	
 	PlayerDesc.fSpeedPerSec = 10.0f;
 	PlayerDesc.fRotationPerSec = XMConvertToRadians(90.0f);
+
 
 	if (FAILED(__super::Initialize(&PlayerDesc)))
 		return E_FAIL;	
@@ -45,6 +50,9 @@ HRESULT CPlayer::Initialize(void* pArg)
 		return E_FAIL;
 
 	if (FAILED(Ready_PartObjects()))
+		return E_FAIL;
+
+	if(FAILED(Ready_Camera()))
 		return E_FAIL;
 
 	if (FAILED(Ready_States()))
@@ -107,14 +115,18 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 HRESULT CPlayer::Render()
 {
-	
 	#ifdef _DEBUG
 		m_pNavigationCom->Render();
 		m_pColliderCom->Render();
 	#endif
 
-
 	return S_OK;
+}
+
+void CPlayer::Set_Cam(CCamera_Target* pCam)
+{
+	m_pCamera = pCam;
+	Safe_AddRef(m_pCamera);
 }
 
 CPartObject* CPlayer::Find_PartObject(const wstring& strPartTag)
@@ -246,6 +258,32 @@ HRESULT CPlayer::Ready_States()
 	return S_OK;
 }
 
+HRESULT CPlayer::Ready_Camera()
+{
+	CCamera_Target::TARGET_CAMERA_DESC Desc = {};
+
+	Desc.fMouseSensitivity = 0.05f;
+	Desc.vEye = _float4(0.f, 20.f, -15.f, 1.f);
+	Desc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
+	Desc.fFovY = XMConvertToRadians(60.0f);
+	Desc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+	Desc.fNear = 0.1f;
+	Desc.fFar = 1000.f;
+	Desc.fSpeedPerSec = 10.f;
+	Desc.fRotationPerSec = XMConvertToRadians(180.0f);
+	Desc.pTarget = this;
+
+	CGameObject* pCam = nullptr;
+
+	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_Camera"), TEXT("Prototype_GameObject_Camera_Target"), &Desc, &pCam)))
+		return E_FAIL;
+
+	m_pCamera = dynamic_cast<CCamera_Target*>(pCam);
+	Safe_AddRef(m_pCamera);
+
+	return S_OK;
+}
+
 
 HRESULT CPlayer::Add_PartObject(const wstring& strPrototypeTag, const wstring& strPartTag, void* pArg)
 {
@@ -318,6 +356,7 @@ void CPlayer::Free()
 		m_pStateCom->Clear();
 	}
 
+	Safe_Release(m_pCamera);
 	Safe_Release(m_pStateCom);
 	Safe_Release(m_pColliderCom);
 	Safe_Release(m_pRigidBodyCom);

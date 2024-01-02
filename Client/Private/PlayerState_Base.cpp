@@ -12,6 +12,7 @@
 #include "Transform.h"
 #include "Navigation.h"
 #include "StateMachine.h"
+#include "Camera_Target.h"
 
 
 CPlayerState_Base::CPlayerState_Base()
@@ -26,6 +27,7 @@ HRESULT CPlayerState_Base::Initialize(CPlayer* pPlayer)
 	m_pOwnerNavagation = dynamic_cast<CNavigation*>(pPlayer->Find_Component(TEXT("Com_Navigation")));
 	m_pOwnerRigidBody = dynamic_cast<CRigidBody*>(pPlayer->Find_Component(TEXT("Com_RigidBody")));
 	m_pOwnerModelCom = dynamic_cast<CModel*>(pPlayer->Find_PartObject(TEXT("Part_Body"))->Find_Component(TEXT("Com_Model")));
+	m_pOwnerCam = pPlayer->Get_Cam();
 
 	if(__super::Initialize(m_pOwnerModelCom))
 		return E_FAIL;
@@ -36,6 +38,8 @@ HRESULT CPlayerState_Base::Initialize(CPlayer* pPlayer)
 	if (FAILED(AddRefIfNotNull(m_pOwnerNavagation)))
 		return E_FAIL;
 	if (FAILED(AddRefIfNotNull(m_pOwnerRigidBody)))
+		return E_FAIL;
+	if (FAILED(AddRefIfNotNull(m_pOwnerCam)))
 		return E_FAIL;
 	
 	return S_OK;
@@ -58,4 +62,5 @@ void CPlayerState_Base::Free()
 	Safe_Release(m_pOwnerTransform);
 	Safe_Release(m_pOwnerRigidBody);
 	Safe_Release(m_pOwnerNavagation);
+	Safe_Release(m_pOwnerCam);
 }
