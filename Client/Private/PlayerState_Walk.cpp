@@ -40,11 +40,14 @@ HRESULT CPlayerState_Walk::EndState()
 	m_fLastInputTime = 0.f;
 	m_fAccTime = 0.f;
 
+    
+
 	return S_OK;
 }
 
 void CPlayerState_Walk::Tick(const _float& fTimeDelta)
 {
+    MouseInput(fTimeDelta);
 	KeyInput(fTimeDelta);
 }
 
@@ -69,18 +72,15 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
         m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Run"));
     }
 
-    _matrix RotationMatrix = XMMatrixIdentity();
-
     if (m_pGameInstance->Key_Pressing(DIK_W))
     {
-        if (true == m_bNoTurn)
+
+        m_ePrevDir = m_eCurrentDir;
+        m_eCurrentDir = CPlayerState_Base::FRONT;
+
+        if (m_ePrevDir != m_eCurrentDir)
         {
-            
-            RotationMatrix = XMMatrixRotationY(XMConvertToRadians(-m_fTurnAngle));
-            
-            m_bLeftTurn = false;
-            m_bRightTurn = false;
-            m_bNoTurn = false;
+            Vertical_Camera_Rotate();
         }
 
         m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
@@ -89,20 +89,14 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
 
     if (m_pGameInstance->Key_Pressing(DIK_A))
     {
-        if (false == m_bLeftTurn)
+
+        m_ePrevDir = m_eCurrentDir;
+        m_eCurrentDir = CPlayerState_Base::LEFT;
+
+        if (m_ePrevDir != m_eCurrentDir)
         {
-            if (true == m_bRightTurn)
-                m_fTurnAngle = -180.0f;
-            else
-                m_fTurnAngle = -90.0f;
-
-            RotationMatrix = XMMatrixRotationY(XMConvertToRadians(m_fTurnAngle));
-
-            m_bLeftTurn = true;
-            m_bRightTurn = false;
-            m_bNoTurn = true;
+            Horizon_Camera_Rotate();
         }
-        
 
         m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
         m_fLastInputTime = fTimeDelta;
@@ -110,33 +104,29 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
 
     if (m_pGameInstance->Key_Pressing(DIK_S))
     {
-        if (true == m_bRightTurn)
-            RotationMatrix = XMMatrixRotationY(XMConvertToRadians(-90.0f));
-        else if (true == m_bLeftTurn)
-            RotationMatrix = XMMatrixRotationY(XMConvertToRadians(90.0f));
 
-        //m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
-        m_pOwnerTransform->Go_Backward(fTimeDelta);
+        m_ePrevDir = m_eCurrentDir;
+        m_eCurrentDir = CPlayerState_Base::BACK;
+
+        if (m_ePrevDir != m_eCurrentDir)
+        {
+            Vertical_Camera_Rotate();
+        }
+
+        m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
         m_fLastInputTime = fTimeDelta;
     }
 
     if (m_pGameInstance->Key_Pressing(DIK_D))
     {
-        if (false == m_bRightTurn)
+        m_ePrevDir = m_eCurrentDir;
+        m_eCurrentDir = CPlayerState_Base::RIGHT;
+
+        if (m_ePrevDir != m_eCurrentDir)
         {
-            if (true == m_bLeftTurn)
-                m_fTurnAngle = 180.0f;
-            else
-                m_fTurnAngle = 90.0f;
-
-            RotationMatrix = XMMatrixRotationY(XMConvertToRadians(m_fTurnAngle));
-
-            m_bRightTurn = true;
-            m_bLeftTurn = false;
-            m_bNoTurn = true;
+            Horizon_Camera_Rotate();
         }
-        
-
+       
         m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
         m_fLastInputTime = fTimeDelta;
     }
@@ -151,11 +141,7 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
         m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
     }
 
-    // 새로운 회전 행렬을 적용
-    _float4x4 CurrentMatrix = m_pOwnerTransform->Get_WorldFloat4x4();
-    XMMATRIX newRotation = XMMatrixMultiply(XMLoadFloat4x4(&CurrentMatrix), RotationMatrix);
-    XMStoreFloat4x4(&CurrentMatrix, newRotation);
-    m_pOwnerTransform->Set_WorldFloat4x4(CurrentMatrix);
+
 }
 
 CPlayerState_Walk* CPlayerState_Walk::Create(CPlayer* pPlayer)

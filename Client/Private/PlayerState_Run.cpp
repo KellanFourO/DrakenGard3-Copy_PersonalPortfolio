@@ -64,29 +64,64 @@ void CPlayerState_Run::Late_Tick(const _float& fTimeDelta)
 void CPlayerState_Run::KeyInput(const _float& fTimeDelta)
 {
 
-	if (m_pGameInstance->Key_Pressing(DIK_W))
-	{
-		m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
-		m_fLastInputTime = fTimeDelta;
-	}
+    if (m_pGameInstance->Key_Pressing(DIK_W))
+    {
 
-	if (m_pGameInstance->Key_Pressing(DIK_A))
-	{
-		m_pOwnerTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
-		m_fLastInputTime = fTimeDelta;
-	}
+        m_ePrevDir = m_eCurrentDir;
+        m_eCurrentDir = CPlayerState_Base::FRONT;
 
-	if (m_pGameInstance->Key_Pressing(DIK_S))
-	{
-		m_pOwnerTransform->Go_Backward(fTimeDelta);
-		m_fLastInputTime = fTimeDelta;
-	}
+        if (m_ePrevDir != m_eCurrentDir)
+        {
+            Vertical_Camera_Rotate();
+        }
 
-	if (m_pGameInstance->Key_Pressing(DIK_D))
-	{
-		m_pOwnerTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * 1.f);
-		m_fLastInputTime = fTimeDelta;
-	}
+        m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
+        m_fLastInputTime = fTimeDelta;
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_A))
+    {
+
+        m_ePrevDir = m_eCurrentDir;
+        m_eCurrentDir = CPlayerState_Base::LEFT;
+
+        if (m_ePrevDir != m_eCurrentDir)
+        {
+            Horizon_Camera_Rotate();
+        }
+
+        m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
+        m_fLastInputTime = fTimeDelta;
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_S))
+    {
+
+        m_ePrevDir = m_eCurrentDir;
+        m_eCurrentDir = CPlayerState_Base::BACK;
+
+        if (m_ePrevDir != m_eCurrentDir)
+        {
+            Vertical_Camera_Rotate();
+        }
+
+        m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
+        m_fLastInputTime = fTimeDelta;
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_D))
+    {
+        m_ePrevDir = m_eCurrentDir;
+        m_eCurrentDir = CPlayerState_Base::RIGHT;
+
+        if (m_ePrevDir != m_eCurrentDir)
+        {
+            Horizon_Camera_Rotate();
+        }
+
+        m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
+        m_fLastInputTime = fTimeDelta;
+    }
 
 	if (m_pGameInstance->Key_Down(DIK_SPACE))
 	{

@@ -42,7 +42,7 @@ HRESULT CCamera_Target::Initialize(void* pArg)
 	
 	
 	XMStoreFloat3(&m_vStartOffset, XMVectorSet(0.f, 5.f, -8.f, 0.f));
-	XMStoreFloat3(&m_vOffset, XMVectorSet(0.f, 3.f, -4.f, 0.f));
+	XMStoreFloat3(&m_vOffset, XMVectorSet(0.f, 3.f, -3.f, 0.f));
 	
 
 	CTransform* pTargetTransform = m_pTarget->Get_Transform();
@@ -76,13 +76,18 @@ void CCamera_Target::Tick(_float fTimeDelta)
 	_vector vActualPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	
 	CTransform* pTargetTransform = m_pTarget->Get_Transform();
+
 	_vector vTargetPos = pTargetTransform->Get_State(CTransform::STATE_POSITION);
 	//_vector vTargetUp = pTargetTransform->Get_State(CTransform::STATE_UP);
 	//_vector vTargetLook = pTargetTransform->Get_State(CTransform::STATE_LOOK);
 	
 	
 	//! 타겟의 위치는 계속 변경되니 다시 이상적인 위치를 구해주자.
-	_vector vIdealPosition = vTargetPos + MouseInput(fTimeDelta);//- vTargetLook * m_fSpringHeight + vTargetUp * m_fSpringWidth;
+	_vector vIdealPosition;
+	
+	vIdealPosition = vTargetPos + MouseInput(fTimeDelta);
+	
+	
 	
 	//! 이상적인 위치에서 실제 위치로 향하는 방향 벡터를 구하자.
 	_vector vDisplacement = vActualPos - vIdealPosition;
@@ -96,6 +101,7 @@ void CCamera_Target::Tick(_float fTimeDelta)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vActualPos);
 	//ComputeMatrix();
 	m_pTransformCom->Look_At(vTargetPos);
+	//! 타겟 포지션 룩엣도 보정을 해줘야한다.
 
 	
 	//TODO 부모의 Tick함수를 호출해줘야 뷰투영행렬을 파이프라인 객체에게 던져준다.
@@ -144,8 +150,8 @@ _vector CCamera_Target::MouseInput(_float fTimeDelta)
 	{
 		m_fMouseX += XMConvertToRadians(MouseMove * m_fMouseSensitivity);
 		
-		//_float fAngle = XMConvertToRadians(MouseMove * m_fMouseSensitivity);
-		//m_pTarget->Get_Transform()->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fAngle);
+		_float fAngle = XMConvertToRadians(MouseMove * XM_PI * fTimeDelta);
+		m_pTarget->Get_Transform()->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fAngle);
 	}
 	
 	if (MouseMove = m_pGameInstance->Get_DIMouseMove(DIMS_Y))
@@ -158,6 +164,10 @@ _vector CCamera_Target::MouseInput(_float fTimeDelta)
 	vQuaternion = XMQuaternionRotationRollPitchYaw(m_fMouseY, m_fMouseX, 0.f);
 	vQuaternion = XMQuaternionNormalize(vQuaternion);
 	RotationMatrix = XMMatrixRotationQuaternion(vQuaternion);
+
+	
+	
+	
 
 	return XMVector3TransformNormal(XMLoadFloat3(&m_vOffset), RotationMatrix);
 }
