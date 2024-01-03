@@ -12,6 +12,8 @@ private:
 
 public:
 	class CComponent*	Get_Component(const wstring& strComponentTag, _uint iIndex);
+	class CComponent*	Get_PartComponent(const wstring& strComponentTag, _uint iIndex, const wstring& strPartTag);
+
 	class CGameObject*	Get_Player();
 
 public:

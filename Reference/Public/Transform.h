@@ -114,7 +114,6 @@ public:
 
 	void	Turn(_fvector vAxis, _float fTimeDelta);
 	_float  CalculateAngleBetweenVectors(const _vector& v1, const _vector& v2);
-	void	RotateTowards(_vector vTarget, _float fTimeDelta);
 	void	Rotation(_fvector vAxis, _float fRadian);
 	void	RotationOfCameraDir(_fvector vCamLook, _float fRadian);
 

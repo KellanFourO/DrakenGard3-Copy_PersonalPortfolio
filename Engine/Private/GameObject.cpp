@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Transform.h"
 #include "Model.h"
+#include "PartObject.h"
 
 CGameObject::CGameObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -174,6 +175,18 @@ CComponent* CGameObject::Find_Component(const wstring& strComTag)
 	
 	return iter->second;
 }
+
+CPartObject* CGameObject::Find_PartObject(const wstring& strPartTag)
+{
+	auto iter = m_PartObjects.find(strPartTag);
+
+	if (iter == m_PartObjects.end())
+		return nullptr;
+
+	return iter->second;
+}
+
+
 
 void CGameObject::Free()
 {

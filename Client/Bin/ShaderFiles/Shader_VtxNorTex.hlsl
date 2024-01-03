@@ -39,13 +39,6 @@ vector			g_vBrushPos;
 float			g_fBrushRange;
 
 
-sampler DefaultSampler = sampler_state
-{
-	Filter = MIN_MAG_MIP_LINEAR; //! 리니어로 주어도 밉레벨이 없는 텍스처형태( dx11에서는 dds만 가능)가 들어왔다면 리니어를 줘도 적용되지 않는다.
-	AddressU = wrap;
-	AddressV = wrap;
-};
-
 //TODO 셰이더가 하는 일
 //! 정점의 변환 ( 월드변환, 뷰변환, 투영변환 ) 을 수행한다. ( 뷰행렬의 투영행렬을 곱했다고 투영 스페이스에 있는 것이아니다. 반드시 w나누기 까지 거친 다음에야 투영 스페이스 변환이 됐다고 할 수 있다. )
 //! 정점의 구성정보를 추가, 삭제 등의 변경을 수행한다.
@@ -126,9 +119,9 @@ PS_OUT PS_MAIN(PS_IN In)
 	//! 마스크텍스처로 두장의 지형텍스처를 섞어서 그릴 것이기에 다시 정의되야 된다.
 	//vector		vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexCoord * 100.0f);
 
-	vector		vSourDiffuse = g_DiffuseTexture[0].Sample(DefaultSampler, In.vTexCoord * 100.0f);
-	vector		vDestDiffuse = g_DiffuseTexture[1].Sample(DefaultSampler, In.vTexCoord * 100.0f);
-	vector		vMask = g_MaskTexture.Sample(DefaultSampler, In.vTexCoord); //! 마스크는 타일링시키지 않을것이기에 uv좌표에 100을 곱해주지 않는다.
+    vector vSourDiffuse = g_DiffuseTexture[0].Sample(LinearSampler, In.vTexCoord * 100.0f);
+    vector vDestDiffuse = g_DiffuseTexture[1].Sample(LinearSampler, In.vTexCoord * 100.0f);
+    vector vMask = g_MaskTexture.Sample(LinearSampler, In.vTexCoord); //! 마스크는 타일링시키지 않을것이기에 uv좌표에 100을 곱해주지 않는다.
 
 	//TODO Brush의 색상을 바로 얻지 않는 이유
 	//! 얻어온 색깔을 디퓨즈 색상에 더해줘야하는데, 내가 지정한 위치에 내가 지정한 사이즈로 그려주길 바란다.
@@ -153,8 +146,8 @@ PS_OUT PS_MAIN(PS_IN In)
 		vUV.x = (In.vWorldPos.x - (g_vBrushPos.x - g_fBrushRange)) / (2.f * g_fBrushRange);
 		vUV.y = ((g_vBrushPos.z + g_fBrushRange) - In.vWorldPos.z) / (2.f * g_fBrushRange);
 
-		vBrush = g_BrushTexture.Sample(DefaultSampler, vUV);
-	}
+        vBrush = g_BrushTexture.Sample(LinearSampler, vUV);
+    }
 
 	//!마스크 텍스처로 읽어들인 색이 하얀색, 검정색이냐에 따라 어떤텍스처의 색으로 그릴것인지 구분하기위한 산술식이다
 	//! 만약 마스크의 색상이 vector(1.f, 1.f, 1.f, 1.f) 이었다면 1과 0을 곱하니 사라지고 마스크는 0이다. 1에서 0을 빼면 SourDiffuse 그대로의 색상이나오고
@@ -198,7 +191,7 @@ PS_OUT PS_MAIN_POINT(PS_IN In)
 	//! 점광원은 빛의 범위를 벗어날시에 아예 빛을 받지말아야한다. 엠비언트 색상도 마찬가지이다.
 
 	//! 점광원은 빛의 방향을 직접 구해줘야한다.
-	vector		vMtrlDiffuse = g_DiffuseTexture[0].Sample(DefaultSampler, In.vTexCoord * 100.0f);
+    vector vMtrlDiffuse = g_DiffuseTexture[0].Sample(LinearSampler, In.vTexCoord * 100.0f);
 	vector		vLightDir = In.vWorldPos - g_vLightPos; //! 픽셀의 월드위치를 바라보는 빛의 방향
 
 	//TODO 감쇄값 (Attenuation) 구해주는 법
@@ -241,9 +234,9 @@ PS_OUT PS_WIRE(PS_IN In)
 	//! 마스크텍스처로 두장의 지형텍스처를 섞어서 그릴 것이기에 다시 정의되야 된다.
 	//vector		vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexCoord * 100.0f);
 
-	vector		vSourDiffuse = g_DiffuseTexture[0].Sample(DefaultSampler, In.vTexCoord * 100.0f);
-	vector		vDestDiffuse = g_DiffuseTexture[1].Sample(DefaultSampler, In.vTexCoord * 100.0f);
-	vector		vMask = g_MaskTexture.Sample(DefaultSampler, In.vTexCoord); //! 마스크는 타일링시키지 않을것이기에 uv좌표에 100을 곱해주지 않는다.
+    vector vSourDiffuse = g_DiffuseTexture[0].Sample(LinearSampler, In.vTexCoord * 100.0f);
+    vector vDestDiffuse = g_DiffuseTexture[1].Sample(LinearSampler, In.vTexCoord * 100.0f);
+    vector vMask = g_MaskTexture.Sample(LinearSampler, In.vTexCoord); //! 마스크는 타일링시키지 않을것이기에 uv좌표에 100을 곱해주지 않는다.
 
 	//TODO Brush의 색상을 바로 얻지 않는 이유
 	//! 얻어온 색깔을 디퓨즈 색상에 더해줘야하는데, 내가 지정한 위치에 내가 지정한 사이즈로 그려주길 바란다.
@@ -268,8 +261,8 @@ PS_OUT PS_WIRE(PS_IN In)
 		vUV.x = (In.vWorldPos.x - (g_vBrushPos.x - g_fBrushRange)) / (2.f * g_fBrushRange);
 		vUV.y = ((g_vBrushPos.z + g_fBrushRange) - In.vWorldPos.z) / (2.f * g_fBrushRange);
 
-		vBrush = g_BrushTexture.Sample(DefaultSampler, vUV);
-	}
+        vBrush = g_BrushTexture.Sample(LinearSampler, vUV);
+    }
 
 	//!마스크 텍스처로 읽어들인 색이 하얀색, 검정색이냐에 따라 어떤텍스처의 색으로 그릴것인지 구분하기위한 산술식이다
 	//! 만약 마스크의 색상이 vector(1.f, 1.f, 1.f, 1.f) 이었다면 1과 0을 곱하니 사라지고 마스크는 0이다. 1에서 0을 빼면 SourDiffuse 그대로의 색상이나오고

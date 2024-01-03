@@ -154,6 +154,9 @@
     <Filter Include="1000. Etc">
       <UniqueIdentifier>{13e605ae-8461-4955-b78b-f5fd7f8cdaea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\02. GameObjects\02. Part">
+      <UniqueIdentifier>{f555567f-8e9f-41ea-96fe-7cd0e4aab98c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -312,6 +315,9 @@
     <ClInclude Include="그라운드 AI설계.h">
       <Filter>1000. Etc</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\PartObject.h">
+      <Filter>01. Utility\02. GameObjects\02. Part</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -445,6 +451,9 @@
     </ClCompile>
     <ClCompile Include="..\private\StateMachine.cpp">
       <Filter>01. Utility\03. Components\08. StateMachine\99. StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PartObject.cpp">
+      <Filter>01. Utility\02. GameObjects\02. Part</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

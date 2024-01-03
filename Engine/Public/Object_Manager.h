@@ -15,6 +15,7 @@ private:
 
 public:
 	class CComponent* Get_Component(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex);
+	class CComponent* Get_PartComponent(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex, const wstring& strPartTag);
 
 public:
 	HRESULT Initialize(_uint iNumLevels);

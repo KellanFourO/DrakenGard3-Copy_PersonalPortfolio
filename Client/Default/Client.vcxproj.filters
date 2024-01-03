@@ -351,9 +351,6 @@
     <ClInclude Include="..\public\SkyBox.h">
       <Filter>02. GameObjects\07. SkyBox</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\PartObject.h">
-      <Filter>02. GameObjects\97. PartObject</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\PlayerPart_Body.h">
       <Filter>02. GameObjects\06. Player\00. Body</Filter>
     </ClInclude>
@@ -583,9 +580,6 @@
     </ClCompile>
     <ClCompile Include="..\private\SkyBox.cpp">
       <Filter>02. GameObjects\07. SkyBox</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\PartObject.cpp">
-      <Filter>02. GameObjects\97. PartObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerPart_Body.cpp">
       <Filter>02. GameObjects\06. Player\00. Body</Filter>

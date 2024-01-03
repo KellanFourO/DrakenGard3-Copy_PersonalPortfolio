@@ -14,11 +14,6 @@
 matrix			g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D		g_Texture[2];
 
-sampler DefaultSampler = sampler_state
-{
-	Filter = MIN_MAG_MIP_LINEAR;
-};
-
 //TODO 셰이더가 하는 일
 //! 정점의 변환 ( 월드변환, 뷰변환, 투영변환 ) 을 수행한다. ( 뷰행렬의 투영행렬을 곱했다고 투영 스페이스에 있는 것이아니다. 반드시 w나누기 까지 거친 다음에야 투영 스페이스 변환이 됐다고 할 수 있다. )
 //! 정점의 구성정보를 추가, 삭제 등의 변경을 수행한다.
@@ -85,8 +80,8 @@ PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 	
-	vector vSourColor = g_Texture[0].Sample(DefaultSampler, In.vTexCoord);
-	vector vDestColor = g_Texture[1].Sample(DefaultSampler, In.vTexCoord);
+    vector vSourColor = g_Texture[0].Sample(LinearSampler, In.vTexCoord);
+    vector vDestColor = g_Texture[1].Sample(LinearSampler, In.vTexCoord);
 
 	Out.vColor = vSourColor + vDestColor; //! 아직 텍스처로드 못했으니 그냥 빨간색으로 채움.
 	

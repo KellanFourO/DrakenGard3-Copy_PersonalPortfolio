@@ -165,27 +165,6 @@ _float CTransform::CalculateAngleBetweenVectors(const _vector& v1, const _vector
 	return acos(XMVectorGetX(XMVector3Dot(XMVector3Normalize(v1), XMVector3Normalize(v2))));
 }
 
-void CTransform::RotateTowards(_vector vTarget, _float fTimeDelta)
-{
-	// 현재 방향 벡터 가져오기
-	_vector vLook = Get_State(STATE_LOOK);
-
-	// 현재 방향과 목표 방향 사이의 각도 계산
-	_float fAngle = CalculateAngleBetweenVectors(vLook, vTarget);
-
-	// 회전할 각도 계산 (여기서는 각 프레임당 회전 속도와 시간 간격을 사용)
-	_float fRotation = min(m_fRotationPerSec * fTimeDelta, fAngle);
-
-	// 회전 축 계산
-	_vector vRotationAxis = XMVector3Cross(vLook, vTarget);
-
-	// 회전 행렬 계산
-	_matrix RotationMatrix = XMMatrixRotationAxis(vRotationAxis, fRotation);
-
-	// 현재 방향 벡터를 회전시켜 새로운 방향으로 설정
-	Set_State(STATE_LOOK, XMVector3TransformNormal(vLook, RotationMatrix));
-}
-
 void CTransform::Rotation(_fvector vAxis, _float fRadian)
 {
 	//TODO 특정 각도로 바라보게 하는 함수이다.

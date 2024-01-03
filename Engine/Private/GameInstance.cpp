@@ -246,6 +246,14 @@ CComponent* CGameInstance::Get_Component(_uint iLevelIndex, const wstring& strLa
 	return m_pObject_Manager->Get_Component(iLevelIndex, strLayerTag, strComponentTag, iIndex);
 }
 
+CComponent* CGameInstance::Get_PartComponent(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, const wstring& strPartTag, _uint iIndex)
+{
+	if (nullptr == m_pObject_Manager)
+		return nullptr;
+
+	return m_pObject_Manager->Get_PartComponent(iLevelIndex, strLayerTag, strComponentTag, iIndex, strPartTag);
+}
+
 CGameObject* CGameInstance::Get_Player(_uint iLevelIndex)
 {
 	if (nullptr == m_pObject_Manager)

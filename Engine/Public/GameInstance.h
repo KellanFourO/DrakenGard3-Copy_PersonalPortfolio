@@ -54,6 +54,7 @@ public: /* For.Object_Manager */
 	HRESULT				Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr, CGameObject **ppOut = nullptr);
 	class CGameObject*  Get_CloneObject(const wstring& strPrototypeTag, void* pArg = nullptr);
 	class CComponent*	Get_Component(_uint iLevelIndex, const wstring & strLayerTag, const wstring & strComponentTag, _uint iIndex = 0);
+	class CComponent*	Get_PartComponent(_uint iLevelIndex, const wstring & strLayerTag, const wstring & strComponentTag, const wstring& strPartTag, _uint iIndex = 0);
 	class CGameObject*  Get_Player(_uint iLevelIndex);
 
 public: /* For.Component_Manager */

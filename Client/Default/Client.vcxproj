@@ -228,7 +228,6 @@
     <ClInclude Include="..\Public\Imgui_Manager.h" />
     <ClInclude Include="..\Public\MonsterPart_EN00_Weapon.h" />
     <ClInclude Include="..\Public\Monster_EN00.h" />
-    <ClInclude Include="..\Public\PartObject.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\PlayerGroundStates.h" />
     <ClInclude Include="..\Public\PlayerPart_Body.h" />
@@ -310,7 +309,6 @@
     <ClCompile Include="..\Private\Imgui_Manager.cpp" />
     <ClCompile Include="..\Private\MonsterPart_EN00_Weapon.cpp" />
     <ClCompile Include="..\Private\Monster_EN00.cpp" />
-    <ClCompile Include="..\Private\PartObject.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\PlayerPart_Body.cpp" />
     <ClCompile Include="..\Private\PlayerPart_Weapon.cpp" />

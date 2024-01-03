@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "..\Public\Player.h"
 #include "GameInstance.h"
-#include "Engine_Function.h"
-
+#include "PartObject.h"
 
 //TODO ÄÄÆ÷³ÍÆ®
 

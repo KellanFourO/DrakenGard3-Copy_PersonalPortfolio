@@ -4,6 +4,7 @@
 
 BEGIN(Engine)
 
+
 class ENGINE_DLL CGameObject abstract : public CBase
 {
 public:
@@ -44,6 +45,8 @@ public:
 	virtual void	  Write_Json(json& Out_Json) override;
 	virtual void	  Load_FromJson(const json& In_Json) override;
 	class CComponent* Find_Component(const wstring& strComTag);
+	class CPartObject* Find_PartObject(const wstring& strPartTag);
+	
 
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -56,6 +59,7 @@ protected:
 	class CTransform*			m_pTransformCom = { nullptr };
 	
 	map<const wstring, class CComponent*>		m_Components;
+	map<const wstring, class CPartObject*>		m_PartObjects;
 
 protected:
 	_bool						m_isCloned = { false };

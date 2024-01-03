@@ -1,5 +1,6 @@
 #include "Layer.h"
 #include "GameObject.h"
+#include "PartObject.h"
 
 CLayer::CLayer()
 {
@@ -13,6 +14,16 @@ CComponent* CLayer::Get_Component(const wstring& strComponentTag, _uint iIndex)
 		++iter;
 
 	return (*iter)->Find_Component(strComponentTag);
+}
+
+CComponent* CLayer::Get_PartComponent(const wstring& strComponentTag, _uint iIndex, const wstring& strPartTag)
+{
+	auto	iter = m_GameObjects.begin();
+
+	for (size_t i = 0; i < iIndex; i++)
+		++iter;
+
+	return (*iter)->Find_PartObject(strPartTag)->Find_Component(strComponentTag);
 }
 
 CGameObject* CLayer::Get_Player()

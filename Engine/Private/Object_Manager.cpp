@@ -19,6 +19,18 @@ CComponent* CObject_Manager::Get_Component(_uint iLevelIndex, const wstring& str
 	return nullptr;
 }
 
+CComponent* CObject_Manager::Get_PartComponent(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex, const wstring& strPartTag)
+{
+	CLayer* pLayer = Find_Layer(iLevelIndex, strLayerTag);
+
+	if (nullptr == pLayer)
+		return nullptr;
+
+	return pLayer->Get_PartComponent(strComponentTag, iIndex, strPartTag);
+
+	return nullptr;
+}
+
 HRESULT CObject_Manager::Initialize(_uint iNumLevels)
 {
 	if (nullptr != m_pLayers)

@@ -1,17 +1,14 @@
 #pragma once
 #include "GameObject.h"
-#include "Client_Defines.h"
 
 BEGIN(Engine)
+
 class CTransform;
 class CBone;
 class CModel;
 class CShader;
-END
 
-BEGIN(Client)
-
-class CPartObject abstract : public CGameObject
+class ENGINE_DLL CPartObject abstract : public CGameObject
 {
 public:
 	typedef struct tagPartDesc
@@ -33,13 +30,13 @@ public:
 	
 
 protected:
-	HRESULT		Ready_Components(LEVEL eLevel, const wstring& strShaderTag, const wstring& strModelTag);
+	HRESULT		Ready_Components(_uint iLevelIndex, const wstring& strShaderTag, const wstring& strModelTag);
 	HRESULT		Bind_ShaderResources();
 
 protected:
 	string				m_strName = "";
 	_float4x4			m_WorldMatrix = {};
-	LEVEL				m_eCurrentLevelID		= { LEVEL_END };
+	_uint				m_eCurrentLevelIndex = 9999;
 
 protected:
 	class CTransform*	m_pParentTransformCom	= { nullptr };

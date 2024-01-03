@@ -9,11 +9,12 @@ class CNavigation;
 class CRigidBody;
 class CStateMachine;
 class CStateBase;
+class CPartObject;
 END
 
 BEGIN(Client)
 
-class CPartObject;
+
 class CPlayerPart_Body;
 
 
@@ -61,7 +62,7 @@ private:
 	_float				m_fAccTime = 0.f;
 
 private:
-	map<const wstring, class CPartObject*>			m_PartObjects;
+	//map<const wstring, class CPartObject*>			m_PartObjects;
 
 public:
 	/* 원형객체를 생성한다. */

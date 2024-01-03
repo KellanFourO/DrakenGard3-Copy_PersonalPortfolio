@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "PartObject.h"
 #include "GameInstance.h"
 #include "Transform.h"
@@ -13,7 +12,7 @@ CPartObject::CPartObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 CPartObject::CPartObject(const CPartObject& rhs)
 	: CGameObject(rhs)
-	, m_eCurrentLevelID(rhs.m_eCurrentLevelID)
+	, m_eCurrentLevelIndex(rhs.m_eCurrentLevelIndex)
 	, m_strName(rhs.m_strName)
 {
 	
@@ -29,14 +28,14 @@ CBone* CPartObject::Get_BonePtr(const _char* pBoneName)
 	return m_pModelCom->Get_BonePtr(pBoneName);
 }
 
-HRESULT CPartObject::Ready_Components(LEVEL eLevel, const wstring& strShaderTag, const wstring& strModelTag)
+HRESULT CPartObject::Ready_Components(_uint iLevelIndex, const wstring& strShaderTag, const wstring& strModelTag)
 {
 	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(eLevel, strShaderTag,	TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	if (FAILED(__super::Add_Component(iLevelIndex, strShaderTag, TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(eLevel, strModelTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(iLevelIndex, strModelTag,  TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
 

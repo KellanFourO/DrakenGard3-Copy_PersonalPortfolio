@@ -18,7 +18,7 @@ HRESULT CPlayerPart_Body::Initialize_Prototype(LEVEL eLevel)
 {
 	m_strName = "CPlayerPart_Body";
 
-	m_eCurrentLevelID = eLevel;
+	m_eCurrentLevelIndex = eLevel;
 
 	return S_OK;
 }
@@ -35,7 +35,7 @@ HRESULT CPlayerPart_Body::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	if (FAILED(__super::Ready_Components(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Prototype_Component_Model_Player"))))
+	if (FAILED(__super::Ready_Components(m_eCurrentLevelIndex, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Prototype_Component_Model_Player"))))
 		return E_FAIL;
 
 	

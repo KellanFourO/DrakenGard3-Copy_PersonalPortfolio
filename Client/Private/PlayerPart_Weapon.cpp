@@ -15,7 +15,7 @@ CPlayerPart_Weapon::CPlayerPart_Weapon(const CPlayerPart_Weapon& rhs)
 
 HRESULT CPlayerPart_Weapon::Initialize_Prototype(LEVEL eLevel)
 {
-	m_eCurrentLevelID = eLevel;
+	m_eCurrentLevelIndex = eLevel;
 	m_strName = "CPlayerPart_Weapon";
 
 	return S_OK;
@@ -40,7 +40,7 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	if (FAILED(__super::Ready_Components(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_Model"), TEXT("Prototype_Component_Model_Weapon1"))))
+	if (FAILED(__super::Ready_Components(m_eCurrentLevelIndex, TEXT("Prototype_Component_Shader_Model"), TEXT("Prototype_Component_Model_Weapon1"))))
 		return E_FAIL;
 
 	/* For.Com_Collider */
@@ -50,7 +50,7 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	BoundingDesc.vCenter = _float3(0.f, 0.f, -0.6f);
 	BoundingDesc.vRotation = _float3(XMConvertToRadians(90.f), 0.f, 0.f);
 
-	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
+	if (FAILED(__super::Add_Component(m_eCurrentLevelIndex, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
 		return E_FAIL;
 
 	m_pTransformCom->Set_Scaling(1.f, 1.f, 1.f);
