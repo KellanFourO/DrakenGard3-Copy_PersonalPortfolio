@@ -1,9 +1,11 @@
 #include "..\Public\GameInstance.h"
 #include "Graphic_Device.h"
+#include "Object_Manager.h"
 #include "Timer_Manager.h"
 #include "Level_Manager.h"
-#include "Object_Manager.h"
 #include "Data_Manager.h"
+#include "Font_Manager.h"
+#include "Renderer.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -55,6 +57,10 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInstance, 
 	//TODO 파이프라인
 	m_pPipeLine = CPipeLine::Create();
 	if (nullptr == m_pPipeLine)
+		return E_FAIL;
+
+	m_pFont_Manager = CFont_Manager::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pFont_Manager)
 		return E_FAIL;
 
 	return S_OK;
@@ -445,8 +451,19 @@ _bool CGameInstance::Mouse_Up(MOUSEKEYSTATE eMouse)
 	return m_pInput_Device->Mouse_Up(eMouse);
 }
 
+HRESULT CGameInstance::Add_Font(const wstring& strFontTag, const wstring& strFontFilePath)
+{
+	return m_pFont_Manager->Add_Font(strFontTag, strFontFilePath);
+}
+
+HRESULT CGameInstance::Render_Font(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _fvector vColor, _float fScale, _float2 vOrigin, _float fRotation)
+{
+	return m_pFont_Manager->Render(strFontTag, strText, vPosition, vColor, fScale, vOrigin, fRotation);
+}
+
 void CGameInstance::Release_Manager()
 {
+	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pComponent_Manager);

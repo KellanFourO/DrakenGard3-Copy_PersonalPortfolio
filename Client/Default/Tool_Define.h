@@ -11,6 +11,6 @@
 #include "../ThirdPartyLib/ImGuiFileDialog/ImGuiFileDialog.h"
 #include "../ThirdPartyLib/ImGuiFileDialog/ImGuiFileDialogConfig.h"
 
-#include "CustomFont.h"
+#include "CustomDialogFont.h"
 
 using namespace ImGuizmo;

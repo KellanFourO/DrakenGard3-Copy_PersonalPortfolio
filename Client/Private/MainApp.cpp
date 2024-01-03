@@ -22,6 +22,9 @@ HRESULT CMainApp::Initialize()
 	if(FAILED(m_pGameInstance->Initialize_Engine(LEVEL_END, g_hInst, GraphicDesc, &m_pDevice, &m_pContext)))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance->Add_Font(TEXT("Font_Netmarble_Bold"), TEXT("../Bin/Resources/Fonts/Netmarble_Bold.spritefont"))))
+		return E_FAIL;
+
 	if(FAILED(TestFunction()))
 		return E_FAIL;
 
@@ -50,6 +53,8 @@ HRESULT CMainApp::Render()
 	
 	m_pGameInstance->Render_Engine();
 	
+	m_pGameInstance->Render_Font(TEXT("Font_Netmarble_Bold"), TEXT("취업하자!!"), _float2(0.f, 0.f));
+
 	m_pGameInstance->Present();
 
 	return S_OK;

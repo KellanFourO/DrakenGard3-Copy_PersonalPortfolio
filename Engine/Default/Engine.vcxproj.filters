@@ -157,6 +157,12 @@
     <Filter Include="01. Utility\02. GameObjects\02. Part">
       <UniqueIdentifier>{f555567f-8e9f-41ea-96fe-7cd0e4aab98c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\06. Fonts">
+      <UniqueIdentifier>{38b470a5-a552-4b4a-89a4-ce4a1e36bb2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\06. Fonts\Manager">
+      <UniqueIdentifier>{2743a8c7-8a99-4d88-9706-7bff64d9f957}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -318,6 +324,12 @@
     <ClInclude Include="..\Public\PartObject.h">
       <Filter>01. Utility\02. GameObjects\02. Part</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\CustomFont.h">
+      <Filter>01. Utility\06. Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Font_Manager.h">
+      <Filter>01. Utility\06. Fonts\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -454,6 +466,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\PartObject.cpp">
       <Filter>01. Utility\02. GameObjects\02. Part</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\CustomFont.cpp">
+      <Filter>01. Utility\06. Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Font_Manager.cpp">
+      <Filter>01. Utility\06. Fonts\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

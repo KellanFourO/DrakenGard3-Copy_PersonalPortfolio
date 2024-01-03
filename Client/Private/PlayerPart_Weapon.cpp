@@ -66,10 +66,6 @@ void CPlayerPart_Weapon::Priority_Tick(_float fTimeDelta)
 
 void CPlayerPart_Weapon::Tick(_float fTimeDelta)
 {
-}
-
-void CPlayerPart_Weapon::Late_Tick(_float fTimeDelta)
-{
 	_matrix		SocketMatrix = m_pSocketBone->Get_CombinedTransformationMatrix();
 
 	////TODO 기존 스케일값을 강제로 1값으로 만드는 코드.
@@ -84,7 +80,10 @@ void CPlayerPart_Weapon::Late_Tick(_float fTimeDelta)
 	XMStoreFloat4x4(&m_WorldMatrix, m_pTransformCom->Get_WorldMatrix() * SocketMatrix * m_pParentTransformCom->Get_WorldMatrix());
 
 	m_pColliderCom->Update(XMLoadFloat4x4(&m_WorldMatrix));
+}
 
+void CPlayerPart_Weapon::Late_Tick(_float fTimeDelta)
+{
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return;
 }

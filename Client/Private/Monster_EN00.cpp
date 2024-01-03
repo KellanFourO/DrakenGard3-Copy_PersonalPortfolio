@@ -85,7 +85,6 @@ void CMonster_EN00::Tick(_float fTimeDelta)
 	}
 
 
-
 	_float3 vPos = {};
 
 	m_pModelCom->Play_Animation(fTimeDelta, vPos);
@@ -104,12 +103,12 @@ void CMonster_EN00::Late_Tick(_float fTimeDelta)
 			Pair.second->Late_Tick(fTimeDelta);
 	}
 
-	//CCollider* pTargetCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_Collider")));
-	//
-	//if (m_pColliderCom->Collision(pTargetCollider))
-	//{
-	//	int i = 0;
-	//}
+	CCollider* pTargetCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_PartComponent(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_Collider"), TEXT("Part_Weapon")));
+	
+	if (m_pColliderCom->Collision(pTargetCollider))
+	{
+		int i = 0;
+	}
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return;

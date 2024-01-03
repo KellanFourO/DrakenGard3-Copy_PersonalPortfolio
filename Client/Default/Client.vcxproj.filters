@@ -342,7 +342,7 @@
     <ClInclude Include="..\Public\Imgui_Manager.h">
       <Filter>96. Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\CustomFont.h">
+    <ClInclude Include="..\Public\CustomDialogFont.h">
       <Filter>99. Defines</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Player.h">
@@ -572,7 +572,7 @@
     <ClCompile Include="..\Private\Imgui_Manager.cpp">
       <Filter>96. Tool</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\CustomFont.cpp">
+    <ClCompile Include="..\Private\CustomDialogFont.cpp">
       <Filter>99. Defines</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Player.cpp">
