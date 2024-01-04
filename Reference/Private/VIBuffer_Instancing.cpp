@@ -48,6 +48,8 @@ HRESULT CVIBuffer_Instancing::Initialize(void* pArg)
 	if (FAILED(__super::Create_Buffer(&m_pVBInstance)))
 		return E_FAIL;
 
+	Safe_Delete_Array(pVertices);
+
 	return S_OK;
 }
 

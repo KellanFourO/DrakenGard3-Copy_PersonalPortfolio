@@ -50,7 +50,7 @@ public: /* For.Level_Manager */
 	HRESULT Open_Level(_uint iCurrentLevelIndex, class CLevel* pNewLevel);
 
 public: /* For.Object_Manager */
-	HRESULT				Add_Prototype(const wstring& strPrototypeTag, class CGameObject* pPrototype, _bool bAddData = false);
+	HRESULT				Add_Prototype(const wstring& strPrototypeTag, class CGameObject* pPrototype, _bool bAddData = false, _bool bModelType = false);
 	HRESULT				Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr, CGameObject **ppOut = nullptr);
 	class CGameObject*  Get_CloneObject(const wstring& strPrototypeTag, void* pArg = nullptr);
 	class CComponent*	Get_Component(_uint iLevelIndex, const wstring & strLayerTag, const wstring & strComponentTag, _uint iIndex = 0);
@@ -62,8 +62,13 @@ public: /* For.Component_Manager */
 	class CComponent* Clone_Component(_uint iLevelIndex, const wstring & strPrototypeTag, void* pArg);
 
 public: /* For.Data_Manager */
-	HRESULT Add_PrototypeTag(const wstring & strProtoTypeTag);
-	vector<wstring>& Get_VecTags();
+	HRESULT Add_PrototypeTag(const wstring & strProtoTypeTag, _bool bModelType);
+
+	map<const wstring, _bool>& Get_ObjectTags();
+	vector<wstring>&		   Get_VecTags();
+
+	HRESULT					   Add_LayerTag(const wstring & strLayerTag);
+	vector<wstring>&		   Get_LayerTags();
 
 public: /* For.Renderer */
 	HRESULT Add_RenderGroup(CRenderer::RENDERGROUP eGroupID, class CGameObject* pGameObject);

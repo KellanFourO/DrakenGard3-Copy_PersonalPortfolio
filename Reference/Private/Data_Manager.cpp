@@ -10,15 +10,26 @@ HRESULT CData_Manager::Initialize()
 	return S_OK;
 }
 
-HRESULT CData_Manager::Add_PrototypeTag(const wstring& strProtoTypeTag)
+HRESULT CData_Manager::Add_PrototypeTag(const wstring& strProtoTypeTag, _bool bModelType)
 {
-	auto iter = find(m_vecTags.begin(), m_vecTags.end(), strProtoTypeTag);
+	auto iter = m_ObjectTags.find(strProtoTypeTag);
 
-	if (iter != m_vecTags.end())
+	if(iter != m_ObjectTags.end())
 		return E_FAIL;
 
+	m_ObjectTags.emplace(strProtoTypeTag, bModelType);
 
-	m_vecTags.push_back(strProtoTypeTag);
+	return S_OK;
+}
+
+HRESULT CData_Manager::Add_LayerTag(const wstring& strLayerTag)
+{
+	auto iter = find(m_vecLayerTags.begin(), m_vecLayerTags.end(), strLayerTag);
+		
+	if(iter != m_vecLayerTags.end())
+		return E_FAIL;
+
+	m_vecLayerTags.push_back(strLayerTag);
 
 	return S_OK;
 }

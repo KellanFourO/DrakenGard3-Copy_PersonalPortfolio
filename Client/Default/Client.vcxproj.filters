@@ -52,170 +52,14 @@
     <Filter Include="96. Tool\00. Camera">
       <UniqueIdentifier>{136c76e3-85ab-4107-b8a6-79d1101a825f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\03. Monster">
-      <UniqueIdentifier>{fbc59e0b-f0ac-4d8e-aebc-9ddfff558ab6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\01. Terrain\00. Dynamic">
       <UniqueIdentifier>{7161916a-d47f-4bbc-813a-b125f734fb18}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\04. TestTree">
-      <UniqueIdentifier>{3886dd1f-d1d8-4c40-aef6-c29591ca3780}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\98. NonAnimObject">
       <UniqueIdentifier>{df94b58a-430c-4d3c-b363-7e67629d8787}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\99. AnimModelObject">
       <UniqueIdentifier>{07b8b8d7-2612-4c0c-bd87-ce9fa43a95f1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\05. ForkLift">
-      <UniqueIdentifier>{784e7824-784c-40c2-987e-037a767f0172}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player">
-      <UniqueIdentifier>{fcad7db1-bfa0-4bd6-8780-e7e6f6bceb78}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\07. SkyBox">
-      <UniqueIdentifier>{37545faa-2817-411b-ae58-6edd100cdf2c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\00. Body">
-      <UniqueIdentifier>{ce5bfef5-cc7d-406e-910b-5ad5e725eed1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\01. Weapon">
-      <UniqueIdentifier>{75bc0754-d80f-4d51-9264-ce1835c3f679}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States">
-      <UniqueIdentifier>{7c36e6bb-ad3f-4a5b-bd5f-431563f7b19a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground">
-      <UniqueIdentifier>{8119e7d1-dbe9-4a50-a7c5-917e76947ea7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground\02. Run">
-      <UniqueIdentifier>{2dc1b869-c23d-425f-8f0a-b5643b706970}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground\01. Walk">
-      <UniqueIdentifier>{196dd11c-220b-44fe-9bb7-4a3f0283cdc4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground\00. Idle">
-      <UniqueIdentifier>{893a29b7-eef4-4fef-8029-0afd549de15d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack">
-      <UniqueIdentifier>{acee4c7a-4f18-4c9c-a501-24456e15e354}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Air">
-      <UniqueIdentifier>{8d25e29b-0a8e-4376-b248-fb40f3f1ed46}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Air\00. Jump">
-      <UniqueIdentifier>{e581d527-8655-4324-8606-a8ec9109036d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack">
-      <UniqueIdentifier>{5aaac1eb-aa62-42f4-aebc-c0df1f680a04}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1">
-      <UniqueIdentifier>{31841d56-8617-49fb-9046-6873df4d2473}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2">
-      <UniqueIdentifier>{9352a632-64a2-492d-8388-a52eef89b721}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3">
-      <UniqueIdentifier>{d93d0331-8b3e-4e33-a7c3-d44d632f38a2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4">
-      <UniqueIdentifier>{f64a63e0-7d5b-4d15-a9fc-463410c33455}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00">
-      <UniqueIdentifier>{ac78bc3c-8daf-4dbf-b6fd-9c4355bf83c3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\01. AIState">
-      <UniqueIdentifier>{f2106f62-feee-4e6d-92ff-72dbe6d5b4b6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State">
-      <UniqueIdentifier>{e32fc78c-733b-4735-9972-01f0e972266c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\01. Weapon">
-      <UniqueIdentifier>{7e3eb02d-aa44-4cb1-995a-e598e2b1c3ec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\04. Attack5">
-      <UniqueIdentifier>{2c14b647-6041-4e36-b7cb-6b126bb16716}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\05. Attack6">
-      <UniqueIdentifier>{d8f0d604-6c81-4f91-98c5-7c4544f915b9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\06. Attack7">
-      <UniqueIdentifier>{56f98632-ca43-4d26-aa5b-0371e517a7b4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8">
-      <UniqueIdentifier>{89521753-c263-4bd2-a1ba-ab0fbfd5bc51}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\01. AIState\00. Control">
-      <UniqueIdentifier>{35022697-288f-48e8-8101-57889c20b2a9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\01. AIState\01. Task">
-      <UniqueIdentifier>{25e47424-5c35-4db9-88b8-c09749a9a9a4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\01. Hit">
-      <UniqueIdentifier>{f76f510d-4816-41c0-bbb0-f5d012ae39f0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\00. Dead">
-      <UniqueIdentifier>{e8dec557-c06d-4eeb-a522-182f18994927}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\00. Dead\Control">
-      <UniqueIdentifier>{234b89cb-162d-4ef3-83d7-a6ead8abb599}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\00. Dead\Task">
-      <UniqueIdentifier>{6ee1a372-498a-4331-8af0-b0b96002348a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\02. Ground">
-      <UniqueIdentifier>{fd10fa7a-8ef7-4e6a-8c4b-d4c982723566}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\03. AttackRange">
-      <UniqueIdentifier>{29dd23f1-964d-40de-818c-f8c567469a3d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye">
-      <UniqueIdentifier>{0ff53118-f569-4097-9424-be10281f4a2b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye\Control">
-      <UniqueIdentifier>{c2798c11-7374-4404-aaa2-6bc594650427}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye\Task">
-      <UniqueIdentifier>{f496c32d-f2d6-4dbe-ae31-7b344db531f9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack">
-      <UniqueIdentifier>{d55364be-b99d-45f5-a1d4-8aa4fc93919f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack\Control">
-      <UniqueIdentifier>{9c6bdc52-bce4-4617-ae26-2b6263e3d9e9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack\Task">
-      <UniqueIdentifier>{2a332382-b5ad-4fac-adfb-9314778fe77f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\01. Hit\Control">
-      <UniqueIdentifier>{ab1df332-7e42-4564-9221-404efd5cadf6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\01. Hit\Task">
-      <UniqueIdentifier>{7648780f-152d-4ea1-8df5-0e18aa882a30}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\06. UpperAttack">
-      <UniqueIdentifier>{87c5d452-fca7-4185-9680-217a5669f731}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\07. ChargeAttack">
-      <UniqueIdentifier>{fcf93137-3027-44e7-a32f-23ea23dcbe9a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\08. PlayerDead">
-      <UniqueIdentifier>{cde11872-bd30-46c9-980e-319d9b0c03f2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\09. DetectRange">
-      <UniqueIdentifier>{559f5faf-337a-4ac8-baca-ffb3f0ac5613}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\10. Arrival">
-      <UniqueIdentifier>{929a4500-cd23-4e05-9a80-bda58cb0b2b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\11. Idle">
-      <UniqueIdentifier>{2ef5d98e-8ee3-432f-9ee3-6f886284dab4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\12. SetTargetPosition">
-      <UniqueIdentifier>{f3cf2f9f-90c5-4ec2-94be-af1c1c2e8091}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Monster\00. EN00\00. State\13. MoveToTarget">
-      <UniqueIdentifier>{e52c758d-6a85-4b66-96eb-e44da6407349}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\02. Camera\Target">
       <UniqueIdentifier>{f52a89cb-a66a-433e-bd0c-c4d4789f5bac}</UniqueIdentifier>
@@ -225,6 +69,195 @@
     </Filter>
     <Filter Include="02. GameObjects\97. TestObject\TestSnow">
       <UniqueIdentifier>{9565376f-b8e9-4a12-9f62-1c1334b1176b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96. Tool\01. Field">
+      <UniqueIdentifier>{50e8fee4-a339-490f-820f-e49add5e08f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player">
+      <UniqueIdentifier>{fcad7db1-bfa0-4bd6-8780-e7e6f6bceb78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\00. Body">
+      <UniqueIdentifier>{ce5bfef5-cc7d-406e-910b-5ad5e725eed1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\01. Weapon">
+      <UniqueIdentifier>{75bc0754-d80f-4d51-9264-ce1835c3f679}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States">
+      <UniqueIdentifier>{7c36e6bb-ad3f-4a5b-bd5f-431563f7b19a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground">
+      <UniqueIdentifier>{8119e7d1-dbe9-4a50-a7c5-917e76947ea7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\02. Run">
+      <UniqueIdentifier>{2dc1b869-c23d-425f-8f0a-b5643b706970}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\01. Walk">
+      <UniqueIdentifier>{196dd11c-220b-44fe-9bb7-4a3f0283cdc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\00. Idle">
+      <UniqueIdentifier>{893a29b7-eef4-4fef-8029-0afd549de15d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack">
+      <UniqueIdentifier>{acee4c7a-4f18-4c9c-a501-24456e15e354}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack">
+      <UniqueIdentifier>{5aaac1eb-aa62-42f4-aebc-c0df1f680a04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1">
+      <UniqueIdentifier>{31841d56-8617-49fb-9046-6873df4d2473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2">
+      <UniqueIdentifier>{9352a632-64a2-492d-8388-a52eef89b721}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3">
+      <UniqueIdentifier>{d93d0331-8b3e-4e33-a7c3-d44d632f38a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4">
+      <UniqueIdentifier>{f64a63e0-7d5b-4d15-a9fc-463410c33455}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\04. Attack5">
+      <UniqueIdentifier>{2c14b647-6041-4e36-b7cb-6b126bb16716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\05. Attack6">
+      <UniqueIdentifier>{d8f0d604-6c81-4f91-98c5-7c4544f915b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\06. Attack7">
+      <UniqueIdentifier>{56f98632-ca43-4d26-aa5b-0371e517a7b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8">
+      <UniqueIdentifier>{89521753-c263-4bd2-a1ba-ab0fbfd5bc51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Air">
+      <UniqueIdentifier>{8d25e29b-0a8e-4376-b248-fb40f3f1ed46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Air\00. Jump">
+      <UniqueIdentifier>{e581d527-8655-4324-8606-a8ec9109036d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster">
+      <UniqueIdentifier>{fbc59e0b-f0ac-4d8e-aebc-9ddfff558ab6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00">
+      <UniqueIdentifier>{ac78bc3c-8daf-4dbf-b6fd-9c4355bf83c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State">
+      <UniqueIdentifier>{e32fc78c-733b-4735-9972-01f0e972266c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\01. Hit">
+      <UniqueIdentifier>{f76f510d-4816-41c0-bbb0-f5d012ae39f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\01. Hit\Control">
+      <UniqueIdentifier>{ab1df332-7e42-4564-9221-404efd5cadf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\01. Hit\Task">
+      <UniqueIdentifier>{7648780f-152d-4ea1-8df5-0e18aa882a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\00. Dead">
+      <UniqueIdentifier>{e8dec557-c06d-4eeb-a522-182f18994927}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\00. Dead\Control">
+      <UniqueIdentifier>{234b89cb-162d-4ef3-83d7-a6ead8abb599}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\00. Dead\Task">
+      <UniqueIdentifier>{6ee1a372-498a-4331-8af0-b0b96002348a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\02. Ground">
+      <UniqueIdentifier>{fd10fa7a-8ef7-4e6a-8c4b-d4c982723566}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\03. AttackRange">
+      <UniqueIdentifier>{29dd23f1-964d-40de-818c-f8c567469a3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\04. KeepEye">
+      <UniqueIdentifier>{0ff53118-f569-4097-9424-be10281f4a2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\04. KeepEye\Control">
+      <UniqueIdentifier>{c2798c11-7374-4404-aaa2-6bc594650427}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\04. KeepEye\Task">
+      <UniqueIdentifier>{f496c32d-f2d6-4dbe-ae31-7b344db531f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\05. NormalAttack">
+      <UniqueIdentifier>{d55364be-b99d-45f5-a1d4-8aa4fc93919f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\05. NormalAttack\Control">
+      <UniqueIdentifier>{9c6bdc52-bce4-4617-ae26-2b6263e3d9e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\05. NormalAttack\Task">
+      <UniqueIdentifier>{2a332382-b5ad-4fac-adfb-9314778fe77f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\06. UpperAttack">
+      <UniqueIdentifier>{87c5d452-fca7-4185-9680-217a5669f731}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\07. ChargeAttack">
+      <UniqueIdentifier>{fcf93137-3027-44e7-a32f-23ea23dcbe9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\08. PlayerDead">
+      <UniqueIdentifier>{cde11872-bd30-46c9-980e-319d9b0c03f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\09. DetectRange">
+      <UniqueIdentifier>{559f5faf-337a-4ac8-baca-ffb3f0ac5613}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\10. Arrival">
+      <UniqueIdentifier>{929a4500-cd23-4e05-9a80-bda58cb0b2b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\11. Idle">
+      <UniqueIdentifier>{2ef5d98e-8ee3-432f-9ee3-6f886284dab4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\12. SetTargetPosition">
+      <UniqueIdentifier>{f3cf2f9f-90c5-4ec2-94be-af1c1c2e8091}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\13. MoveToTarget">
+      <UniqueIdentifier>{e52c758d-6a85-4b66-96eb-e44da6407349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\01. Weapon">
+      <UniqueIdentifier>{7e3eb02d-aa44-4cb1-995a-e598e2b1c3ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\01. AIState">
+      <UniqueIdentifier>{f2106f62-feee-4e6d-92ff-72dbe6d5b4b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\01. AIState\00. Control">
+      <UniqueIdentifier>{35022697-288f-48e8-8101-57889c20b2a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\01. AIState\01. Task">
+      <UniqueIdentifier>{25e47424-5c35-4db9-88b8-c09749a9a9a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. SkyBox">
+      <UniqueIdentifier>{37545faa-2817-411b-ae58-6edd100cdf2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\00. Map">
+      <UniqueIdentifier>{52f6ea65-eaad-4354-a8e5-ec50b03fac44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\00. Map\Stage1">
+      <UniqueIdentifier>{51ba8aeb-cc67-4971-8d64-76fd62774625}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\00. Map\Stage1\Map1">
+      <UniqueIdentifier>{43a7999b-10aa-46b7-9ddc-bfbc61211d8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\01. TestTree">
+      <UniqueIdentifier>{3886dd1f-d1d8-4c40-aef6-c29591ca3780}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\02. ForkLift">
+      <UniqueIdentifier>{784e7824-784c-40c2-987e-037a767f0172}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\03. Cannon">
+      <UniqueIdentifier>{cb2c75dc-b3b9-4b39-9d84-cd84e7fa3a1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\04. AmmorBox">
+      <UniqueIdentifier>{9c4ef56f-8b3b-45f1-a196-a64e9d114ee6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\05. Barricade">
+      <UniqueIdentifier>{bf5c7d1a-5bf0-4684-9129-bbc6193470bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\05. Barricade\Broken">
+      <UniqueIdentifier>{cdc1ed2f-a42d-4a1a-bdf3-a2ec61e6b2f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\06. Box">
+      <UniqueIdentifier>{3988c7f6-7a03-4792-9bc7-96570ddea778}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\06. Box\Broken">
+      <UniqueIdentifier>{8119ba31-0c50-4edb-8326-d10e428c1d1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\00. Map\BaseRoad">
+      <UniqueIdentifier>{77ae4e73-bc18-4a62-9010-1336f3d8bc59}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -295,10 +328,10 @@
       <Filter>96. Tool\00. Camera</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Monster.h">
-      <Filter>02. GameObjects\03. Monster</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\TestTree.h">
-      <Filter>02. GameObjects\04. TestTree</Filter>
+      <Filter>02. GameObjects\98. NonAnimObject\01. TestTree</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Dynamic_Terrain.h">
       <Filter>02. GameObjects\01. Terrain\00. Dynamic</Filter>
@@ -310,7 +343,7 @@
       <Filter>02. GameObjects\99. AnimModelObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ForkLift.h">
-      <Filter>02. GameObjects\05. ForkLift</Filter>
+      <Filter>02. GameObjects\98. NonAnimObject\02. ForkLift</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Reference\Imgui\ImGuizmo.h">
       <Filter>96. Tool\99. Default</Filter>
@@ -346,151 +379,187 @@
       <Filter>99. Defines</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Player.h">
-      <Filter>02. GameObjects\06. Player</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player</Filter>
     </ClInclude>
     <ClInclude Include="..\public\SkyBox.h">
-      <Filter>02. GameObjects\07. SkyBox</Filter>
+      <Filter>02. GameObjects\03. SkyBox</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerPart_Body.h">
-      <Filter>02. GameObjects\06. Player\00. Body</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\00. Body</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerPart_Weapon.h">
-      <Filter>02. GameObjects\06. Player\01. Weapon</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\01. Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\public\PlayerState_Base.h">
-      <Filter>02. GameObjects\06. Player\02. States</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Idle.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\00. Idle</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\00. Idle</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Walk.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\01. Walk</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\01. Walk</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Run.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\02. Run</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\02. Run</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Jump.h">
-      <Filter>02. GameObjects\06. Player\02. States\Air\00. Jump</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Air\00. Jump</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Attack1.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Attack2.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Attack3.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Attack4.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Monster_EN00.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00</Filter>
     </ClInclude>
     <ClInclude Include="..\public\AIState_Base.h">
-      <Filter>02. GameObjects\03. Monster\01. AIState</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. AIState</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MonsterPart_EN00_Weapon.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\01. Weapon</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\01. Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Attack3_End.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerGroundStates.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_NormalAttackBase.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Attack5.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\04. Attack5</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\04. Attack5</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Attack6.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\05. Attack6</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\05. Attack6</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Attack7.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\06. Attack7</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\06. Attack7</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Attack8.h">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AIControl_Base.h">
-      <Filter>02. GameObjects\03. Monster\01. AIState\00. Control</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. AIState\00. Control</Filter>
     </ClInclude>
     <ClInclude Include="..\public\AITask_Base.h">
-      <Filter>02. GameObjects\03. Monster\01. AIState\01. Task</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. AIState\01. Task</Filter>
     </ClInclude>
     <ClInclude Include="..\public\EN00_Task_Dead.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\00. Dead\Task</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\00. Dead\Task</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Control_Dead.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\00. Dead\Control</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\00. Dead\Control</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00States.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Control_Ground.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\02. Ground</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\02. Ground</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Control_AttackRange.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\03. AttackRange</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\03. AttackRange</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Control_KeepEye.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye\Control</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\04. KeepEye\Control</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Task_KeepEye.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye\Task</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\04. KeepEye\Task</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Control_NormalAttack.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack\Control</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\05. NormalAttack\Control</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Task_NormalAttack.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack\Task</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\05. NormalAttack\Task</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Control_Hit.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Hit\Control</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\01. Hit\Control</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Task_Hit.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Hit\Task</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\01. Hit\Task</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Control_UpperAttack.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\06. UpperAttack</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\06. UpperAttack</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Task_UpperAttack.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\06. UpperAttack</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\06. UpperAttack</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Control_ChargeAttack.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\07. ChargeAttack</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\07. ChargeAttack</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Task_ChargeAttack.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\07. ChargeAttack</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\07. ChargeAttack</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Control_PlayerDead.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\08. PlayerDead</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\08. PlayerDead</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Control_DetectRange.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\09. DetectRange</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\09. DetectRange</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Task_DetectRange.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\09. DetectRange</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\09. DetectRange</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Control_Arrival.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\10. Arrival</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\10. Arrival</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Task_Idle.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\11. Idle</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\11. Idle</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Control_SetTargetPosition.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\12. SetTargetPosition</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\12. SetTargetPosition</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EN00_Task_MoveToTarget.h">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\13. MoveToTarget</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\13. MoveToTarget</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Target.h">
       <Filter>02. GameObjects\02. Camera\Target</Filter>
     </ClInclude>
     <ClInclude Include="..\public\TestSnow.h">
       <Filter>02. GameObjects\97. TestObject\TestSnow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Stage1Map_1.h">
+      <Filter>02. GameObjects\98. NonAnimObject\00. Map\Stage1\Map1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Field.h">
+      <Filter>96. Tool\01. Field</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Environment_Cannon.h">
+      <Filter>02. GameObjects\98. NonAnimObject\03. Cannon</Filter>
+    </ClInclude>
+    <ClInclude Include="NonAnimObjects.h">
+      <Filter>02. GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimObjects.h">
+      <Filter>02. GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Environment_WoodBox.h">
+      <Filter>02. GameObjects\98. NonAnimObject\06. Box</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Environment_BrokenBox2.h">
+      <Filter>02. GameObjects\98. NonAnimObject\06. Box\Broken</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Environment_BrokenBox1.h">
+      <Filter>02. GameObjects\98. NonAnimObject\06. Box\Broken</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Environment_BaseRoad.h">
+      <Filter>02. GameObjects\98. NonAnimObject\00. Map\BaseRoad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Environment_AmmorBox.h">
+      <Filter>02. GameObjects\98. NonAnimObject\04. AmmorBox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Environment_Barricade.h">
+      <Filter>02. GameObjects\98. NonAnimObject\05. Barricade</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Environment_BrokenBarricade.h">
+      <Filter>02. GameObjects\98. NonAnimObject\05. Barricade\Broken</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -552,10 +621,10 @@
       <Filter>96. Tool\00. Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Monster.cpp">
-      <Filter>02. GameObjects\03. Monster</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\TestTree.cpp">
-      <Filter>02. GameObjects\04. TestTree</Filter>
+      <Filter>02. GameObjects\98. NonAnimObject\01. TestTree</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Dynamic_Terrain.cpp">
       <Filter>02. GameObjects\01. Terrain\00. Dynamic</Filter>
@@ -567,7 +636,7 @@
       <Filter>02. GameObjects\98. NonAnimObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ForkLift.cpp">
-      <Filter>02. GameObjects\05. ForkLift</Filter>
+      <Filter>02. GameObjects\98. NonAnimObject\02. ForkLift</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialog.cpp">
       <Filter>96. Tool\99. Default</Filter>
@@ -579,145 +648,175 @@
       <Filter>99. Defines</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Player.cpp">
-      <Filter>02. GameObjects\06. Player</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player</Filter>
     </ClCompile>
     <ClCompile Include="..\private\SkyBox.cpp">
-      <Filter>02. GameObjects\07. SkyBox</Filter>
+      <Filter>02. GameObjects\03. SkyBox</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerPart_Body.cpp">
-      <Filter>02. GameObjects\06. Player\00. Body</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\00. Body</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerPart_Weapon.cpp">
-      <Filter>02. GameObjects\06. Player\01. Weapon</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\01. Weapon</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Base.cpp">
-      <Filter>02. GameObjects\06. Player\02. States</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Idle.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\00. Idle</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\00. Idle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Walk.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\01. Walk</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\01. Walk</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Run.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\02. Run</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\02. Run</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Jump.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Air\00. Jump</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Air\00. Jump</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Attack1.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Attack2.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Attack3.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Attack4.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Monster_EN00.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AIState_Base.cpp">
-      <Filter>02. GameObjects\03. Monster\01. AIState</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. AIState</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MonsterPart_EN00_Weapon.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\01. Weapon</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\01. Weapon</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Attack3_End.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_NormalAttackBase.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Attack5.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\04. Attack5</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\04. Attack5</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Attack6.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\05. Attack6</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\05. Attack6</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Attack7.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\06. Attack7</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\06. Attack7</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Attack8.cpp">
-      <Filter>02. GameObjects\06. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8</Filter>
     </ClCompile>
     <ClCompile Include="..\private\AIControl_Base.cpp">
-      <Filter>02. GameObjects\03. Monster\01. AIState\00. Control</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. AIState\00. Control</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AITask_Base.cpp">
-      <Filter>02. GameObjects\03. Monster\01. AIState\01. Task</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. AIState\01. Task</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Task_Dead.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\00. Dead\Task</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\00. Dead\Task</Filter>
     </ClCompile>
     <ClCompile Include="..\private\EN00_Control_Dead.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\00. Dead\Control</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\00. Dead\Control</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Control_Ground.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\02. Ground</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\02. Ground</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Control_AttackRange.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\03. AttackRange</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\03. AttackRange</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Control_KeepEye.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye\Control</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\04. KeepEye\Control</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Task_KeepEye.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\04. KeepEye\Task</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\04. KeepEye\Task</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Control_NormalAttack.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack\Control</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\05. NormalAttack\Control</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Task_NormalAttack.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\05. NormalAttack\Task</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\05. NormalAttack\Task</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Control_Hit.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Hit\Control</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\01. Hit\Control</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Task_Hit.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\01. Hit\Task</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\01. Hit\Task</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Control_UpperAttack.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\06. UpperAttack</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\06. UpperAttack</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Task_UpperAttack.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\06. UpperAttack</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\06. UpperAttack</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Control_ChargeAttack.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\07. ChargeAttack</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\07. ChargeAttack</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Task_ChargeAttack.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\07. ChargeAttack</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\07. ChargeAttack</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Control_PlayerDead.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\08. PlayerDead</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\08. PlayerDead</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Control_DetectRange.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\09. DetectRange</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\09. DetectRange</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Task_DetectRange.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\09. DetectRange</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\09. DetectRange</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Control_Arrival.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\10. Arrival</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\10. Arrival</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Task_Idle.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\11. Idle</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\11. Idle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Control_SetTargetPosition.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\12. SetTargetPosition</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\12. SetTargetPosition</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EN00_Task_MoveToTarget.cpp">
-      <Filter>02. GameObjects\03. Monster\00. EN00\00. State\13. MoveToTarget</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\00. State\13. MoveToTarget</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Target.cpp">
       <Filter>02. GameObjects\02. Camera\Target</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\TestSnow.cpp">
       <Filter>02. GameObjects\97. TestObject\TestSnow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Stage1Map_1.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\00. Map\Stage1\Map1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Field.cpp">
+      <Filter>96. Tool\01. Field</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_Cannon.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\03. Cannon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_AmmorBox.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\04. AmmorBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_BrokenBox1.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\06. Box\Broken</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_BrokenBox2.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\06. Box\Broken</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_WoodBox.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\06. Box</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_BaseRoad.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\00. Map\BaseRoad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_BrokenBarricade.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\05. Barricade\Broken</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_Barricade.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\05. Barricade</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -755,6 +854,9 @@
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Particle_Rect.hlsl">
+      <Filter>97. ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxField.hlsl">
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

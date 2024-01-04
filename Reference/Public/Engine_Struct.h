@@ -99,6 +99,17 @@ namespace Engine
 		XMFLOAT3		vTangent;
 	}VTXDYNAMIC;
 
+	typedef struct ENGINE_DLL tagVertex_Dynamic_Field
+	{
+		XMFLOAT3		vPosition;
+		XMFLOAT3		vNormal;
+		XMFLOAT2		vTexcoord;
+		XMFLOAT3		vTangent;
+
+		static const unsigned int					iNumElements = 4;
+		static const D3D11_INPUT_ELEMENT_DESC		Elements[iNumElements];
+	}VTXFIELD;
+
 	typedef struct tagKeyFrame
 	{
 		XMFLOAT3	vScale, vPosition;

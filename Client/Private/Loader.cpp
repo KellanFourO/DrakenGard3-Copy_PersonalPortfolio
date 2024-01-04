@@ -4,30 +4,15 @@
 
 //TODO GameObject
 #include "Camera_Dynamic.h"
-#include "BackGround.h"
-#include "SkyBox.h"
-#include "Terrain.h"
-#include "Dynamic_Terrain.h"
-#include "Monster.h"
-#include "TestTree.h"
-#include "ForkLift.h"
 #include "Camera_Target.h"
-#include "TestSnow.h"
-
-//TODO Player
-#include "Player.h"
-#include "PlayerPart_Body.h"
-#include "PlayerPart_Weapon.h"
-
-//TODO Monster
-#include "Monster_EN00.h"
-#include "MonsterPart_EN00_Weapon.h"
-
 
 //TODO Tool
 #include "Camera_MapTool.h"
+#include "Field.h"
 #include "Imgui_Manager.h"
 
+#include "AnimObjects.h"
+#include "NonAnimObjects.h"
 
 #include <process.h> //! 스레드를 사용하기위한 헤더 추가
 
@@ -154,39 +139,81 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	//TODO 플레이어
 
 	//lstrcpy(m_szLoadingText, TEXT("플레이어 모델(을) 로드하는 중입니다."));
-	////! Player_Body
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
-	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Player"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("Player"), pFilePathData), PivotMatrix)));
-	
-	//! Player_Weapon1
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f); //! 모델의 초기 회전 셋팅
-	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Weapon1"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Player_Weapon1"), pFilePathData), PivotMatrix)));
+	//////! Player_Body
+	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Player"),
+	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("Player"), pFilePathData), PivotMatrix)));
+	//
+	////! Player_Weapon1
+	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f); //! 모델의 초기 회전 셋팅
+	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Weapon1"),
+	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Player_Weapon1"), pFilePathData), PivotMatrix)));
 
 
-	lstrcpy(m_szLoadingText, TEXT("몬스터 모델(을) 로드하는 중입니다."));
+	//lstrcpy(m_szLoadingText, TEXT("몬스터 모델(을) 로드하는 중입니다."));
+	//
+	////!Prototype_Component_Model_Monster_EN00
+	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00"),
+	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("EN00"), pFilePathData, true), PivotMatrix)));
+	//
+	////!Prototype_Component_Model_Monster_EN00
+	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00_Weapon"),
+	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("EN00_Weapon"), pFilePathData), PivotMatrix)));
 
-	//!Prototype_Component_Model_Monster_EN00
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
-	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("EN00"), pFilePathData, true), PivotMatrix)));
-	
-	//!Prototype_Component_Model_Monster_EN00
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
-	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00_Weapon"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("EN00_Weapon"), pFilePathData), PivotMatrix)));
 
+	lstrcpy(m_szLoadingText, TEXT("지형 모델(을) 로드하는 중입니다."));
 
 	//!For.Prototype_Component_Model_ForkLift #포크리프트_Add_ProtoType
 	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_ForkLift"),
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("ForkLift"), pFilePathData), PivotMatrix)));
-	////
+
 	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_TestTree"),
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Tree"), pFilePathData), PivotMatrix)));
 
+	PivotMatrix = XMMatrixScaling(0.001f, 0.001f, 0.001f); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Stage1_Map1"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Stage1Map"), pFilePathData), PivotMatrix)));
+
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_BaseRoad"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("BaseRoad"), pFilePathData), PivotMatrix)));
+
+
+	PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Environment_Cannon"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Cannon"), pFilePathData), PivotMatrix)));
+
+
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Environment_AmmorBox"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("AmmorBox"), pFilePathData), PivotMatrix)));
+
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Environment_Barricade"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Barricade"), pFilePathData), PivotMatrix)));
+
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Environment_BrokenBarricade"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("BrokenBarricade"), pFilePathData), PivotMatrix)));
+
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Environment_WoodBox"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("WoodBox"), pFilePathData), PivotMatrix)));
+
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Environment_BrokenBox1"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("BrokenBox1"), pFilePathData), PivotMatrix)));
+
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Environment_BrokenBox2"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("BrokenBox2"), pFilePathData), PivotMatrix)));
+
+	
+	
 
 	Safe_Delete(pFilePathData);
 	
@@ -205,6 +232,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 			CVIBuffer_Dynamic_Terrain::Create(m_pDevice, m_pContext))))
 			return E_FAIL;
 
+	//!For.Prototype_Component_VIBuffer_Dynamic_Terrain #동적터레인_Add_ProtoType
+		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Field"),
+			CVIBuffer_Field::Create(m_pDevice, m_pContext))))
+			return E_FAIL;
+
 	//! For.Prototype_Component_VIBuffer_Particle_Rect 
 		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Particle_Rect"),
 			CVIBuffer_Particle_Rect::Create(m_pDevice, m_pContext, 20))))
@@ -220,6 +252,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	//! For.Prototype_Component_Shader_VtxCube  #큐브셰이더_AddPrototype
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_VtxCube"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxCube.hlsl"), VTXCUBE::Elements, VTXCUBE::iNumElements))))
+		return E_FAIL;
+
+	//! For.Prototype_Component_Shader_VtxField #필드셰이더_AddPrototype
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_VtxField"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxField.hlsl"), VTXFIELD::Elements, VTXFIELD::iNumElements))))
 		return E_FAIL;
 	
 	//! For.Prototype_Component_Shader_Model  #모델셰이더_AddPrototype
@@ -275,31 +312,32 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	lstrcpy(m_szLoadingText, TEXT("플레이어 원형(을) 로드하는 중입니다."));
 
 	/* For.Prototype_GameObject_Player */
-	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
-		CPlayer::Create(m_pDevice, m_pContext), true)))
-		return E_FAIL;
-
-	/* For.Prototype_PartObject_PlayerBody */
-	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_PlayerBody"),
-		CPlayerPart_Body::Create(m_pDevice, m_pContext, eLevel))))
-		return E_FAIL;
-
-	/* For.Prototype_PartObject_PlayerWeapon */
-	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_PlayerWeapon"),
-		CPlayerPart_Weapon::Create(m_pDevice, m_pContext, eLevel))))
-		return E_FAIL;
-
+	//if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
+	//	CPlayer::Create(m_pDevice, m_pContext), true, true)))
+	//	return E_FAIL;
+	//
+	///* For.Prototype_PartObject_PlayerBody */
+	//if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_PlayerBody"),
+	//	CPlayerPart_Body::Create(m_pDevice, m_pContext, eLevel))))
+	//	return E_FAIL;
+	//
+	///* For.Prototype_PartObject_PlayerWeapon */
+	//if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_PlayerWeapon"),
+	//	CPlayerPart_Weapon::Create(m_pDevice, m_pContext, eLevel))))
+	//	return E_FAIL;
+	//
 	lstrcpy(m_szLoadingText, TEXT("몬스터 원형(을) 로드하는 중입니다."));
-
+	
 	/* For.Prototype_GameObject_Monster_EN00 */
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_EN00"),
-		CMonster_EN00::Create(m_pDevice, m_pContext, eLevel), true)))
+		CMonster_EN00::Create(m_pDevice, m_pContext, eLevel), true, true)))
 		return E_FAIL;
-	
+	//
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_Monster_EN00_Weapon"),
 		CMonsterPart_EN00_Weapon::Create(m_pDevice, m_pContext, eLevel), true)))
 		return E_FAIL;
 
+	lstrcpy(m_szLoadingText, TEXT("지형 원형(을) 로드하는 중입니다."));
 
 	/* For.Protytype_GameObject_SkyBox */
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SkyBox"),
@@ -321,11 +359,41 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CDynamic_Terrain::Create(m_pDevice, m_pContext, eLevel))))
 		return E_FAIL;
 
+
+	lstrcpy(m_szLoadingText, TEXT("환경 원형(을) 로드하는 중입니다."));
 	//! For.Prototype_GameObject_TestTree #테스트트리_AddPrototype
-	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_TestTree"), CTestTree::Create(m_pDevice, m_pContext, eLevel), true));
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_TestTree"), CTestTree::Create(m_pDevice, m_pContext, eLevel), true, false));
 
 	//! For.Prototype_GameObject_ForkLift #포크리프트_AddPrototype
-	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ForkLift"), CForkLift::Create(m_pDevice, m_pContext, eLevel), true));
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ForkLift"), CForkLift::Create(m_pDevice, m_pContext, eLevel), true, false));
+
+	//! For.Prototype_GameObject_Stage1Map_1 #스테이지1맵_AddPrototype
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Stage1Map_1"), CStage1Map_1::Create(m_pDevice, m_pContext, eLevel), true, false));
+
+	//! For.Prototype_GameObject_Environment_Cannon #환경 캐논_AddPrototype
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment_Cannon"), CEnvironment_Cannon::Create(m_pDevice, m_pContext, eLevel), true, false));
+
+	//! For.Prototype_GameObject_Environment_AmmorBox #환경 총알박스_AddPrototype
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment_AmmorBox"), CEnvironment_AmmorBox::Create(m_pDevice, m_pContext, eLevel), true, false));
+
+	//! For.Prototype_GameObject_Environment_Barricade #환경 바리케이드_AddPrototype
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment_Barricade"), CEnvironment_Barricade::Create(m_pDevice, m_pContext, eLevel), true, false));
+
+	//! For.Prototype_GameObject_Environment_BrokenBarricade #환경 부서진 바리케이드_AddPrototype
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment_BrokenBarricade"), CEnvironment_BrokenBarricade::Create(m_pDevice, m_pContext, eLevel), true, false));
+
+	//! For.Prototype_GameObject_Environment_BaseRoad #환경 베이스로드_AddPrototype
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment_BaseRoad"), CEnvironment_BaseRoad::Create(m_pDevice, m_pContext, eLevel), true, false));
+
+
+	//! For.Prototype_GameObject_Environment_WoodBox #환경 나무상자_AddPrototype
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment_WoodBox"), CEnvironment_WoodBox::Create(m_pDevice, m_pContext, eLevel), true, false));
+
+	//! For.Prototype_GameObject_Environment_BrokenBox1#환경 부서진 나무상자1_AddPrototype
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment_BrokenBox1"), CEnvironment_BrokenBox1::Create(m_pDevice, m_pContext, eLevel), true, false));
+
+	//! For.Prototype_GameObject_Environment_BrokenBox2#환경 부서진 나무상자2_AddPrototype
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment_BrokenBox2"), CEnvironment_BrokenBox2::Create(m_pDevice, m_pContext, eLevel), true, false));
 
 	
 		
@@ -347,6 +415,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	case Client::LEVEL_TOOL:
 		if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_MapTool"),
 			CCamera_MapTool::Create(m_pDevice, m_pContext, eLevel))))
+			return E_FAIL;
+
+		/* For.Prototype_GameObject_Field */
+		if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Field"),
+			CField::Create(m_pDevice, m_pContext, eLevel))))
 			return E_FAIL;
 		break;
 	}

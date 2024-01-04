@@ -224,6 +224,15 @@
     <ClInclude Include="..\Public\EN00_Task_NormalAttack.h" />
     <ClInclude Include="..\Public\EN00_Task_MoveToTarget.h" />
     <ClInclude Include="..\Public\EN00_Task_UpperAttack.h" />
+    <ClInclude Include="..\Public\Environment_AmmorBox.h" />
+    <ClInclude Include="..\Public\Environment_Barricade.h" />
+    <ClInclude Include="..\Public\Environment_BaseRoad.h" />
+    <ClInclude Include="..\Public\Environment_BrokenBarricade.h" />
+    <ClInclude Include="..\Public\Environment_BrokenBox1.h" />
+    <ClInclude Include="..\Public\Environment_BrokenBox2.h" />
+    <ClInclude Include="..\Public\Environment_Cannon.h" />
+    <ClInclude Include="..\Public\Environment_WoodBox.h" />
+    <ClInclude Include="..\Public\Field.h" />
     <ClInclude Include="..\Public\ForkLift.h" />
     <ClInclude Include="..\Public\Imgui_Manager.h" />
     <ClInclude Include="..\Public\MonsterPart_EN00_Weapon.h" />
@@ -248,6 +257,7 @@
     <ClInclude Include="..\Public\PlayerState_Run.h" />
     <ClInclude Include="..\Public\PlayerState_Walk.h" />
     <ClInclude Include="..\public\SkyBox.h" />
+    <ClInclude Include="..\Public\Stage1Map_1.h" />
     <ClInclude Include="..\public\TestSnow.h" />
     <ClInclude Include="..\Public\TestTree.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
@@ -261,7 +271,9 @@
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialog.h" />
     <ClInclude Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialogConfig.h" />
+    <ClInclude Include="AnimObjects.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="NonAnimObjects.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -306,6 +318,15 @@
     <ClCompile Include="..\Private\EN00_Task_NormalAttack.cpp" />
     <ClCompile Include="..\Private\EN00_Task_MoveToTarget.cpp" />
     <ClCompile Include="..\Private\EN00_Task_UpperAttack.cpp" />
+    <ClCompile Include="..\Private\Environment_AmmorBox.cpp" />
+    <ClCompile Include="..\Private\Environment_Barricade.cpp" />
+    <ClCompile Include="..\Private\Environment_BaseRoad.cpp" />
+    <ClCompile Include="..\Private\Environment_BrokenBarricade.cpp" />
+    <ClCompile Include="..\Private\Environment_BrokenBox1.cpp" />
+    <ClCompile Include="..\Private\Environment_BrokenBox2.cpp" />
+    <ClCompile Include="..\Private\Environment_Cannon.cpp" />
+    <ClCompile Include="..\Private\Environment_WoodBox.cpp" />
+    <ClCompile Include="..\Private\Field.cpp" />
     <ClCompile Include="..\Private\ForkLift.cpp" />
     <ClCompile Include="..\Private\Imgui_Manager.cpp" />
     <ClCompile Include="..\Private\MonsterPart_EN00_Weapon.cpp" />
@@ -329,6 +350,7 @@
     <ClCompile Include="..\Private\PlayerState_Run.cpp" />
     <ClCompile Include="..\Private\PlayerState_Walk.cpp" />
     <ClCompile Include="..\private\SkyBox.cpp" />
+    <ClCompile Include="..\Private\Stage1Map_1.cpp" />
     <ClCompile Include="..\Private\TestSnow.cpp" />
     <ClCompile Include="..\Private\TestTree.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
@@ -361,6 +383,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Model.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Particle_Rect.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCube.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxField.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsl" />
   </ItemGroup>

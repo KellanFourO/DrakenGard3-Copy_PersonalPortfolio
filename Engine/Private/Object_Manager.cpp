@@ -43,13 +43,13 @@ HRESULT CObject_Manager::Initialize(_uint iNumLevels)
 	return S_OK;
 }
 
-HRESULT CObject_Manager::Add_Prototype(const wstring& strPrototypeTag, CGameObject* pPrototype, _bool bAddData)
+HRESULT CObject_Manager::Add_Prototype(const wstring& strPrototypeTag, CGameObject* pPrototype, _bool bAddData, _bool bModelType)
 {
 	if (nullptr == pPrototype || nullptr != Find_Prototype(strPrototypeTag)) //todo || 문을 사용할때는 반드시 좀 더 간단한 조건을 앞에 놓아서 효율적으로
 			return E_FAIL;
 
 	if(bAddData)
-	CGameInstance::GetInstance()->Add_PrototypeTag(strPrototypeTag);
+	CGameInstance::GetInstance()->Add_PrototypeTag(strPrototypeTag, bModelType);
 
 	m_Prototypes.emplace(strPrototypeTag, pPrototype); //! 원형객체 추가.
 	

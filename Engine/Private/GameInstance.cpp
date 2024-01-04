@@ -220,12 +220,12 @@ HRESULT CGameInstance::Open_Level(_uint iCurrentLevelIndex, CLevel* pNewLevel)
 	return m_pLevel_Manager->Open_Level(iCurrentLevelIndex, pNewLevel);
 }
 
-HRESULT CGameInstance::Add_Prototype(const wstring& strPrototypeTag, CGameObject* pPrototype, _bool bAddData)
+HRESULT CGameInstance::Add_Prototype(const wstring& strPrototypeTag, CGameObject* pPrototype, _bool bAddData, _bool bModelType)
 {
 	if(nullptr == m_pObject_Manager)
 		return E_FAIL;
 
-	return m_pObject_Manager->Add_Prototype(strPrototypeTag,pPrototype, bAddData);
+	return m_pObject_Manager->Add_Prototype(strPrototypeTag,pPrototype, bAddData, bModelType);
 }
 
 HRESULT CGameInstance::Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg, CGameObject** ppOut)
@@ -284,21 +284,44 @@ CComponent* CGameInstance::Clone_Component(_uint iLevelIndex, const wstring& str
 	return m_pComponent_Manager->Clone_Component(iLevelIndex, strPrototypeTag,pArg);
 }
 
-HRESULT CGameInstance::Add_PrototypeTag(const wstring& strProtoTypeTag)
+HRESULT CGameInstance::Add_PrototypeTag(const wstring& strProtoTypeTag, _bool bModelType)
 {
 	if (nullptr == m_pData_Manager)
 		return E_FAIL;
 	
-	return m_pData_Manager->Add_PrototypeTag(strProtoTypeTag);
+	return m_pData_Manager->Add_PrototypeTag(strProtoTypeTag, bModelType);
+}
+
+map<const wstring, _bool>& CGameInstance::Get_ObjectTags()
+{
+	if (nullptr == m_pData_Manager)
+		return map<const wstring, _bool>();
+
+	return m_pData_Manager->Get_ObjectTags();
 }
 
 vector<wstring>& CGameInstance::Get_VecTags()
 {
-
 	if (nullptr == m_pData_Manager)
 		return vector<wstring>();
 
 	return m_pData_Manager->Get_VecTags();
+}
+
+HRESULT CGameInstance::Add_LayerTag(const wstring& strLayerTag)
+{
+	if (nullptr == m_pData_Manager)
+		return E_FAIL;
+
+	return m_pData_Manager->Add_LayerTag(strLayerTag);
+}
+
+vector<wstring>& CGameInstance::Get_LayerTags()
+{
+	if (nullptr == m_pData_Manager)
+		return vector<wstring>();
+
+	return m_pData_Manager->Get_LayerTags();
 }
 
 HRESULT CGameInstance::Add_RenderGroup(CRenderer::RENDERGROUP eGroupID, CGameObject* pGameObject)

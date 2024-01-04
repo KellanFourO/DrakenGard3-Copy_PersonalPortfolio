@@ -175,6 +175,9 @@
     <Filter Include="01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Rect">
       <UniqueIdentifier>{30837ce1-23e4-4363-8ecc-9ebdea50af6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\03. Components\00. VIBuffer\Field">
+      <UniqueIdentifier>{daef4ff4-2b3e-4b4c-b543-180626098e1e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -351,6 +354,9 @@
     <ClInclude Include="..\public\VIBuffer_Particle_Rect.h">
       <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Point</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Field.h">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Field</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -499,6 +505,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Particle_Rect.cpp">
       <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Field.cpp">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Field</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

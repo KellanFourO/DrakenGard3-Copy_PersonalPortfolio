@@ -50,6 +50,7 @@ private:
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };
 	class CDynamic_Terrain* m_pDynamic_Terrain = { nullptr };
+	class CField*	m_pField = { nullptr };
 	class CCamera_MapTool* m_pCamera = { nullptr };
 	
 private:
@@ -97,6 +98,7 @@ private:
 
 private:
 	VTXDYNAMIC					m_tMapInfo;
+	VTXFIELD					m_tFieldInfo;
 	_bool						m_bMapToolPickMode = { false };
 	BRUSHMODE					m_eBrushMode = { BRUSHMODE::BRUSH_END };
 
@@ -107,7 +109,7 @@ private:
 		 
 
 private: //TODO 오브젝트툴 #오브젝트툴
-	HRESULT					Add_PrototypeTag(const wstring& strPrototypeTag);
+	HRESULT					Add_PrototypeTag(const wstring& strPrototypeTag, _bool bModelType);
 	HRESULT					Ready_ProtoTagList();
 
 	void					BinaryModeTick();
@@ -145,11 +147,25 @@ private:
 	_bool						m_bPressing;
 
 	_int						m_iObjectMode = { 0 };
-	vector<string>				m_vecObjectProtoTags;
+	_int						m_iModelType = { 0 };
+
+	vector<string>				m_vecLayerTags;
+	_int						m_iSelectLayerTagIndex = { -1 };
+	_bool						m_bOpenLayerTags = true;
+
+	vector<string>				m_vecAnimObjectTags;
+	vector<string>				m_vecCreateAnimObjectTags;
+	vector<class CGameObject*>  m_vecAnimObjects;
+
+	vector<string>				m_vecNonAnimObjectTags;
+	vector<string>				m_vecCreateNonAnimObjectTags;
+	vector<class CGameObject*>  m_vecNonAnimObjects;
+	
+
+
 	_int						m_iSelectTagIndex = { 0 };
 
-	vector<string>				m_vecCreateObjectTag;
-	vector<class CGameObject*>	m_vecObjects;
+
 	class CGameObject*			m_PickingObject = nullptr;
 	class CGameObject*			m_PartObject = nullptr;
 	_int						m_iPickingObjectIndex = 0;

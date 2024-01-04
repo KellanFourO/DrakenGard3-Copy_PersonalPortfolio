@@ -45,11 +45,12 @@ private:
 	_float			m_fDampConstant; //! 용수철 상수를 바탕으로한 감쇠(Dampening) 상수
 
 	_float3			m_vVelocity; //! 속도벡터
+	_float3			m_vLookVelocity; //!룩속도벡터
 
 	_float			m_fMouseX = 0, m_fMouseY = 0;
 
-	_float3			m_vStartOffset;
 	_float3			m_vOffset;
+	_float3			m_vActualPos;
 
 
 

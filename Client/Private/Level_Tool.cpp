@@ -4,6 +4,7 @@
 #include "Imgui_Manager.h"
 #include "GameInstance.h"
 #include "Camera_Dynamic.h"
+#include "Field.h"
 
 CLevel_Tool::CLevel_Tool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -14,6 +15,14 @@ HRESULT CLevel_Tool::Initialize()
 {
 	//if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 	//	return E_FAIL;
+	//m_pGameInstance->Add_LayerTag(TEXT("Layer_Camera"));
+
+	m_pGameInstance->Add_LayerTag(TEXT("Layer_Player"));
+	m_pGameInstance->Add_LayerTag(TEXT("Layer_Monster"));
+	m_pGameInstance->Add_LayerTag(TEXT("Layer_Boss"));
+	m_pGameInstance->Add_LayerTag(TEXT("Layer_Effect"));
+	m_pGameInstance->Add_LayerTag(TEXT("Layer_BackGround"));
+
 
 	if (FAILED(Ready_Imgui()))
 	{

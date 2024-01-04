@@ -39,21 +39,18 @@ HRESULT CCamera_Target::Initialize(void* pArg)
 	m_fSpringConstant = 30.f;
 	m_fDampConstant = 2.0f * sqrt(m_fSpringConstant);
 
-	
-	
-	XMStoreFloat3(&m_vStartOffset, XMVectorSet(0.f, 5.f, -8.f, 0.f));
 	XMStoreFloat3(&m_vOffset, XMVectorSet(0.f, 3.f, -3.f, 0.f));
 	
 
 	CTransform* pTargetTransform = m_pTarget->Get_Transform();
 
 	_vector vTargetPos = pTargetTransform->Get_State(CTransform::STATE_POSITION);
-	//_vector vTargetUp = pTargetTransform->Get_State(CTransform::STATE_UP);
-	//_vector vTargetLook = pTargetTransform->Get_State(CTransform::STATE_LOOK);
+	//!XMStoreFloat3(&m_vTargetPos, vTargetPos);
 
 	_vector vActualPos = vTargetPos + XMLoadFloat3(&m_vOffset);
 	
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vActualPos);
+
 	XMStoreFloat3(&m_vVelocity, XMVectorZero());
 	
 
@@ -73,34 +70,40 @@ void CCamera_Target::Tick(_float fTimeDelta)
 		m_bAdmin = !m_bAdmin;
 		
 
-	_vector vActualPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_vector vActualPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);  //! 이게 현재 위치
+	XMStoreFloat3(&m_vActualPos, vActualPos);
 	
 	CTransform* pTargetTransform = m_pTarget->Get_Transform();
 
-	_vector vTargetPos = pTargetTransform->Get_State(CTransform::STATE_POSITION);
-	//_vector vTargetUp = pTargetTransform->Get_State(CTransform::STATE_UP);
-	//_vector vTargetLook = pTargetTransform->Get_State(CTransform::STATE_LOOK);
+	_vector vTargetPos = pTargetTransform->Get_State(CTransform::STATE_POSITION); //! 타겟 위치
 	
 	
 	//! 타겟의 위치는 계속 변경되니 다시 이상적인 위치를 구해주자.
 	_vector vIdealPosition;
+	vIdealPosition = vTargetPos + MouseInput(fTimeDelta); //! 이상적인 위치
 	
-	vIdealPosition = vTargetPos + MouseInput(fTimeDelta);
-	
-	
+	//_vector vLookIdealPosition;
+	//vLookIdealPosition = vTargetPos;
 	
 	//! 이상적인 위치에서 실제 위치로 향하는 방향 벡터를 구하자.
 	_vector vDisplacement = vActualPos - vIdealPosition;
+	_vector vLookDisplacement = vTargetPos + vDisplacement;
 	
 	_vector vSpringAccel = (-m_fSpringConstant * vDisplacement) - (m_fDampConstant * XMLoadFloat3(&m_vVelocity));
-	
+	//_vector vLookSpringAccel = (-m_fSpringConstant * vLookDisplacement) - (m_fDampConstant * XMLoadFloat3(&m_vLookVelocity));
 	
 	XMStoreFloat3(&m_vVelocity, (XMLoadFloat3(&m_vVelocity) + (vSpringAccel * fTimeDelta)));
-	vActualPos += (XMLoadFloat3(&m_vVelocity) * fTimeDelta);
+	//XMStoreFloat3(&m_vLookVelocity, (XMLoadFloat3(&m_vLookVelocity) + (vLookSpringAccel * fTimeDelta)));
+
+	vActualPos += (XMLoadFloat3(&m_vVelocity) * fTimeDelta); //! 실제 위치
+	//vLookActualPos += (XMLoadFloat3(&m_vLookVelocity) * fTimeDelta);
 	
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vActualPos);
-	//ComputeMatrix();
-	m_pTransformCom->Look_At(vTargetPos);
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vActualPos); //! 실제위치 셋.
+	//XMStoreFloat3(&m_vTargetPos, vLookActualPos);
+
+	m_pTransformCom->Look_At(vLookDisplacement);
+	//m_pTransformCom->Look_At(XMLoadFloat3(&m_vTargetPos));
 	//! 타겟 포지션 룩엣도 보정을 해줘야한다.
 
 	
@@ -150,8 +153,9 @@ _vector CCamera_Target::MouseInput(_float fTimeDelta)
 	{
 		m_fMouseX += XMConvertToRadians(MouseMove * m_fMouseSensitivity);
 		
-		_float fAngle = XMConvertToRadians(MouseMove * XM_PI * fTimeDelta);
-		m_pTarget->Get_Transform()->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fAngle);
+		//_float fAngle = XMConvertToRadians(MouseMove * XM_PI * fTimeDelta);6
+		//m_pTarget->Get_Transform()->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fAngle);
+		m_pTarget->Get_Transform()->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(MouseMove * fTimeDelta));
 	}
 	
 	if (MouseMove = m_pGameInstance->Get_DIMouseMove(DIMS_Y))
@@ -165,9 +169,6 @@ _vector CCamera_Target::MouseInput(_float fTimeDelta)
 	vQuaternion = XMQuaternionNormalize(vQuaternion);
 	RotationMatrix = XMMatrixRotationQuaternion(vQuaternion);
 
-	
-	
-	
 
 	return XMVector3TransformNormal(XMLoadFloat3(&m_vOffset), RotationMatrix);
 }
