@@ -163,6 +163,18 @@
     <Filter Include="01. Utility\06. Fonts\Manager">
       <UniqueIdentifier>{2743a8c7-8a99-4d88-9706-7bff64d9f957}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\03. Components\00. VIBuffer\Particles">
+      <UniqueIdentifier>{e9821b2f-d071-4ec0-9860-1486c94054a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\00. VIBuffer\Particles\Instancing">
+      <UniqueIdentifier>{e85f7c3a-251a-42e9-8f7a-b586e37aade5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Point">
+      <UniqueIdentifier>{1834745d-f8cd-4af8-980d-0a880af50a55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Rect">
+      <UniqueIdentifier>{30837ce1-23e4-4363-8ecc-9ebdea50af6e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -330,6 +342,15 @@
     <ClInclude Include="..\public\Font_Manager.h">
       <Filter>01. Utility\06. Fonts\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="인스턴싱.h">
+      <Filter>1000. Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\VIBuffer_Instancing.h">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\VIBuffer_Particle_Rect.h">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Point</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -472,6 +493,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Font_Manager.cpp">
       <Filter>01. Utility\06. Fonts\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Instancing.cpp">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Particle_Rect.cpp">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Point</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

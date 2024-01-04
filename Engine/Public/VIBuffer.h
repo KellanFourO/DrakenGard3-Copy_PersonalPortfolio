@@ -25,7 +25,7 @@ public:
 
 public:
 	//TODO 정점, 인덱스, 인스턴스 버퍼들을 생성한다.
-	HRESULT Bind_VIBuffers();
+	virtual HRESULT Bind_VIBuffers();
 	HRESULT Create_Buffer(_Inout_ ID3D11Buffer * *ppBuffer);
 	//! 아래 주석에서 설명하듯 버퍼타입이 동일하기에 Create_Buffer 함수 하나로 한번에 처리가 가능해진다.
 

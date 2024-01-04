@@ -106,6 +106,17 @@ namespace Engine
 		float		fTrackPosition; //! 동작을 취하는 시간은 언제야?
 		_bool		bTest = false;
 	}KEYFRAME;
+
+	typedef struct tagStatusMatrix
+	{
+		XMFLOAT4	vRight, vUp, vLook, vPosition;
+	}VTXINSTANCE;
+
+	typedef struct ENGINE_DLL tagParticleRect
+	{
+		static const unsigned int					iNumElements = 6;
+		static const D3D11_INPUT_ELEMENT_DESC		Elements[iNumElements];
+	}VTX_PARTICLE_RECT;
 }
 
 

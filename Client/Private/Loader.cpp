@@ -12,6 +12,7 @@
 #include "TestTree.h"
 #include "ForkLift.h"
 #include "Camera_Target.h"
+#include "TestSnow.h"
 
 //TODO Player
 #include "Player.h"
@@ -135,6 +136,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Brush.png"), 1))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_Snow */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Snow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
+		return E_FAIL;
+
 	lstrcpy(m_szLoadingText, TEXT("모델를(을) 로드하는 중입니다."));
 
 	CModel::ModelData* pFilePathData = new CModel::ModelData;
@@ -198,6 +204,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Dynamic_Terrain"),
 			CVIBuffer_Dynamic_Terrain::Create(m_pDevice, m_pContext))))
 			return E_FAIL;
+
+	//! For.Prototype_Component_VIBuffer_Particle_Rect 
+		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Particle_Rect"),
+			CVIBuffer_Particle_Rect::Create(m_pDevice, m_pContext, 20))))
+			return E_FAIL;
 		
 
 	lstrcpy(m_szLoadingText, TEXT("셰이더를(을) 로드하는 중입니다."));
@@ -218,6 +229,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	//! For.Prototype_Component_Shader_Model  #모델셰이더_AddPrototype
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_AnimModel"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_AnimModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements)));
+
+	/* For.Prototype_Component_Shader_Particle_Rect */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_Particle_Rect"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Particle_Rect.hlsl"), VTX_PARTICLE_RECT::Elements, VTX_PARTICLE_RECT::iNumElements))))
+		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("네비게이션(을) 로드하는 중입니다."));
 	//! For.Prototype_Component_Navigation
@@ -288,6 +304,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	/* For.Protytype_GameObject_SkyBox */
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SkyBox"),
 		CSkyBox::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* For.Protytype_GameObject_TestSnow */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_TestSnow"),
+		CTestSnow::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	/* For.Prototype_GameObject_Terrain */

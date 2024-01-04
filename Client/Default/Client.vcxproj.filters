@@ -76,17 +76,11 @@
     <Filter Include="02. GameObjects\07. SkyBox">
       <UniqueIdentifier>{37545faa-2817-411b-ae58-6edd100cdf2c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\97. PartObject">
-      <UniqueIdentifier>{1d806d1d-c2ad-4023-9749-38b852409390}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\06. Player\00. Body">
       <UniqueIdentifier>{ce5bfef5-cc7d-406e-910b-5ad5e725eed1}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\06. Player\01. Weapon">
       <UniqueIdentifier>{75bc0754-d80f-4d51-9264-ce1835c3f679}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. StateMachine">
-      <UniqueIdentifier>{456c0b3a-87e4-48e9-89b8-0f946ee4390e}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\06. Player\02. States">
       <UniqueIdentifier>{7c36e6bb-ad3f-4a5b-bd5f-431563f7b19a}</UniqueIdentifier>
@@ -225,6 +219,12 @@
     </Filter>
     <Filter Include="02. GameObjects\02. Camera\Target">
       <UniqueIdentifier>{f52a89cb-a66a-433e-bd0c-c4d4789f5bac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\97. TestObject">
+      <UniqueIdentifier>{1d806d1d-c2ad-4023-9749-38b852409390}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\97. TestObject\TestSnow">
+      <UniqueIdentifier>{9565376f-b8e9-4a12-9f62-1c1334b1176b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -489,6 +489,9 @@
     <ClInclude Include="..\Public\Camera_Target.h">
       <Filter>02. GameObjects\02. Camera\Target</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\TestSnow.h">
+      <Filter>02. GameObjects\97. TestObject\TestSnow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -713,6 +716,9 @@
     <ClCompile Include="..\Private\Camera_Target.cpp">
       <Filter>02. GameObjects\02. Camera\Target</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\TestSnow.cpp">
+      <Filter>02. GameObjects\97. TestObject\TestSnow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -746,6 +752,9 @@
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCube.hlsl">
+      <Filter>97. ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Particle_Rect.hlsl">
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>
