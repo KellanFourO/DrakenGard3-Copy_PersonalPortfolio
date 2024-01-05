@@ -798,8 +798,6 @@ void CImgui_Manager::CreateObjectFunction()
 		}
 	}
 
-	
-
 	if (m_iSelectLayerTagIndex != -1) //! 레이어 태그를 선택 했다면.
 	{
 		m_bOpenLayerTags = false;
@@ -872,9 +870,13 @@ void CImgui_Manager::CreateObjectFunction()
 
 		if (true == m_bModelPicking)
 		{
-			for (auto& pNonAnimObject : m_vecNonAnimObjects)
+			_int iNonAnimObjectSize = m_vecNonAnimObjects.size();
+
+			for (_int i = 0; i < iNonAnimObjectSize; ++i)
 			{
-				if (pNonAnimObject->Picking(m_fPickingPos, dynamic_cast<CModel*>(pNonAnimObject->Find_Component(TEXT("Com_Model")))) && true == ImGui_MouseInCheck())
+				_float3 vPickedPos = {};
+
+				if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos) && true == ImGui_MouseInCheck())
 				{
 					CGameObject* pGameObject = nullptr;
 
@@ -913,9 +915,54 @@ void CImgui_Manager::CreateObjectFunction()
 					}
 
 
-					pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f));
+					pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(vPickedPos.x, vPickedPos.y, vPickedPos.z, 1.f));
 				}
 			}
+
+// 			for (auto& pNonAnimObject : m_vecNonAnimObjects)
+// 			{
+// 				if (pNonAnimObject->Picking(m_fPickingPos, dynamic_cast<CModel*>(pNonAnimObject->Find_Component(TEXT("Com_Model")))) && true == ImGui_MouseInCheck())
+// 				{
+// 					CGameObject* pGameObject = nullptr;
+// 					 
+// 					wstring wstr;
+// 
+// 					if (0 == m_iModelType)
+// 						wstr = ConvertStrToWstr(m_vecAnimObjectTags[m_iSelectTagIndex]);
+// 					else
+// 						wstr = ConvertStrToWstr(m_vecNonAnimObjectTags[m_iSelectTagIndex]);
+// 
+// 					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, nullptr, reinterpret_cast<CGameObject**>(&pGameObject))))
+// 						return;
+// 
+// 
+// 					string SliceTag = ConvertWstrToStr(wstr);
+// 					string IndexTag;
+// 
+// 					if (0 == m_iModelType)
+// 						IndexTag = to_string(m_vecAnimObjects.size() + 1);
+// 					else
+// 						IndexTag = to_string(m_vecNonAnimObjects.size() + 1);
+// 
+// 					SliceTag = SliceTag + IndexTag;
+// 
+// 					if (0 == m_iModelType)
+// 					{
+// 						m_vecCreateAnimObjectTags.push_back(SliceTag);
+// 						m_vecCreateAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
+// 						m_vecAnimObjects.push_back(pGameObject);
+// 					}
+// 					else
+// 					{
+// 						m_vecCreateNonAnimObjectTags.push_back(SliceTag);
+// 						m_vecCreateNonAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
+// 						m_vecNonAnimObjects.push_back(pGameObject);
+// 					}
+// 
+// 
+// 					pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f));
+// 				}
+// 			}
 		}
 		else if (m_pField->MouseOnTerrain() && ImGui_MouseInCheck())
 		{
@@ -1092,9 +1139,11 @@ void CImgui_Manager::SelectObjectFunction()
 
 		for (_uint i = 0; i < iObjectSize; ++i)
 		{
+			_float3 vPickedPos = {};
+			
 			if (0 == m_iModelType)
 			{
-				if (m_vecAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecAnimObjects[i]->Find_Component(TEXT("Com_Model")))))
+				if (m_vecAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos))
 				{
 					m_PickingObject = m_vecAnimObjects[i];
 					m_iPickingObjectIndex = i;
@@ -1102,7 +1151,7 @@ void CImgui_Manager::SelectObjectFunction()
 			}
 			else
 			{
-				if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model")))))
+				if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos))
 				{
 					m_PickingObject = m_vecNonAnimObjects[i];
 					m_iPickingObjectIndex = i;

@@ -138,29 +138,30 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	
 	//TODO 플레이어
 
-	//lstrcpy(m_szLoadingText, TEXT("플레이어 모델(을) 로드하는 중입니다."));
+	lstrcpy(m_szLoadingText, TEXT("플레이어 모델(을) 로드하는 중입니다."));
+	
 	//////! Player_Body
-	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
-	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Player"),
-	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("Player"), pFilePathData), PivotMatrix)));
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Player"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("Player"), pFilePathData), PivotMatrix)));
 	//
 	////! Player_Weapon1
-	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f); //! 모델의 초기 회전 셋팅
-	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Weapon1"),
-	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Player_Weapon1"), pFilePathData), PivotMatrix)));
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Weapon1"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Player_Weapon1"), pFilePathData), PivotMatrix)));
 
 
-	//lstrcpy(m_szLoadingText, TEXT("몬스터 모델(을) 로드하는 중입니다."));
+	lstrcpy(m_szLoadingText, TEXT("몬스터 모델(을) 로드하는 중입니다."));
+	
+	////!Prototype_Component_Model_Monster_EN00
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("EN00"), pFilePathData, true), PivotMatrix)));
 	//
 	////!Prototype_Component_Model_Monster_EN00
-	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
-	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00"),
-	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("EN00"), pFilePathData, true), PivotMatrix)));
-	//
-	////!Prototype_Component_Model_Monster_EN00
-	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
-	//FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00_Weapon"),
-	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("EN00_Weapon"), pFilePathData), PivotMatrix)));
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00_Weapon"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("EN00_Weapon"), pFilePathData), PivotMatrix)));
 
 
 	lstrcpy(m_szLoadingText, TEXT("지형 모델(을) 로드하는 중입니다."));
@@ -212,8 +213,6 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Environment_BrokenBox2"),
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("BrokenBox2"), pFilePathData), PivotMatrix)));
 
-	
-	
 
 	Safe_Delete(pFilePathData);
 	
@@ -312,19 +311,19 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	lstrcpy(m_szLoadingText, TEXT("플레이어 원형(을) 로드하는 중입니다."));
 
 	/* For.Prototype_GameObject_Player */
-	//if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
-	//	CPlayer::Create(m_pDevice, m_pContext), true, true)))
-	//	return E_FAIL;
-	//
-	///* For.Prototype_PartObject_PlayerBody */
-	//if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_PlayerBody"),
-	//	CPlayerPart_Body::Create(m_pDevice, m_pContext, eLevel))))
-	//	return E_FAIL;
-	//
-	///* For.Prototype_PartObject_PlayerWeapon */
-	//if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_PlayerWeapon"),
-	//	CPlayerPart_Weapon::Create(m_pDevice, m_pContext, eLevel))))
-	//	return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
+		CPlayer::Create(m_pDevice, m_pContext), true, true)))
+		return E_FAIL;
+	
+	/* For.Prototype_PartObject_PlayerBody */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_PlayerBody"),
+		CPlayerPart_Body::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+	
+	/* For.Prototype_PartObject_PlayerWeapon */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_PlayerWeapon"),
+		CPlayerPart_Weapon::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
 	//
 	lstrcpy(m_szLoadingText, TEXT("몬스터 원형(을) 로드하는 중입니다."));
 	
@@ -395,10 +394,6 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	//! For.Prototype_GameObject_Environment_BrokenBox2#환경 부서진 나무상자2_AddPrototype
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment_BrokenBox2"), CEnvironment_BrokenBox2::Create(m_pDevice, m_pContext, eLevel), true, false));
 
-	
-		
-
-	
 	switch (eLevel)
 	{
 	/* For.Prototype_GameObject_Camera_Dynamic */

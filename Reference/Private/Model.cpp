@@ -359,14 +359,14 @@ HRESULT CModel::Bind_ShaderResource(CShader* pShader, const _char* pConstantName
 }
 
 
-_bool CModel::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix)
+_bool CModel::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix, _float3* pOut)
 {
 	if (m_Meshes.empty()) // 메쉬가 비었는지 체크
 		return false;
 
 	for (auto& iter : m_Meshes)
 	{
-		if (iter->Compute_MousePos(_Ray, _WorldMatrix))
+		if (iter->Compute_MousePos(_Ray, _WorldMatrix, pOut))
 			return true;
 	}
 

@@ -22,7 +22,8 @@ public:
 
 public:
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, const vector<class CBone*>& Bones);
-	_bool	Compute_MousePos(RAY _Ray, _matrix _WorldMatrix);
+	_bool	Compute_MousePos(RAY _Ray, _matrix _WorldMatrix, _float3* pOut);
+	
 	
 private:
 	HRESULT Ready_Vertices_NonAnim(vector<VTXMESH>& Vertices, _fmatrix PivotMatrix);

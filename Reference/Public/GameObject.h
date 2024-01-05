@@ -39,7 +39,7 @@ public:
 	virtual HRESULT Render();
 
 public:
-	_bool	Picking(_float3 vPickPos, class CModel* pModelCom);
+	_bool	Picking(_float3 vPickPos, class CModel* pModelCom, _float3* pOut);
 
 public:
 	virtual void	  Write_Json(json& Out_Json) override;

@@ -17,8 +17,6 @@ protected:
 	virtual ~CNonAnimObject() = default;
 
 
-public:
-	_bool				MouseOnThis();
 
 protected:
 	LEVEL				m_eCurrentLevelID = { LEVEL_END };

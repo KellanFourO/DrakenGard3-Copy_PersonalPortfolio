@@ -66,7 +66,7 @@ public:
 
 public:
 	_bool	MouseOnModel();
-	_bool	Compute_MousePos(RAY _Ray, _matrix _WorldMatrix);
+	_bool	Compute_MousePos(RAY _Ray, _matrix _WorldMatrix, _float3* pOut);
 
 private:
 	//!const aiScene*			m_pAIScene = { nullptr };

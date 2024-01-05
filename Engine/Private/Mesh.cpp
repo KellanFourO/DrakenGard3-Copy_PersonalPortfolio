@@ -179,7 +179,7 @@ HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, c
 	return pShader->Bind_Matrices(pConstantName, BoneMatrices, 256);
 }
 
-_bool CMesh::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix)
+_bool CMesh::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix, _float3* pOut)
 {
 	_matrix matWorld = XMMatrixInverse(nullptr, _WorldMatrix);
 	_vector vRayPos, vRayDir;
@@ -203,8 +203,11 @@ _bool CMesh::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix)
 
 		if (true == DirectX::TriangleTests::Intersects(vRayPos, vRayDir, vIndexXPos, vIndexYPos, vIndexZPos, fDist))
 		{
-			//vPickedPos = vRayPos + XMVector3Normalize(vRayDir) * fDist;
-			//XMStoreFloat3(pOut, vPickedPos);
+			vPickedPos = vRayPos + XMVector3Normalize(vRayDir) * fDist;
+
+			vPickedPos = XMVector3TransformCoord(vPickedPos, _WorldMatrix);
+
+			XMStoreFloat3(pOut, vPickedPos);
 
 			return true;
 		}
@@ -212,6 +215,7 @@ _bool CMesh::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix)
 
 	return false;
 }
+
 
 HRESULT CMesh::Ready_Vertices_NonAnim(vector<VTXMESH>& Vertices, _fmatrix PivotMatrix)
 {

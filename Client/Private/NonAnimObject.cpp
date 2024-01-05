@@ -13,26 +13,8 @@ CNonAnimObject::CNonAnimObject(const CNonAnimObject& rhs)
 {
 }
 
-_bool CNonAnimObject::MouseOnThis()
-{
- 	if (nullptr == m_pModelCom)
- 	{
- 		MSG_BOX("ModelCom is nullptr");
- 		return false;
- 	}
- 
- 	_uint WinCX, WinCY;
- 	WinCX = g_iWinSizeX; WinCY = g_iWinSizeY;
- 
- 	RAY WorldRay = m_pGameInstance->Get_Ray(WinCX, WinCY);
- 
- 	if (m_pModelCom->Compute_MousePos(WorldRay, m_pTransformCom->Get_WorldMatrix()))
- 	{
- 		return true;
- 	}
 
-	return false;
-}
+
 
 void CNonAnimObject::Free()
 {
