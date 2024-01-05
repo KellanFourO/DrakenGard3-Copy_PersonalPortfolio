@@ -128,6 +128,4 @@ void CStage1Map_1::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pShaderCom);
 }

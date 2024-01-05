@@ -3,7 +3,6 @@
 #include "NonAnimObject.h"
 
 BEGIN(Engine)
-class CShader;
 class CTexture;
 class CVIBuffer_Particle_Rect;
 END
@@ -26,7 +25,6 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	CShader* m_pShaderCom = { nullptr };
 	CTexture* m_pTextureCom = { nullptr };
 	CVIBuffer_Particle_Rect* m_pVIBufferCom = { nullptr };
 

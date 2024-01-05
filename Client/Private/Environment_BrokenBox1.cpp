@@ -128,6 +128,4 @@ void CEnvironment_BrokenBox1::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pShaderCom);
 }

@@ -48,6 +48,23 @@ HRESULT CLayer::Add_GameObject(CGameObject* pGameObject)
 	return S_OK;
 }
 
+HRESULT CLayer::Erase_GameObject(CGameObject* pGameObject)
+{
+	if(nullptr == pGameObject)
+		return E_FAIL;
+	
+	auto iter = find(m_GameObjects.begin(), m_GameObjects.end(), pGameObject);
+	
+	if(iter == m_GameObjects.end())
+		return E_FAIL;
+
+	Safe_Release(*iter);
+	m_GameObjects.erase(iter);
+
+	
+	return S_OK;
+}
+
 void CLayer::Priority_Tick(_float fTimeDelta)
 {
 	for (auto& pGameObject : m_GameObjects)

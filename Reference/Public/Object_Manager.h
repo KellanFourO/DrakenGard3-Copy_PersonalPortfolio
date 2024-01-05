@@ -23,6 +23,7 @@ public:
 	HRESULT Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr, _Inout_ class CGameObject** ppOut = nullptr);
 	class CGameObject* Get_CloneObject(const wstring& strProtoTypeTag, void* pArg = nullptr);
 	HRESULT	Remove_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg);
+	HRESULT Erase_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, class CGameObject* pEraseObject);
 
 	class CGameObject* Get_Player(_uint iLevelIndex);
 

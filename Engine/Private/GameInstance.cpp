@@ -268,6 +268,16 @@ CGameObject* CGameInstance::Get_Player(_uint iLevelIndex)
 	return m_pObject_Manager->Get_Player(iLevelIndex);
 }
 
+HRESULT CGameInstance::Erase_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, CGameObject* pEraseObject)
+{
+	if (nullptr == m_pObject_Manager)
+		return E_FAIL;
+
+	return m_pObject_Manager->Erase_CloneObject(iLevelIndex, strLayerTag, pEraseObject);
+}
+
+
+
 HRESULT CGameInstance::Add_Prototype(_uint iLevelIndex, const wstring& strPrototypeTag, CComponent* pPrototype)
 {
 	if (nullptr == m_pComponent_Manager)

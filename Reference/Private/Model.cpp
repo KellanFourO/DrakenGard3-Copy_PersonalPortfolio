@@ -358,6 +358,7 @@ HRESULT CModel::Bind_ShaderResource(CShader* pShader, const _char* pConstantName
 	return m_Materials[iMaterialIndex].pMtrlTextures[eTextureType]->Bind_ShaderResource(pShader,pConstantName); //! 우리는 어처피 1장이다. textureIndex는 따로 줄 필요없다.
 }
 
+
 _bool CModel::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix)
 {
 	if (m_Meshes.empty()) // 메쉬가 비었는지 체크

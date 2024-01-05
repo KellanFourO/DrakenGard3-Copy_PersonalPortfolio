@@ -65,6 +65,7 @@ public:
 	HRESULT Bind_ShaderResource(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType);
 
 public:
+	_bool	MouseOnModel();
 	_bool	Compute_MousePos(RAY _Ray, _matrix _WorldMatrix);
 
 private:

@@ -18,6 +18,7 @@ public:
 
 public:
 	HRESULT Add_GameObject(class CGameObject* pGameObject);
+	HRESULT Erase_GameObject(class CGameObject* pGameObject);
 	void	Priority_Tick(_float fTimeDelta);
 	void	Tick(_float fTimeDelta);
 	void	Late_Tick(_float fTimeDelta);

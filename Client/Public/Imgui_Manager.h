@@ -117,6 +117,7 @@ private: //TODO 오브젝트툴 #오브젝트툴
 
 	void					CreateObjectFunction();
 	void					SelectObjectFunction();
+	void					DeleteObjectFunction();
 
 	void					SaveObject(string strFilePath);
 	void					LoadObject(string strFilePath);
@@ -155,13 +156,18 @@ private:
 
 	vector<string>				m_vecAnimObjectTags;
 	vector<string>				m_vecCreateAnimObjectTags;
+	vector<string>				m_vecCreateAnimObjectLayerTag;
+
 	vector<class CGameObject*>  m_vecAnimObjects;
 
 	vector<string>				m_vecNonAnimObjectTags;
 	vector<string>				m_vecCreateNonAnimObjectTags;
+	vector<string>				m_vecCreateNonAnimObjectLayerTag;
 	vector<class CGameObject*>  m_vecNonAnimObjects;
 	
 
+	_bool						m_bModelPicking = false;
+	_bool						m_bDeleteMode = false;
 
 	_int						m_iSelectTagIndex = { 0 };
 

@@ -1,10 +1,6 @@
 #pragma once
 #include "NonAnimObject.h"
 
-BEGIN(Engine)
-class CShader;
-class CModel;
-END
 
 BEGIN(Client)
 
@@ -29,9 +25,6 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-private:
-	CShader* m_pShaderCom = { nullptr };
-	CModel* m_pModelCom = { nullptr };
 
 private:
 	HRESULT Ready_Components();

@@ -127,7 +127,4 @@ CGameObject* CEnvironment_Cannon::Clone(void* pArg)
 void CEnvironment_Cannon::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pShaderCom);
 }

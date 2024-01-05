@@ -2,7 +2,6 @@
 #include "NonAnimObject.h"
 
 BEGIN(Engine)
-class CShader;
 class CTexture;
 class CNavigation;
 class CVIBuffer_Terrain;
@@ -28,7 +27,6 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	CShader*				m_pShaderCom = { nullptr };
 	CTexture*				m_pTextureCom[TYPE_END] = { nullptr };
 	CVIBuffer_Terrain*		m_pVIBufferCom = { nullptr };
 	CNavigation*			m_pNavigationCom = { nullptr };

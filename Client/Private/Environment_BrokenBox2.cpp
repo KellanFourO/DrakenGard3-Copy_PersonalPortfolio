@@ -127,7 +127,4 @@ CGameObject* CEnvironment_BrokenBox2::Clone(void* pArg)
 void CEnvironment_BrokenBox2::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pShaderCom);
 }

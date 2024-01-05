@@ -114,6 +114,17 @@ HRESULT CObject_Manager::Remove_CloneObject(_uint iLevelIndex, const wstring& st
 	return S_OK;
 }
 
+HRESULT CObject_Manager::Erase_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, CGameObject* pEraseObject)
+{
+	CLayer* pLayer = Find_Layer(iLevelIndex, strLayerTag);
+
+	if(nullptr == pLayer)
+		return E_FAIL;
+
+	return pLayer->Erase_GameObject(pEraseObject);
+	
+}
+
 CGameObject* CObject_Manager::Get_Player(_uint iLevelIndex)
 {
 	CLayer* pLayer = Find_Layer(iLevelIndex, TEXT("Layer_Player"));

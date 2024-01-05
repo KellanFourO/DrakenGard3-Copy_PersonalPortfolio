@@ -56,6 +56,7 @@ public: /* For.Object_Manager */
 	class CComponent*	Get_Component(_uint iLevelIndex, const wstring & strLayerTag, const wstring & strComponentTag, _uint iIndex = 0);
 	class CComponent*	Get_PartComponent(_uint iLevelIndex, const wstring & strLayerTag, const wstring & strComponentTag, const wstring& strPartTag, _uint iIndex = 0);
 	class CGameObject*  Get_Player(_uint iLevelIndex);
+	HRESULT				Erase_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, class CGameObject* pEraseObject);
 
 public: /* For.Component_Manager */
 	HRESULT Add_Prototype(_uint iLevelIndex, const wstring & strPrototypeTag, class CComponent* pPrototype);

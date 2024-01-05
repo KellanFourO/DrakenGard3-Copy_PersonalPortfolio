@@ -178,5 +178,4 @@ void CTerrain::Free()
 		Safe_Release(m_pTextureCom[i]);
 	}
 
-	Safe_Release(m_pShaderCom);
 }

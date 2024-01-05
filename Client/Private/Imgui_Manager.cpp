@@ -12,13 +12,14 @@
 #include "MonsterPart_EN00_Weapon.h"
 #include "Monster_EN00.h"
 #include "BoundingBox_AABB.h"
+#include "Layer.h"
 
 #include <regex>
 #include <codecvt>
 #include <filesystem>
 #include <iostream>
 #include <fstream>
-
+#include "NonAnimObject.h"
 
 ImGuiIO g_io;
 static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
@@ -747,8 +748,7 @@ void CImgui_Manager::ObjectModeTick()
 
 		if (true == m_bObjectToolPickMode)
 		{
-			ImGui::RadioButton(u8"Create", &m_iObjectMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"Select", &m_iObjectMode, 1);
-
+			ImGui::RadioButton(u8"Create", &m_iObjectMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"Select", &m_iObjectMode, 1); ImGui::SameLine(); ImGui::RadioButton(u8"Delete", &m_iObjectMode, 2);
 
 			ImGui::RadioButton(u8"AnimModel", &m_iModelType, 0); ImGui::SameLine(); ImGui::RadioButton(u8"NonAnimModel", &m_iModelType, 1);
 
@@ -760,6 +760,11 @@ void CImgui_Manager::ObjectModeTick()
 			else if (1 == m_iObjectMode)
 			{
 				SelectObjectFunction();
+			}
+
+			else if (2 == m_iObjectMode)
+			{
+				DeleteObjectFunction();
 			}
 		}
 	}
@@ -824,6 +829,9 @@ void CImgui_Manager::CreateObjectFunction()
 		{
 			iObjectTagSize = m_vecNonAnimObjectTags.size();
 
+			ImGui::Checkbox(u8"모델픽킹", &m_bModelPicking);
+
+
 			if (ImGui::BeginListBox(u8"논애니메이션 모델 태그 리스트"))
 			{
 				for (_uint i = 0; i < iObjectTagSize; ++i)
@@ -861,7 +869,55 @@ void CImgui_Manager::CreateObjectFunction()
 			return;
 		}
 
-		if (m_pField->MouseOnTerrain() && ImGui_MouseInCheck())
+
+		if (true == m_bModelPicking)
+		{
+			for (auto& pNonAnimObject : m_vecNonAnimObjects)
+			{
+				if (pNonAnimObject->Picking(m_fPickingPos, dynamic_cast<CModel*>(pNonAnimObject->Find_Component(TEXT("Com_Model")))) && true == ImGui_MouseInCheck())
+				{
+					CGameObject* pGameObject = nullptr;
+
+					wstring wstr;
+
+					if (0 == m_iModelType)
+						wstr = ConvertStrToWstr(m_vecAnimObjectTags[m_iSelectTagIndex]);
+					else
+						wstr = ConvertStrToWstr(m_vecNonAnimObjectTags[m_iSelectTagIndex]);
+
+					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, nullptr, reinterpret_cast<CGameObject**>(&pGameObject))))
+						return;
+
+
+					string SliceTag = ConvertWstrToStr(wstr);
+					string IndexTag;
+
+					if (0 == m_iModelType)
+						IndexTag = to_string(m_vecAnimObjects.size() + 1);
+					else
+						IndexTag = to_string(m_vecNonAnimObjects.size() + 1);
+
+					SliceTag = SliceTag + IndexTag;
+
+					if (0 == m_iModelType)
+					{
+						m_vecCreateAnimObjectTags.push_back(SliceTag);
+						m_vecCreateAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
+						m_vecAnimObjects.push_back(pGameObject);
+					}
+					else
+					{
+						m_vecCreateNonAnimObjectTags.push_back(SliceTag);
+						m_vecCreateNonAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
+						m_vecNonAnimObjects.push_back(pGameObject);
+					}
+
+
+					pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f));
+				}
+			}
+		}
+		else if (m_pField->MouseOnTerrain() && ImGui_MouseInCheck())
 		{
 			CGameObject* pGameObject = nullptr;
 
@@ -890,11 +946,13 @@ void CImgui_Manager::CreateObjectFunction()
 			if (0 == m_iModelType)
 			{
 				m_vecCreateAnimObjectTags.push_back(SliceTag);
+				m_vecCreateAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
 				m_vecAnimObjects.push_back(pGameObject);
 			}
 			else
 			{
 				m_vecCreateNonAnimObjectTags.push_back(SliceTag);
+				m_vecCreateNonAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
 				m_vecNonAnimObjects.push_back(pGameObject);
 			}
 
@@ -912,7 +970,7 @@ void CImgui_Manager::SelectObjectFunction()
 	Set_GuizmoCamProj();	//! 기즈모 뷰 투영 셋팅해주기.
 	
 
-	static bool bPartDebug = true;
+	static bool bPartDebug = false;
 
 	ImGui::Text(u8"현재 EN00파츠");
 	ImGui::Checkbox(u8"테스트", &bPartDebug);
@@ -1012,8 +1070,14 @@ void CImgui_Manager::SelectObjectFunction()
 
 	m_fPickingPos = m_pField->GetMousePos();
 
+	if (nullptr != m_PickingObject)
+	{
+		if(m_pGameInstance->Mouse_Down(DIM_RB))
+			m_PickingObject = nullptr;
+	}
+	
 
-	if (m_pGameInstance->Mouse_Down(DIM_LB))
+	if (m_pGameInstance->Mouse_Down(DIM_LB) && nullptr == m_PickingObject)
 	{
 		_int iObjectSize;
 
@@ -1050,6 +1114,114 @@ void CImgui_Manager::SelectObjectFunction()
 	
 
 	
+}
+
+void CImgui_Manager::DeleteObjectFunction()
+{
+	ImGui::NewLine();
+	
+
+	ImGui::InputInt(u8"삭제할 오브젝트의 인덱스 : ", &m_iPickingObjectIndex);
+
+	_int iObjectListSize;
+
+	if (0 == m_iModelType)
+	{
+		iObjectListSize = m_vecAnimObjects.size();
+
+		if (ImGui::BeginListBox(u8""))
+		{
+			for (_int i = 0; i < iObjectListSize; ++i)
+			{
+				const _bool isSelected = (m_iPickingObjectIndex == i);
+
+				if (ImGui::Selectable(m_vecCreateAnimObjectTags[i].c_str(), isSelected))
+				{
+					m_PickingObject = m_vecAnimObjects[i];
+					m_iPickingObjectIndex = i;
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndListBox();
+		}
+	}
+	else
+	{
+		iObjectListSize = m_vecNonAnimObjects.size();
+
+		if (ImGui::BeginListBox(u8""))
+		{
+			for (_int i = 0; i < iObjectListSize; ++i)
+			{
+				const _bool isSelected = (m_iPickingObjectIndex == i);
+
+				if (ImGui::Selectable(m_vecCreateNonAnimObjectTags[i].c_str(), isSelected))
+				{
+					m_PickingObject = m_vecNonAnimObjects[i];
+					m_iPickingObjectIndex = i;
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndListBox();
+		}
+	}
+
+	
+		if (ImGui::Button(u8"삭제") && m_iPickingObjectIndex >= 0)
+		{
+			// 범위 체크 필요
+			if (0 == m_iModelType)
+			{
+				if (m_iPickingObjectIndex < static_cast<int>(m_vecCreateAnimObjectTags.size()) && m_iPickingObjectIndex < static_cast<int>(m_vecAnimObjects.size()))
+				{
+					// 해당 인덱스의 요소를 동시에 삭제
+					m_vecCreateAnimObjectTags.erase(m_vecCreateAnimObjectTags.begin() + m_iPickingObjectIndex);
+					m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecCreateAnimObjectLayerTag[m_iPickingObjectIndex]), m_vecAnimObjects[m_iPickingObjectIndex]);
+					m_vecCreateAnimObjectLayerTag.erase(m_vecCreateAnimObjectLayerTag.begin() + m_iPickingObjectIndex);
+					m_vecAnimObjects.erase(m_vecAnimObjects.begin() + m_iPickingObjectIndex);
+				}
+				else
+				{
+					// 인덱스가 범위를 벗어날 경우 처리
+					ImGui::Text(u8"인덱스가 범위를 벗어납니다.");
+				}
+			}
+			else
+			{
+				if (m_iPickingObjectIndex < static_cast<int>(m_vecCreateNonAnimObjectTags.size()) && m_iPickingObjectIndex < static_cast<int>(m_vecNonAnimObjects.size()))
+				{
+					// 해당 인덱스의 요소를 동시에 삭제
+					m_vecCreateNonAnimObjectTags.erase(m_vecCreateNonAnimObjectTags.begin() + m_iPickingObjectIndex);
+					m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecCreateNonAnimObjectLayerTag[m_iPickingObjectIndex]), m_vecNonAnimObjects[m_iPickingObjectIndex]);
+					m_vecCreateNonAnimObjectLayerTag.erase(m_vecCreateNonAnimObjectLayerTag.begin() + m_iPickingObjectIndex);
+					m_vecNonAnimObjects.erase(m_vecNonAnimObjects.begin() + m_iPickingObjectIndex);
+				}
+				else
+				{
+					// 인덱스가 범위를 벗어날 경우 처리
+					ImGui::Text(u8"인덱스가 범위를 벗어납니다.");
+				}
+			}
+			
+		}
+		else
+		{
+			// 음수일 경우 처리
+			ImGui::Text(u8"올바른 인덱스 값을 입력하세요.");
+		}
+
+	//! 오브젝트 태그는 지울 필요가 없다.
+	
+	//! CreateAnimObjectTags를 지워야한다.
+	//! m_vecCreateAnimObjectTag와 m_vecAnimObject의 인덱스는 동일하다.
+	
+
 }
 
 void CImgui_Manager::SaveObject(string strFilePath)
@@ -1822,11 +1994,11 @@ void CImgui_Manager::Free()
 	m_vecCreateNonAnimObjectTags.clear();
 
 
-	for(auto& pAnimObject : m_vecAnimObjects)
-		Safe_Release(pAnimObject);
-
-	for (auto& pNonAnimObject : m_vecNonAnimObjects)
-		Safe_Release(pNonAnimObject);
+	//for(auto& pAnimObject : m_vecAnimObjects)
+	//	Safe_Release(pAnimObject);
+	//
+	//for (auto& pNonAnimObject : m_vecNonAnimObjects)
+	//	Safe_Release(pNonAnimObject);
 
 	m_pFileDialog->Close();
 
