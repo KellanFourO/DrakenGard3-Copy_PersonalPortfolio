@@ -55,12 +55,10 @@ public:
 	
 	
 public:
-	virtual void Write_Json(json& Out_Json, const wstring& strFileName);
-	virtual void Load_FromJson(const json& In_Json, const wstring& strFileName);
+	virtual void Write_Json(json& Out_Json);
+	virtual void Load_FromJson(const json& In_Json);
 	
 
-public:
-	void	CreateHeightMap();
 	void	Picking_Terrain(EDIT_MODE eMode);
 	_float3	GetMousePos();
 

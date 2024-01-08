@@ -189,6 +189,7 @@ void CImgui_Manager::ImGui_MapToolTick()
 				m_pField->Delete_Component(TEXT("Com_VIBuffer"));
 			}
 
+
 			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Field"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pField))))
 				return;
 
@@ -455,13 +456,13 @@ void CImgui_Manager::OpenDialog(TOOLID eToolID)
 	{
 	case Client::CImgui_Manager::TOOL_MAP:
 		strKey = "MapToolDialog";
-		strTitle = u8"맵 다이얼로그" + strAdd;
+		strTitle = u8"맵 " + strAdd;
 		strPath = "../Bin/DafaFiles/Map/";
 
 		break;
 	case Client::CImgui_Manager::TOOL_OBJECT:
 		strKey = "ObjectToolDialog";
-		strTitle = u8"오브젝트 다이얼로그" + strAdd;
+		strTitle = u8"오브젝트 " + strAdd;
 		strPath = "../Bin/DafaFiles/Object/";
 		break;
 	case Client::CImgui_Manager::TOOL_CAMERA:
@@ -509,7 +510,7 @@ void CImgui_Manager::ShowDialog(TOOLID eToolID)
 					SaveMap(filePathName, fileName);
 
 				else if (m_eToolID == CImgui_Manager::TOOL_OBJECT)
-					SaveObject(filePathName);
+					SaveObject(filePath, fileName);
 				break;
 			}
 
@@ -520,7 +521,16 @@ void CImgui_Manager::ShowDialog(TOOLID eToolID)
 					LoadMap(filePathName, fileName);
 
 				else if (m_eToolID == CImgui_Manager::TOOL_OBJECT)
-					LoadObject(filePathName);
+				{
+					if (fileName.find("NonAnim") != string::npos)
+					{
+						LoadNonAnimObject(filePath, fileName);
+					}
+					else if (fileName.find("Anim") != string::npos)
+					{
+						LoadAnimObject(filePath, fileName);
+					}
+				}
 				break;
 			}
 			}
@@ -635,7 +645,7 @@ void CImgui_Manager::SaveMap(string strFilePath, string strFileName)
 		sub = strFileName.substr(index, current - index);
 	}
 
-	m_pDynamic_Terrain->Write_Json(OutJson, ConvertStrToWstr(sub));
+	m_pField->Write_Json(OutJson);
 
 	if (FAILED(CJson_Utility::Save_Json(strFilePath.c_str(), OutJson)))
 	{
@@ -736,6 +746,7 @@ void CImgui_Manager::BinaryModeTick()
 
 void CImgui_Manager::ObjectModeTick()
 {
+
 	if (ImGui::Button(u8"저장하기")) { m_eDialogMode = CImgui_Manager::DIALOG_SAVE; OpenDialog(m_eToolID); } ImGui::SameLine(); if (ImGui::Button(u8"불러오기")) { m_eDialogMode = CImgui_Manager::DIALOG_LOAD; OpenDialog(m_eToolID); }
 
 	if (nullptr != m_pField)
@@ -798,9 +809,11 @@ void CImgui_Manager::CreateObjectFunction()
 		}
 	}
 
-	if (m_iSelectLayerTagIndex != -1) //! 레이어 태그를 선택 했다면.
-	{
+	if(m_iSelectLayerTagIndex != -1)
 		m_bOpenLayerTags = false;
+
+	if (m_bOpenLayerTags == false) //! 레이어 태그를 선택 했다면.
+	{
 
 		if (0 == m_iModelType)
 		{
@@ -848,8 +861,11 @@ void CImgui_Manager::CreateObjectFunction()
 			}
 		}
 
-		if(ImGui::Button(u8"취소"))
+		if (ImGui::Button(u8"취소"))
+		{
 			m_bOpenLayerTags = true;
+			m_iSelectLayerTagIndex = -1;
+		}
 	}
 
 
@@ -887,7 +903,13 @@ void CImgui_Manager::CreateObjectFunction()
 					else
 						wstr = ConvertStrToWstr(m_vecNonAnimObjectTags[m_iSelectTagIndex]);
 
-					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, nullptr, reinterpret_cast<CGameObject**>(&pGameObject))))
+
+
+					CGameObject::GAMEOBJECT_DESC pDesc;
+
+					pDesc.iLevelIndex = LEVEL_TOOL;
+
+					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pGameObject))))
 						return;
 
 
@@ -895,9 +917,9 @@ void CImgui_Manager::CreateObjectFunction()
 					string IndexTag;
 
 					if (0 == m_iModelType)
-						IndexTag = to_string(m_vecAnimObjects.size() + 1);
+						IndexTag = "@" + to_string(m_vecAnimObjects.size() + 1);
 					else
-						IndexTag = to_string(m_vecNonAnimObjects.size() + 1);
+						IndexTag = "@" + to_string(m_vecNonAnimObjects.size() + 1);
 
 					SliceTag = SliceTag + IndexTag;
 
@@ -919,50 +941,6 @@ void CImgui_Manager::CreateObjectFunction()
 				}
 			}
 
-// 			for (auto& pNonAnimObject : m_vecNonAnimObjects)
-// 			{
-// 				if (pNonAnimObject->Picking(m_fPickingPos, dynamic_cast<CModel*>(pNonAnimObject->Find_Component(TEXT("Com_Model")))) && true == ImGui_MouseInCheck())
-// 				{
-// 					CGameObject* pGameObject = nullptr;
-// 					 
-// 					wstring wstr;
-// 
-// 					if (0 == m_iModelType)
-// 						wstr = ConvertStrToWstr(m_vecAnimObjectTags[m_iSelectTagIndex]);
-// 					else
-// 						wstr = ConvertStrToWstr(m_vecNonAnimObjectTags[m_iSelectTagIndex]);
-// 
-// 					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, nullptr, reinterpret_cast<CGameObject**>(&pGameObject))))
-// 						return;
-// 
-// 
-// 					string SliceTag = ConvertWstrToStr(wstr);
-// 					string IndexTag;
-// 
-// 					if (0 == m_iModelType)
-// 						IndexTag = to_string(m_vecAnimObjects.size() + 1);
-// 					else
-// 						IndexTag = to_string(m_vecNonAnimObjects.size() + 1);
-// 
-// 					SliceTag = SliceTag + IndexTag;
-// 
-// 					if (0 == m_iModelType)
-// 					{
-// 						m_vecCreateAnimObjectTags.push_back(SliceTag);
-// 						m_vecCreateAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
-// 						m_vecAnimObjects.push_back(pGameObject);
-// 					}
-// 					else
-// 					{
-// 						m_vecCreateNonAnimObjectTags.push_back(SliceTag);
-// 						m_vecCreateNonAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
-// 						m_vecNonAnimObjects.push_back(pGameObject);
-// 					}
-// 
-// 
-// 					pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f));
-// 				}
-// 			}
 		}
 		else if (m_pField->MouseOnTerrain() && ImGui_MouseInCheck())
 		{
@@ -975,7 +953,11 @@ void CImgui_Manager::CreateObjectFunction()
 			else 
 				wstr = ConvertStrToWstr(m_vecNonAnimObjectTags[m_iSelectTagIndex]);
 
-			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, nullptr, reinterpret_cast<CGameObject**>(&pGameObject))))
+			CGameObject::GAMEOBJECT_DESC pDesc;
+
+			pDesc.iLevelIndex = LEVEL_TOOL;
+
+			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pGameObject))))
 					return;
 			
 
@@ -984,9 +966,9 @@ void CImgui_Manager::CreateObjectFunction()
 			string IndexTag; 
 			
 			if (0 == m_iModelType)
-				IndexTag = to_string(m_vecAnimObjects.size() + 1);
-			else 
-				IndexTag = to_string(m_vecNonAnimObjects.size() + 1);
+				IndexTag = "@" + to_string(m_vecAnimObjects.size() + 1);
+			else
+				IndexTag = "@" + to_string(m_vecNonAnimObjects.size() + 1);
 
 			SliceTag = SliceTag + IndexTag;
 
@@ -1273,12 +1255,210 @@ void CImgui_Manager::DeleteObjectFunction()
 
 }
 
-void CImgui_Manager::SaveObject(string strFilePath)
+void CImgui_Manager::SaveObject(string strPath, string strFileName)
 {
+	
+	_int iAnimObjectSize = m_vecAnimObjects.size();
+	_int iNonAnimObjectSize = m_vecNonAnimObjects.size();
+	json AnimationJson;
+	json NonAnimationJson;
+	
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
+
+	string strAnimPath = strPath + "/" + strNoExtFileName + "_Anim.json";
+	string strNonAnimPATH = strPath + "/" + strNoExtFileName + "_NonAnim.json";
+
+
+	for (auto& tag : m_vecCreateAnimObjectTags) {
+		// 문자열에서 '@' 문자 이후의 부분을 지움
+		size_t atIndex = tag.find('@');
+		if (atIndex != std::string::npos) {
+			tag.erase(atIndex); // '@' 이후의 문자열을 모두 제거
+		}
+
+		// 결과 출력
+		std::cout << tag << std::endl;
+	}
+
+	for (_int i = 0; i < iAnimObjectSize; i++)
+	{
+		AnimationJson[i].emplace("Index", i);
+		AnimationJson[i].emplace("LayerTag", m_vecCreateAnimObjectLayerTag[i]);
+		AnimationJson[i].emplace("ObjectTag", m_vecCreateAnimObjectTags[i]);
+		m_vecAnimObjects[i]->Write_Json(AnimationJson[i]);
+	}
+	
+	
+
+	for (auto& tag : m_vecCreateNonAnimObjectTags) {
+		// 문자열에서 '@' 문자 이후의 부분을 지움
+		size_t atIndex = tag.find('@');
+		if (atIndex != std::string::npos) {
+			tag.erase(atIndex); // '@' 이후의 문자열을 모두 제거
+		}
+
+		// 결과 출력
+		std::cout << tag << std::endl;
+	}
+
+	for (_int i = 0; i < iNonAnimObjectSize; i++)
+	{
+		
+		NonAnimationJson[i].emplace("Index" , i);
+		NonAnimationJson[i].emplace("LayerTag", m_vecCreateNonAnimObjectLayerTag[i]);
+		NonAnimationJson[i].emplace("ObjectTag", m_vecCreateNonAnimObjectTags[i]);
+		m_vecNonAnimObjects[i]->Write_Json(NonAnimationJson[i]);
+	}
+
+	if (FAILED(CJson_Utility::Save_Json(strAnimPath.c_str(), AnimationJson)))
+	{
+		MSG_BOX("애니메이션 모델 세이브 실패");
+	}
+	else
+	{
+		MSG_BOX("애니메이션 모델 저장 성공");
+	}
+
+	if (FAILED(CJson_Utility::Save_Json(strNonAnimPATH.c_str(), NonAnimationJson)))
+	{
+		MSG_BOX("논 애니메이션 모델 세이브 실패");
+	}
+	else
+	{
+		MSG_BOX("논 애니메이션 모델 저장 성공");
+	}
+
 }
 
-void CImgui_Manager::LoadObject(string strFilePath)
+void CImgui_Manager::LoadAnimObject(string strPath, string strFileName)
 {
+	json LoadJson;
+
+	string strFullPath = strPath + "/" + strFileName;
+
+	CJson_Utility::Load_Json(strFullPath.c_str(), LoadJson);
+
+	_int JsonSize = LoadJson.size();
+
+
+	ClearAnimObjects();
+	
+	for (_int i = 0; i < JsonSize; i++)
+	{
+		m_vecCreateAnimObjectLayerTag.push_back(LoadJson[i]["LayerTag"]);
+		m_vecCreateAnimObjectTags.push_back(LoadJson[i]["ObjectTag"]);
+
+		CGameObject* pGameObject = nullptr;
+
+		CGameObject::GAMEOBJECT_DESC Desc;
+
+		Desc.iLevelIndex = LEVEL_TOOL;
+
+		wstring wstrLayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
+		wstring wstrObjectTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
+
+		m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObjectTag, &Desc, &pGameObject);
+
+		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
+
+		_float4x4 WorldMatrix;
+
+		for (_int i = 0; i < 4; ++i)
+		{
+			for (_int j = 0; j < 4; ++j)
+			{
+				WorldMatrix.m[i][j] = TransformJson[i][j];
+			}
+		}
+
+
+		pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
+
+		m_vecAnimObjects.push_back(pGameObject);
+
+	}
+	
+	
+	
+
+}
+	
+void CImgui_Manager::LoadNonAnimObject(string strPath, string strFileName)
+{
+	json LoadJson;
+
+	string strFullPath = strPath + "/" + strFileName;
+
+	CJson_Utility::Load_Json(strFullPath.c_str(), LoadJson);
+
+	_int JsonSize = LoadJson.size();
+
+
+	ClearAnimObjects();
+
+	for (_int i = 0; i < JsonSize; i++)
+	{
+		m_vecCreateNonAnimObjectLayerTag.push_back(LoadJson[i]["LayerTag"]);
+		m_vecCreateNonAnimObjectTags.push_back(LoadJson[i]["ObjectTag"]);
+
+		CGameObject* pGameObject = nullptr;
+
+		CGameObject::GAMEOBJECT_DESC Desc;
+
+		Desc.iLevelIndex = LEVEL_TOOL;
+
+		wstring wstrLayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
+		wstring wstrObjectTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
+
+		m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObjectTag, &Desc, &pGameObject);
+
+		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
+
+		_float4x4 WorldMatrix;
+
+		for (_int i = 0; i < 4; ++i)
+		{
+			for (_int j = 0; j < 4; ++j)
+			{
+				WorldMatrix.m[i][j] = TransformJson[i][j];
+			}
+		}
+
+
+		pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
+
+		m_vecNonAnimObjects.push_back(pGameObject);
+
+	}
+}
+
+void CImgui_Manager::ClearAnimObjects()
+{
+	_int iAnimObjectsSize = m_vecAnimObjects.size();
+	
+
+	for (_int i = 0; i < iAnimObjectsSize; ++i)
+	{
+		m_vecCreateAnimObjectTags.erase(m_vecCreateAnimObjectTags.begin() + i);
+		m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecCreateAnimObjectLayerTag[i]), m_vecAnimObjects[i]);
+		m_vecCreateAnimObjectLayerTag.erase(m_vecCreateAnimObjectLayerTag.begin() + i);
+		m_vecAnimObjects.erase(m_vecAnimObjects.begin() + i);
+	}
+
+	
+}
+
+void CImgui_Manager::ClearNonAnimObjects()
+{
+	_int iNonAnimObjectsSize = m_vecNonAnimObjects.size();
+
+	for (_int i = 0; i < iNonAnimObjectsSize; ++i)
+	{
+		m_vecCreateNonAnimObjectTags.erase(m_vecCreateNonAnimObjectTags.begin() + i);
+		m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecCreateNonAnimObjectLayerTag[i]), m_vecNonAnimObjects[i]);
+		m_vecCreateNonAnimObjectLayerTag.erase(m_vecCreateNonAnimObjectLayerTag.begin() + i);
+		m_vecNonAnimObjects.erase(m_vecNonAnimObjects.begin() + i);
+	}
 }
 
 HRESULT CImgui_Manager::StartBakeBinary()

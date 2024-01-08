@@ -284,9 +284,9 @@ void CTransform::Translate(_fvector& _vTranslation)
 
 void CTransform::Write_Json(json& Out_Json)
 {
-	Out_Json.clear();
-
 	Out_Json.emplace("Transform", m_WorldMatrix.m);
+	Out_Json.emplace("SpeedPerSec", m_fSpeedPerSec);
+	Out_Json.emplace("RotationPerSec", m_fRotationPerSec);
 }
 
 void CTransform::Load_FromJson(const json& In_Json)

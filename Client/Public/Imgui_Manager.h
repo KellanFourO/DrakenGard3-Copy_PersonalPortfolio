@@ -119,8 +119,12 @@ private: //TODO 오브젝트툴 #오브젝트툴
 	void					SelectObjectFunction();
 	void					DeleteObjectFunction();
 
-	void					SaveObject(string strFilePath);
-	void					LoadObject(string strFilePath);
+	void					SaveObject(string strPath, string strFileName);
+	void					LoadAnimObject(string strPath, string strFileName);
+	void					LoadNonAnimObject(string strPath, string strFileName);
+
+	void					ClearAnimObjects();
+	void					ClearNonAnimObjects();
 
 	HRESULT					StartBakeBinary();
 	HRESULT					BinaryConvert(string strFileName, string strFilePath, const MODEL_TYPE& eModelType);

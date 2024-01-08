@@ -394,6 +394,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	//! For.Prototype_GameObject_Environment_BrokenBox2#환경 부서진 나무상자2_AddPrototype
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment_BrokenBox2"), CEnvironment_BrokenBox2::Create(m_pDevice, m_pContext, eLevel), true, false));
 
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Target"),
+		CCamera_Target::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+
 	switch (eLevel)
 	{
 	/* For.Prototype_GameObject_Camera_Dynamic */
@@ -402,9 +407,7 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 			CCamera_Dynamic::Create(m_pDevice, m_pContext, eLevel))))
 			return E_FAIL;
 
-		if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Target"),
-			CCamera_Target::Create(m_pDevice, m_pContext, eLevel))))
-			return E_FAIL;
+		
 		break;
 	/* For.Prototype_GameObject_Camera_MapTool */
 	case Client::LEVEL_TOOL:

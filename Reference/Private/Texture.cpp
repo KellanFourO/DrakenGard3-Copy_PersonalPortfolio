@@ -101,6 +101,14 @@ HRESULT CTexture::Bind_ShaderResourceArray(CShader* pShader, const _char* pConst
 	return pShader->Bind_SRVs(pConstantName, &m_SRVs.front(), m_iNumTextures);
 }
 
+void CTexture::Write_Json(json& Out_Json)
+{
+}
+
+void CTexture::Load_FromJson(const json& In_Json)
+{
+}
+
 CTexture* CTexture::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strTextureFilePath, _uint iNumTextures)
 {
 	CTexture* pInstance = new CTexture(pDevice, pContext);

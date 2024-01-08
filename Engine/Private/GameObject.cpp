@@ -114,6 +114,8 @@ _bool CGameObject::Picking(_float3 vPickPos, class CModel* pModelCom, _float3* p
 
 void CGameObject::Write_Json(json& Out_Json)
 {
+	//Out_Json.emplace("PrototypeTag", )
+
 	for (auto& pComponent : m_Components)
 	{
 		pComponent.second->Write_Json(Out_Json["Component"]);

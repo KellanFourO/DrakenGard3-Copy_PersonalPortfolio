@@ -88,96 +88,25 @@ HRESULT CField::Render()
 	return S_OK;
 }
 
-void CField::Write_Json(json& Out_Json, const wstring& strFileName)
+void CField::Write_Json(json& Out_Json)
 {
 	__super::Write_Json(Out_Json);
 
-	CreateHeightMap();
-
-	wstring strFilePath = TEXT("../Bin/DataFiles/Map/");
-	wstring strEXT = TEXT(".dat");
-	
-	wstring strFullPath = strFilePath + strFileName + strEXT;
-
-
-	HANDLE	hFile = CreateFile(strFullPath.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-
-	if(0 == hFile)
-		return;
-	_ulong	dwByte;	
-
-	vector<VTXFIELD>* vecInfo = m_pVIBufferCom->Get_Infos();
-
-	for (auto& tInfo : *vecInfo)
-	{
-		VTXFIELD tOut;
-		memcpy(&tOut, &tInfo, sizeof(VTXFIELD));
-		WriteFile(hFile, &tOut, sizeof(VTXFIELD), &dwByte, nullptr);
-	}
-
-
-	CloseHandle(hFile);
-
-	//! 정점 정보를 저장할꺼야
-	//! 정점 정봊보는 버퍼컴포넌트가 가지고있어.
-	//! 바이너리화를 시킬 거야
-	//! JSON말고 일반파일입출력을 통해서 할거야.
 	
 	Out_Json.emplace("SizeX", m_tDynamicInfo.fX);
 	Out_Json.emplace("SizeY", m_tDynamicInfo.fY);
 	Out_Json.emplace("SizeZ", m_tDynamicInfo.fZ);
 }
 
-void CField::Load_FromJson(const json& In_Json, const wstring& strFileName)
+void CField::Load_FromJson(const json& In_Json)
 {
 	__super::Load_FromJson(In_Json);
 
-	wstring strFilePath = TEXT("../Bin/DataFiles/Map/");
-	wstring strEXT = TEXT(".dat");
-
-	wstring strFullPath = strFilePath + strFileName + strEXT;
-
-	m_tDynamicInfo.fX = In_Json["SizeX"];
-	m_tDynamicInfo.fY = In_Json["SizeY"];
-	m_tDynamicInfo.fZ = In_Json["SizeZ"];
 	
-	HANDLE hFile = CreateFile(strFullPath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-
-	if (0 == hFile)
-		return;
-
-	_ulong dwByte = { 0 };
-
-	while (true)
-	{
-		VTXFIELD tInfo;
-
-		ReadFile(hFile, &tInfo, sizeof(VTXFIELD), &dwByte, nullptr);
-
-		if (0 == dwByte)
-			break;
-
-		m_tDynamicInfo.vecVertexInfo.push_back(tInfo);
-	}
-
-	CloseHandle(hFile);
-
-	Delete_Component(TEXT("Com_VIBuffer"));
-
-	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Field"), &m_tDynamicInfo)))
-		return;
-
-	//__super::Add_Component(LEVEL_GAMEPLAY,In_Json["Texture"], TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr);
-	
-	_int i = 0;
 
 }
 
 
-void CField::CreateHeightMap()
-{
-	
-}
 
 void CField::Picking_Terrain(EDIT_MODE eMode)
 {
@@ -243,6 +172,7 @@ _bool CField::MouseOnTerrain()
 
 	
 }
+
 
 HRESULT CField::Ready_Components()
 {

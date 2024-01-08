@@ -48,6 +48,10 @@ HRESULT CMonster::Render()
 void CMonster::Write_Json(json& Out_Json)
 {
 	__super::Write_Json(Out_Json);
+
+
+
+
 }
 
 void CMonster::Load_FromJson(const json& In_Json)

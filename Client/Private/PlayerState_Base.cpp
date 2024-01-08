@@ -41,6 +41,9 @@ HRESULT CPlayerState_Base::Initialize(CPlayer* pPlayer)
 		return E_FAIL;
 	if (FAILED(AddRefIfNotNull(m_pOwnerCam)))
 		return E_FAIL;
+
+
+	
 	
 	return S_OK;
 }

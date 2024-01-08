@@ -65,7 +65,6 @@ public:
 	HRESULT Bind_ShaderResource(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType);
 
 public:
-	_bool	MouseOnModel();
 	_bool	Compute_MousePos(RAY _Ray, _matrix _WorldMatrix, _float3* pOut);
 
 private:
@@ -122,6 +121,10 @@ private:
 	wstring ConvertStrToWstrModel(const string& str);
 	_float3 QuaternionToEuler(const _float4& quaternion);
 	
+private:
+	virtual void Write_Json(json& Out_Json) override;
+	virtual void Load_FromJson(const json& In_Json) override;
+
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);
 	virtual CComponent* Clone(void* pArg) override;

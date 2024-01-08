@@ -30,6 +30,7 @@ CModel::CModel(const CModel& rhs)
 	//! 깊은복제로 뺄 것이다. , m_Bones(rhs.m_Bones)
 	//! 마찬가지 , m_Animations(rhs.m_Animations)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
+	, m_tDataFilePath(rhs.m_tDataFilePath)
 {
 	//! 애니메이션도 공유되버리면서 m_fTrackposition의 값이 누적되버리면서 속도가 점점 빨라지는 것이다. 깊은 복제 빼버리자.
 	for (auto& pProtoAnimation : rhs.m_Animations)
@@ -825,6 +826,53 @@ _float3 CModel::QuaternionToEuler(const _float4& quaternion)
 	euler.z = std::atan2(siny_cosp, cosy_cosp);
 
 	return euler;
+}
+
+void CModel::Write_Json(json& Out_Json)
+{
+	Out_Json.emplace("BoneDataPath", ConvertWstrToStrModel(m_tDataFilePath.strBoneDataPath));
+	Out_Json.emplace("MeshDataPath", ConvertWstrToStrModel(m_tDataFilePath.strMeshDataPath));
+	Out_Json.emplace("MaterialDataPath", ConvertWstrToStrModel(m_tDataFilePath.strMaterialDataPath));
+	Out_Json.emplace("AnimationDataPath", ConvertWstrToStrModel(m_tDataFilePath.strAnimationDataPath));
+	Out_Json.emplace("HitAnimationDataPath", ConvertWstrToStrModel(m_tDataFilePath.strHitAnimationDataPath));
+	
+	Out_Json.emplace("ModelType", m_eModelType);
+	
+	Out_Json.emplace("PivotMatrix", m_PivotMatrix.m);
+
+		
+}
+
+void CModel::Load_FromJson(const json& In_Json)
+{
+	if(In_Json.end() == In_Json.find("Model"))
+		return;
+	
+	m_tDataFilePath.strBoneDataPath = ConvertStrToWstrModel(In_Json["BoneDataPath"]);
+	m_tDataFilePath.strMeshDataPath = ConvertStrToWstrModel(In_Json["MeshDataPath"]);
+	m_tDataFilePath.strMaterialDataPath = ConvertStrToWstrModel(In_Json["MaterialDataPath"]);
+	m_tDataFilePath.strAnimationDataPath = ConvertStrToWstrModel(In_Json["AnimationDataPath"]);
+	m_tDataFilePath.strHitAnimationDataPath = ConvertStrToWstrModel(In_Json["HitAnimationDataPath"]);
+	
+	m_eModelType = In_Json["ModelType"];
+	
+	for (_int i = 0; i < 4; i++)
+	{
+		for (_int j = 0; j < 4; j++)
+		{
+			m_PivotMatrix.m[i][j] = In_Json["PivotMatrix"][i][j];
+		}
+	}
+	
+	////m_PivotMatrix._11 = In_Json["_11"]; m_PivotMatrix._12 = In_Json["_12"]; m_PivotMatrix._13 = In_Json["_13"]; m_PivotMatrix._14 = In_Json["_14"];
+	////m_PivotMatrix._21 = In_Json["_21"]; m_PivotMatrix._22 = In_Json["_22"]; m_PivotMatrix._23 = In_Json["_23"]; m_PivotMatrix._24 = In_Json["_24"];
+	////m_PivotMatrix._31 = In_Json["_31"]; m_PivotMatrix._32 = In_Json["_32"]; m_PivotMatrix._33 = In_Json["_33"]; m_PivotMatrix._34 = In_Json["_34"];
+	////m_PivotMatrix._41 = In_Json["_41"]; m_PivotMatrix._42 = In_Json["_42"]; m_PivotMatrix._43 = In_Json["_43"]; m_PivotMatrix._44 = In_Json["_44"];
+	//
+	if(FAILED(Initialize_Prototype(m_eModelType, m_tDataFilePath, XMLoadFloat4x4(&m_PivotMatrix))))
+		MSG_BOX("모델 로드 실패");
+	
+
 }
 
 CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix)

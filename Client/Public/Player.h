@@ -38,8 +38,9 @@ public:
 
 public:
 	class CCamera_Target*	Get_Cam() { return m_pCamera; }
-	void			Set_Cam(class CCamera_Target* pCam);
-	CPartObject*	Find_PartObject(const wstring& strPartTag);
+	void					Set_Cam(class CCamera_Target* pCam);
+	CPartObject*			Find_PartObject(const wstring& strPartTag);
+	LEVEL					Get_LevelID() { return m_eCurrentLevelID; }
 
 private:
 	HRESULT			Ready_Components();

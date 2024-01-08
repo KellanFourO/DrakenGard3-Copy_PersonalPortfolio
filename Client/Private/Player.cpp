@@ -34,13 +34,17 @@ HRESULT CPlayer::Initialize_Prototype()
  
 HRESULT CPlayer::Initialize(void* pArg)
 {	
-	
 
 	CGameObject::GAMEOBJECT_DESC PlayerDesc = {};
 	
+	if (nullptr != pArg)
+		PlayerDesc = *(GAMEOBJECT_DESC*)pArg;
+
 	PlayerDesc.fSpeedPerSec = 10.0f;
 	PlayerDesc.fRotationPerSec = XMConvertToRadians(180.0f);
+	m_eCurrentLevelID = (LEVEL)PlayerDesc.iLevelIndex;
 
+	
 
 	if (FAILED(__super::Initialize(&PlayerDesc)))
 		return E_FAIL;	
@@ -51,8 +55,9 @@ HRESULT CPlayer::Initialize(void* pArg)
 	if (FAILED(Ready_PartObjects()))
 		return E_FAIL;
 
-	if(FAILED(Ready_Camera()))
-		return E_FAIL;
+	
+	if (FAILED(Ready_Camera()))
+			return E_FAIL;
 
 	if (FAILED(Ready_States()))
 		return E_FAIL;
@@ -144,7 +149,7 @@ HRESULT CPlayer::Ready_Components()
 	CNavigation::NAVI_DESC		NaviDesc = {};
 	NaviDesc.iCurrentIndex = 0;
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Navigation"),
 		TEXT("Com_Navigation"), reinterpret_cast<CComponent**>(&m_pNavigationCom), &NaviDesc)))
 		return E_FAIL;
 
@@ -155,12 +160,12 @@ HRESULT CPlayer::Ready_Components()
 	BoundingDesc.vCenter = _float3(0.f, BoundingDesc.vExtents.y, 0.f);
 	BoundingDesc.vRotation = _float3(0.f, XMConvertToRadians(45.0f), 0.f);
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"),
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Collider_OBB"),
 		TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
 		return E_FAIL;
 
 	//TODO 리지드바디
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_RigidBody"),
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_RigidBody"),
 		TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), m_pTransformCom)))
 		return E_FAIL;
 
@@ -170,7 +175,7 @@ HRESULT CPlayer::Ready_Components()
 	//	return E_FAIL;
 	
 	//TODO 상태머신
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_StateMachine"),
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_StateMachine"),
 		TEXT("Com_StateMachine"), reinterpret_cast<CComponent**>(&m_pStateCom), this)))
 		return E_FAIL;
 
@@ -274,7 +279,7 @@ HRESULT CPlayer::Ready_Camera()
 
 	CGameObject* pCam = nullptr;
 
-	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_Camera"), TEXT("Prototype_GameObject_Camera_Target"), &Desc, &pCam)))
+	if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_Camera"), TEXT("Prototype_GameObject_Camera_Target"), &Desc, &pCam)))
 		return E_FAIL;
 
 	m_pCamera = dynamic_cast<CCamera_Target*>(pCam);

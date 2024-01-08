@@ -16,6 +16,7 @@ public:
 
 		_float fSpeedPerSec		= 0.f;
 		_float fRotationPerSec	= 0.f;
+		_uint  iLevelIndex = 0;
 	
 	}GAMEOBJECT_DESC;
 
@@ -65,6 +66,7 @@ protected:
 	_bool						m_isCloned = { false };
 	_bool						m_isPlayer = { false };
 	_bool						m_isDead = { false };
+
 
 protected:
 	HRESULT Add_Component(_uint iLevelIndex, const wstring& strPrototypeTag,
