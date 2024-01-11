@@ -231,6 +231,7 @@
     <ClInclude Include="..\Public\Environment_BrokenBox1.h" />
     <ClInclude Include="..\Public\Environment_BrokenBox2.h" />
     <ClInclude Include="..\Public\Environment_Cannon.h" />
+    <ClInclude Include="..\public\Environment_Object.h" />
     <ClInclude Include="..\Public\Environment_WoodBox.h" />
     <ClInclude Include="..\Public\Field.h" />
     <ClInclude Include="..\Public\ForkLift.h" />
@@ -325,6 +326,7 @@
     <ClCompile Include="..\Private\Environment_BrokenBox1.cpp" />
     <ClCompile Include="..\Private\Environment_BrokenBox2.cpp" />
     <ClCompile Include="..\Private\Environment_Cannon.cpp" />
+    <ClCompile Include="..\private\Environment_Object.cpp" />
     <ClCompile Include="..\Private\Environment_WoodBox.cpp" />
     <ClCompile Include="..\Private\Field.cpp" />
     <ClCompile Include="..\Private\ForkLift.cpp" />

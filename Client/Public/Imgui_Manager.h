@@ -164,6 +164,8 @@ private:
 
 	vector<class CGameObject*>  m_vecAnimObjects;
 
+	vector<string>				m_vecModelTags;
+
 	vector<string>				m_vecNonAnimObjectTags;
 	vector<string>				m_vecCreateNonAnimObjectTags;
 	vector<string>				m_vecCreateNonAnimObjectLayerTag;

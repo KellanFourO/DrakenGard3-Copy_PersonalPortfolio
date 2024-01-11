@@ -34,6 +34,18 @@ HRESULT CData_Manager::Add_LayerTag(const wstring& strLayerTag)
 	return S_OK;
 }
 
+HRESULT CData_Manager::Add_ModelTag(const wstring& strModelTag)
+{
+	auto iter = find(m_vecModelTags.begin(), m_vecModelTags.end(), strModelTag);
+
+	if (iter != m_vecModelTags.end())
+		return E_FAIL;
+
+	m_vecModelTags.push_back(strModelTag);
+
+	return S_OK;
+}
+
 CData_Manager* CData_Manager::Create()
 {
 	CData_Manager* pInstance = new CData_Manager;

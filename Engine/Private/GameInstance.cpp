@@ -278,12 +278,12 @@ HRESULT CGameInstance::Erase_CloneObject(_uint iLevelIndex, const wstring& strLa
 
 
 
-HRESULT CGameInstance::Add_Prototype(_uint iLevelIndex, const wstring& strPrototypeTag, CComponent* pPrototype)
+HRESULT CGameInstance::Add_Prototype(_uint iLevelIndex, const wstring& strPrototypeTag, CComponent* pPrototype, _bool bModelCom)
 {
 	if (nullptr == m_pComponent_Manager)
 		return E_FAIL;
 
-	return m_pComponent_Manager->Add_Prototype(iLevelIndex,strPrototypeTag,pPrototype);
+	return m_pComponent_Manager->Add_Prototype(iLevelIndex,strPrototypeTag,pPrototype, bModelCom);
 }
 
 CComponent* CGameInstance::Clone_Component(_uint iLevelIndex, const wstring& strPrototypeTag, void* pArg)
@@ -332,6 +332,22 @@ vector<wstring>& CGameInstance::Get_LayerTags()
 		return vector<wstring>();
 
 	return m_pData_Manager->Get_LayerTags();
+}
+
+HRESULT CGameInstance::Add_ModelTag(const wstring& strModelTag)
+{
+	if (nullptr == m_pData_Manager)
+		return E_FAIL;
+
+	return m_pData_Manager->Add_ModelTag(strModelTag);
+}
+
+vector<wstring>& CGameInstance::Get_ModelTags()
+{
+	if (nullptr == m_pData_Manager)
+		return vector<wstring>();
+
+	return m_pData_Manager->Get_ModelTags();
 }
 
 HRESULT CGameInstance::Add_RenderGroup(CRenderer::RENDERGROUP eGroupID, CGameObject* pGameObject)

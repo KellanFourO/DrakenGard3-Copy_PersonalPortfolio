@@ -11,6 +11,7 @@
 #include "Environment_BaseRoad.h"
 
 //! È¯°æ
+#include "Environment_Object.h"
 #include "TestTree.h"
 #include "ForkLift.h"
 #include "Environment_Cannon.h"

@@ -37,11 +37,10 @@ HRESULT CCamera_Target::Initialize(void* pArg)
 	if(FAILED(__super::Initialize(pDesc)))
 		return E_FAIL;
 
-	m_fSpringConstant = 30.f;
+	m_fSpringConstant = 500.f;
 	m_fDampConstant = 2.0f * sqrt(m_fSpringConstant);
 
 	XMStoreFloat3(&m_vOffset, XMVectorSet(0.f, 3.f, -3.f, 0.f));
-	
 
 	CTransform* pTargetTransform = m_pTarget->Get_Transform();
 
@@ -53,9 +52,6 @@ HRESULT CCamera_Target::Initialize(void* pArg)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vActualPos);
 
 	XMStoreFloat3(&m_vVelocity, XMVectorZero());
-	
-
-	
 
 	return S_OK;
 }
@@ -66,55 +62,58 @@ void CCamera_Target::Priority_Tick(_float fTimeDelta)
 
 void CCamera_Target::Tick(_float fTimeDelta)
 {
-
-	LEVEL eTargetLevel = dynamic_cast<CPlayer*>(m_pTarget)->Get_LevelID();
-
-	if (eTargetLevel != LEVEL_TOOL)
+	if (m_pTarget != nullptr)
 	{
-		if (m_pGameInstance->Key_Down(DIK_TAB))
-			m_bAdmin = !m_bAdmin;
+		LEVEL eTargetLevel = dynamic_cast<CPlayer*>(m_pTarget)->Get_LevelID();
+
+		if (eTargetLevel != LEVEL_TOOL)
+		{
+			if (m_pGameInstance->Key_Down(DIK_TAB))
+				m_bAdmin = !m_bAdmin;
 
 
-		_vector vActualPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);  //! 이게 현재 위치
-		XMStoreFloat3(&m_vActualPos, vActualPos);
+			_vector vActualPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);  //! 이게 현재 위치
+			XMStoreFloat3(&m_vActualPos, vActualPos);
 
-		CTransform* pTargetTransform = m_pTarget->Get_Transform();
+			CTransform* pTargetTransform = m_pTarget->Get_Transform();
 
-		_vector vTargetPos = pTargetTransform->Get_State(CTransform::STATE_POSITION); //! 타겟 위치
-
-
-		//! 타겟의 위치는 계속 변경되니 다시 이상적인 위치를 구해주자.
-		_vector vIdealPosition;
-		vIdealPosition = vTargetPos + MouseInput(fTimeDelta); //! 이상적인 위치
-
-		//_vector vLookIdealPosition;
-		//vLookIdealPosition = vTargetPos;
-
-		//! 이상적인 위치에서 실제 위치로 향하는 방향 벡터를 구하자.
-		_vector vDisplacement = vActualPos - vIdealPosition;
-		_vector vLookDisplacement = vTargetPos + vDisplacement;
-
-		_vector vSpringAccel = (-m_fSpringConstant * vDisplacement) - (m_fDampConstant * XMLoadFloat3(&m_vVelocity));
-		//_vector vLookSpringAccel = (-m_fSpringConstant * vLookDisplacement) - (m_fDampConstant * XMLoadFloat3(&m_vLookVelocity));
-
-		XMStoreFloat3(&m_vVelocity, (XMLoadFloat3(&m_vVelocity) + (vSpringAccel * fTimeDelta)));
-		//XMStoreFloat3(&m_vLookVelocity, (XMLoadFloat3(&m_vLookVelocity) + (vLookSpringAccel * fTimeDelta)));
-
-		vActualPos += (XMLoadFloat3(&m_vVelocity) * fTimeDelta); //! 실제 위치
-		//vLookActualPos += (XMLoadFloat3(&m_vLookVelocity) * fTimeDelta);
+			_vector vTargetPos = pTargetTransform->Get_State(CTransform::STATE_POSITION); //! 타겟 위치
 
 
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vActualPos); //! 실제위치 셋.
-		//XMStoreFloat3(&m_vTargetPos, vLookActualPos);
+			//! 타겟의 위치는 계속 변경되니 다시 이상적인 위치를 구해주자.
+			_vector vIdealPosition;
+			vIdealPosition = vTargetPos + MouseInput(fTimeDelta); //! 이상적인 위치
 
-		m_pTransformCom->Look_At(vLookDisplacement);
-		//m_pTransformCom->Look_At(XMLoadFloat3(&m_vTargetPos));
-		//! 타겟 포지션 룩엣도 보정을 해줘야한다.
+			//_vector vLookIdealPosition;
+			//vLookIdealPosition = vTargetPos;
+
+			//! 이상적인 위치에서 실제 위치로 향하는 방향 벡터를 구하자.
+			_vector vDisplacement = vActualPos - vIdealPosition;
+			_vector vLookDisplacement = vTargetPos + vDisplacement;
+
+			_vector vSpringAccel = (-m_fSpringConstant * vDisplacement) - (m_fDampConstant * XMLoadFloat3(&m_vVelocity));
+			//_vector vLookSpringAccel = (-m_fSpringConstant * vLookDisplacement) - (m_fDampConstant * XMLoadFloat3(&m_vLookVelocity));
+
+			XMStoreFloat3(&m_vVelocity, (XMLoadFloat3(&m_vVelocity) + (vSpringAccel * fTimeDelta)));
+			//XMStoreFloat3(&m_vLookVelocity, (XMLoadFloat3(&m_vLookVelocity) + (vLookSpringAccel * fTimeDelta)));
+
+			vActualPos += (XMLoadFloat3(&m_vVelocity) * fTimeDelta); //! 실제 위치
+			//vLookActualPos += (XMLoadFloat3(&m_vLookVelocity) * fTimeDelta);
 
 
-		//TODO 부모의 Tick함수를 호출해줘야 뷰투영행렬을 파이프라인 객체에게 던져준다.
-		__super::Tick(fTimeDelta);
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, vActualPos); //! 실제위치 셋.
+			//XMStoreFloat3(&m_vTargetPos, vLookActualPos);
+
+			m_pTransformCom->Look_At(vLookDisplacement);
+			//m_pTransformCom->Look_At(XMLoadFloat3(&m_vTargetPos));
+			//! 타겟 포지션 룩엣도 보정을 해줘야한다.
+
+
+			//TODO 부모의 Tick함수를 호출해줘야 뷰투영행렬을 파이프라인 객체에게 던져준다.
+			__super::Tick(fTimeDelta);
+		}
 	}
+	
 	
 }
 

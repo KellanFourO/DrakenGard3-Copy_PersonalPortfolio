@@ -23,6 +23,7 @@
 
 BEGIN(Engine)
 
+
 class CComponent_Manager final : public CBase
 {
 private:
@@ -31,7 +32,7 @@ private:
 
 public:
 	HRESULT Initialize(_uint iNumLevels);
-	HRESULT Add_Prototype(_uint iLevelIndex, const wstring& strPrototypeTag, class CComponent* pPrototype);
+	HRESULT Add_Prototype(_uint iLevelIndex, const wstring& strPrototypeTag, class CComponent* pPrototype, _bool bModelCom = false);
 	class CComponent* Clone_Component(_uint iLevelIndex, const wstring& strPrototypeTag, void* pArg);
 	void	Clear(_uint iLevelIndex);
 
@@ -43,6 +44,7 @@ private:
 
 private:
 	class CComponent*	Find_Prototype(_uint iLevelIndex, const wstring& strPrototypeTag);
+	class CGameInstance* m_pGameInstance = { nullptr };
 
 public:
 	static CComponent_Manager*	Create(_uint iNumLevels);

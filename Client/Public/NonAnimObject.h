@@ -16,8 +16,6 @@ protected:
 	CNonAnimObject(const CNonAnimObject& rhs);
 	virtual ~CNonAnimObject() = default;
 
-
-
 protected:
 	LEVEL				m_eCurrentLevelID = { LEVEL_END };
 

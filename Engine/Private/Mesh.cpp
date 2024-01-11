@@ -204,7 +204,6 @@ _bool CMesh::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix, _float3* pOut)
 		if (true == DirectX::TriangleTests::Intersects(vRayPos, vRayDir, vIndexXPos, vIndexYPos, vIndexZPos, fDist))
 		{
 			vPickedPos = vRayPos + XMVector3Normalize(vRayDir) * fDist;
-
 			vPickedPos = XMVector3TransformCoord(vPickedPos, _WorldMatrix);
 
 			XMStoreFloat3(pOut, vPickedPos);

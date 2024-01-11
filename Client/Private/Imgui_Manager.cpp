@@ -19,7 +19,8 @@
 #include <filesystem>
 #include <iostream>
 #include <fstream>
-#include "NonAnimObject.h"
+//#include "NonAnimObject.h"
+#include "Environment_Object.h"
 
 ImGuiIO g_io;
 static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
@@ -457,13 +458,13 @@ void CImgui_Manager::OpenDialog(TOOLID eToolID)
 	case Client::CImgui_Manager::TOOL_MAP:
 		strKey = "MapToolDialog";
 		strTitle = u8"맵 " + strAdd;
-		strPath = "../Bin/DafaFiles/Map/";
+		strPath = "../Bin/DataFiles/Map/";
 
 		break;
 	case Client::CImgui_Manager::TOOL_OBJECT:
 		strKey = "ObjectToolDialog";
 		strTitle = u8"오브젝트 " + strAdd;
-		strPath = "../Bin/DafaFiles/Object/";
+		strPath = "../Bin/DataFiles/";
 		break;
 	case Client::CImgui_Manager::TOOL_CAMERA:
 		break;
@@ -720,6 +721,13 @@ HRESULT CImgui_Manager::Ready_ProtoTagList()
 		Add_PrototypeTag(wstrTag.first, wstrTag.second);
 	}
 
+	vector<wstring> ModelTags = m_pGameInstance->Get_ModelTags();
+
+	for (auto& strModelTag : ModelTags)
+	{
+		m_vecModelTags.push_back(ConvertWstrToStr(strModelTag));
+	}
+
 	return S_OK;
 }
 
@@ -838,27 +846,46 @@ void CImgui_Manager::CreateObjectFunction()
 		}
 		else
 		{
-			iObjectTagSize = m_vecNonAnimObjectTags.size();
+			//iObjectTagSize = m_vecNonAnimObjectTags.size();
+			iObjectTagSize = m_vecModelTags.size();
 
 			ImGui::Checkbox(u8"모델픽킹", &m_bModelPicking);
 
 
-			if (ImGui::BeginListBox(u8"논애니메이션 모델 태그 리스트"))
+			if (ImGui::BeginListBox(u8"환경 모델 태그 리스트"))
 			{
 				for (_uint i = 0; i < iObjectTagSize; ++i)
 				{
 					const _bool isSelected = (m_iSelectTagIndex == i);
-
-					if (ImGui::Selectable(m_vecNonAnimObjectTags[i].c_str(), isSelected))
+					
+					if (ImGui::Selectable(m_vecModelTags[i].c_str(), isSelected))
 					{
 						m_iSelectTagIndex = i;
-
+					
 						if (isSelected)
 							ImGui::SetItemDefaultFocus();
 					}
 				}
 				ImGui::EndListBox();
 			}
+
+			//if (ImGui::BeginListBox(u8"논애니메이션 모델 태그 리스트"))
+			//{
+			//
+			//	for (_uint i = 0; i < iObjectTagSize; ++i)
+			//	{
+			//		const _bool isSelected = (m_iSelectTagIndex == i);
+			//
+			//		if (ImGui::Selectable(m_vecNonAnimObjectTags[i].c_str(), isSelected))
+			//		{
+			//			m_iSelectTagIndex = i;
+			//
+			//			if (isSelected)
+			//				ImGui::SetItemDefaultFocus();
+			//		}
+			//	}
+			//	ImGui::EndListBox();
+			//}
 		}
 
 		if (ImGui::Button(u8"취소"))
@@ -901,19 +928,39 @@ void CImgui_Manager::CreateObjectFunction()
 					if (0 == m_iModelType)
 						wstr = ConvertStrToWstr(m_vecAnimObjectTags[m_iSelectTagIndex]);
 					else
-						wstr = ConvertStrToWstr(m_vecNonAnimObjectTags[m_iSelectTagIndex]);
+						wstr = TEXT("Prototype_GameObject_Environment");
 
-
+					
 
 					CGameObject::GAMEOBJECT_DESC pDesc;
 
 					pDesc.iLevelIndex = LEVEL_TOOL;
 
-					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pGameObject))))
-						return;
+					if (0 == m_iModelType)
+					{
+						if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pGameObject))))
+							return;
+					}
+					else
+					{
+							CEnvironment_Object::ENVIRONMENT_DESC Desc;
+							Desc.iLevelIndex = LEVEL_TOOL;
+							Desc.strModelTag = ConvertStrToWstr(m_vecModelTags[m_iSelectTagIndex]);
+
+							if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &Desc, reinterpret_cast<CGameObject**>(&pGameObject))))
+								return;
+					}
+					
 
 
-					string SliceTag = ConvertWstrToStr(wstr);
+					string SliceTag = "";
+
+					if (0 == m_iModelType)
+						SliceTag = ConvertWstrToStr(wstr);
+					else
+						SliceTag = m_vecModelTags[m_iSelectTagIndex];
+
+
 					string IndexTag;
 
 					if (0 == m_iModelType)
@@ -950,19 +997,38 @@ void CImgui_Manager::CreateObjectFunction()
 			
 			if(0 == m_iModelType)
 				wstr = ConvertStrToWstr(m_vecAnimObjectTags[m_iSelectTagIndex]);
-			else 
-				wstr = ConvertStrToWstr(m_vecNonAnimObjectTags[m_iSelectTagIndex]);
+			else
+				wstr = TEXT("Prototype_GameObject_Environment");
 
 			CGameObject::GAMEOBJECT_DESC pDesc;
 
 			pDesc.iLevelIndex = LEVEL_TOOL;
 
-			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pGameObject))))
+			if (0 == m_iModelType)
+			{
+				if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pGameObject))))
 					return;
+			}
+			else
+			{
+				CEnvironment_Object::ENVIRONMENT_DESC Desc;
+				Desc.iLevelIndex = LEVEL_TOOL;
+				Desc.strModelTag = ConvertStrToWstr(m_vecModelTags[m_iSelectTagIndex]);
+
+				if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &Desc, reinterpret_cast<CGameObject**>(&pGameObject))))
+					return;
+			}
 			
 
 
-			string SliceTag = ConvertWstrToStr(wstr);
+			string SliceTag = "";
+			
+			if (0 == m_iModelType)
+				SliceTag = ConvertWstrToStr(wstr);
+			else
+				SliceTag = m_vecModelTags[m_iSelectTagIndex];
+
+
 			string IndexTag; 
 			
 			if (0 == m_iModelType)
@@ -1240,6 +1306,8 @@ void CImgui_Manager::DeleteObjectFunction()
 				}
 			}
 			
+			m_PickingObject = nullptr;
+			m_iPickingObjectIndex = 0;
 		}
 		else
 		{
@@ -1339,7 +1407,7 @@ void CImgui_Manager::LoadAnimObject(string strPath, string strFileName)
 	CJson_Utility::Load_Json(strFullPath.c_str(), LoadJson);
 
 	_int JsonSize = LoadJson.size();
-
+	m_PickingObject = nullptr;
 
 	ClearAnimObjects();
 	
@@ -1392,25 +1460,27 @@ void CImgui_Manager::LoadNonAnimObject(string strPath, string strFileName)
 	CJson_Utility::Load_Json(strFullPath.c_str(), LoadJson);
 
 	_int JsonSize = LoadJson.size();
+	m_PickingObject = nullptr;
 
-
-	ClearAnimObjects();
+	ClearNonAnimObjects();
 
 	for (_int i = 0; i < JsonSize; i++)
 	{
+		
 		m_vecCreateNonAnimObjectLayerTag.push_back(LoadJson[i]["LayerTag"]);
 		m_vecCreateNonAnimObjectTags.push_back(LoadJson[i]["ObjectTag"]);
 
 		CGameObject* pGameObject = nullptr;
 
-		CGameObject::GAMEOBJECT_DESC Desc;
+		CEnvironment_Object::ENVIRONMENT_DESC Desc;
 
 		Desc.iLevelIndex = LEVEL_TOOL;
+		Desc.strModelTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
 
 		wstring wstrLayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
-		wstring wstrObjectTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
+		
 
-		m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObjectTag, &Desc, &pGameObject);
+		m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, TEXT("Prototype_GameObject_Environment"), &Desc, &pGameObject);
 
 		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
 
@@ -1454,11 +1524,15 @@ void CImgui_Manager::ClearNonAnimObjects()
 
 	for (_int i = 0; i < iNonAnimObjectsSize; ++i)
 	{
-		m_vecCreateNonAnimObjectTags.erase(m_vecCreateNonAnimObjectTags.begin() + i);
+		
 		m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecCreateNonAnimObjectLayerTag[i]), m_vecNonAnimObjects[i]);
-		m_vecCreateNonAnimObjectLayerTag.erase(m_vecCreateNonAnimObjectLayerTag.begin() + i);
 		m_vecNonAnimObjects.erase(m_vecNonAnimObjects.begin() + i);
 	}
+
+	m_vecCreateNonAnimObjectTags.clear();
+	m_vecCreateNonAnimObjectLayerTag.clear();
+
+	
 }
 
 HRESULT CImgui_Manager::StartBakeBinary()

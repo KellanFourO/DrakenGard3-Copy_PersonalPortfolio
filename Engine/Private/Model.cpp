@@ -236,18 +236,19 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmat
 	if(FAILED(Read_MaterialData(m_tDataFilePath.strMaterialDataPath)))
 		return E_FAIL;
 
-	if(eType == CModel::TYPE_ANIM)
-	if (FAILED(Read_AnimationData(m_tDataFilePath.strAnimationDataPath)))
-		return E_FAIL;
-
-	if (!m_tDataFilePath.strHitAnimationDataPath.empty()) //! HitAnimationPath가 공백이 아니었다면
+	if (eType == CModel::TYPE_ANIM)
 	{
-		if (FAILED(Read_AnimationData(m_tDataFilePath.strHitAnimationDataPath)))
-		{
+		if (FAILED(Read_AnimationData(m_tDataFilePath.strAnimationDataPath)))
 			return E_FAIL;
+
+		if (!m_tDataFilePath.strHitAnimationDataPath.empty()) //! HitAnimationPath가 공백이 아니었다면
+		{
+			if (FAILED(Read_AnimationData(m_tDataFilePath.strHitAnimationDataPath)))
+			{
+				return E_FAIL;
+			}
 		}
 	}
-	
 
 	return S_OK;
 }

@@ -59,7 +59,7 @@ public: /* For.Object_Manager */
 	HRESULT				Erase_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, class CGameObject* pEraseObject);
 
 public: /* For.Component_Manager */
-	HRESULT Add_Prototype(_uint iLevelIndex, const wstring & strPrototypeTag, class CComponent* pPrototype);
+	HRESULT Add_Prototype(_uint iLevelIndex, const wstring & strPrototypeTag, class CComponent* pPrototype, _bool bModelCom = false);
 	class CComponent* Clone_Component(_uint iLevelIndex, const wstring & strPrototypeTag, void* pArg);
 
 public: /* For.Data_Manager */
@@ -70,6 +70,9 @@ public: /* For.Data_Manager */
 
 	HRESULT					   Add_LayerTag(const wstring & strLayerTag);
 	vector<wstring>&		   Get_LayerTags();
+
+	HRESULT					   Add_ModelTag(const wstring & strModelTag);
+	vector<wstring>&		   Get_ModelTags();
 
 public: /* For.Renderer */
 	HRESULT Add_RenderGroup(CRenderer::RENDERGROUP eGroupID, class CGameObject* pGameObject);

@@ -7,6 +7,7 @@
 #include "Dynamic_Terrain.h"
 #include "Player.h"
 #include "Camera_Target.h"
+#include "Environment_Object.h"
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -76,7 +77,11 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const wstring& strLayerTag)
 HRESULT CLevel_GamePlay::Ready_Layer_Player(const wstring& strLayerTag)
 {
 
-	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Player"))))
+	CGameObject::GAMEOBJECT_DESC Desc;
+
+	Desc.iLevelIndex = LEVEL_GAMEPLAY;
+
+	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Player"), &Desc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -95,37 +100,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const wstring& strLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const wstring& strLayerTag)
 {
-	HANDLE hFile = CreateFile(TEXT("../Bin/DataFiles/Map/test.dat"), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-
-	if (0 == hFile)
-		return E_FAIL;
-
-	_ulong dwByte = { 0 };
-
-	CDynamic_Terrain::DINFO testInfo;
-
-	testInfo.fX = 50;
-	testInfo.fY = 1;
-	testInfo.fZ = 50;
-
-	while (true)
-	{
-		VTXDYNAMIC tInfo;
-
-		ReadFile(hFile, &tInfo, sizeof(VTXDYNAMIC), &dwByte, nullptr);
-
-		if (0 == dwByte)
-			break;
-
-		testInfo.vecVertexInfo.push_back(tInfo);
-	}
-
-	CloseHandle(hFile);
-
-	//if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Dynamic_Terrain"), &testInfo)))
-	//	return E_FAIL;
-	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Terrain"))))
-		return E_FAIL;
+	
+// 	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Terrain"))))
+// 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_SkyBox"))))
 		return E_FAIL;
@@ -133,8 +110,43 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const wstring& strLayerTag)
 	//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_ForkLift"))))
 	//	return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_TestTree"))))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_TestTree"))))
+	//	return E_FAIL;
+
+	json LoadJson;
+
+	CJson_Utility::Load_Json("../Bin/DataFiles/13_NonAnim.json", LoadJson);
+
+	_int LoadSize = LoadJson.size();
+
+	for (_int i = 0; i < LoadSize; ++i)
+	{
+		CGameObject* pGameObject = nullptr;
+
+		CEnvironment_Object::ENVIRONMENT_DESC Desc;
+
+		Desc.iLevelIndex = LEVEL_GAMEPLAY;
+		Desc.strModelTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
+		
+
+		if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Environment"), &Desc, &pGameObject)))
+			return E_FAIL;
+		
+		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
+
+		_float4x4 WorldMatrix;
+
+		for (_int i = 0; i < 4; ++i)
+		{
+			for (_int j = 0; j < 4; ++j)
+			{
+				WorldMatrix.m[i][j] = TransformJson[i][j];
+			}
+		}
+
+		pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
+	}
+
 
 	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_TestSnow"))))
 		return E_FAIL;
@@ -142,6 +154,14 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const wstring& strLayerTag)
 
 
 	return S_OK;
+}
+
+wstring CLevel_GamePlay::ConvertStrToWstr(const string& str)
+{
+	int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), nullptr, 0);
+	wstring wstr(size_needed, 0);
+	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), &wstr[0], size_needed);
+	return wstr;
 }
 
 CLevel_GamePlay* CLevel_GamePlay::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

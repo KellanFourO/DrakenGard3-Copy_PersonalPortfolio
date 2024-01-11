@@ -259,6 +259,9 @@
     <Filter Include="02. GameObjects\98. NonAnimObject\00. Map\BaseRoad">
       <UniqueIdentifier>{77ae4e73-bc18-4a62-9010-1336f3d8bc59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\99. EnvironmentObject">
+      <UniqueIdentifier>{203f6293-1a54-49e6-bfc0-9780067891ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -561,6 +564,9 @@
     <ClInclude Include="..\Public\Environment_BrokenBarricade.h">
       <Filter>02. GameObjects\98. NonAnimObject\05. Barricade\Broken</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Environment_Object.h">
+      <Filter>02. GameObjects\98. NonAnimObject\99. EnvironmentObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -817,6 +823,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Environment_Barricade.cpp">
       <Filter>02. GameObjects\98. NonAnimObject\05. Barricade</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Environment_Object.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\99. EnvironmentObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
