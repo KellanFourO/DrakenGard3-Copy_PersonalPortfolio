@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "EN00_Control_NormalAttack.h"
 #include "GameObject.h"
 

@@ -87,6 +87,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
+	
 
 	Key_Input(fTimeDelta);
 

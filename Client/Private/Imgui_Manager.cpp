@@ -14,6 +14,10 @@
 #include "BoundingBox_AABB.h"
 #include "Layer.h"
 
+#include "Navigation.h"
+#include "Cell.h"
+
+
 #include <regex>
 #include <codecvt>
 #include <filesystem>
@@ -21,6 +25,7 @@
 #include <fstream>
 //#include "NonAnimObject.h"
 #include "Environment_Object.h"
+#include "../../Reference/Public/Delaunator/delaunator.hpp"
 
 ImGuiIO g_io;
 static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
@@ -56,7 +61,11 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 	ImGuizmo_Initialize();			//! ImGui 즈모 초기화
 	ImGuiFileDialog_Intialize();	//! Imgui 파일다이얼로그 초기화
 
-	Ready_ProtoTagList();			//! 오브젝트 프로토태그 리스트 준비
+	Ready_ProtoTagList();			//! 오브젝트 프로토태그 리스트 준
+
+	//m_pNavigation = dynamic_cast<CNavigation*>(m_pGameInstance->Clone_Component(LEVEL_TOOL, TEXT("Prototype_Component_Navigation"), nullptr));
+
+	
 
 	return S_OK;
 }
@@ -76,6 +85,9 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		ImGui_MapToolTick();
 
 		ImGui_ObjectToolTick();
+
+		ImGui_NaviToolTick();
+
 
 		ShowDialog(m_eToolID);
 
@@ -466,6 +478,13 @@ void CImgui_Manager::OpenDialog(TOOLID eToolID)
 		strTitle = u8"오브젝트 " + strAdd;
 		strPath = "../Bin/DataFiles/";
 		break;
+
+	case Client::CImgui_Manager::TOOL_NAVI:
+		strKey = "NaviToolDialog";
+		strTitle = u8"내비게이션 " + strAdd;
+		strPath = "../Bin/DataFiles/";
+		break;
+
 	case Client::CImgui_Manager::TOOL_CAMERA:
 		break;
 	case Client::CImgui_Manager::TOOL_EFFECT:
@@ -490,6 +509,11 @@ void CImgui_Manager::ShowDialog(TOOLID eToolID)
 		DialogKey = "ObjectToolDialog";
 	}
 
+	else if (eToolID == CImgui_Manager::TOOL_NAVI)
+	{
+		DialogKey = "NaviToolDialog";
+	}
+
 	if (m_pFileDialog->Display(DialogKey))
 	{
 		if (m_pFileDialog->IsOk())
@@ -512,6 +536,10 @@ void CImgui_Manager::ShowDialog(TOOLID eToolID)
 
 				else if (m_eToolID == CImgui_Manager::TOOL_OBJECT)
 					SaveObject(filePath, fileName);
+
+				else if(m_eToolID == CImgui_Manager::TOOL_NAVI)
+					SaveNavi(filePathName);
+
 				break;
 			}
 
@@ -532,6 +560,10 @@ void CImgui_Manager::ShowDialog(TOOLID eToolID)
 						LoadAnimObject(filePath, fileName);
 					}
 				}
+
+				else if (m_eToolID == CImgui_Manager::TOOL_NAVI)
+						LoadNavi(filePathName);
+
 				break;
 			}
 			}
@@ -763,7 +795,10 @@ void CImgui_Manager::ObjectModeTick()
 		ImGui::Text(u8"마우스 Y : %f", m_pField->GetMousePos().y);
 		ImGui::Text(u8"마우스 Z : %f", m_pField->GetMousePos().z);
 
+
 		ImGui::Checkbox(u8"픽킹모드", &m_bObjectToolPickMode);
+		
+		
 
 		if (true == m_bObjectToolPickMode)
 		{
@@ -946,6 +981,8 @@ void CImgui_Manager::CreateObjectFunction()
 							CEnvironment_Object::ENVIRONMENT_DESC Desc;
 							Desc.iLevelIndex = LEVEL_TOOL;
 							Desc.strModelTag = ConvertStrToWstr(m_vecModelTags[m_iSelectTagIndex]);
+
+							
 
 							if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &Desc, reinterpret_cast<CGameObject**>(&pGameObject))))
 								return;
@@ -1466,9 +1503,11 @@ void CImgui_Manager::LoadNonAnimObject(string strPath, string strFileName)
 
 	for (_int i = 0; i < JsonSize; i++)
 	{
-		
+		string IndexTag = "@" + to_string(i);
+		string pushObjectTag = string(LoadJson[i]["ObjectTag"]) + IndexTag;
+
 		m_vecCreateNonAnimObjectLayerTag.push_back(LoadJson[i]["LayerTag"]);
-		m_vecCreateNonAnimObjectTags.push_back(LoadJson[i]["ObjectTag"]);
+		m_vecCreateNonAnimObjectTags.push_back(pushObjectTag);
 
 		CGameObject* pGameObject = nullptr;
 
@@ -2205,6 +2244,168 @@ _uint CImgui_Manager::Get_BoneIndex(const char* szName)
 //	return wideStr;
 //}
 
+void CImgui_Manager::ImGui_NaviToolTick()
+{
+	if (ImGui::BeginTabItem(u8"내비게이션"))
+	{
+		m_eToolID = CImgui_Manager::TOOL_NAVI;
+
+		if (ImGui::Button(u8"저장하기")) { m_eDialogMode = CImgui_Manager::DIALOG_SAVE; OpenDialog(m_eToolID); } ImGui::SameLine(); if (ImGui::Button(u8"불러오기")) { m_eDialogMode = CImgui_Manager::DIALOG_LOAD; OpenDialog(m_eToolID); }
+
+		ImGui::RadioButton(u8"만들기", &m_iNaviToolMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"삭제", &m_iNaviToolMode, 1);
+
+		ImGui::Text(u8"마우스 X : %f", m_fNaviPickingPos.x);
+		ImGui::Text(u8"마우스 Y : %f", m_fNaviPickingPos.y);
+		ImGui::Text(u8"마우스 Z : %f", m_fNaviPickingPos.z);
+
+		if (m_iNaviToolMode == 0)
+		{
+			Create_Navi_Mode_Tick();
+		}
+
+		else if (m_iNaviToolMode == 1)
+		{
+			Delete_Navi_Mode_Tick();
+		}
+
+		if(nullptr != m_pNavigation)
+		m_pNavigation->Render();
+
+		ImGui::EndTabItem();
+	}
+}
+
+void CImgui_Manager::Create_Navi_Mode_Tick()
+{
+	_int iObjectListSize = m_vecCreateNonAnimObjectTags.size();
+
+	if (nullptr == m_pNaviTargetObject)
+	{
+		if (ImGui::BeginListBox(u8""))
+		{
+			for (_int i = 0; i < iObjectListSize; ++i)
+			{
+				const _bool isSelected = (m_iTargetIndex == i);
+
+				if (ImGui::Selectable(m_vecCreateNonAnimObjectTags[i].c_str(), isSelected))
+				{
+					m_pNaviTargetObject = m_vecNonAnimObjects[i];
+					m_iTargetIndex = i;
+					m_pNavigation = dynamic_cast<CEnvironment_Object*>(m_pNaviTargetObject)->Get_NaviCom();
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndListBox();
+		}
+	}	
+
+	else
+	{
+		if (ImGui::Button(u8"생성") )
+		{
+			if (3 > m_iCurrentPickingIndex)
+				return;
+
+			delaunator::Delaunator d(m_vecNaviPoints);
+
+
+			for (size_t i = 0; i < d.triangles.size(); i += 3)
+			{
+				_float3 points[3];
+
+				for (int j = 0; j < 3; ++j)
+				{
+					size_t index = d.triangles[i + j];
+					points[j] = _float3(m_vecNaviPoints[2 * index], 0.f, m_vecNaviPoints[2 * index + 1]);
+				}
+
+				
+				Set_CCW(points);
+
+				CCell* pCell = CCell::Create(m_pDevice, m_pContext, points, m_iNaviIndex++);
+
+				m_pNavigation->AddCell(pCell);
+				
+			}
+
+			Reset_NaviPicking();
+		}
+
+		if (m_pGameInstance->Mouse_Down(DIM_LB) && true == ImGui_MouseInCheck())
+		{
+			_int index = 0;
+			
+			_float3 fPickedPos = { 0.f, 0.f, 0.f };
+
+			if (m_pNaviTargetObject->Picking(_float3(), dynamic_cast<CModel*>(m_pNaviTargetObject->Find_Component(TEXT("Com_Model"))), &fPickedPos))
+			{
+				m_vecNaviPoints.push_back(fPickedPos.x);
+				m_vecNaviPoints.push_back(fPickedPos.z);
+				++m_iCurrentPickingIndex;
+
+				m_fNaviPickingPos = fPickedPos;
+			}
+						
+		}
+
+		ImGui::NewLine();
+		
+		if (ImGui::Button(u8"타겟해제"))
+		{
+			m_pNaviTargetObject = nullptr;
+			m_pNavigation = nullptr;
+		}
+	}
+}
+
+void CImgui_Manager::Delete_Navi_Mode_Tick()
+{
+	ImGui::Text("아직 미완");
+}
+
+void CImgui_Manager::Set_CCW(_float3* vPoint)
+{
+	_vector vPositionFromVector[3];
+	for (int i(0); i < 3; i++)
+		vPositionFromVector[i] = XMLoadFloat3(&(vPoint[i]));
+
+	_vector vAtoB(vPositionFromVector[1] - vPositionFromVector[0]);
+	_vector vAtoC(vPositionFromVector[2] - vPositionFromVector[0]);
+
+	_vector vAtoB2D, vAtoC2D, vAtoB2DCross;
+	vAtoB2D = vAtoC2D = vAtoB2DCross = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+	vAtoB2D = XMVectorSetX(vAtoB2D, XMVectorGetX(vAtoB));
+	vAtoB2D = XMVectorSetY(vAtoB2D, XMVectorGetZ(vAtoB));
+	vAtoC2D = XMVectorSetX(vAtoC2D, XMVectorGetX(vAtoC));
+	vAtoC2D = XMVectorSetY(vAtoC2D, XMVectorGetZ(vAtoC));
+	vAtoB2DCross = XMVectorSetX(vAtoB2DCross, -1.f * XMVectorGetY(vAtoB2D));
+	vAtoB2DCross = XMVectorSetY(vAtoB2DCross, XMVectorGetX(vAtoB2D));
+	_float fDot(XMVectorGetX(XMVector2Dot(vAtoB2DCross, vAtoC2D)));
+	if (0.f < fDot)
+	{
+		XMStoreFloat3(&vPoint[1], vPositionFromVector[2]);
+		XMStoreFloat3(&vPoint[2], vPositionFromVector[1]);
+	}
+}
+
+void CImgui_Manager::Reset_NaviPicking()
+{
+	m_iCurrentPickingIndex = 0;
+	m_vecNaviPoints.clear();
+}
+
+void CImgui_Manager::SaveNavi(string strFullPath)
+{
+	m_pNavigation->SaveData(ConvertStrToWstr(strFullPath));
+}
+
+void CImgui_Manager::LoadNavi(string strFullPath)
+{
+}
+
 wstring CImgui_Manager::SliceObjectTag(const wstring& strObjectTag)
 {
 	size_t pos = strObjectTag.rfind(L"_");
@@ -2279,6 +2480,7 @@ wstring CImgui_Manager::ConvertStrToWstr(const string& str)
 
 void CImgui_Manager::Free()
 {
+	
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

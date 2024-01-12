@@ -9,7 +9,7 @@ class CImgui_Manager final : public CBase
 	DECLARE_SINGLETON(CImgui_Manager);
 
 public:
-	enum TOOLID { TOOL_MAP, TOOL_OBJECT, TOOL_CAMERA, TOOL_EFFECT, TOOL_END };
+	enum TOOLID { TOOL_MAP, TOOL_OBJECT, TOOL_NAVI, TOOL_CAMERA, TOOL_EFFECT, TOOL_END };
 	enum DIALOGID { DIALOG_SAVE, DIALOG_LOAD, DIALOG_BINARY, DIALOG_END };
 	enum BRUSHMODE { BRUSH_DOWN, BRUSH_UP, BRUSH_PRESSING, BRUSH_END };
 
@@ -52,6 +52,7 @@ private:
 	class CDynamic_Terrain* m_pDynamic_Terrain = { nullptr };
 	class CField*	m_pField = { nullptr };
 	class CCamera_MapTool* m_pCamera = { nullptr };
+	class CNavigation*		m_pNavigation = { nullptr };
 	
 private:
 	ID3D11Device* m_pDevice = { nullptr };
@@ -190,6 +191,27 @@ private:
 	vector<asMesh*>				m_vecMesh;
 	vector<asMaterial*>			m_vecMaterial;
 	vector<asAnimation*>		m_vecAnimation;
+
+private: //TODO 내비게이션 툴 #내비게이션툴
+	void					ImGui_NaviToolTick();
+	void					Create_Navi_Mode_Tick();
+	void					Delete_Navi_Mode_Tick();
+	void					Set_CCW(_float3* vPoint);
+	void					Reset_NaviPicking();
+
+	void					SaveNavi(string strFullPath);
+	void					LoadNavi(string strFullPath);
+
+private:
+	_int						m_iNaviToolMode = 0;
+	_int						m_iCurrentPickingIndex = 0;
+	_int						m_iTargetIndex = 0;
+	_int						m_iNaviIndex = 0;
+	_float3						m_fNaviPickingPos;
+
+	class CGameObject*			m_pNaviTargetObject = nullptr;
+	
+	vector<double>				m_vecNaviPoints;
 
 private:
 	string sourceUpperPath = "../Assets/";

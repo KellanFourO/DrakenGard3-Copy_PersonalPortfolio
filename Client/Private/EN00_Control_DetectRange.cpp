@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "EN00_Control_DetectRange.h"
 #include "GameObject.h"
 #include "Transform.h"

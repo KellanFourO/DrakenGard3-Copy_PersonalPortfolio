@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "EN00_Control_Arrival.h"
 #include "GameObject.h"
 #include "Transform.h"

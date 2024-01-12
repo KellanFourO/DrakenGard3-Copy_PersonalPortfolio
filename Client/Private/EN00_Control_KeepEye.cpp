@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "EN00_Control_KeepEye.h"
 #include "GameObject.h"
 

@@ -17,6 +17,8 @@ HRESULT CEnvironment_Object::Initialize_Prototype(LEVEL eLevel)
 {
 	m_eCurrentLevelID = eLevel;
 
+	
+
 	return S_OK;
 }
 
@@ -32,6 +34,8 @@ HRESULT CEnvironment_Object::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+	//m_pTransformCom->Set_WorldFloat4x4(m_WorldMatrix);
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -43,6 +47,8 @@ HRESULT CEnvironment_Object::Initialize(void* pArg)
 
 void CEnvironment_Object::Priority_Tick(_float fTimeDelta)
 {
+	
+	m_pNavigationCom->Update(XMMatrixIdentity());
 }
 
 void CEnvironment_Object::Tick(_float fTimeDelta)
@@ -68,8 +74,14 @@ HRESULT CEnvironment_Object::Render()
 
 		m_pShaderCom->Begin(0);
 
+
 		m_pModelCom->Render(i);
 	}
+
+#ifdef _DEBUG
+	m_pNavigationCom->Render();
+#endif 
+
 
 	return S_OK;
 }
@@ -84,6 +96,11 @@ HRESULT CEnvironment_Object::Ready_Components()
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, m_strModelTag,
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		return E_FAIL;
+
+	//! For.Com_Navigation
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Navigation"),
+		TEXT("Com_Navigation"), reinterpret_cast<CComponent**>(&m_pNavigationCom))))
 		return E_FAIL;
 
 	return S_OK;
@@ -133,4 +150,7 @@ CGameObject* CEnvironment_Object::Clone(void* pArg)
 void CEnvironment_Object::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pNavigationCom);
+	
 }

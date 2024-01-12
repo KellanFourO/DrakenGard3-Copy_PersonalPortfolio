@@ -23,14 +23,20 @@ private:
 	CNavigation(const CNavigation& rhs);
 	virtual ~CNavigation() = default;
 
+
+public:
+	void			SaveData(wstring strSavePath);
+
 public:
 	virtual HRESULT Initialize_Prototype(const wstring& strNavigationFilePath);
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual HRESULT Render();
 	
 public:
+	_int	Get_CellSize() { return m_Cells.size(); };
 	void	Update(_fmatrix WorldMatrix);
 	_bool	isMove(_fvector vPosition);
+	void	AddCell(class CCell* pCell);
 
 private:
 	vector<class CCell*>	m_Cells;

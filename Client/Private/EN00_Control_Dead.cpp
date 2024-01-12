@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "..\Public\EN00_Control_Dead.h"
 #include "GameObject.h"
 

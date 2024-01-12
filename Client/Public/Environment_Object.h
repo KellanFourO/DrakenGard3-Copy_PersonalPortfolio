@@ -1,6 +1,10 @@
 #pragma once
 #include "NonAnimObject.h"
 
+BEGIN(Engine)
+class CNavigation;
+END
+
 BEGIN(Client)
 
 class CEnvironment_Object final : public CNonAnimObject
@@ -9,13 +13,16 @@ public:
 	typedef struct tagEnvironmentDesc : public CGameObject::GAMEOBJECT_DESC
 	{
 		_float4 vPos = { 0.f, 0.f, 0.f, 0.f };
-		wstring		strModelTag;
+		wstring	strModelTag;
 	}ENVIRONMENT_DESC;
 
 private:
 	CEnvironment_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CEnvironment_Object(const CEnvironment_Object& rhs);
 	virtual ~CEnvironment_Object() = default;
+
+public:
+	CNavigation*	Get_NaviCom() { return m_pNavigationCom; }
 
 public:
 	virtual HRESULT Initialize_Prototype(LEVEL eLevel);
@@ -30,7 +37,10 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
-	wstring	 m_strModelTag = TEXT("");
+	CNavigation*		m_pNavigationCom = { nullptr };
+
+private:
+	wstring				m_strModelTag = TEXT("");
 
 public:
 	/* 원형객체를 생성한다. */

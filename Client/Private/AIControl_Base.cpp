@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "AIControl_Base.h"
 
 _int CAIControl_Base::Get_RandomNumber(_int MaxCount)

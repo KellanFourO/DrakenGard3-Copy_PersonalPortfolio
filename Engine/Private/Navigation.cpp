@@ -25,6 +25,33 @@ CNavigation::CNavigation(const CNavigation& rhs)
 
 }
 
+void CNavigation::SaveData(wstring strSavePath)
+{
+    HANDLE	hFile = CreateFile(strSavePath.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+
+    if (0 == hFile)
+        return;
+
+    _ulong dwByte = 0;
+
+    _int iCellSize = m_Cells.size();
+
+    for (_int i = 0; i < iCellSize; ++i)
+    {
+        _float3 vPoints[3];
+
+        vPoints[0] = *m_Cells[i]->Get_Point(CCell::POINT_A);
+        vPoints[1] = *m_Cells[i]->Get_Point(CCell::POINT_B);
+        vPoints[2] = *m_Cells[i]->Get_Point(CCell::POINT_C);
+
+        WriteFile(hFile, vPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+    }
+
+    CloseHandle(hFile);
+
+}
+
+
 HRESULT CNavigation::Initialize_Prototype(const wstring& strNavigationFilePath)
 {
     HANDLE hFile = CreateFile(strNavigationFilePath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
@@ -43,7 +70,7 @@ HRESULT CNavigation::Initialize_Prototype(const wstring& strNavigationFilePath)
         if(0 == dwByte)
             break;
 
-        //! 여기서 Create 할 것. CCell*
+        //! 여기WW서 Create 할 것. CCell*
         CCell*  pCell = CCell::Create(m_pDevice, m_pContext, vPoints, m_Cells.size());
         if(nullptr == pCell)
             return E_FAIL;
@@ -76,6 +103,9 @@ HRESULT CNavigation::Initialize(void* pArg)
 
 HRESULT CNavigation::Render()
 {
+    if(m_Cells.empty())
+        return E_FAIL;
+
     _float4 vColor = { 0.f, 0.f, 0.f, 1.f};
 
     if (m_iCurrentIndex == -1)
@@ -124,9 +154,12 @@ void CNavigation::Update(_fmatrix WorldMatrix)
 
 _bool CNavigation::isMove(_fvector vPosition)
 {
+    if(m_Cells.empty())
+        return false;
+        
     _int        iNeighborIndex = { -1 };
 
-    if(true == m_Cells[m_iCurrentIndex]->isIn(vPosition, XMLoadFloat4x4(&m_WorldMatrix),&iNeighborIndex))
+    if(true == m_Cells[m_iCurrentIndex]->isIn(vPosition, XMLoadFloat4x4(&m_WorldMatrix), &iNeighborIndex))
         return true;
 
     else
@@ -149,6 +182,16 @@ _bool CNavigation::isMove(_fvector vPosition)
             return false;
     }
     
+}
+
+void CNavigation::AddCell(CCell* pCell)
+{
+    if(nullptr == pCell)
+        return;
+
+    m_Cells.push_back(pCell);
+
+    Make_Neighbors();
 }
 
 HRESULT CNavigation::Make_Neighbors()
