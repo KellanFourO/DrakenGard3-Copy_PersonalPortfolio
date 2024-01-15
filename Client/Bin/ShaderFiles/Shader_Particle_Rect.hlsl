@@ -8,11 +8,11 @@ struct VS_IN
     float3 vPosition : POSITION;
     float2 vTexcoord : TEXCOORD0;
 
-    //인스턴스 버퍼용 VS_IN을 볼 수 있다
     float4 vRight : TEXCOORD1;
     float4 vUp : TEXCOORD2;
     float4 vLook : TEXCOORD3;
     float4 vTranslation : TEXCOORD4;
+    float4 vColor : COLOR0;
 };
 
 
@@ -20,6 +20,7 @@ struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0;
+    float4 vColor : COLOR0;
 };
 
 
@@ -28,7 +29,7 @@ VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out = (VS_OUT) 0;
 
-    matrix TransformMatrix = matrix(In.vRight, In.vUp, In.vLook, In.vTranslation); //In의 로컬 상태행렬을 이용하여 정점을 곱해주는 것을 볼 수 있다.
+    matrix TransformMatrix = matrix(In.vRight, In.vUp, In.vLook, In.vTranslation);
 
     vector vPosition = mul(float4(In.vPosition, 1.f), TransformMatrix);
 
@@ -38,8 +39,9 @@ VS_OUT VS_MAIN(VS_IN In)
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
 
-    Out.vPosition = mul(vPosition, matWVP); //로컬 상태가 곱해진 정점을 자신이 가진 월드행렬로 곱해주자
+    Out.vPosition = mul(vPosition, matWVP);
     Out.vTexcoord = In.vTexcoord;
+    Out.vColor = In.vColor;
 
     return Out;
 }
@@ -55,6 +57,7 @@ struct PS_IN
 {
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0;
+    float4 vColor : COLOR0;
 };
 
 struct PS_OUT
@@ -68,7 +71,12 @@ PS_OUT PS_MAIN(PS_IN In)
     PS_OUT Out = (PS_OUT) 0;
 
 	/* 첫번째 인자의 방식으로 두번째 인자의 위치에 있는 픽셀의 색을 얻어온다. */
-    Out.vColor = g_Texture.Sample(LinearSampler, In.vTexcoord);
+    Out.vColor = g_Texture.Sample(PointSampler, In.vTexcoord);
+
+    if (Out.vColor.a < 0.8f)
+        discard;
+
+    Out.vColor.a = In.vColor.a;
 
     return Out;
 }
@@ -81,7 +89,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+        SetBlendState(BS_AlphaBlend_Add, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
 		/* 렌더스테이츠 */
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;

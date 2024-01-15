@@ -16,11 +16,17 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_GamePlay::Initialize()
 {
+	if (FAILED(Ready_LightDesc()))
+		return E_FAIL;
+
 	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
 		return E_FAIL;
 
 	//if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 	//	return E_FAIL;
+
+	if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))
+		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;
@@ -42,6 +48,11 @@ HRESULT CLevel_GamePlay::Render()
 {
 	SetWindowText(g_hWnd, TEXT("게임플레이레벨입니다."));
 
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_LightDesc()
+{
 	return S_OK;
 }
 
@@ -90,6 +101,17 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const wstring& strLayerTag)
 		return E_FAIL;
 
 	pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(43.88f, 0.f, 18.55f, 1.f));
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Layer_Effect(const wstring& strLayerTag)
+{
+	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Particle_Blue"))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Particle_Red"))))
+		return E_FAIL;
 
 	return S_OK;
 }

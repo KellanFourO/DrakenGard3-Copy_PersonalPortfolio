@@ -238,6 +238,8 @@
     <ClInclude Include="..\Public\Imgui_Manager.h" />
     <ClInclude Include="..\Public\MonsterPart_EN00_Weapon.h" />
     <ClInclude Include="..\Public\Monster_EN00.h" />
+    <ClInclude Include="..\Public\Particle_Blue.h" />
+    <ClInclude Include="..\Public\Particle_Red.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\PlayerGroundStates.h" />
     <ClInclude Include="..\Public\PlayerPart_Body.h" />
@@ -260,7 +262,6 @@
     <ClInclude Include="..\public\SkyBox.h" />
     <ClInclude Include="..\Public\SkyDome.h" />
     <ClInclude Include="..\Public\Stage1Map_1.h" />
-    <ClInclude Include="..\public\TestSnow.h" />
     <ClInclude Include="..\Public\TestTree.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
@@ -334,6 +335,8 @@
     <ClCompile Include="..\Private\Imgui_Manager.cpp" />
     <ClCompile Include="..\Private\MonsterPart_EN00_Weapon.cpp" />
     <ClCompile Include="..\Private\Monster_EN00.cpp" />
+    <ClCompile Include="..\Private\Particle_Blue.cpp" />
+    <ClCompile Include="..\Private\Particle_Red.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\PlayerPart_Body.cpp" />
     <ClCompile Include="..\Private\PlayerPart_Weapon.cpp" />
@@ -355,7 +358,6 @@
     <ClCompile Include="..\private\SkyBox.cpp" />
     <ClCompile Include="..\Private\SkyDome.cpp" />
     <ClCompile Include="..\Private\Stage1Map_1.cpp" />
-    <ClCompile Include="..\Private\TestSnow.cpp" />
     <ClCompile Include="..\Private\TestTree.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
@@ -383,13 +385,38 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimModel.hlsl" />
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_Model.hlsl" />
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_Particle_Rect.hlsl" />
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCube.hlsl" />
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxField.hlsl" />
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimModel.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Model.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Particle_Point.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Particle_Rect.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCube.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxField.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

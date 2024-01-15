@@ -23,6 +23,8 @@
 #include "Environment_BrokenBox1.h"
 #include "Environment_BrokenBox2.h"
 
+//!이펙트
 
 //! 파티클
-#include "TestSnow.h"
+#include "Particle_Blue.h"
+#include "Particle_Red.h"

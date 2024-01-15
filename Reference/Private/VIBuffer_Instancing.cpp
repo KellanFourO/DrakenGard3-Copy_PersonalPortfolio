@@ -10,17 +10,23 @@ CVIBuffer_Instancing::CVIBuffer_Instancing(const CVIBuffer_Instancing& rhs)
 	, m_iNumInstance(rhs.m_iNumInstance)
 	, m_iInstanceStride(rhs.m_iInstanceStride)
 	, m_iIndexCountPerInstance(rhs.m_iIndexCountPerInstance)
+	, m_RandomNumber(rhs.m_RandomNumber)
+	, m_pSpeeds(rhs.m_pSpeeds)
+	, m_pLifeTimes(rhs.m_pLifeTimes)
+	, m_InstancingDesc(rhs.m_InstancingDesc)
 {
 }
 
 HRESULT CVIBuffer_Instancing::Initialize_Prototype()
 {
+	m_RandomNumber = mt19937_64(m_RandomDevice());
+
 	return S_OK;
 }
 
 HRESULT CVIBuffer_Instancing::Initialize(void* pArg)
 {
-	INSTANCING_DESC		InstancingDesc = *(INSTANCING_DESC*)pArg;
+	m_InstancingDesc = *(INSTANCING_DESC*)pArg;
 
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
 
@@ -35,12 +41,36 @@ HRESULT CVIBuffer_Instancing::Initialize(void* pArg)
 
 	VTXINSTANCE* pVertices = new VTXINSTANCE[m_iNumInstance];
 
+	_vector vDir = XMVectorSet(1.f, 0.f, 0.f, 0.f); //! 임의의 방향벡터
+	_float	fLength = { 0.0f };
+
+	uniform_real_distribution<float>	RandomRange(0.1f, m_InstancingDesc.fRange);
+	uniform_real_distribution<float>	RandomRotation(0.0f, XMConvertToRadians(360.0f));
+	uniform_real_distribution<float>	RandomScale(m_InstancingDesc.vScale.x, m_InstancingDesc.vScale.y);
+	uniform_real_distribution<float>	RandomSpeed(m_InstancingDesc.vSpeed.x, m_InstancingDesc.vSpeed.y); //! float2를 이용하여 랜덤으로 설정할 크기와 속도의 최소, 최대값을 받아서 뽑아주자
+	uniform_real_distribution<float>	RandomLifeTime(m_InstancingDesc.vLifeTime.x, m_InstancingDesc.vLifeTime.y);
+
 	for (size_t i = 0; i < m_iNumInstance; i++) //! 인스턴스 개수만큼 상태행렬 만들어주자
 	{
-		pVertices[i].vRight = _float4(1.f, 0.f, 0.f, 0.f);
-		pVertices[i].vUp = _float4(0.f, 1.f, 0.f, 0.f);
-		pVertices[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
-		pVertices[i].vPosition = _float4(rand() % 10, rand() % 10, rand() % 10, 1.f);
+		m_pSpeeds[i] = RandomSpeed(m_RandomNumber);
+		m_pLifeTimes[i] = RandomLifeTime(m_RandomNumber);
+
+		_float	fScale = RandomScale(m_RandomNumber);
+
+		pVertices[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
+		pVertices[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
+		pVertices[i].vLook = _float4(0.f, 0.f, 1.0f, 0.f);
+
+		vDir = XMVector3Normalize(vDir) * RandomRange(m_RandomNumber);
+
+		_vector		vRotation = XMQuaternionRotationRollPitchYaw(RandomRotation(m_RandomNumber), RandomRotation(m_RandomNumber), RandomRotation(m_RandomNumber));
+
+		_matrix		RotationMatrix = XMMatrixRotationQuaternion(vRotation);
+
+		XMStoreFloat4(&pVertices[i].vPosition, XMLoadFloat3(&m_InstancingDesc.vCenter) + XMVector3TransformNormal(vDir, RotationMatrix));
+		pVertices[i].vPosition.w = 1.f;
+		pVertices[i].vColor = _float4(1.f, 1.f, 1.f, 1.f);
+
 	}
 
 	m_SubResourceData.pSysMem = pVertices;
@@ -89,6 +119,31 @@ HRESULT CVIBuffer_Instancing::Bind_VIBuffers()
 	return S_OK;
 }
 
+void CVIBuffer_Instancing::Update(_float fTimeDelta)
+{
+	m_fAge += fTimeDelta;
+
+	D3D11_MAPPED_SUBRESOURCE			SubResource = {};
+
+	m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
+
+	VTXINSTANCE* pVertices = ((VTXINSTANCE*)SubResource.pData);
+
+	for (size_t i = 0; i < m_iNumInstance; i++)
+	{
+		_float		fAlpha = max(m_pLifeTimes[i] - m_fAge, 0.f);
+
+		pVertices[i].vColor.w = fAlpha;
+
+		_vector		vDir = XMVector3Normalize(XMLoadFloat4(&pVertices[i].vPosition) - XMLoadFloat3(&m_InstancingDesc.vCenter));
+		vDir = XMVectorSetW(vDir, 0.f);
+
+		XMStoreFloat4(&pVertices[i].vPosition, XMLoadFloat4(&pVertices[i].vPosition) + vDir * m_pSpeeds[i] * fTimeDelta);
+	}
+
+	m_pContext->Unmap(m_pVBInstance, 0);
+}
+
 HRESULT CVIBuffer_Instancing::Render()
 {
 	//! 드로우인덱스인스턴스 함수를 사용하는 것을 볼 수 있다.
@@ -102,6 +157,13 @@ HRESULT CVIBuffer_Instancing::Render()
 void CVIBuffer_Instancing::Free()
 {
 	__super::Free();
+
+	if (false == m_isCloned)
+	{
+		Safe_Delete_Array(m_pSpeeds);
+		Safe_Delete_Array(m_pLifeTimes);
+	}
+
 
 	Safe_Release(m_pVBInstance);
 }

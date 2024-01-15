@@ -354,13 +354,16 @@
     <ClInclude Include="..\public\VIBuffer_Instancing.h">
       <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\VIBuffer_Particle_Rect.h">
-      <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Point</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Field.h">
       <Filter>01. Utility\03. Components\00. VIBuffer\Field</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Collision_Manager.h" />
+    <ClInclude Include="..\public\VIBuffer_Particle_Rect.h">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Rect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Particle_Point.h">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Point</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -507,13 +510,16 @@
     <ClCompile Include="..\Private\VIBuffer_Instancing.cpp">
       <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\VIBuffer_Particle_Rect.cpp">
-      <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Point</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Field.cpp">
       <Filter>01. Utility\03. Components\00. VIBuffer\Field</Filter>
     </ClCompile>
     <ClCompile Include="Collision_Manager.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Particle_Rect.cpp">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Rect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Particle_Point.cpp">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Point</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Navigation.hlsl">

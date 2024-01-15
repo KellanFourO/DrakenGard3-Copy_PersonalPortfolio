@@ -13,18 +13,20 @@ CVIBuffer_Particle_Rect::CVIBuffer_Particle_Rect(const CVIBuffer_Particle_Rect& 
 
 HRESULT CVIBuffer_Particle_Rect::Initialize_Prototype(_uint iNumInstance)
 {
-	//!정점
+
+
 	m_iNumVertexBuffers = 2;
 	m_iNumVertices = 4;
 	m_iStride = sizeof(VTXPOSTEX);
-
-	//! 인스턴스
 	m_iInstanceStride = sizeof(VTXINSTANCE);
 	m_iIndexCountPerInstance = 6;
 	m_iNumInstance = iNumInstance;
 
-	m_iNumIndices = 6 * iNumInstance; //! 인덱스를 인스턴스 개수만큼 곱해주는 것을 볼 수 있다
-	m_iIndexStride = 2; //! 나중에 개수 많아지면 이것도 4가 되야 할 거야.
+	m_pSpeeds = new _float[m_iNumInstance];
+	m_pLifeTimes = new _float[m_iNumInstance];
+
+	m_iNumIndices = 6 * iNumInstance;
+	m_iIndexStride = 2;
 	m_eIndexFormat = m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
 	m_eTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
@@ -110,6 +112,11 @@ HRESULT CVIBuffer_Particle_Rect::Initialize(void* pArg)
 
 	return S_OK;
 }
+
+//void CVIBuffer_Particle_Rect::Update(_float fTimeDelta)
+//{
+//
+//}
 
 CVIBuffer_Particle_Rect* CVIBuffer_Particle_Rect::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iNumInstance)
 {

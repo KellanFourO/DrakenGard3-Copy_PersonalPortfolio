@@ -376,8 +376,13 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 
 	//! For.Prototype_Component_VIBuffer_Particle_Rect 
 		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Particle_Rect"),
-			CVIBuffer_Particle_Rect::Create(m_pDevice, m_pContext, 20))))
+			CVIBuffer_Particle_Rect::Create(m_pDevice, m_pContext, 100))))
 			return E_FAIL;
+
+	//! For.Prototype_Component_VIBuffer_Particle_Point 
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Particle_Point"),
+		CVIBuffer_Particle_Point::Create(m_pDevice, m_pContext, 100))))
+		return E_FAIL;
 		
 
 	lstrcpy(m_szLoadingText, TEXT("셰이더를(을) 로드하는 중입니다."));
@@ -407,6 +412,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	/* For.Prototype_Component_Shader_Particle_Rect */
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_Particle_Rect"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Particle_Rect.hlsl"), VTX_PARTICLE_RECT::Elements, VTX_PARTICLE_RECT::iNumElements))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Shader_Particle_Point */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_Particle_Point"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Particle_Point.hlsl"), VTX_PARTICLE_POINT::Elements, VTX_PARTICLE_POINT::iNumElements))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("네비게이션(을) 로드하는 중입니다."));
@@ -502,17 +512,21 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		return E_FAIL;
 
 
-	lstrcpy(m_szLoadingText, TEXT("환경 원형(을) 로드하는 중입니다."));
+	lstrcpy(m_szLoadingText, TEXT("이펙트 원형(을) 로드하는 중입니다."));
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment"), CEnvironment_Object::Create(m_pDevice,m_pContext, eLevel)));
 
-	////! For.Prototype_GameObject_Environment_Barricade #환경 바리케이드_AddPrototype
-	//FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment_Barricade"), CEnvironment_Barricade::Create(m_pDevice, m_pContext, eLevel), true, false));
+	/* For.Prototype_GameObject_Particle_Blue */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Particle_Blue"),
+		CParticle_Blue::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
 
-	////! For.Prototype_GameObject_Environment_BrokenBarricade #환경 부서진 바리케이드_AddPrototype
-	//FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment_BrokenBarricade"), CEnvironment_BrokenBarricade::Create(m_pDevice, m_pContext, eLevel), true, false));
+	/* For.Prototype_GameObject_Particle_Red */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Particle_Red"),
+		CParticle_Red::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
 
 
-
+	lstrcpy(m_szLoadingText, TEXT("카메라 원형(을) 로드하는 중입니다."));
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Target"),
 		CCamera_Target::Create(m_pDevice, m_pContext, eLevel))))
 		return E_FAIL;

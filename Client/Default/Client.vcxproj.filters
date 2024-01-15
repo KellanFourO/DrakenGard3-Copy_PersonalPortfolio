@@ -64,12 +64,6 @@
     <Filter Include="02. GameObjects\02. Camera\Target">
       <UniqueIdentifier>{f52a89cb-a66a-433e-bd0c-c4d4789f5bac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\97. TestObject">
-      <UniqueIdentifier>{1d806d1d-c2ad-4023-9749-38b852409390}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\97. TestObject\TestSnow">
-      <UniqueIdentifier>{9565376f-b8e9-4a12-9f62-1c1334b1176b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="96. Tool\01. Field">
       <UniqueIdentifier>{50e8fee4-a339-490f-820f-e49add5e08f3}</UniqueIdentifier>
     </Filter>
@@ -264,6 +258,18 @@
     </Filter>
     <Filter Include="02. GameObjects\04. SkyDome">
       <UniqueIdentifier>{a58e2906-de3f-4288-91fc-29bfe77fc500}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects">
+      <UniqueIdentifier>{d6f3bc27-28ee-4805-8fb2-8f76871241b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Particles">
+      <UniqueIdentifier>{c3303b44-6d50-4ae9-a9fc-347744853c2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Particles\Blue">
+      <UniqueIdentifier>{f143126c-bc3c-46b8-9036-13511a79211f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Particles\Red">
+      <UniqueIdentifier>{55049603-f789-48d4-9a73-a0c3aa9b793d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -528,9 +534,6 @@
     <ClInclude Include="..\Public\Camera_Target.h">
       <Filter>02. GameObjects\02. Camera\Target</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\TestSnow.h">
-      <Filter>02. GameObjects\97. TestObject\TestSnow</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Stage1Map_1.h">
       <Filter>02. GameObjects\98. NonAnimObject\00. Map\Stage1\Map1</Filter>
     </ClInclude>
@@ -572,6 +575,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\SkyDome.h">
       <Filter>02. GameObjects\04. SkyDome</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Particle_Blue.h">
+      <Filter>02. GameObjects\05. Effects\Particles\Blue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Particle_Red.h">
+      <Filter>02. GameObjects\05. Effects\Particles\Red</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -797,9 +806,6 @@
     <ClCompile Include="..\Private\Camera_Target.cpp">
       <Filter>02. GameObjects\02. Camera\Target</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\TestSnow.cpp">
-      <Filter>02. GameObjects\97. TestObject\TestSnow</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Stage1Map_1.cpp">
       <Filter>02. GameObjects\98. NonAnimObject\00. Map\Stage1\Map1</Filter>
     </ClCompile>
@@ -835,6 +841,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\SkyDome.cpp">
       <Filter>02. GameObjects\04. SkyDome</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Particle_Blue.cpp">
+      <Filter>02. GameObjects\05. Effects\Particles\Blue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Particle_Red.cpp">
+      <Filter>02. GameObjects\05. Effects\Particles\Red</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -875,6 +887,9 @@
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxField.hlsl">
+      <Filter>97. ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Particle_Point.hlsl">
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>
