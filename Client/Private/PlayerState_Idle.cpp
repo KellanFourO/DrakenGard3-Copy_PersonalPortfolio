@@ -67,15 +67,15 @@ void CPlayerState_Idle::KeyInput(const _float& fTimeDelta)
 		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Walk"));
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_SPACE))
-	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_AIR, TEXT("PlayerState_Jump"));
-	}
+	//if (m_pGameInstance->Key_Down(DIK_SPACE))
+	//{
+	//	m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_AIR, TEXT("PlayerState_Jump"));
+	//}
 
-	if (m_pGameInstance->Mouse_Down(DIM_LB))
-	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
-	}
+	//if (m_pGameInstance->Mouse_Down(DIM_LB))
+	//{
+	//	m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
+	//}
 }
 
 CPlayerState_Idle* CPlayerState_Idle::Create(CPlayer* pPlayer)

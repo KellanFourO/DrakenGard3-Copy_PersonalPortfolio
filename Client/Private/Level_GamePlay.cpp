@@ -129,12 +129,46 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const wstring& strLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_Monster(const wstring& strLayerTag)
 {
-	for (_int i = 0; i < 5; ++i)
-	{
-		if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Monster_EN00"))))
-		return E_FAIL;
-	}
+	//for (_int i = 0; i < 5; ++i)
+	//{
+	//	if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Monster_EN00"))))
+	//	return E_FAIL;
+	//}
 	
+	json LoadJson;
+
+	CJson_Utility::Load_Json("../Bin/DataFiles/Stage1Monster.json", LoadJson);
+
+	_int LoadSize = LoadJson.size();
+
+	for (_int i = 0; i < LoadSize; ++i)
+	{
+		CGameObject* pGameObject = nullptr;
+
+		
+		
+		wstring LayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
+		wstring ObjectTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
+
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, LayerTag, ObjectTag, nullptr, &pGameObject)))
+			return E_FAIL;
+
+		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
+
+		_float4x4 WorldMatrix;
+
+		for (_int i = 0; i < 4; ++i)
+		{
+			for (_int j = 0; j < 4; ++j)
+			{
+				WorldMatrix.m[i][j] = TransformJson[i][j];
+			}
+		}
+
+		pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
+	}
+
 	return S_OK;
 }
 

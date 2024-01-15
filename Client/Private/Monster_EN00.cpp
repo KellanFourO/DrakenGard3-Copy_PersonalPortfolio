@@ -202,6 +202,13 @@ void CMonster_EN00::Init_Desc()
 
 HRESULT CMonster_EN00::Ready_Components()
 {
+	CNavigation::NAVI_DESC		NaviDesc = {};
+	NaviDesc.iCurrentIndex = 0;
+
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Navigation"),
+		TEXT("Com_Navigation"), reinterpret_cast<CComponent**>(&m_pNavigationCom), &NaviDesc)))
+		return E_FAIL;
+
 	/* For.Com_Shader */ //#¸ðµ¨¼ÎÀÌ´õ´Â_Prototype_Component_Shader_Model
 	//Prototype_Component_Shader_AnimModel
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_AnimModel"),
@@ -272,6 +279,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree()
 	EN00_BlackBoard->setCollider(m_pColliderCom);
 	EN00_BlackBoard->setTransform(m_pTransformCom);
 	EN00_BlackBoard->setGameInstance(m_pGameInstance);
+	EN00_BlackBoard->setNavigation(m_pNavigationCom);
 
 	
 

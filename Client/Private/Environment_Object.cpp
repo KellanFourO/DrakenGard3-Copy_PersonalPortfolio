@@ -10,7 +10,9 @@ CEnvironment_Object::CEnvironment_Object(ID3D11Device* pDevice, ID3D11DeviceCont
 
 CEnvironment_Object::CEnvironment_Object(const CEnvironment_Object& rhs)
 	: CNonAnimObject(rhs)
+	, m_pNavigationCom(rhs.m_pNavigationCom)
 {
+	Safe_AddRef(m_pNavigationCom);
 }
 
 HRESULT CEnvironment_Object::Initialize_Prototype(LEVEL eLevel)
@@ -18,6 +20,10 @@ HRESULT CEnvironment_Object::Initialize_Prototype(LEVEL eLevel)
 	m_eCurrentLevelID = eLevel;
 
 	
+	//! For.Com_Navigation
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Navigation"),
+		TEXT("Com_Navigation"), reinterpret_cast<CComponent**>(&m_pNavigationCom))))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -98,10 +104,7 @@ HRESULT CEnvironment_Object::Ready_Components()
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
-	//! For.Com_Navigation
-	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Navigation"),
-		TEXT("Com_Navigation"), reinterpret_cast<CComponent**>(&m_pNavigationCom))))
-		return E_FAIL;
+	
 
 	return S_OK;
 }
@@ -114,6 +117,7 @@ HRESULT CEnvironment_Object::Bind_ShaderResources()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ))))
 		return E_FAIL;
+	
 
 	return S_OK;
 }

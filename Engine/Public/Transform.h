@@ -119,6 +119,8 @@ public:
 	
 
 	void	Go_Target(_fvector vTargetPos, _float fTimeDelta, _float fSpare = 0.1f);
+	void	Go_Target_Navi(_fvector vTargetPos, _float fTimeDelta, class CNavigation* pNavigation, _float fSpare = 0.1f);
+
 	void	Look_At(_fvector vTargetPos);
 	void	Look_At_OnLand(_fvector vTargetPos);
 	_bool	HasArrived(const DirectX::XMFLOAT3& _vCurrentPos, const DirectX::XMFLOAT3& _vTargetPos, _float fArrivalThreshold);

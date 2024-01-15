@@ -2269,19 +2269,70 @@ void CImgui_Manager::Create_Navi_Mode_Tick()
 
 	else
 	{
+		
+		_int iPickedSize = m_vecPickingListBox.size();
+
+		static _int iPickingIndex = 0;
+
+		if (!m_vecPickedPoints.empty())
+		{
+			if (ImGui::BeginListBox(u8""))
+			{
+				for (_int i = 0; i < iPickedSize; ++i)
+				{
+					const _bool isSelected = (m_iNaviListBoxIndex == i);
+
+					if (ImGui::Selectable(m_vecPickingListBox[i].c_str(), isSelected))
+					{
+						m_iNaviListBoxIndex = i;
+
+						if (isSelected)
+							ImGui::SetItemDefaultFocus();
+					}
+				}
+
+				ImGui::EndListBox();
+			}
+
+			if (m_iNaviListBoxIndex != -1)
+			{
+				ImGui::Text(u8"픽킹 X : %f", m_vecPickedPoints[m_iNaviListBoxIndex].x);
+				ImGui::Text(u8"픽킹 Y : %f", m_vecPickedPoints[m_iNaviListBoxIndex].y);
+				ImGui::Text(u8"픽킹 Z : %f", m_vecPickedPoints[m_iNaviListBoxIndex].z);
+			}
+
+			if (ImGui::Button(u8"픽킹인덱스 삭제"))
+			{
+				if (m_iNaviListBoxIndex < m_vecPickedPoints.size()) {
+					m_vecPickedPoints.erase(m_vecPickedPoints.begin() + m_iNaviListBoxIndex);
+					m_vecPickingListBox.erase(m_vecPickingListBox.begin() + m_iNaviListBoxIndex);
+					
+					if(m_vecPickingListBox.size() == 0)
+						m_iNaviListBoxIndex = -1;
+					else
+						m_iNaviListBoxIndex = m_vecPickingListBox.size() - 1;
+					
+				}
+			}
+		}
+		
+		
+		
+
 		if (ImGui::Button(u8"생성") )
 		{
 			if (3 > m_iCurrentPickingIndex)
 				return;
 
-			_int iPickedSize = m_vecPickedPoints.size();
+			
 
 			vector<double> fPoints; 
-			fPoints.reserve(iPickedSize * 2);
+			//fPoints.reserve(iPickedSize * 2);
 
 			for (_int i = 0; i < iPickedSize; ++i)
 			{
 				fPoints.push_back(m_vecPickedPoints[i].x);
+				
 				fPoints.push_back(m_vecPickedPoints[i].z);
 			}
 
@@ -2298,14 +2349,7 @@ void CImgui_Manager::Create_Navi_Mode_Tick()
 				//	d.coords[2 * d.triangles[i + 1] + 1],//ty1
 				//	d.coords[2 * d.triangles[i + 2]],    //tx2
 				//	d.coords[2 * d.triangles[i + 2] + 1] //ty2
-
-				//! 픽포인츠 사이즈가  4
-				//! 트라이앵글 사이즈가 6
-				//! 첫번째 틱 0, 1, 2
-				//! 두번째 틱
-				//! 3, 4, 5 여기서 터지는거
-
-				_float3 points[3] = { m_vecPickedPoints[i], m_vecPickedPoints[i + 1], m_vecPickedPoints[i + 2] };
+				_float3 points[3] = { m_vecPickedPoints[d.triangles[i]], m_vecPickedPoints[d.triangles[i + 1]], m_vecPickedPoints[d.triangles[i + 2]] };
 
 				Set_CCW(points);
 
@@ -2317,46 +2361,60 @@ void CImgui_Manager::Create_Navi_Mode_Tick()
 			Reset_NaviPicking();
 		}
 
-		if (m_pGameInstance->Mouse_Down(DIM_LB) && true == ImGui_MouseInCheck())
+		ImGui::Checkbox(u8"픽킹모드", &m_bPickingNaviMode);
+		
+
+		if (m_pGameInstance->Mouse_Down(DIM_LB) && true == ImGui_MouseInCheck() && true == m_bPickingNaviMode)
 		{
 			_int index = 0;
 			
 			_float3 fPickedPos = { 0.f, 0.f, 0.f };
 
-			_int	iNonAnimObjectSize = m_vecNonAnimObjects.size();
-
-			_int	iIndex = 0;
-			_float fHighestYValue = -FLT_MAX;
-			_float3 vHighestPickesPos = {};
-			_bool	bIsPicking = false;
-			
-			for (_int i = 0; i < iNonAnimObjectSize; ++i)
+			if (m_pNaviTargetObject->Picking(_float3(), dynamic_cast<CModel*>(m_pNaviTargetObject->Find_Component(TEXT("Com_Model"))), &fPickedPos))
 			{
-				_float3 vPickedPos = {};
-
-				if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos) && true == ImGui_MouseInCheck())
-				{
-					_float3 vDestPos;
-					XMStoreFloat3(&vDestPos, m_vecNonAnimObjects[i]->Get_Transform()->Get_State(CTransform::STATE_POSITION));
-
-					if (vDestPos.y > fHighestYValue)
-					{
-						fHighestYValue = vDestPos.y;
-						iIndex = i;
-						vHighestPickesPos = vPickedPos;
-						bIsPicking = true;
-					}
-				}
-			}
-
-			if (true == bIsPicking)
-			{
-				Find_NearPointPos(&vHighestPickesPos);
-				m_vecPickedPoints.push_back(vHighestPickesPos);
+				Find_NearPointPos(&fPickedPos);
+				m_vecPickedPoints.push_back(fPickedPos);
+				m_vecPickingListBox.push_back(to_string(m_iNaviPickingIndex));
 				++m_iCurrentPickingIndex;
-
-				m_fNaviPickingPos = vHighestPickesPos;
+				++m_iNaviPickingIndex;
+				m_fNaviPickingPos = fPickedPos;
 			}
+// 			_int	iNonAnimObjectSize = m_vecNonAnimObjects.size();
+// 
+// 			_int	iIndex = 0;
+// 			_float fHighestYValue = -FLT_MAX;
+// 			_float3 vHighestPickesPos = {};
+// 			_bool	bIsPicking = false;
+// 			
+// 			for (_int i = 0; i < iNonAnimObjectSize; ++i)
+// 			{
+// 				_float3 vPickedPos = {};
+// 
+// 				if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos) && true == ImGui_MouseInCheck())
+// 				{
+// 					_float3 vDestPos;
+// 					XMStoreFloat3(&vDestPos, m_vecNonAnimObjects[i]->Get_Transform()->Get_State(CTransform::STATE_POSITION));
+// 
+// 					if (vDestPos.y > fHighestYValue) //! 객체의 y값이  이전 객체의  y값보다 크다면
+// 					{
+// 						fHighestYValue = vDestPos.y; //! 이전객체의 y값은 현재 객체의 y값이 된다.
+// 						iIndex = i;
+// 						vHighestPickesPos = vPickedPos;
+// 						bIsPicking = true;
+// 					}
+// 				}
+// 			}
+// 
+// 			if (true == bIsPicking)
+// 			{
+// 				//! 반복문이 끝난 후 가장 y값이 높은 객체의 픽킹 위치를 기준으로
+// 				
+// 				Find_NearPointPos(&vHighestPickesPos);
+// 				m_vecPickedPoints.push_back(vHighestPickesPos);
+// 				++m_iCurrentPickingIndex;
+// 
+// 				m_fNaviPickingPos = vHighestPickesPos;
+// 			}
 		}
 
 		ImGui::NewLine();
@@ -2387,28 +2445,36 @@ void CImgui_Manager::Delete_Navi_Mode_Tick()
 		_float3 vHighestPickesPos = {};
 		_bool	bIsPicking = false;
 
-		for (_int i = 0; i < iNonAnimObjectSize; ++i)
+		//for (_int i = 0; i < iNonAnimObjectSize; ++i)
+		//{
+		//	_float3 vPickedPos = {};
+		//
+		//	if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos) && true == ImGui_MouseInCheck())
+		//	{
+		//		_float3 vDestPos;
+		//		XMStoreFloat3(&vDestPos, m_vecNonAnimObjects[i]->Get_Transform()->Get_State(CTransform::STATE_POSITION));
+		//
+		//		if (vDestPos.y > fHighestYValue)
+		//		{
+		//			fHighestYValue = vDestPos.y;
+		//			iIndex = i;
+		//			vHighestPickesPos = vPickedPos;
+		//			bIsPicking = true;
+		//		}
+		//	}
+		//}
+
+		if (m_pNaviTargetObject->Picking(_float3(), dynamic_cast<CModel*>(m_pNaviTargetObject->Find_Component(TEXT("Com_Model"))), &fPickedPos))
 		{
-			_float3 vPickedPos = {};
+			Find_NearPointPos(&fPickedPos);
 
-			if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos) && true == ImGui_MouseInCheck())
-			{
-				_float3 vDestPos;
-				XMStoreFloat3(&vDestPos, m_vecNonAnimObjects[i]->Get_Transform()->Get_State(CTransform::STATE_POSITION));
-
-				if (vDestPos.y > fHighestYValue)
-				{
-					fHighestYValue = vDestPos.y;
-					iIndex = i;
-					vHighestPickesPos = vPickedPos;
-					bIsPicking = true;
-				}
-			}
+			m_fNaviPickingPos = fPickedPos;
+			bIsPicking = true;
 		}
 
 		if (true == bIsPicking)
 		{
-			CCell* pTargetCell = Find_NearCell(vHighestPickesPos);
+			CCell* pTargetCell = Find_NearCell(fPickedPos);
 
 			if(nullptr == pTargetCell)
 				return;
@@ -2448,6 +2514,10 @@ void CImgui_Manager::Reset_NaviPicking()
 {
 	m_iCurrentPickingIndex = 0;
 	m_vecPickedPoints.clear();
+	m_vecPickingListBox.clear();
+
+	m_iNaviListBoxIndex = 0;
+	m_iNaviPickingIndex = 0;
 }
 
 void CImgui_Manager::Find_NearPointPos(_float3* fPickedPos)

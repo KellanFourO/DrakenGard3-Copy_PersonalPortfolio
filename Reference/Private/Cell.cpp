@@ -111,6 +111,28 @@ _bool CCell::isIn(_fvector vPosition, _fmatrix WorldMatrix, _int* pNeighborIndex
 	return true;
 }
 
+//void CCell::Compute_Height(_float3& vPosition, _float& fY)
+//{
+//	_vector vPlane = {};
+//
+//	_vector vPointA = XMLoadFloat3(&m_vPoints[POINT_A]);
+//
+//	_vector vPointB =
+//	_vector vPointC =
+//		, XMLoadFloat3(&m_vPoints[POINT_B]), XMLoadFloat3(&m_vPoints[POINT_C]
+//
+//	vPlane = XMPlaneFromPoints(XMLoadFloat3(&m_vPoints[POINT_A]), XMLoadFloat3(&m_vPoints[POINT_B]), XMLoadFloat3(&m_vPoints[POINT_C]));
+//
+//	_float4 vResultPlane = {};
+//
+//	XMStoreFloat4(&vResultPlane, vPlane);
+//
+//	if (vResultPlane.y > 0.f)
+//	{
+//		fY = (-resultPlane.x * vPosition.x - resultPlane.z * vPosition.z - resultPlane.w) / resultPlane.y;
+//	}
+//}
+
 #ifdef _DEBUG
 HRESULT CCell::Render()
 {

@@ -6,6 +6,7 @@ BEGIN(Engine)
 class CShader;
 class CCollider;
 class CModel;
+class CNavigation;
 END
 
 
@@ -38,6 +39,7 @@ protected:
 	CShader*							m_pShaderCom	= { nullptr };
 	CModel*								m_pModelCom		= { nullptr }; //#버퍼컴에서_모델컴으로_변경됨
 	CCollider*							m_pColliderCom	= { nullptr };
+	CNavigation*						m_pNavigationCom = { nullptr };
 	shared_ptr<BrainTree::BehaviorTree> m_BehaviorTree	= { nullptr };
 
 private:

@@ -45,6 +45,9 @@ public:
 
 public:
 	const _int		Find_Cell(_float3 vWorldPos);
+	
+
+	_float Compute_Height(_float3 vPosition);
 
 private:
 	vector<class CCell*>	m_Cells;

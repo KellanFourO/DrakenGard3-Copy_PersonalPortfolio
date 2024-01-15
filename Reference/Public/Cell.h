@@ -15,8 +15,12 @@ private:
 
 public:
 	const _float3*	Get_Point(POINT ePoint) const { return &m_vPoints[ePoint]; }
-	_int			Get_Index() { return m_iIndex; }
 	const _float3*  Get_Points() { return m_vPoints; }
+
+	const _float3*	Get_Normal(LINE eLine) const { return &m_vPoints[eLine]; }
+	const _float3*	Get_Normals() { return m_vNormals; }
+
+	_int			Get_Index() { return m_iIndex; }
 
 public:
 	HRESULT Initialize(const _float3* pPoints, _uint iIndex);
@@ -24,6 +28,7 @@ public:
 	_bool	isIn(_fvector vPosition, _fmatrix WorldMatrix, _int* pNeighborIndex);
 	void	Reset_Line(LINE eLine) { m_iNeighbors[eLine] = -1; }
 
+	//void    Compute_Height(_float3& vPosition, _float& fY);
 	void	SetUp_Neighbor(LINE eLine, CCell* pNeighborCell)
 	{
 		m_iNeighbors[eLine] = pNeighborCell->m_iIndex;

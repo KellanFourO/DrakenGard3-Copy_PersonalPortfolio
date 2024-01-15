@@ -19,6 +19,7 @@ class CTransform;
 class CRigidBody;
 class CGameObject;
 class CGameInstance;
+class CNavigation;
 END
 
 
@@ -97,6 +98,7 @@ public:
     Engine::CCollider* GetCollider() { return pCollider; }
     Engine::CTransform* GetTransform() { return pTransform; }
     Engine::CRigidBody* GetRigidBody() { return pRigidBody; }
+    Engine::CNavigation* GetNavigation() { return pNavigation; }
     Engine::CGameInstance* GetGameInstance() { return pGameInstance; }
 
     void setTimeDelta(float& _fTimeDelta) { fTimeDelta = _fTimeDelta; }
@@ -108,6 +110,7 @@ public:
     void setCollider(Engine::CCollider* _pCollider) { pCollider = _pCollider; }
     void setTransform(Engine::CTransform* _pTransform) { pTransform = _pTransform; }
     void setRigidBody(Engine::CRigidBody* _pRigidBody) { pRigidBody = _pRigidBody; }
+    void setNavigation(Engine::CNavigation* _pNavigation) { pNavigation = _pNavigation; }
     void setGameInstance(Engine::CGameInstance* _pGameInstance) { pGameInstance = _pGameInstance; }
 
     using Ptr = std::shared_ptr<Blackboard>;
@@ -133,6 +136,7 @@ protected:
     Engine::CCollider*        pCollider = { nullptr };
     Engine::CTransform*       pTransform = { nullptr };
     Engine::CRigidBody*       pRigidBody = { nullptr };
+    Engine::CNavigation*      pNavigation = { nullptr };
     Engine::CGameInstance*    pGameInstance = { nullptr };
     //std::unordered_map<std::string, Engine::CPartObject*> pParts;
 };

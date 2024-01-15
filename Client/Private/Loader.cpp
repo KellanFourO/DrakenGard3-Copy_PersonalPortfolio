@@ -149,8 +149,8 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Weapon1"),
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Player_Weapon1"), pFilePathData), PivotMatrix)));
-
-
+	
+	
 	lstrcpy(m_szLoadingText, TEXT("몬스터 모델(을) 로드하는 중입니다."));
 	
 	////!Prototype_Component_Model_Monster_EN00
@@ -422,7 +422,7 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	lstrcpy(m_szLoadingText, TEXT("네비게이션(을) 로드하는 중입니다."));
 	//! For.Prototype_Component_Navigation
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Navigation"),
-		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/DataFiles/Test0116.dat")))))
+		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/DataFiles/25.dat")))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("리지드바디를(을) 로드하는 중입니다."));

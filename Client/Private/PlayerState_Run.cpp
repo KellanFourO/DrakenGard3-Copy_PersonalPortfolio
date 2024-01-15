@@ -123,15 +123,15 @@ void CPlayerState_Run::KeyInput(const _float& fTimeDelta)
         m_fLastInputTime = fTimeDelta;
     }
 
-	if (m_pGameInstance->Key_Down(DIK_SPACE))
-	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_AIR, TEXT("PlayerState_Jump"));
-	}
-
-	if (m_pGameInstance->Mouse_Down(DIM_LB))
-	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
-	}
+	//if (m_pGameInstance->Key_Down(DIK_SPACE))
+	//{
+	//	m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_AIR, TEXT("PlayerState_Jump"));
+	//}
+    //
+	//if (m_pGameInstance->Mouse_Down(DIM_LB))
+	//{
+	//	m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
+	//}
 }
 
 CPlayerState_Run* CPlayerState_Run::Create(CPlayer* pPlayer)

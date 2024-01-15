@@ -210,12 +210,17 @@ private:
 	_int						m_iTargetIndex = 0;
 	_int						m_iNaviIndex = 0;
 	_float3						m_fNaviPickingPos;
-	_float						m_fCombinationRange = 2.f; //! 결합 범위
+	_float						m_fCombinationRange = 3.f; //! 결합 범위
 
 	class CGameObject*			m_pNaviTargetObject = nullptr;
 	
 	vector<_float3>				m_vecPickedPoints;
+	vector<string>				m_vecPickingListBox;
+	_int						m_iNaviPickingIndex = 0;
+	_int						m_iNaviListBoxIndex = 0;
 	vector<double>				m_vecNaviPoints;
+	_bool						m_bPickingNaviMode = false;
+	_float3						m_vPickingPoint = {};
 	//vector<_float>				m_vecNaviYPoints;
 
 private:

@@ -51,7 +51,7 @@ _vector CAIState_Base::Chase(CGameObject* pTarget)
 	vTargetPos = pTarget->Get_Transform()->Get_State(CTransform::STATE_POSITION);
 	vOwnerPos = pOwnerTransform->Get_State(CTransform::STATE_POSITION);
    	
-	pOwnerTransform->Go_Target(vTargetPos, blackboard->GetTimeDelta());
+	pOwnerTransform->Go_Target_Navi(vTargetPos, blackboard->GetTimeDelta(), blackboard->GetNavigation());
  
  	_vector vDistance = XMVector3Length(vTargetPos - vOwnerPos);
  

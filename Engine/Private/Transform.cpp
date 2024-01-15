@@ -70,22 +70,33 @@ void CTransform::Go_Straight(_float fTimeDelta, class CNavigation* pNavigation)
 	//TODO 방향벡터를 만들어서 가게하면된다.
 
 	//! 내 위치 벡터와 룩 벡터를 만들고. 바라보는 방향으로 가게 하는 것.
-	_vector vPostion = Get_State(STATE_POSITION);
 	_vector vLook = Get_State(STATE_LOOK);
+	_vector vPosition = Get_State(STATE_POSITION);
+
+	
 
 	//! 룩 벡터를 정규화하지 않았다면 바로 그 위치로 이동되버린다. 그래서 정규화 시킨 후에 바라보는 방향을 시간값에 비례한 속도로 이동시키는 것.
-	vPostion += XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+	vPosition += XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
 
 	//TODO 네비게이션 매쉬 검사
 	//! 내가 가려고 하는 위치가 갈수있는 위치인지 검사 하고 갈 수 있는  위치라면 Set_State 해주는 것.
 	if (nullptr != pNavigation)
 	{
-		if(false == pNavigation->isMove(vPostion))
+		if(false == pNavigation->isMove(vPosition))
 			return;
+		else
+		{
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+		}
 	}
 
 	//! 위에서 연산을 끝낸 벡터를 실제 월드행렬의 위치벡터에게 적용시킨다. 
-	Set_State(STATE_POSITION, vPostion);
+	Set_State(STATE_POSITION, vPosition);
 }
 
 void CTransform::Go_Left(_float fTimeDelta)
@@ -222,6 +233,30 @@ void CTransform::Go_Target(_fvector vTargetPos, _float fTimeDelta, _float fSpare
 	if(fDistance >= fSpare)
 		vPosition += XMVector3Normalize(vDir) * m_fSpeedPerSec * fTimeDelta;
 
+
+	Look_At(vTargetPos);
+	Set_State(STATE_POSITION, vPosition);
+}
+
+void CTransform::Go_Target_Navi(_fvector vTargetPos, _float fTimeDelta, CNavigation* pNavigation, _float fSpare)
+{
+	//TODO 타겟 위치에 도달할때 까지 추적
+
+	_vector vPosition = Get_State(STATE_POSITION);
+	_vector	vDir = vTargetPos - vPosition;
+
+	_float fDistance = XMVectorGetX(XMVector3Length(vDir));
+
+	
+
+	if (fDistance >= fSpare)
+		vPosition += XMVector3Normalize(vDir) * m_fSpeedPerSec * fTimeDelta;
+
+	_float3 vPos;
+	XMStoreFloat3(&vPos, vPosition);
+
+	_float fY = pNavigation->Compute_Height(vPos);
+	XMVectorSetY(vPosition, fY);
 
 	Look_At(vTargetPos);
 	Set_State(STATE_POSITION, vPosition);

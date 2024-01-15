@@ -222,6 +222,35 @@ const _int CNavigation::Find_Cell(_float3 vWorldPos)
     return iIndex;
 }
 
+
+
+_float CNavigation::Compute_Height(_float3 vPosition)
+{
+    _vector vPlane = {};
+    
+    CCell* pCell = m_Cells[m_iCurrentIndex];
+
+    _vector vA = XMVectorSetW(XMLoadFloat3(pCell->Get_Point(CCell::POINT_A)), 1.f);
+    _vector vB = XMVectorSetW(XMLoadFloat3(pCell->Get_Point(CCell::POINT_B)), 1.f);
+    _vector vC = XMVectorSetW(XMLoadFloat3(pCell->Get_Point(CCell::POINT_C)), 1.f);
+   
+    vPlane = XMPlaneFromPoints(vA, vB, vC);
+   
+
+    _float fA = XMVectorGetX(vPlane);
+    _float fB = XMVectorGetY(vPlane);
+    _float fC = XMVectorGetZ(vPlane);
+    _float fD = XMVectorGetW(vPlane);
+
+    _float fX = vPosition.x;
+    _float fY = vPosition.y;
+    _float fZ = vPosition.z;
+
+
+    return (-fA * fX) - (fC * fZ) - fD;
+    
+}
+
 HRESULT CNavigation::Make_Neighbors()
 {
 
