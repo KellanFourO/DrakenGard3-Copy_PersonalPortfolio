@@ -13,8 +13,8 @@ CLevel_Tool::CLevel_Tool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 HRESULT CLevel_Tool::Initialize()
 {
-	//if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
-	//	return E_FAIL;
+	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
+		return E_FAIL;
 	//m_pGameInstance->Add_LayerTag(TEXT("Layer_Camera"));
 
 	m_pGameInstance->Add_LayerTag(TEXT("Layer_Player"));
@@ -109,10 +109,7 @@ HRESULT CLevel_Tool::Ready_Layer_Camera(const wstring& strLayerTag)
 
 HRESULT CLevel_Tool::Ready_Layer_BackGround(const wstring& strLayerTag)
 {
-	if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, strLayerTag, TEXT("Prototype_GameObject_Terrain"))))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, strLayerTag, TEXT("Prototype_GameObject_ForkLift"))))
+	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, strLayerTag, TEXT("Prototype_GameObject_SkyBox"))))
 		return E_FAIL;
 
 

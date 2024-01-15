@@ -3,6 +3,7 @@
 //!±‚≈∏
 #include "BackGround.h"
 #include "SkyBox.h"
+#include "SkyDome.h"
 
 //! ∏ 
 #include "Stage1Map_1.h"

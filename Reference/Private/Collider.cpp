@@ -6,13 +6,17 @@
 
 #include "GameInstance.h"
 
+_uint CCollider::g_iColliderID = 0;
+
 CCollider::CCollider(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:	CComponent(pDevice, pContext)
+	,	m_iID(g_iColliderID++)
 {
 }
 
 CCollider::CCollider(const CCollider& rhs)
 	:	CComponent(rhs)
+	, m_iID(g_iColliderID++)
 	, m_eType(rhs.m_eType)
 	, m_pBatch(rhs.m_pBatch)
 	, m_pEffect(rhs.m_pEffect)
@@ -78,6 +82,22 @@ void CCollider::Update(_fmatrix TransformMatrix)
 _bool CCollider::Collision(CCollider* pTargetCollider)
 {
 	return m_pBounding->Collision(pTargetCollider, &m_isCollision);
+}
+
+void CCollider::On_Collision(CCollider* pOther, const _float& fX, const _float& fY, const _float& fZ)
+{
+	
+	m_eState = COLLISION_STATE_ON;
+}
+
+void CCollider::On_CollisionEnter(CCollider* pOther, const _float& fX, const _float& fY, const _float& fZ)
+{
+	m_eState = COLLISION_STATE_ENTER;
+}
+
+void CCollider::On_CollisionExit(CCollider* pOther, const _float& fX, const _float& fY, const _float& fZ)
+{
+	m_eState = COLLISION_STATE_EXIT;
 }
 
 #ifdef _DEBUG

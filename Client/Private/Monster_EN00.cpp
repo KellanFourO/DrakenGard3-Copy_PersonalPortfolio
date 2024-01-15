@@ -48,8 +48,12 @@ HRESULT CMonster_EN00::Initialize(void* pArg)
 	if (FAILED(Ready_PartObjects()))
 		return E_FAIL;
 
-	if (FAILED(Ready_BehaviorTree()))
-		return E_FAIL;
+
+	if (m_eCurrentLevelID != LEVEL_TOOL)
+	{
+		if (FAILED(Ready_BehaviorTree()))
+			return E_FAIL;
+	}
 
 	m_pModelCom->Root_MotionStart();
 
@@ -73,10 +77,15 @@ void CMonster_EN00::Priority_Tick(_float fTimeDelta)
 
 void CMonster_EN00::Tick(_float fTimeDelta)
 {
-	m_BehaviorTree->getBlackboard()->setTimeDelta(fTimeDelta);
-	BrainTree::Node::Status TreeStatus = m_BehaviorTree->update();
+	if (m_eCurrentLevelID != LEVEL_TOOL)
+	{
+		m_BehaviorTree->getBlackboard()->setTimeDelta(fTimeDelta);
+		BrainTree::Node::Status TreeStatus = m_BehaviorTree->update();
 
-	Debug_KeyInput();
+		Debug_KeyInput();
+	}
+
+	
 
 	for (auto& Pair : m_PartObjects)
 	{
@@ -103,11 +112,14 @@ void CMonster_EN00::Late_Tick(_float fTimeDelta)
 			Pair.second->Late_Tick(fTimeDelta);
 	}
 
-	CCollider* pTargetCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_PartComponent(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_Collider"), TEXT("Part_Weapon")));
-	
-	if (m_pColliderCom->Collision(pTargetCollider))
+	if (m_eCurrentLevelID != LEVEL_TOOL)
 	{
-		int i = 0;
+		CCollider* pTargetCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_PartComponent(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_Collider"), TEXT("Part_Weapon")));
+
+		if (m_pColliderCom->Collision(pTargetCollider))
+		{
+			int i = 0;
+		}
 	}
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
@@ -155,14 +167,15 @@ void CMonster_EN00::Write_Json(json& Out_Json)
 	//Out_Json["MonsterDesc"]["Patrol"] =				m_tLinkStateDesc.bPatrol;
 	//Out_Json["MonsterDesc"]["SectionIndex"] =		m_tLinkStateDesc.iSectionIndex;
 
-	auto iter = Out_Json["Component"].find("Model");
-	Out_Json["Component"].erase(iter);
+	//auto iter = Out_Json["Component"].find("Model");
+	//Out_Json["Component"].erase(iter);
 }
 
 void CMonster_EN00::Load_FromJson(const json& In_Json)
 {
 	__super::Load_FromJson(In_Json);
 
+	
 	//m_tLinkStateDesc.Reset();
 	//
 	//m_tLinkStateDesc.eMonType = In_Json["MonsterDesc"]["MonsterType"];
@@ -265,6 +278,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree()
 
 	CGameObject* pTarget = nullptr;
 
+	
 	pTarget = m_pGameInstance->Get_Player(m_eCurrentLevelID);
 
 	if (nullptr != pTarget)

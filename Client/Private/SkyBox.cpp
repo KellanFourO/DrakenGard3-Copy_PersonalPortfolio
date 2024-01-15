@@ -12,8 +12,9 @@ CSkyBox::CSkyBox(const CSkyBox& rhs)
 {
 }
 
-HRESULT CSkyBox::Initialize_Prototype()
+HRESULT CSkyBox::Initialize_Prototype(LEVEL eLevel)
 {
+	m_eCurrentLevelID = eLevel;
 	return S_OK;
 }
 
@@ -64,17 +65,17 @@ HRESULT CSkyBox::Ready_Components()
 {
 	
 	//! For. Com_Shader
-	if(FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_VtxCube"),
+	if(FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_VtxCube"),
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		return E_FAIL;
 
 	//!For. Com_Texture
-	if(FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Sky"),
+	if(FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Texture_Sky"),
 		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 		return E_FAIL;
 
 	//!For. Com_VIBuffer
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Cube"),
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_VIBuffer_Cube"),
 		TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
 		return E_FAIL;
 
@@ -99,12 +100,12 @@ HRESULT CSkyBox::Bind_ShaderResources()
 	return S_OK;
 }
 
-CSkyBox* CSkyBox::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CSkyBox* CSkyBox::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel)
 {
 	CSkyBox* pInstance = new CSkyBox(pDevice, pContext);
 
 	/* 원형객체를 초기화한다.  */
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(pInstance->Initialize_Prototype(eLevel)))
 	{
 		MSG_BOX("Failed to Created : CSkyBox");
 		Safe_Release(pInstance);

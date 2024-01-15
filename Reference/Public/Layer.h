@@ -12,6 +12,7 @@ private:
 
 public:
 	class CComponent*	Get_Component(const wstring& strComponentTag, _uint iIndex);
+	list<class CGameObject*>& Get_ObjectList() { return m_GameObjects; }
 	class CComponent*	Get_PartComponent(const wstring& strComponentTag, _uint iIndex, const wstring& strPartTag);
 
 	class CGameObject*	Get_Player();

@@ -57,6 +57,7 @@ public: /* For.Object_Manager */
 	class CComponent*	Get_PartComponent(_uint iLevelIndex, const wstring & strLayerTag, const wstring & strComponentTag, const wstring& strPartTag, _uint iIndex = 0);
 	class CGameObject*  Get_Player(_uint iLevelIndex);
 	HRESULT				Erase_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, class CGameObject* pEraseObject);
+	class CLayer*		Find_Layer(_uint iLevelIndex, const wstring & strLayerTag);
 
 public: /* For.Component_Manager */
 	HRESULT Add_Prototype(_uint iLevelIndex, const wstring & strPrototypeTag, class CComponent* pPrototype, _bool bModelCom = false);
@@ -105,6 +106,12 @@ public:	/* For.Font_Manager */
 	HRESULT Add_Font(const wstring & strFontTag, const wstring & strFontFilePath);
 	HRESULT Render_Font(const wstring & strFontTag, const wstring & strText, const _float2 & vPosition, _fvector vColor = XMVectorSet(1.f, 1.f, 1.f, 1.f), _float fScale = 1.f, _float2 vOrigin = _float2(0.f, 0.f), _float fRotation = 0.f);
 
+public: /* For.Collision_Manager*/
+	HRESULT Add_Check_CollisionGroup(const _tchar * LeftLayerTag, const _tchar * RightLayerTag);
+	void	Reset_CollisionGroup();
+	
+
+	
 
 private:
 	class CGraphic_Device*			m_pGraphic_Device = { nullptr };
@@ -117,6 +124,7 @@ private:
 	class CPipeLine*				m_pPipeLine = { nullptr };
 	class CInput_Device*			m_pInput_Device = { nullptr };
 	class CFont_Manager*			m_pFont_Manager = { nullptr };
+	class CCollision_Manager*		m_pCollision_Manager = { nullptr };
 
 public:
 	void Release_Manager();

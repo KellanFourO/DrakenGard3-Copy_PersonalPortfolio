@@ -15,11 +15,15 @@ private:
 
 public:
 	const _float3*	Get_Point(POINT ePoint) const { return &m_vPoints[ePoint]; }
+	_int			Get_Index() { return m_iIndex; }
+	const _float3*  Get_Points() { return m_vPoints; }
 
 public:
 	HRESULT Initialize(const _float3* pPoints, _uint iIndex);
 	_bool	Compare_Points(const _float3* pSourPoint, const _float3* pDestPoint);
 	_bool	isIn(_fvector vPosition, _fmatrix WorldMatrix, _int* pNeighborIndex);
+	void	Reset_Line(LINE eLine) { m_iNeighbors[eLine] = -1; }
+
 	void	SetUp_Neighbor(LINE eLine, CCell* pNeighborCell)
 	{
 		m_iNeighbors[eLine] = pNeighborCell->m_iIndex;

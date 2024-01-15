@@ -198,6 +198,8 @@ private: //TODO 내비게이션 툴 #내비게이션툴
 	void					Delete_Navi_Mode_Tick();
 	void					Set_CCW(_float3* vPoint);
 	void					Reset_NaviPicking();
+	void					Find_NearPointPos(_float3* fPickedPos);
+	CCell*					Find_NearCell(_float3 fPickedPos);
 
 	void					SaveNavi(string strFullPath);
 	void					LoadNavi(string strFullPath);
@@ -208,10 +210,13 @@ private:
 	_int						m_iTargetIndex = 0;
 	_int						m_iNaviIndex = 0;
 	_float3						m_fNaviPickingPos;
+	_float						m_fCombinationRange = 2.f; //! 결합 범위
 
 	class CGameObject*			m_pNaviTargetObject = nullptr;
 	
+	vector<_float3>				m_vecPickedPoints;
 	vector<double>				m_vecNaviPoints;
+	//vector<_float>				m_vecNaviYPoints;
 
 private:
 	string sourceUpperPath = "../Assets/";

@@ -70,7 +70,7 @@ public:
 private:
 	//!const aiScene*			m_pAIScene = { nullptr };
 	//!Assimp::Importer		m_Importer;
-private:
+
 	_float4x4					m_PivotMatrix; 
 	TYPE						m_eModelType = { TYPE_END };
 

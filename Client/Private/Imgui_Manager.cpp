@@ -852,6 +852,8 @@ void CImgui_Manager::CreateObjectFunction()
 		}
 	}
 
+	ImGui::Checkbox(u8"모델픽킹", &m_bModelPicking);
+
 	if(m_iSelectLayerTagIndex != -1)
 		m_bOpenLayerTags = false;
 
@@ -861,6 +863,7 @@ void CImgui_Manager::CreateObjectFunction()
 		if (0 == m_iModelType)
 		{
 			iObjectTagSize = m_vecAnimObjectTags.size();
+
 
 			if (ImGui::BeginListBox(u8"애니메이션 모델 태그 리스트"))
 			{
@@ -884,8 +887,6 @@ void CImgui_Manager::CreateObjectFunction()
 			//iObjectTagSize = m_vecNonAnimObjectTags.size();
 			iObjectTagSize = m_vecModelTags.size();
 
-			ImGui::Checkbox(u8"모델픽킹", &m_bModelPicking);
-
 
 			if (ImGui::BeginListBox(u8"환경 모델 태그 리스트"))
 			{
@@ -903,24 +904,6 @@ void CImgui_Manager::CreateObjectFunction()
 				}
 				ImGui::EndListBox();
 			}
-
-			//if (ImGui::BeginListBox(u8"논애니메이션 모델 태그 리스트"))
-			//{
-			//
-			//	for (_uint i = 0; i < iObjectTagSize; ++i)
-			//	{
-			//		const _bool isSelected = (m_iSelectTagIndex == i);
-			//
-			//		if (ImGui::Selectable(m_vecNonAnimObjectTags[i].c_str(), isSelected))
-			//		{
-			//			m_iSelectTagIndex = i;
-			//
-			//			if (isSelected)
-			//				ImGui::SetItemDefaultFocus();
-			//		}
-			//	}
-			//	ImGui::EndListBox();
-			//}
 		}
 
 		if (ImGui::Button(u8"취소"))
@@ -930,10 +913,6 @@ void CImgui_Manager::CreateObjectFunction()
 		}
 	}
 
-
-	
-
-	
 
 	if (m_pGameInstance->Mouse_Down(DIM_LB))
 	{
@@ -950,101 +929,110 @@ void CImgui_Manager::CreateObjectFunction()
 		{
 			_int iNonAnimObjectSize = m_vecNonAnimObjects.size();
 
+			CGameObject* pHighestObject = nullptr;
+
+			_int	iIndex = 0;
+			_float fHighestYValue = -FLT_MAX;
+			_float3 vHighestPickesPos = {};
+			_bool	bIsPicking = false;
+
 			for (_int i = 0; i < iNonAnimObjectSize; ++i)
 			{
 				_float3 vPickedPos = {};
 
 				if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos) && true == ImGui_MouseInCheck())
 				{
-					CGameObject* pGameObject = nullptr;
-
-					wstring wstr;
-
-					if (0 == m_iModelType)
-						wstr = ConvertStrToWstr(m_vecAnimObjectTags[m_iSelectTagIndex]);
-					else
-						wstr = TEXT("Prototype_GameObject_Environment");
-
 					
+					_float3 vDestPos;
+					XMStoreFloat3(&vDestPos, m_vecNonAnimObjects[i]->Get_Transform()->Get_State(CTransform::STATE_POSITION));
 
+					if (vDestPos.y > fHighestYValue)
+					{
+						fHighestYValue = vDestPos.y;
+						iIndex = i;
+						vHighestPickesPos = vPickedPos;
+						bIsPicking = true;
+					}
+				}
+			}
+
+			if (true == bIsPicking)
+			{
+				CGameObject* pGameObject = nullptr;
+
+				wstring wstr;
+				string SliceTag = "";
+				string IndexTag;
+
+				if (0 == m_iModelType)
+				{
 					CGameObject::GAMEOBJECT_DESC pDesc;
 
 					pDesc.iLevelIndex = LEVEL_TOOL;
 
-					if (0 == m_iModelType)
-					{
-						if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pGameObject))))
-							return;
-					}
-					else
-					{
-							CEnvironment_Object::ENVIRONMENT_DESC Desc;
-							Desc.iLevelIndex = LEVEL_TOOL;
-							Desc.strModelTag = ConvertStrToWstr(m_vecModelTags[m_iSelectTagIndex]);
+					wstr = ConvertStrToWstr(m_vecAnimObjectTags[m_iSelectTagIndex]);
 
-							
+					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pGameObject))))
+						return;
 
-							if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &Desc, reinterpret_cast<CGameObject**>(&pGameObject))))
-								return;
-					}
-					
-
-
-					string SliceTag = "";
-
-					if (0 == m_iModelType)
-						SliceTag = ConvertWstrToStr(wstr);
-					else
-						SliceTag = m_vecModelTags[m_iSelectTagIndex];
-
-
-					string IndexTag;
-
-					if (0 == m_iModelType)
-						IndexTag = "@" + to_string(m_vecAnimObjects.size() + 1);
-					else
-						IndexTag = "@" + to_string(m_vecNonAnimObjects.size() + 1);
-
+					SliceTag = ConvertWstrToStr(wstr);
+					IndexTag = "@" + to_string(m_vecAnimObjects.size() + 1);
 					SliceTag = SliceTag + IndexTag;
 
-					if (0 == m_iModelType)
-					{
-						m_vecCreateAnimObjectTags.push_back(SliceTag);
-						m_vecCreateAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
-						m_vecAnimObjects.push_back(pGameObject);
-					}
-					else
-					{
-						m_vecCreateNonAnimObjectTags.push_back(SliceTag);
-						m_vecCreateNonAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
-						m_vecNonAnimObjects.push_back(pGameObject);
-					}
-
-
-					pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(vPickedPos.x, vPickedPos.y, vPickedPos.z, 1.f));
+					m_vecCreateAnimObjectTags.push_back(SliceTag);
+					m_vecCreateAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
+					m_vecAnimObjects.push_back(pGameObject);
 				}
-			}
 
+				else
+				{
+					CEnvironment_Object::ENVIRONMENT_DESC Desc;
+					Desc.iLevelIndex = LEVEL_TOOL;
+					Desc.strModelTag = ConvertStrToWstr(m_vecModelTags[m_iSelectTagIndex]);
+
+					wstr = TEXT("Prototype_GameObject_Environment");
+
+					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &Desc, reinterpret_cast<CGameObject**>(&pGameObject))))
+						return;
+
+					SliceTag = m_vecModelTags[m_iSelectTagIndex];
+					IndexTag = "@" + to_string(m_vecNonAnimObjects.size() + 1);
+					SliceTag = SliceTag + IndexTag;
+
+					m_vecCreateNonAnimObjectTags.push_back(SliceTag);
+					m_vecCreateNonAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
+					m_vecNonAnimObjects.push_back(pGameObject);
+				}
+
+				pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(vHighestPickesPos.x, vHighestPickesPos.y, vHighestPickesPos.z, 1.f));
+			}
+			
 		}
 		else if (m_pField->MouseOnTerrain() && ImGui_MouseInCheck())
 		{
 			CGameObject* pGameObject = nullptr;
 
 			wstring wstr;
-			
-			if(0 == m_iModelType)
-				wstr = ConvertStrToWstr(m_vecAnimObjectTags[m_iSelectTagIndex]);
-			else
-				wstr = TEXT("Prototype_GameObject_Environment");
-
-			CGameObject::GAMEOBJECT_DESC pDesc;
-
-			pDesc.iLevelIndex = LEVEL_TOOL;
+			string SliceTag = "";
+			string IndexTag = "";
 
 			if (0 == m_iModelType)
 			{
+				CGameObject::GAMEOBJECT_DESC pDesc;
+				pDesc.iLevelIndex = LEVEL_TOOL;
+
+				wstr = ConvertStrToWstr(m_vecAnimObjectTags[m_iSelectTagIndex]);
+
 				if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pGameObject))))
 					return;
+
+				SliceTag = ConvertWstrToStr(wstr);
+				IndexTag = "@" + to_string(m_vecAnimObjects.size() + 1);
+				SliceTag = SliceTag + IndexTag;
+
+				m_vecCreateAnimObjectTags.push_back(SliceTag);
+				m_vecCreateAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
+				m_vecAnimObjects.push_back(pGameObject);
 			}
 			else
 			{
@@ -1052,43 +1040,20 @@ void CImgui_Manager::CreateObjectFunction()
 				Desc.iLevelIndex = LEVEL_TOOL;
 				Desc.strModelTag = ConvertStrToWstr(m_vecModelTags[m_iSelectTagIndex]);
 
+				wstr = TEXT("Prototype_GameObject_Environment");
+
 				if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &Desc, reinterpret_cast<CGameObject**>(&pGameObject))))
 					return;
-			}
-			
 
-
-			string SliceTag = "";
-			
-			if (0 == m_iModelType)
-				SliceTag = ConvertWstrToStr(wstr);
-			else
 				SliceTag = m_vecModelTags[m_iSelectTagIndex];
-
-
-			string IndexTag; 
-			
-			if (0 == m_iModelType)
-				IndexTag = "@" + to_string(m_vecAnimObjects.size() + 1);
-			else
 				IndexTag = "@" + to_string(m_vecNonAnimObjects.size() + 1);
+				SliceTag = SliceTag + IndexTag;
 
-			SliceTag = SliceTag + IndexTag;
-
-			if (0 == m_iModelType)
-			{
-				m_vecCreateAnimObjectTags.push_back(SliceTag);
-				m_vecCreateAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
-				m_vecAnimObjects.push_back(pGameObject);
-			}
-			else
-			{
 				m_vecCreateNonAnimObjectTags.push_back(SliceTag);
 				m_vecCreateNonAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
 				m_vecNonAnimObjects.push_back(pGameObject);
 			}
 
-			
 			pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f));
 		}
 
@@ -2309,26 +2274,44 @@ void CImgui_Manager::Create_Navi_Mode_Tick()
 			if (3 > m_iCurrentPickingIndex)
 				return;
 
-			delaunator::Delaunator d(m_vecNaviPoints);
+			_int iPickedSize = m_vecPickedPoints.size();
+
+			vector<double> fPoints; 
+			fPoints.reserve(iPickedSize * 2);
+
+			for (_int i = 0; i < iPickedSize; ++i)
+			{
+				fPoints.push_back(m_vecPickedPoints[i].x);
+				fPoints.push_back(m_vecPickedPoints[i].z);
+			}
+
+			
+			delaunator::Delaunator d(fPoints);
 
 
 			for (size_t i = 0; i < d.triangles.size(); i += 3)
 			{
-				_float3 points[3];
+				//"Triangle points: [[%f, %f], [%f, %f], [%f, %f]]\n",
+				//	d.coords[2 * d.triangles[i]],        //tx0            
+				//	d.coords[2 * d.triangles[i] + 1],    //ty0
+				//	d.coords[2 * d.triangles[i + 1]],    //tx1
+				//	d.coords[2 * d.triangles[i + 1] + 1],//ty1
+				//	d.coords[2 * d.triangles[i + 2]],    //tx2
+				//	d.coords[2 * d.triangles[i + 2] + 1] //ty2
 
-				for (int j = 0; j < 3; ++j)
-				{
-					size_t index = d.triangles[i + j];
-					points[j] = _float3(m_vecNaviPoints[2 * index], 0.f, m_vecNaviPoints[2 * index + 1]);
-				}
+				//! 픽포인츠 사이즈가  4
+				//! 트라이앵글 사이즈가 6
+				//! 첫번째 틱 0, 1, 2
+				//! 두번째 틱
+				//! 3, 4, 5 여기서 터지는거
 
-				
+				_float3 points[3] = { m_vecPickedPoints[i], m_vecPickedPoints[i + 1], m_vecPickedPoints[i + 2] };
+
 				Set_CCW(points);
 
 				CCell* pCell = CCell::Create(m_pDevice, m_pContext, points, m_iNaviIndex++);
 
 				m_pNavigation->AddCell(pCell);
-				
 			}
 
 			Reset_NaviPicking();
@@ -2340,15 +2323,40 @@ void CImgui_Manager::Create_Navi_Mode_Tick()
 			
 			_float3 fPickedPos = { 0.f, 0.f, 0.f };
 
-			if (m_pNaviTargetObject->Picking(_float3(), dynamic_cast<CModel*>(m_pNaviTargetObject->Find_Component(TEXT("Com_Model"))), &fPickedPos))
+			_int	iNonAnimObjectSize = m_vecNonAnimObjects.size();
+
+			_int	iIndex = 0;
+			_float fHighestYValue = -FLT_MAX;
+			_float3 vHighestPickesPos = {};
+			_bool	bIsPicking = false;
+			
+			for (_int i = 0; i < iNonAnimObjectSize; ++i)
 			{
-				m_vecNaviPoints.push_back(fPickedPos.x);
-				m_vecNaviPoints.push_back(fPickedPos.z);
+				_float3 vPickedPos = {};
+
+				if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos) && true == ImGui_MouseInCheck())
+				{
+					_float3 vDestPos;
+					XMStoreFloat3(&vDestPos, m_vecNonAnimObjects[i]->Get_Transform()->Get_State(CTransform::STATE_POSITION));
+
+					if (vDestPos.y > fHighestYValue)
+					{
+						fHighestYValue = vDestPos.y;
+						iIndex = i;
+						vHighestPickesPos = vPickedPos;
+						bIsPicking = true;
+					}
+				}
+			}
+
+			if (true == bIsPicking)
+			{
+				Find_NearPointPos(&vHighestPickesPos);
+				m_vecPickedPoints.push_back(vHighestPickesPos);
 				++m_iCurrentPickingIndex;
 
-				m_fNaviPickingPos = fPickedPos;
+				m_fNaviPickingPos = vHighestPickesPos;
 			}
-						
 		}
 
 		ImGui::NewLine();
@@ -2363,7 +2371,52 @@ void CImgui_Manager::Create_Navi_Mode_Tick()
 
 void CImgui_Manager::Delete_Navi_Mode_Tick()
 {
-	ImGui::Text("아직 미완");
+	vector<CCell*> vecCells = m_pNavigation->Get_Cells();
+	_int iCellSize = vecCells.size();
+
+	if (m_pGameInstance->Mouse_Down(DIM_LB) && true == ImGui_MouseInCheck())
+	{
+		_int index = 0;
+
+		_float3 fPickedPos = { 0.f, 0.f, 0.f };
+
+		_int	iNonAnimObjectSize = m_vecNonAnimObjects.size();
+
+		_int	iIndex = 0;
+		_float fHighestYValue = -FLT_MAX;
+		_float3 vHighestPickesPos = {};
+		_bool	bIsPicking = false;
+
+		for (_int i = 0; i < iNonAnimObjectSize; ++i)
+		{
+			_float3 vPickedPos = {};
+
+			if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos) && true == ImGui_MouseInCheck())
+			{
+				_float3 vDestPos;
+				XMStoreFloat3(&vDestPos, m_vecNonAnimObjects[i]->Get_Transform()->Get_State(CTransform::STATE_POSITION));
+
+				if (vDestPos.y > fHighestYValue)
+				{
+					fHighestYValue = vDestPos.y;
+					iIndex = i;
+					vHighestPickesPos = vPickedPos;
+					bIsPicking = true;
+				}
+			}
+		}
+
+		if (true == bIsPicking)
+		{
+			CCell* pTargetCell = Find_NearCell(vHighestPickesPos);
+
+			if(nullptr == pTargetCell)
+				return;
+
+			m_pNavigation->Delete_Cell(pTargetCell->Get_Index());
+		}
+	}
+	
 }
 
 void CImgui_Manager::Set_CCW(_float3* vPoint)
@@ -2394,7 +2447,110 @@ void CImgui_Manager::Set_CCW(_float3* vPoint)
 void CImgui_Manager::Reset_NaviPicking()
 {
 	m_iCurrentPickingIndex = 0;
-	m_vecNaviPoints.clear();
+	m_vecPickedPoints.clear();
+}
+
+void CImgui_Manager::Find_NearPointPos(_float3* fPickedPos)
+{
+	vector<CCell*> vecCells = m_pNavigation->Get_Cells();
+	_int iCellSize = vecCells.size();
+	_float fMinDistance = FLT_MAX;
+	
+	_float3 vPickedPos = *fPickedPos;
+
+
+
+	for (_int i = 0; i < iCellSize; ++i)
+	{
+		_float3 vPointA = *vecCells[i]->Get_Point(CCell::POINT_A);
+		_float3 vPointB = *vecCells[i]->Get_Point(CCell::POINT_B);
+		_float3 vPointC = *vecCells[i]->Get_Point(CCell::POINT_C);
+
+		_float distanceA = (_float)sqrt(pow(vPickedPos.x - vPointA.x, 2) +
+			pow(vPickedPos.y - vPointA.y, 2) +
+			pow(vPickedPos.z - vPointA.z, 2));
+
+		_float distanceB = (_float)sqrt(pow(vPickedPos.x - vPointB.x, 2) +
+			pow(vPickedPos.y - vPointB.y, 2) +
+			pow(vPickedPos.z - vPointB.z, 2));
+
+		_float distanceC = (_float)sqrt(pow(vPickedPos.x - vPointC.x, 2) +
+			pow(vPickedPos.y - vPointC.y, 2) +
+			pow(vPickedPos.z - vPointC.z, 2));
+
+		if (distanceA < fMinDistance && distanceA < m_fCombinationRange)
+		{
+			fMinDistance = distanceA;
+			*fPickedPos = vPointA;
+		}
+
+		if (distanceB < fMinDistance && distanceB < m_fCombinationRange)
+		{
+			fMinDistance = distanceB;
+			*fPickedPos = vPointB;
+		}
+
+		if (distanceC < fMinDistance && distanceC < m_fCombinationRange)
+		{
+			fMinDistance = distanceC;
+			*fPickedPos = vPointC;
+		}
+
+
+	}
+
+}
+
+CCell* CImgui_Manager::Find_NearCell(_float3 fPickedPos)
+{
+	vector<CCell*> vecCells = m_pNavigation->Get_Cells();
+	_int iCellSize = vecCells.size();
+	_float fMinDistance = FLT_MAX;
+
+	_float3 vPickedPos = fPickedPos;
+
+
+
+	for (_int i = 0; i < iCellSize; ++i)
+	{
+		_float3 vPointA = *vecCells[i]->Get_Point(CCell::POINT_A);
+		_float3 vPointB = *vecCells[i]->Get_Point(CCell::POINT_B);
+		_float3 vPointC = *vecCells[i]->Get_Point(CCell::POINT_C);
+
+		_float distanceA = (_float)sqrt(pow(vPickedPos.x - vPointA.x, 2) +
+			pow(vPickedPos.y - vPointA.y, 2) +
+			pow(vPickedPos.z - vPointA.z, 2));
+
+		_float distanceB = (_float)sqrt(pow(vPickedPos.x - vPointB.x, 2) +
+			pow(vPickedPos.y - vPointB.y, 2) +
+			pow(vPickedPos.z - vPointB.z, 2));
+
+		_float distanceC = (_float)sqrt(pow(vPickedPos.x - vPointC.x, 2) +
+			pow(vPickedPos.y - vPointC.y, 2) +
+			pow(vPickedPos.z - vPointC.z, 2));
+
+		if (distanceA < fMinDistance && distanceA < m_fCombinationRange)
+		{
+			fMinDistance = distanceA;
+			return vecCells[i];
+		}
+
+		if (distanceB < fMinDistance && distanceB < m_fCombinationRange)
+		{
+			fMinDistance = distanceB;
+			return vecCells[i];
+		}
+
+		if (distanceC < fMinDistance && distanceC < m_fCombinationRange)
+		{
+			fMinDistance = distanceC;
+			return vecCells[i];
+		}
+
+
+	}
+
+	return nullptr;
 }
 
 void CImgui_Manager::SaveNavi(string strFullPath)

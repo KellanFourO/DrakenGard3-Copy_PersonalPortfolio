@@ -258,6 +258,7 @@
     <ClInclude Include="..\Public\PlayerState_Run.h" />
     <ClInclude Include="..\Public\PlayerState_Walk.h" />
     <ClInclude Include="..\public\SkyBox.h" />
+    <ClInclude Include="..\Public\SkyDome.h" />
     <ClInclude Include="..\Public\Stage1Map_1.h" />
     <ClInclude Include="..\public\TestSnow.h" />
     <ClInclude Include="..\Public\TestTree.h" />
@@ -352,6 +353,7 @@
     <ClCompile Include="..\Private\PlayerState_Run.cpp" />
     <ClCompile Include="..\Private\PlayerState_Walk.cpp" />
     <ClCompile Include="..\private\SkyBox.cpp" />
+    <ClCompile Include="..\Private\SkyDome.cpp" />
     <ClCompile Include="..\Private\Stage1Map_1.cpp" />
     <ClCompile Include="..\Private\TestSnow.cpp" />
     <ClCompile Include="..\Private\TestTree.cpp" />

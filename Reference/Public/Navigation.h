@@ -33,10 +33,15 @@ public:
 	virtual HRESULT Render();
 	
 public:
+	vector<class CCell*>	Get_Cells() { return m_Cells; }
 	_int	Get_CellSize() { return m_Cells.size(); };
 	void	Update(_fmatrix WorldMatrix);
 	_bool	isMove(_fvector vPosition);
 	void	AddCell(class CCell* pCell);
+	HRESULT	Delete_Cell(const _uint iIndex);
+
+public:
+	const _int		Find_Cell(_float3 vWorldPos);
 
 private:
 	vector<class CCell*>	m_Cells;

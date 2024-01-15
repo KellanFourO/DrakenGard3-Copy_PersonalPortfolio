@@ -17,7 +17,7 @@ private:
 	virtual ~CBoundingBox_OBB() = default;
 
 public:
-	const BoundingOrientedBox* Get_Bounding() {return m_pBoundingOriented; }
+	BoundingOrientedBox* Get_Bounding() {return m_pBoundingOriented; }
 
 public:
 	HRESULT Initialize(BOUNDING_DESC* pBoundingDesc);

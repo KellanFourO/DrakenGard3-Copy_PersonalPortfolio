@@ -26,6 +26,7 @@ public:
 	HRESULT Erase_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, class CGameObject* pEraseObject);
 
 	class CGameObject* Get_Player(_uint iLevelIndex);
+	class CLayer* Find_Layer(_uint iLevelIndex, const wstring& strLayerTag);
 
 public:
 	void	Priority_Tick(_float fTimeDelta);
@@ -44,7 +45,7 @@ private:
 
 private:
 	class CGameObject*	Find_Prototype(const wstring& strPrototypeTag);
-	class CLayer*		Find_Layer(_uint iLevelIndex, const wstring& strLayerTag);
+	
 
 public:
 	static CObject_Manager*	Create(_uint iNumLevels);

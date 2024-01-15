@@ -5,17 +5,17 @@
  자신 인덱스 : 0
 
 
- 이름 : SMO_BG50_Rubble_0200
+ 이름 : SMO_BG50_Rubble_0000
  부모 인덱스 : 0
  자신 인덱스 : 1
 
 
- 이름 : SMO_BG50_Rubble_0200
+ 이름 : SMO_BG50_Rubble_0000
  부모 인덱스 : 0
  자신 인덱스 : 2
 
 
- 이름 : SMO_BG50_Rubble_0200
+ 이름 : SMO_BG50_Rubble_0000
  부모 인덱스 : 0
  자신 인덱스 : 3
 

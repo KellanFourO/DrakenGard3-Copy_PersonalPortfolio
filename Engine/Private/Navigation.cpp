@@ -194,6 +194,34 @@ void CNavigation::AddCell(CCell* pCell)
     Make_Neighbors();
 }
 
+HRESULT CNavigation::Delete_Cell(const _uint iIndex)
+{
+    for (vector<CCell*>::iterator iter = m_Cells.begin(); iter != m_Cells.end();)
+    {
+        if ((*iter)->Get_Index() == iIndex)
+        {
+            Safe_Release(*iter);
+            iter = m_Cells.erase(iter);
+
+            Make_Neighbors();
+
+            return S_OK;
+        }
+        else
+            ++iter;
+    }
+
+    return E_FAIL;
+}
+
+const _int CNavigation::Find_Cell(_float3 vWorldPos)
+{
+    _int iIndex = -1;
+  
+
+    return iIndex;
+}
+
 HRESULT CNavigation::Make_Neighbors()
 {
 
@@ -210,14 +238,23 @@ HRESULT CNavigation::Make_Neighbors()
             {
                pSourCell->SetUp_Neighbor(CCell::LINE_AB, pDestCell);
             }
+//             else
+//                 pSourCell->Reset_Line(CCell::LINE_AB);
+
             if (true == pDestCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_B), pSourCell->Get_Point(CCell::POINT_C)))
             {
                 pSourCell->SetUp_Neighbor(CCell::LINE_BC, pDestCell);
             }
+//             else
+//                 pSourCell->Reset_Line(CCell::LINE_BC);
+
             if (true == pDestCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_C), pSourCell->Get_Point(CCell::POINT_A)))
             {
                 pSourCell->SetUp_Neighbor(CCell::LINE_CA, pDestCell);
             }
+//             else
+//                 pSourCell->Reset_Line(CCell::LINE_CA);
+
         }
     }
     

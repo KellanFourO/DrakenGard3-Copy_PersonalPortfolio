@@ -17,7 +17,7 @@ private:
 	virtual ~CSkyBox() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype() override;
+	virtual HRESULT Initialize_Prototype(LEVEL eLevel);
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void	Priority_Tick(_float fTimeDelta) override;
 	virtual void	Tick(_float fTimeDelta) override;
@@ -33,7 +33,7 @@ private:
 	HRESULT			Bind_ShaderResources();
 
 public:
-	static	CSkyBox*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static	CSkyBox*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel);
 	virtual CGameObject*	Clone(void* pArg) override;
 	virtual void			Free() override;
 };

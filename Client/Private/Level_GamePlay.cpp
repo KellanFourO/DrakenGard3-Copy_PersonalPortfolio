@@ -28,40 +28,7 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
- 	json LoadJson;
  	
- 	CJson_Utility::Load_Json("../Bin/DataFiles/Map1.json", LoadJson);
- 	
- 	_int LoadSize = LoadJson.size();
- 	
- 	for (_int i = 0; i < LoadSize; ++i)
- 	{
- 		CGameObject* pGameObject = nullptr;
- 	
- 		CEnvironment_Object::ENVIRONMENT_DESC Desc;
- 	
- 		Desc.iLevelIndex = LEVEL_GAMEPLAY;
- 		Desc.strModelTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
- 		wstring LayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
- 	
- 	
- 		if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, LayerTag, TEXT("Prototype_GameObject_Environment"), &Desc, &pGameObject)))
- 			return E_FAIL;
- 	
- 		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
- 	
- 		_float4x4 WorldMatrix;
- 	
- 		for (_int i = 0; i < 4; ++i)
- 		{
- 			for (_int j = 0; j < 4; ++j)
- 			{
- 				WorldMatrix.m[i][j] = TransformJson[i][j];
- 			}
- 		}
- 	
- 		pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
- 	}
 
 
 	return S_OK;
@@ -122,7 +89,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const wstring& strLayerTag)
 	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Player"), &Desc, &pGameObject)))
 		return E_FAIL;
 
-	pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(141.79f, 0.f, -122.93f, 1.f));
+	pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(43.88f, 0.f, 18.55f, 1.f));
 
 	return S_OK;
 }
@@ -144,12 +111,49 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const wstring& strLayerTag)
  	//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Terrain"))))
  	//	return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_SkyBox"))))
+	//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_SkyBox"))))
+	//	return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_SkyDome"))))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_TestSnow"))))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_TestSnow"))))
+	//	return E_FAIL;
 
+	json LoadJson;
+
+	CJson_Utility::Load_Json("../Bin/DataFiles/Map.json", LoadJson);
+
+	_int LoadSize = LoadJson.size();
+
+	for (_int i = 0; i < LoadSize; ++i)
+	{
+		CGameObject* pGameObject = nullptr;
+
+		CEnvironment_Object::ENVIRONMENT_DESC Desc;
+
+		Desc.iLevelIndex = LEVEL_GAMEPLAY;
+		Desc.strModelTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
+		wstring LayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
+
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, LayerTag, TEXT("Prototype_GameObject_Environment"), &Desc, &pGameObject)))
+			return E_FAIL;
+
+		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
+
+		_float4x4 WorldMatrix;
+
+		for (_int i = 0; i < 4; ++i)
+		{
+			for (_int j = 0; j < 4; ++j)
+			{
+				WorldMatrix.m[i][j] = TransformJson[i][j];
+			}
+		}
+
+		pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
+	}
 
 
 	return S_OK;

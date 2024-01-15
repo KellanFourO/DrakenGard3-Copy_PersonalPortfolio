@@ -262,6 +262,9 @@
     <Filter Include="02. GameObjects\98. NonAnimObject\99. EnvironmentObject">
       <UniqueIdentifier>{203f6293-1a54-49e6-bfc0-9780067891ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\04. SkyDome">
+      <UniqueIdentifier>{a58e2906-de3f-4288-91fc-29bfe77fc500}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -567,6 +570,9 @@
     <ClInclude Include="..\public\Environment_Object.h">
       <Filter>02. GameObjects\98. NonAnimObject\99. EnvironmentObject</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SkyDome.h">
+      <Filter>02. GameObjects\04. SkyDome</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -826,6 +832,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Environment_Object.cpp">
       <Filter>02. GameObjects\98. NonAnimObject\99. EnvironmentObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SkyDome.cpp">
+      <Filter>02. GameObjects\04. SkyDome</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

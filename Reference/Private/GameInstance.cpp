@@ -6,6 +6,7 @@
 #include "Data_Manager.h"
 #include "Font_Manager.h"
 #include "Renderer.h"
+#include "Collision_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -59,8 +60,14 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInstance, 
 	if (nullptr == m_pPipeLine)
 		return E_FAIL;
 
+	//TODO 폰트매니저
 	m_pFont_Manager = CFont_Manager::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pFont_Manager)
+		return E_FAIL;
+		
+	//TODO 콜리전매니저
+	m_pCollision_Manager = CCollision_Manager::Create();
+	if(nullptr == m_pCollision_Manager)
 		return E_FAIL;
 
 	return S_OK;
@@ -87,6 +94,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	//! 객체들의 Late_Tick에서 파이프라인에게 접근해서 작업할 수 있기에 Tick과 Late_Tick 사이에 넣은 것이다.
 
 	m_pObject_Manager->Late_Tick(fTimeDelta);
+
+	m_pCollision_Manager->Update_CollisionMgr(m_pLevel_Manager->Get_CurrentLevelIndex());
 
 	m_pLevel_Manager->Tick(fTimeDelta);
 
@@ -274,6 +283,14 @@ HRESULT CGameInstance::Erase_CloneObject(_uint iLevelIndex, const wstring& strLa
 		return E_FAIL;
 
 	return m_pObject_Manager->Erase_CloneObject(iLevelIndex, strLayerTag, pEraseObject);
+}
+
+CLayer* CGameInstance::Find_Layer(_uint iLevelIndex, const wstring& strLayerTag)
+{
+	if (nullptr == m_pObject_Manager)
+		return nullptr;
+
+	return m_pObject_Manager->Find_Layer(iLevelIndex, strLayerTag);
 }
 
 
@@ -510,8 +527,25 @@ HRESULT CGameInstance::Render_Font(const wstring& strFontTag, const wstring& str
 	return m_pFont_Manager->Render(strFontTag, strText, vPosition, vColor, fScale, vOrigin, fRotation);
 }
 
+HRESULT CGameInstance::Add_Check_CollisionGroup(const _tchar* LeftLayerTag, const _tchar* RightLayerTag)
+{
+	if (nullptr == m_pCollision_Manager)
+		return E_FAIL;
+
+	return m_pCollision_Manager->Add_Check_CollisionGroup(LeftLayerTag, RightLayerTag);
+}
+
+void CGameInstance::Reset_CollisionGroup()
+{
+	if (nullptr == m_pCollision_Manager)
+		return;
+
+	m_pCollision_Manager->Reset_CollisionGroup();
+}
+
 void CGameInstance::Release_Manager()
 {
+	Safe_Release(m_pCollision_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pObject_Manager);
