@@ -7,6 +7,8 @@
 #include "Font_Manager.h"
 #include "Renderer.h"
 #include "Collision_Manager.h"
+#include "Target_Manager.h"
+#include "Light_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -50,6 +52,9 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInstance, 
 	if(nullptr == m_pData_Manager)
 		return E_FAIL;
 
+	m_pTarget_Manager = CTarget_Manager::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
 	//TODO 렌더러
 	m_pRenderer = CRenderer::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pRenderer)
@@ -68,6 +73,10 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInstance, 
 	//TODO 콜리전매니저
 	m_pCollision_Manager = CCollision_Manager::Create();
 	if(nullptr == m_pCollision_Manager)
+		return E_FAIL;
+
+	m_pLight_Manager = CLight_Manager::Create();
+	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
 
 	return S_OK;
@@ -143,15 +152,15 @@ IDXGISwapChain* CGameInstance::Get_SwapChain()
 	return m_pGraphic_Device->Get_SwapChain();
 }
 
-ID3D11RenderTargetView* CGameInstance::Get_BackRTV()
+ID3D11RenderTargetView* CGameInstance::Get_BackBufferRTV() const
 {
 	if (nullptr == m_pGraphic_Device)
 		return nullptr;
 
-	return m_pGraphic_Device->Get_BackRTV();
+	return m_pGraphic_Device->Get_BackBufferRTV();
 }
 
-ID3D11DepthStencilView* CGameInstance::Get_DSV()
+ID3D11DepthStencilView* CGameInstance::Get_DSV() const
 {
 	if (nullptr == m_pGraphic_Device)
 		return nullptr;
@@ -543,8 +552,82 @@ void CGameInstance::Reset_CollisionGroup()
 	m_pCollision_Manager->Reset_CollisionGroup();
 }
 
+HRESULT CGameInstance::Add_RenderTarget(const wstring& strTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vClearColor)
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	return m_pTarget_Manager->Add_RenderTarget(strTargetTag, iSizeX, iSizeY, ePixelFormat, vClearColor);
+}
+
+HRESULT CGameInstance::Add_MRT(const wstring& strMRTTag, const wstring& strTargetTag)
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	return m_pTarget_Manager->Add_MRT(strMRTTag, strTargetTag);
+}
+
+HRESULT CGameInstance::Begin_MRT(const wstring& strMRTTag)
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	return m_pTarget_Manager->Begin_MRT(strMRTTag);
+}
+
+HRESULT CGameInstance::End_MRT()
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	return m_pTarget_Manager->End_MRT();
+}
+
+HRESULT CGameInstance::Bind_RenderTarget_ShaderResource(const wstring& strTargetTag, CShader* pShader, const _char* pConstantName)
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	return m_pTarget_Manager->Bind_ShaderResource(strTargetTag, pShader, pConstantName);
+}
+
+#ifdef _DEBUG
+HRESULT CGameInstance::Ready_RenderTarget_Debug(const wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	return m_pTarget_Manager->Ready_Debug(strTargetTag, fX, fY, fSizeX, fSizeY);
+}
+
+HRESULT CGameInstance::Render_Debug_RTVs(const wstring& strMRTTag, CShader* pShader, CVIBuffer_Rect* pVIBuffer)
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	return m_pTarget_Manager->Render_Debug(strMRTTag, pShader, pVIBuffer);
+}
+HRESULT CGameInstance::Add_Light(const LIGHT_DESC& LightDesc)
+{
+	if (nullptr == m_pLight_Manager)
+		return E_FAIL;
+
+	return m_pLight_Manager->Add_Light(LightDesc);
+}
+HRESULT CGameInstance::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
+{
+	if (nullptr == m_pLight_Manager)
+		return E_FAIL;
+
+	return m_pLight_Manager->Render(pShader, pVIBuffer);
+}
+#endif 
+
 void CGameInstance::Release_Manager()
 {
+	Safe_Release(m_pLight_Manager);
+	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pCollision_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pPipeLine);

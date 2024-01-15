@@ -226,29 +226,11 @@
     <Filter Include="02. GameObjects\98. NonAnimObject\00. Map\Stage1\Map1">
       <UniqueIdentifier>{43a7999b-10aa-46b7-9ddc-bfbc61211d8c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\98. NonAnimObject\01. TestTree">
-      <UniqueIdentifier>{3886dd1f-d1d8-4c40-aef6-c29591ca3780}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\98. NonAnimObject\02. ForkLift">
-      <UniqueIdentifier>{784e7824-784c-40c2-987e-037a767f0172}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\98. NonAnimObject\03. Cannon">
-      <UniqueIdentifier>{cb2c75dc-b3b9-4b39-9d84-cd84e7fa3a1d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\98. NonAnimObject\04. AmmorBox">
-      <UniqueIdentifier>{9c4ef56f-8b3b-45f1-a196-a64e9d114ee6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\98. NonAnimObject\05. Barricade">
       <UniqueIdentifier>{bf5c7d1a-5bf0-4684-9129-bbc6193470bf}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\98. NonAnimObject\05. Barricade\Broken">
       <UniqueIdentifier>{cdc1ed2f-a42d-4a1a-bdf3-a2ec61e6b2f9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\98. NonAnimObject\06. Box">
-      <UniqueIdentifier>{3988c7f6-7a03-4792-9bc7-96570ddea778}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\98. NonAnimObject\06. Box\Broken">
-      <UniqueIdentifier>{8119ba31-0c50-4edb-8326-d10e428c1d1b}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\98. NonAnimObject\00. Map\BaseRoad">
       <UniqueIdentifier>{77ae4e73-bc18-4a62-9010-1336f3d8bc59}</UniqueIdentifier>
@@ -342,9 +324,6 @@
     <ClInclude Include="..\public\Monster.h">
       <Filter>02. GameObjects\99. AnimModelObject\01. Monster</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\TestTree.h">
-      <Filter>02. GameObjects\98. NonAnimObject\01. TestTree</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Dynamic_Terrain.h">
       <Filter>02. GameObjects\01. Terrain\00. Dynamic</Filter>
     </ClInclude>
@@ -353,9 +332,6 @@
     </ClInclude>
     <ClInclude Include="..\public\AnimObject.h">
       <Filter>02. GameObjects\99. AnimModelObject</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\ForkLift.h">
-      <Filter>02. GameObjects\98. NonAnimObject\02. ForkLift</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Reference\Imgui\ImGuizmo.h">
       <Filter>96. Tool\99. Default</Filter>
@@ -540,29 +516,14 @@
     <ClInclude Include="..\Public\Field.h">
       <Filter>96. Tool\01. Field</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Environment_Cannon.h">
-      <Filter>02. GameObjects\98. NonAnimObject\03. Cannon</Filter>
-    </ClInclude>
     <ClInclude Include="NonAnimObjects.h">
       <Filter>02. GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="AnimObjects.h">
       <Filter>02. GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Environment_WoodBox.h">
-      <Filter>02. GameObjects\98. NonAnimObject\06. Box</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Environment_BrokenBox2.h">
-      <Filter>02. GameObjects\98. NonAnimObject\06. Box\Broken</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Environment_BrokenBox1.h">
-      <Filter>02. GameObjects\98. NonAnimObject\06. Box\Broken</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Environment_BaseRoad.h">
       <Filter>02. GameObjects\98. NonAnimObject\00. Map\BaseRoad</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Environment_AmmorBox.h">
-      <Filter>02. GameObjects\98. NonAnimObject\04. AmmorBox</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Environment_Barricade.h">
       <Filter>02. GameObjects\98. NonAnimObject\05. Barricade</Filter>
@@ -644,9 +605,6 @@
     <ClCompile Include="..\Private\Monster.cpp">
       <Filter>02. GameObjects\99. AnimModelObject\01. Monster</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\TestTree.cpp">
-      <Filter>02. GameObjects\98. NonAnimObject\01. TestTree</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Dynamic_Terrain.cpp">
       <Filter>02. GameObjects\01. Terrain\00. Dynamic</Filter>
     </ClCompile>
@@ -655,9 +613,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\NonAnimObject.cpp">
       <Filter>02. GameObjects\98. NonAnimObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\ForkLift.cpp">
-      <Filter>02. GameObjects\98. NonAnimObject\02. ForkLift</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialog.cpp">
       <Filter>96. Tool\99. Default</Filter>
@@ -811,21 +766,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Field.cpp">
       <Filter>96. Tool\01. Field</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Environment_Cannon.cpp">
-      <Filter>02. GameObjects\98. NonAnimObject\03. Cannon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Environment_AmmorBox.cpp">
-      <Filter>02. GameObjects\98. NonAnimObject\04. AmmorBox</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Environment_BrokenBox1.cpp">
-      <Filter>02. GameObjects\98. NonAnimObject\06. Box\Broken</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Environment_BrokenBox2.cpp">
-      <Filter>02. GameObjects\98. NonAnimObject\06. Box\Broken</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Environment_WoodBox.cpp">
-      <Filter>02. GameObjects\98. NonAnimObject\06. Box</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Environment_BaseRoad.cpp">
       <Filter>02. GameObjects\98. NonAnimObject\00. Map\BaseRoad</Filter>

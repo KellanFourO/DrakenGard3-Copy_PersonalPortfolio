@@ -30,7 +30,10 @@ public:
 public:
 	virtual HRESULT Initialize_Prototype(const wstring& strNavigationFilePath);
 	virtual HRESULT Initialize(void* pArg) override;
+
+#ifdef _DEBUG
 	virtual HRESULT Render();
+#endif
 	
 public:
 	vector<class CCell*>	Get_Cells() { return m_Cells; }

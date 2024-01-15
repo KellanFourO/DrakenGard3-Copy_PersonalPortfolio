@@ -11,8 +11,8 @@ private:
 
 public:
 	IDXGISwapChain*				Get_SwapChain() { return m_pSwapChain;}
-	ID3D11RenderTargetView*		Get_BackRTV() { return m_pBackBufferRTV; }
-	ID3D11DepthStencilView*		Get_DSV() { return m_pDepthStencilView; }
+	ID3D11RenderTargetView*		Get_BackBufferRTV() const { return m_pBackBufferRTV; }
+	ID3D11DepthStencilView*		Get_DSV() const { return m_pDepthStencilView; }
 	GRAPHIC_DESC				Get_GraphicDesc() const { return m_GraphicDesc; }
 
 public:

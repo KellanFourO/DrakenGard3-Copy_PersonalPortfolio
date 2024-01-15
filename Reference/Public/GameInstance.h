@@ -31,8 +31,8 @@ public: /* For.Engine */
 public: /* For.Graphic_Device */		
 
 	IDXGISwapChain*			Get_SwapChain();
-	ID3D11RenderTargetView* Get_BackRTV();
-	ID3D11DepthStencilView* Get_DSV();
+	ID3D11RenderTargetView* Get_BackBufferRTV() const;
+	ID3D11DepthStencilView* Get_DSV() const;
 	GRAPHIC_DESC			Get_GraphicDesc();
 
 	HRESULT Clear_BackBuffer_View(_float4 vClearColor);
@@ -109,6 +109,21 @@ public:	/* For.Font_Manager */
 public: /* For.Collision_Manager*/
 	HRESULT Add_Check_CollisionGroup(const _tchar * LeftLayerTag, const _tchar * RightLayerTag);
 	void	Reset_CollisionGroup();
+
+public: /* For.Target_Manager */
+	HRESULT Add_RenderTarget(const wstring & strTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4 & vClearColor);
+	HRESULT Add_MRT(const wstring & strMRTTag, const wstring & strTargetTag);
+	HRESULT Begin_MRT(const wstring & strMRTTag);
+	HRESULT End_MRT();
+	HRESULT Bind_RenderTarget_ShaderResource(const wstring & strTargetTag, class CShader* pShader, const _char * pConstantName);
+#ifdef _DEBUG
+	HRESULT Ready_RenderTarget_Debug(const wstring & strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
+	HRESULT Render_Debug_RTVs(const wstring & strMRTTag, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
+#endif
+
+public: /* For.Light_Manager */
+	HRESULT Add_Light(const LIGHT_DESC& LightDesc);
+	HRESULT Render_Lights(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 	
 
 	
@@ -125,6 +140,8 @@ private:
 	class CInput_Device*			m_pInput_Device = { nullptr };
 	class CFont_Manager*			m_pFont_Manager = { nullptr };
 	class CCollision_Manager*		m_pCollision_Manager = { nullptr };
+	class CTarget_Manager* m_pTarget_Manager = { nullptr };
+	class CLight_Manager* m_pLight_Manager = { nullptr };
 
 public:
 	void Release_Manager();

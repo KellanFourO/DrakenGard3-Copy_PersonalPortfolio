@@ -17,12 +17,26 @@ namespace Engine
 		class CTexture*	pMtrlTextures[AI_TEXTURE_TYPE_MAX]; //! 어심프라이브러리에서 제공하는 재질 텍스처타입 열거체
 	}MATERIAL_DESC;
 
-	typedef struct tagPassDesc
+// 	typedef struct tagPassDesc
+// 	{
+// 		ID3D11VertexShader* VertexShader = { nullptr };
+// 		ID3D11PixelShader* PixelShader = { nullptr };
+// 		ID3D11InputLayout* layout = { nullptr };
+// 	}PASS_DESC;
+
+	typedef struct
 	{
-		ID3D11VertexShader* VertexShader = { nullptr };
-		ID3D11PixelShader* PixelShader = { nullptr };
-		ID3D11InputLayout* layout = { nullptr };
-	}PASS_DESC;
+		enum TYPE { TYPE_DIRECTIONAL, TYPE_POINT, TYPE_END };
+		TYPE			eType;
+		XMFLOAT4		vDirection;
+		XMFLOAT4		vPosition;
+
+		float			fRange;
+
+		XMFLOAT4		vDiffuse;
+		XMFLOAT4		vAmbient;
+		XMFLOAT4		vSpecular;
+	}LIGHT_DESC;
 
 	typedef struct tagRayDesc
 	{

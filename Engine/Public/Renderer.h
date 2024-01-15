@@ -19,12 +19,25 @@ private:
 public:
 	HRESULT Initialize();
 	HRESULT Add_RenderGroup(RENDERGROUP eGroupID, class CGameObject* pGameObject);
+	HRESULT Add_DebugRender(class CComponent* pDebugCom);
 	HRESULT Draw_RenderGroup();
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
 	ID3D11DeviceContext*		m_pContext = { nullptr };
+	class CGameInstance*		m_pGameInstance = { nullptr };
 	list<class CGameObject*>	m_RenderObjects[RENDER_END]; //! 가장 아래에서 자료구조
+
+#ifdef _DEBUG
+	list<class CComponent*>					m_DebugComponent;
+#endif
+
+private:
+	class CShader* m_pShader = { nullptr };
+	class CVIBuffer_Rect* m_pVIBuffer = { nullptr };
+
+	_float4x4								m_WorldMatrix;
+	_float4x4								m_ViewMatrix, m_ProjMatrix;
 
 private:
 	HRESULT Render_Priority();
@@ -32,6 +45,14 @@ private:
 	HRESULT Render_NonBlend();
 	HRESULT Render_Blend();
 	HRESULT Render_UI();
+
+	HRESULT Render_LightAcc();
+	HRESULT Render_Deferred();
+
+#ifdef _DEBUG
+private:
+	HRESULT Render_Debug();
+#endif	
 
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

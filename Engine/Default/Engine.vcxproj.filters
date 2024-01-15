@@ -181,6 +181,18 @@
     <Filter Include="01. Utility\03. Components\06. Collider\98. Manager">
       <UniqueIdentifier>{0a40f0c0-9cdf-4234-8f1c-6cafc92ddb60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\07. RenderTargets">
+      <UniqueIdentifier>{70aae463-e2a7-4216-9dd4-5427a2542d93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\07. RenderTargets\Manager">
+      <UniqueIdentifier>{03d161ec-f8ff-465f-8d45-dbffa27f8af4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\08. Lights">
+      <UniqueIdentifier>{f905fd08-82a2-4654-9734-9c77c2b9cd4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\08. Lights\Manager">
+      <UniqueIdentifier>{f84ff549-8be2-4052-aae1-a227a64fe8f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -357,12 +369,26 @@
     <ClInclude Include="..\Public\VIBuffer_Field.h">
       <Filter>01. Utility\03. Components\00. VIBuffer\Field</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Collision_Manager.h" />
     <ClInclude Include="..\public\VIBuffer_Particle_Rect.h">
       <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Rect</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Particle_Point.h">
       <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\RenderTarget.h">
+      <Filter>01. Utility\07. RenderTargets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Collision_Manager.h">
+      <Filter>01. Utility\03. Components\06. Collider\98. Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Target_Manager.h">
+      <Filter>01. Utility\07. RenderTargets\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Light_Manager.h">
+      <Filter>01. Utility\08. Lights\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Light.h">
+      <Filter>01. Utility\08. Lights</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -513,16 +539,33 @@
     <ClCompile Include="..\Private\VIBuffer_Field.cpp">
       <Filter>01. Utility\03. Components\00. VIBuffer\Field</Filter>
     </ClCompile>
-    <ClCompile Include="Collision_Manager.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Particle_Rect.cpp">
       <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Rect</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Particle_Point.cpp">
       <Filter>01. Utility\03. Components\00. VIBuffer\Particles\Instancing\Point</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Collision_Manager.cpp">
+      <Filter>01. Utility\03. Components\06. Collider\98. Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RenderTarget.cpp">
+      <Filter>01. Utility\07. RenderTargets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Target_Manager.cpp">
+      <Filter>01. Utility\07. RenderTargets\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Light_Manager.cpp">
+      <Filter>01. Utility\08. Lights\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Light.cpp">
+      <Filter>01. Utility\08. Lights</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Navigation.hlsl">
+      <Filter>98. ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">
       <Filter>98. ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

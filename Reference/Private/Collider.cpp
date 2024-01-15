@@ -106,6 +106,8 @@ HRESULT CCollider::Render()
 	if (nullptr == m_pBounding)
 		return E_FAIL;
 
+	m_pContext->GSSetShader(nullptr, nullptr, 0);
+
 	m_pBatch->Begin();
 
 	m_pEffect->SetWorld(XMMatrixIdentity());
@@ -115,7 +117,6 @@ HRESULT CCollider::Render()
 	m_pContext->IASetInputLayout(m_pInputLayout);
 
 	m_pEffect->Apply(m_pContext);
-
 
 	m_pBounding->Render(m_pBatch, m_isCollision == true ? XMVectorSet(1.f, 0.f, 0.f, 1.f) : XMVectorSet(0.f, 1.f, 0.f, 1.f));
 

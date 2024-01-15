@@ -19,6 +19,8 @@ HRESULT CCustomFont::Initialize(const wstring& strFontFilePath)
 
 HRESULT CCustomFont::Render(const wstring& strText, const _float2& vPosition, _fvector vColor, _float fScale, _float2 vOrigin, _float fRotation)
 {
+	m_pContext->GSSetShader(nullptr, nullptr, 0);
+	
 	m_pBatch->Begin();
 
 	m_pFont->DrawString(m_pBatch, strText.c_str(), vPosition, vColor, fRotation, vOrigin, fScale);
