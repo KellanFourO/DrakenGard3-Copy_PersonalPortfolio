@@ -43,7 +43,7 @@ BrainTree::Node::Status CEN00_Task_KeepEye::Task()
     if (true == m_bMoving)
     {
         pOwnerTransform->Look_At(blackboard->GetTarget()->Get_Transform()->Get_State(CTransform::STATE_POSITION));
-        pOwnerTransform->Go_Right(blackboard->GetTimeDelta());
+        pOwnerTransform->Go_Right(blackboard->GetTimeDelta(), blackboard->GetNavigation());
     }
 
 

@@ -137,7 +137,16 @@ HRESULT CNavigation::Render()
         for (auto& pCell : m_Cells)
         {
             if (nullptr != pCell)
+            {
+                if (true == pCell->Is_Picking())
+                {
+                    vColor = _float4(0.f, 0.f, 1.f, 1.f);
+                    m_pShader->Bind_RawValue("g_vColor", &vColor, sizeof(_float4));
+                }
+                    
+
                 pCell->Render();
+            }
         }
     }
     else
@@ -253,6 +262,7 @@ _float CNavigation::Compute_Height(_float3 vPosition)
 
 HRESULT CNavigation::Make_Neighbors()
 {
+    _bool bAB = false, bBC = false, bCA = false;
 
     //#¼¿ÀÌÁß¼øÈ¸
     for (auto& pSourCell : m_Cells)
@@ -266,24 +276,25 @@ HRESULT CNavigation::Make_Neighbors()
             if (true == pDestCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_A), pSourCell->Get_Point(CCell::POINT_B)))
             {
                pSourCell->SetUp_Neighbor(CCell::LINE_AB, pDestCell);
+               bAB = true;
             }
-//             else
-//                 pSourCell->Reset_Line(CCell::LINE_AB);
+
 
             if (true == pDestCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_B), pSourCell->Get_Point(CCell::POINT_C)))
             {
                 pSourCell->SetUp_Neighbor(CCell::LINE_BC, pDestCell);
+                bBC = true;
             }
-//             else
-//                 pSourCell->Reset_Line(CCell::LINE_BC);
+
 
             if (true == pDestCell->Compare_Points(pSourCell->Get_Point(CCell::POINT_C), pSourCell->Get_Point(CCell::POINT_A)))
             {
                 pSourCell->SetUp_Neighbor(CCell::LINE_CA, pDestCell);
+                bCA = true;
             }
-//             else
-//                 pSourCell->Reset_Line(CCell::LINE_CA);
 
+            if(false == bAB && false == bBC && false == bCA)
+                pSourCell->Reset_Line();
         }
     }
     

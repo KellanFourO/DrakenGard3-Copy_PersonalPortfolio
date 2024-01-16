@@ -21,14 +21,14 @@ HRESULT CPlayerState_Run::Initialize(CPlayer* pPlayer)
 
 	m_fEndTime = 0.25f; //! 일정시간 키 입력 없을시 Idle 상태로 돌아가기.
 	
-
 	return S_OK;
 }
 
 HRESULT CPlayerState_Run::StartState()
 {
 	m_pOwnerModelCom->Set_Animation(76);
-	m_pOwnerTransform->Set_SpeedPerSec(4.f);
+    m_pOwnerModelCom->Set_AnimationSpeed(4.f);
+	m_pOwnerTransform->Set_SpeedPerSec(8.5f);
 	m_pOwnerTransform->Set_RotationPerSec(XMConvertToRadians(90.0f));
 
 	return S_OK;
@@ -128,10 +128,10 @@ void CPlayerState_Run::KeyInput(const _float& fTimeDelta)
 	//	m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_AIR, TEXT("PlayerState_Jump"));
 	//}
     //
-	//if (m_pGameInstance->Mouse_Down(DIM_LB))
-	//{
-	//	m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
-	//}
+	if (m_pGameInstance->Mouse_Down(DIM_LB))
+	{
+		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
+	}
 }
 
 CPlayerState_Run* CPlayerState_Run::Create(CPlayer* pPlayer)

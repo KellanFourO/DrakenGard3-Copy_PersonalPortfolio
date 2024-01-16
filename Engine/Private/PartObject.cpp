@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "Model.h"
 #include "Bone.h"
+#include "Navigation.h"
 
 CPartObject::CPartObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext)
@@ -56,6 +57,9 @@ HRESULT CPartObject::Bind_ShaderResources()
 
 void CPartObject::Free()
 {
+	if(nullptr != m_pParentNavigationCom)
+		Safe_Release(m_pParentNavigationCom);
+
 	Safe_Release(m_pParentTransformCom);
 	Safe_Release(m_pSocketBone);
 	Safe_Release(m_pShaderCom);

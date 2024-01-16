@@ -14,7 +14,6 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	, m_isFinished(rhs.m_isFinished)
 	, m_CurrentKeyFrames(rhs.m_CurrentKeyFrames)
 	, m_fAnimRatio(rhs.m_fAnimRatio)
-	, m_fAnimationSpeed(rhs.m_fAnimationSpeed)
 	, m_iMaxKeyFrame(rhs.m_iMaxKeyFrame)
 	, m_iPrevChannelIndex(rhs.m_iPrevChannelIndex)
 {
@@ -76,7 +75,7 @@ void CAnimation::Reset_Animation()
 	m_iPrevChannelIndex = -1;
 
 	m_isFinished = false;
-	m_fAnimationSpeed = 1.f;
+	
 
 	for (_uint i = 0; i < m_iNumChannels; ++i)
 		m_Channels[i]->Reset_KeyFrame();
@@ -84,11 +83,11 @@ void CAnimation::Reset_Animation()
 
 
 
-_bool CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones)
+_bool CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones, _float fAnimSpeed)
 {
 	
 	/* 애니메이션 지속증가 */
-	m_fTrackPosition += m_fTicksPerSecond * fTimeDelta * m_fAnimationSpeed;
+	m_fTrackPosition += m_fTicksPerSecond * fTimeDelta * fAnimSpeed;
 	m_fAnimRatio = m_fTrackPosition / m_fDuration;
 
 	if (m_fTrackPosition >= m_fDuration)
@@ -129,7 +128,7 @@ CAnimation* CAnimation::Create(const _float& fDuration, const _float& fTickPerSe
 	CAnimation* pInstance = new CAnimation();
 
 	/* 원형객체를 초기화한다.  */
-	if (FAILED(pInstance->Initialize(fDuration,fTickPerSecond,Channels,strName)))
+	if (FAILED(pInstance->Initialize(fDuration, fTickPerSecond, Channels, strName)))
 	{
 		MSG_BOX("Failed to Created : CAnimation");
 		Safe_Release(pInstance);

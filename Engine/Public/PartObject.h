@@ -7,6 +7,7 @@ class CTransform;
 class CBone;
 class CModel;
 class CShader;
+class CNavigation;
 
 class ENGINE_DLL CPartObject abstract : public CGameObject
 {
@@ -14,6 +15,7 @@ public:
 	typedef struct tagPartDesc
 	{
 		class CTransform*	m_pParentTransform	= { nullptr };
+		class CNavigation*	m_pParentNavigation = { nullptr };
 		class CBone*		m_pSocketBone		= { nullptr };
 	}PART_DESC;
 
@@ -39,6 +41,7 @@ protected:
 	_uint				m_eCurrentLevelIndex = 9999;
 
 protected:
+	class CNavigation*	m_pParentNavigationCom = { nullptr };
 	class CTransform*	m_pParentTransformCom	= { nullptr };
 	class CModel*		m_pModelCom				= { nullptr };
 	class CShader*		m_pShaderCom			= { nullptr };

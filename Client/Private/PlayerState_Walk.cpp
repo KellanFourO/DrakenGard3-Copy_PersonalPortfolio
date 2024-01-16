@@ -10,6 +10,7 @@
 #include "Navigation.h"
 #include "RigidBody.h"
 #include "Camera_Target.h"
+#include "Animation.h"
 
 CPlayerState_Walk::CPlayerState_Walk()
 {
@@ -29,7 +30,12 @@ HRESULT CPlayerState_Walk::Initialize(CPlayer* pPlayer)
 HRESULT CPlayerState_Walk::StartState()
 {
 	m_pOwnerModelCom->Set_Animation(67);
-	m_pOwnerTransform->Set_SpeedPerSec(1.f);
+    
+    
+    
+
+    m_pOwnerModelCom->Set_AnimationSpeed(1.5f);
+	m_pOwnerTransform->Set_SpeedPerSec(5.f);
 	m_pOwnerTransform->Set_RotationPerSec(XMConvertToRadians(60.0f));
 
 	return S_OK;
@@ -136,10 +142,10 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
     //    m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_AIR, TEXT("PlayerState_Jump"));
     //}
 
-    //if (m_pGameInstance->Mouse_Down(DIM_LB))
-    //{
-    //    m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
-    //}
+    if (m_pGameInstance->Mouse_Down(DIM_LB))
+    {
+        m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
+    }
 
 
 }

@@ -189,6 +189,8 @@ HRESULT CPlayer::Ready_PartObjects()
 	CPartObject::PART_DESC BodyDesc = {};
 
 	BodyDesc.m_pParentTransform = m_pTransformCom;
+	BodyDesc.m_pParentNavigation = m_pNavigationCom;
+
 	if(FAILED(Add_PartObject(TEXT("Prototype_PartObject_PlayerBody"), TEXT("Part_Body"), &BodyDesc)))
 		return E_FAIL;
 

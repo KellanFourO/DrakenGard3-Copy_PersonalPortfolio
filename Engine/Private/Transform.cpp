@@ -99,57 +99,133 @@ void CTransform::Go_Straight(_float fTimeDelta, class CNavigation* pNavigation)
 	Set_State(STATE_POSITION, vPosition);
 }
 
-void CTransform::Go_Left(_float fTimeDelta)
+void CTransform::Go_Left(_float fTimeDelta, class CNavigation* pNavigation)
 {
 	_vector vPosition = Get_State(STATE_POSITION);
 	_vector vRight = Get_State(STATE_RIGHT);
 
 	vPosition -= XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
 
+	if (nullptr != pNavigation)
+	{
+		if (false == pNavigation->isMove(vPosition))
+			return;
+		else
+		{
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+		}
+	}
+
 	Set_State(STATE_POSITION, vPosition);
 }
 
-void CTransform::Go_Right(_float fTimeDelta)
+void CTransform::Go_Right(_float fTimeDelta, class CNavigation* pNavigation)
 {
 	_vector vPosition = Get_State(STATE_POSITION);
 	_vector vRight = Get_State(STATE_RIGHT);
 
 	vPosition += XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
 
+	if (nullptr != pNavigation)
+	{
+		if (false == pNavigation->isMove(vPosition))
+			return;
+		else
+		{
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+		}
+	}
+
 	Set_State(STATE_POSITION, vPosition);
 }
 
-void CTransform::Go_Backward(_float fTimeDelta)
+void CTransform::Go_Backward(_float fTimeDelta, class CNavigation* pNavigation)
 {
 	//TODO 방향벡터를 만들어서 가게하면된다.
 
 		//! 내 위치 벡터와 룩 벡터를 만들고. 바라보는 방향으로 가게 하는 것.
-	_vector vPostion = Get_State(STATE_POSITION);
+	_vector vPosition = Get_State(STATE_POSITION);
 	_vector vLook = Get_State(STATE_LOOK);
 
 	//! 룩 벡터를 정규화하지 않았다면 바로 그 위치로 이동되버린다. 그래서 정규화 시킨 후에 바라보는 방향을 시간값에 비례한 속도로 이동시키는 것.
-	vPostion -= XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+	vPosition -= XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+
+	if (nullptr != pNavigation)
+	{
+		if (false == pNavigation->isMove(vPosition))
+			return;
+		else
+		{
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+		}
+	}
 
 	//! 위에서 연산을 끝낸 벡터를 실제 월드행렬의 위치벡터에게 적용시킨다. 
-	Set_State(STATE_POSITION, vPostion);
+	Set_State(STATE_POSITION, vPosition);
 }
 
-void CTransform::Go_Up(_float fTimeDelta)
+void CTransform::Go_Up(_float fTimeDelta, class CNavigation* pNavigation)
 {
 	_vector vPosition = Get_State(STATE_POSITION);
 	_vector vUp = Get_State(CTransform::STATE_UP);
 
 	vPosition += XMVector3Normalize(vUp) * m_fSpeedPerSec * fTimeDelta;
 
+	if (nullptr != pNavigation)
+	{
+		if (false == pNavigation->isMove(vPosition))
+			return;
+		else
+		{
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+		}
+	}
+
 	Set_State(STATE_POSITION, vPosition);
 }
 
-void CTransform::Go_Down(_float fTimeDelta)
+void CTransform::Go_Down(_float fTimeDelta, class CNavigation* pNavigation)
 {
 	_vector vPosition = Get_State(STATE_POSITION);
 	_vector vUp = Get_State(CTransform::STATE_UP);
 
+
 	vPosition -= XMVector3Normalize(vUp) * m_fSpeedPerSec * fTimeDelta;
+
+	if (nullptr != pNavigation)
+	{
+		if (false == pNavigation->isMove(vPosition))
+			return;
+		else
+		{
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+		}
+	}
 
 	Set_State(STATE_POSITION, vPosition);
 }

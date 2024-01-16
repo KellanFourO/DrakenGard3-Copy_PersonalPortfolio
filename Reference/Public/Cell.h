@@ -22,11 +22,13 @@ public:
 
 	_int			Get_Index() { return m_iIndex; }
 
+	_bool			Is_Picking() { return m_bPicking; }
+
 public:
 	HRESULT Initialize(const _float3* pPoints, _uint iIndex);
 	_bool	Compare_Points(const _float3* pSourPoint, const _float3* pDestPoint);
 	_bool	isIn(_fvector vPosition, _fmatrix WorldMatrix, _int* pNeighborIndex);
-	void	Reset_Line(LINE eLine) { m_iNeighbors[eLine] = -1; }
+	void	Reset_Line();
 
 	//void    Compute_Height(_float3& vPosition, _float& fY);
 	void	SetUp_Neighbor(LINE eLine, CCell* pNeighborCell)
@@ -46,6 +48,8 @@ private:
 	_int					m_iNeighbors[LINE_END] = { -1, -1, -1};
 	_float3					m_vNormals[LINE_END] = {};
 	_uint					m_iIndex = { 0 };
+
+	_bool					m_bPicking = false;
 
 #ifdef _DEBUG
 private:

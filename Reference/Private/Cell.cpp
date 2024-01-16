@@ -14,6 +14,7 @@ CCell::CCell(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	Safe_AddRef(m_pContext);
 }
 
+
 HRESULT CCell::Initialize(const _float3* pPoints, _uint iIndex)
 {
 	memcpy(m_vPoints, pPoints, sizeof(_float3) * POINT_END);
@@ -109,6 +110,14 @@ _bool CCell::isIn(_fvector vPosition, _fmatrix WorldMatrix, _int* pNeighborIndex
 	}
 
 	return true;
+}
+
+void CCell::Reset_Line()
+{
+	for (_int i = 0; i < LINE_END; ++i)
+	{
+		m_iNeighbors[i] = -1;
+	}
 }
 
 //void CCell::Compute_Height(_float3& vPosition, _float& fY)

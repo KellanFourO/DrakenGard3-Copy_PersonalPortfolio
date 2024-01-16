@@ -41,6 +41,8 @@ public:
 	_int	Get_IndexFromAnimName(const _char* In_szAnimName);
 	_uint	Get_CurrentAnimationKeyIndex() const;
 
+	_bool	is_BlendFinished() { return m_isBlend;}
+
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);
 	virtual HRESULT Initialize(void* pArg);
@@ -94,6 +96,7 @@ private:
 	_bool						m_isLoop = { true };
 	_bool						m_isFinished = { false };
 
+	_float						m_fAnimationSpeed = 1.5f;
 
 	_float3						m_vPrevRootPosition = { 0.f, 0.f, 0.f };
 	_float3						m_vCurrentRootPosition = { 0.f, 0.f, 0.f };

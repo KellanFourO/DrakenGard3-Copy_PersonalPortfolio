@@ -263,7 +263,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree()
 	EN00_BlackBoard->setString("Name", "EN00");
 	EN00_BlackBoard->setFloat("Max_HP", 100.f);
 	EN00_BlackBoard->setFloat("Current_HP", 100.f);
-	EN00_BlackBoard->setFloat("Attack_Range", 2.f);
+	EN00_BlackBoard->setFloat("Attack_Range", 3.f);
 	EN00_BlackBoard->setFloat("Detect_Range", 5.f);
 	EN00_BlackBoard->setFloat3("TargetPostion", _float3(0.f, 0.f, 0.f));
 

@@ -13,7 +13,7 @@ BrainTree::Node::Status CEN00_Task_MoveToTarget::Task()
     NotLoop();
     SetAnimation(3);
     
-    blackboard->GetTransform()->Set_SpeedPerSec(2.f);
+    blackboard->GetTransform()->Set_SpeedPerSec(5.f);
     blackboard->GetTransform()->Set_RotationPerSec(XMConvertToRadians(55.f));
     
 

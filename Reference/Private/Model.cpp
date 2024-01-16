@@ -31,6 +31,7 @@ CModel::CModel(const CModel& rhs)
 	//! 마찬가지 , m_Animations(rhs.m_Animations)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
 	, m_tDataFilePath(rhs.m_tDataFilePath)
+	, m_fAnimationSpeed(rhs.m_fAnimationSpeed)
 {
 	//! 애니메이션도 공유되버리면서 m_fTrackposition의 값이 누적되버리면서 속도가 점점 빨라지는 것이다. 깊은 복제 빼버리자.
 	for (auto& pProtoAnimation : rhs.m_Animations)
@@ -144,10 +145,7 @@ void CModel::Set_Animation(_uint iAnimIndex, _uint iStartKeyIndex, _float fBlend
 
 void CModel::Set_AnimationSpeed(_float fAnimationSpeed)
 {
-	for (size_t i = 0; i < m_Animations.size(); i++)
-	{
-		m_Animations[i]->Set_AnimationSpeed(fAnimationSpeed);
-	}
+	m_fAnimationSpeed = fAnimationSpeed;
 }
 
 void CModel::Root_Motion(CTransform* pTransform)
@@ -305,7 +303,7 @@ void CModel::Play_Animation(_float fTimeDelta, _float3& vRootOutPos)
 		if (m_fMaxBlendTime < DBL_EPSILON || m_fCurrentBlendTime >= m_fMaxBlendTime)
 		{
 			/* DBL_EPSILON : 부동 소수점 연산에서 표현 가능한 가장 작은 양의 값 (거의 0 근사) || 애니메이션이 한번 수행함 */
-			m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(m_isLoop, fTimeDelta, m_Bones);
+			m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(m_isLoop, fTimeDelta, m_Bones, m_fAnimationSpeed);
 			m_isBlend = false;
 			m_Animations[m_iCurrentAnimIndex]->Set_TrackPosition(m_fCurrentBlendTime);
 		}
@@ -322,7 +320,7 @@ void CModel::Play_Animation(_float fTimeDelta, _float3& vRootOutPos)
 	}
 	else
 	{
-		m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(m_isLoop, fTimeDelta, m_Bones);
+		m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(m_isLoop, fTimeDelta, m_Bones, m_fAnimationSpeed);
 	}
 
 

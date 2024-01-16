@@ -20,10 +20,13 @@ public:
 	_uint						Get_iNumChannels() { return m_iNumChannels; }
 	vector<_uint>&				Get_CurrentKeyFrames() { return m_CurrentKeyFrames; }
 	vector<class CChannel*>&	Get_Channels() { return m_Channels;}
+
+	void						Set_Duration(_float fDuration) { m_fDuration = fDuration; }
+	void						Set_AbsoluteDuration(_float fAbsolute) { m_fAbsoulteDuration = fAbsolute; }
 	
 	void						Set_StartAnimationKey(_uint iKeyIndex) { m_fTrackPosition = (m_fDuration / m_iMaxKeyFrame) * iKeyIndex; }
 	void						Set_TrackPosition(_float fTrackposition) { m_fTrackPosition = fTrackposition; }
-	void						Set_AnimationSpeed(_float fAnimationSpeed) { m_fAnimationSpeed = fAnimationSpeed; }
+	
 	_bool						Get_Finished() { return m_isFinished; }
 
 	_float						Get_AnimRatio() { return m_fAnimRatio; }
@@ -34,7 +37,7 @@ public:
 	HRESULT Initialize(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName);
 
 public:
-	_bool	Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones);
+	_bool	Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones, _float fAnimSpeed = 5.f);
 	void	Blend_TransformationMatrix(_float fMaxBlendTime, _float fRatio, const CModel::BONES& Bones);
 	void	Reset_Animation();
 
@@ -43,12 +46,12 @@ public:
 private:
 	_char					m_szName[MAX_PATH] = "";
 	_float					m_fDuration = { 0.0f };			//! 해당 애니메이션의 전체 길이
+	_float					m_fAbsoulteDuration = { 0.f };
 	_float					m_fTicksPerSecond = { 0.f };	//! 애니메이션의 재생속도
 	_float					m_fTrackPosition = { 0.f };		//! 현재 애니메이션이 재생되고 있는 위치
 	_uint					m_iNumChannels = { 0 };			//! 해당 애니메이션이 사용하는 뼈의 갯수.
 
 	//TODO 애니메이션 변수
-	_float					m_fAnimationSpeed = 5.f;
 	_float4					m_RootMotionPos;
 	_float4					m_vBeginRootBonePos = _float4(0.f, 0.f, 0.f, 1.f);
 	_double					m_RootMotionValue = 1.0;

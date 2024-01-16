@@ -14,6 +14,7 @@ private:
 
 public:
 	void	Set_Loop(_bool bLoop) { m_bLoop = bLoop; }
+	
 
 
 public:
@@ -30,7 +31,10 @@ public:
 	virtual void Init_Desc();
 
 
-_bool			m_bLoop = true;
+private:
+	_bool			m_bLoop = true;
+	
+
 
 public:
 	/* 원형객체를 생성한다. */

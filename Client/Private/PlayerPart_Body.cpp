@@ -28,8 +28,12 @@ HRESULT CPlayerPart_Body::Initialize(void* pArg)
 	
 
 	m_pParentTransformCom = ((PART_DESC*)pArg)->m_pParentTransform;
+	m_pParentNavigationCom = ((PART_DESC*)pArg)->m_pParentNavigation;
 
 	if (FAILED(AddRefIfNotNull(m_pParentTransformCom)))
+		return E_FAIL;
+
+	if (FAILED(AddRefIfNotNull(m_pParentNavigationCom)))
 		return E_FAIL;
 
 	if (FAILED(__super::Initialize(pArg)))
@@ -59,7 +63,15 @@ void CPlayerPart_Body::Tick(_float fTimeDelta)
 	_float3 vTest = vPos;
 	_int i = 0;
 
-	m_pParentTransformCom->Add_LookPos(vPos);
+	_vector vRealPos = m_pParentTransformCom->Get_State(CTransform::STATE_POSITION);
+
+	vRealPos.m128_f32[0] += vPos.x;
+	vRealPos.m128_f32[1] += vPos.y;
+	vRealPos.m128_f32[2] += vPos.z;
+	vRealPos.m128_f32[3] = 1.f;
+
+	if(true == m_pParentNavigationCom->isMove(vRealPos))
+		m_pParentTransformCom->Add_LookPos(vPos);
 }
 
 void CPlayerPart_Body::Late_Tick(_float fTimeDelta)
