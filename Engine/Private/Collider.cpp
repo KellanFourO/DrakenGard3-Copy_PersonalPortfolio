@@ -114,6 +114,7 @@ HRESULT CCollider::Render()
 	m_pEffect->SetView(m_pGameInstance->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
 	m_pEffect->SetProjection(m_pGameInstance->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
 
+
 	m_pContext->IASetInputLayout(m_pInputLayout);
 
 	m_pEffect->Apply(m_pContext);

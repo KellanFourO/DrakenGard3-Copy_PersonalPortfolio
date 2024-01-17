@@ -1,7 +1,7 @@
 #pragma once
 #include "PlayerState_Base.h"
 
-BEGIN(Client)
+BEGIN(Client)		
 class CPlayer;
 
 class CPlayerState_Idle final : public CPlayerState_Base 
@@ -16,6 +16,9 @@ public:
 	virtual HRESULT EndState() override;
 
 	virtual void	Tick(const _float& fTimeDelta) override;
+
+private:
+	_bool			m_bLookAtCamLook = false;
 
 private:
 	virtual void	KeyInput(const _float& fTimeDelta) override;

@@ -26,14 +26,16 @@ HRESULT CPlayerState_Attack8::Initialize(CPlayer* pPlayer)
 
 HRESULT CPlayerState_Attack8::StartState()
 {
+	m_pOwnerModelCom->Set_AnimationSpeed(1.75f);
 	m_pOwnerModelCom->Set_Animation(104);
 	m_pOwnerModelCom->Set_Loop(false);
+	m_pOwnerModelCom->Root_MotionStart();
 	return S_OK;
 }
 
 HRESULT CPlayerState_Attack8::EndState()
 {
-
+	__super::EndState();
 	m_fAccTime = 0.f;
 	m_fLastInputTime = 0.f;
 	m_isEnd = false;

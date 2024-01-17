@@ -40,8 +40,8 @@ void CCamera_Dynamic::Priority_Tick(_float fTimeDelta)
 
 void CCamera_Dynamic::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_TAB))
-		m_bAdmin = !m_bAdmin;
+	//if (m_pGameInstance->Key_Down(DIK_TAB))
+	//	m_bAdmin = !m_bAdmin;
 	
 
 	if (!m_bAdmin)

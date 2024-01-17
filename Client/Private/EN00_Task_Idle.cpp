@@ -10,10 +10,15 @@ BrainTree::Node::Status CEN00_Task_Idle::update()
 BrainTree::Node::Status CEN00_Task_Idle::Task()
 {
     SetAnimation(0);
-    
-    
-    if(true == EndAnim())
+
+
+    if (true == blackboard->getBool("Is_Patrol"))
+    {
         return BrainTree::Node::Status::Success;
+    }
     else
-        return BrainTree::Node::Status::Running;
+        return BrainTree::Node::Status::Failure;
+    
+    
+    
 }

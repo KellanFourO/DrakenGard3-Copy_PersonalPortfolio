@@ -232,9 +232,6 @@
     <Filter Include="02. GameObjects\98. NonAnimObject\05. Barricade\Broken">
       <UniqueIdentifier>{cdc1ed2f-a42d-4a1a-bdf3-a2ec61e6b2f9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\98. NonAnimObject\00. Map\BaseRoad">
-      <UniqueIdentifier>{77ae4e73-bc18-4a62-9010-1336f3d8bc59}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\98. NonAnimObject\99. EnvironmentObject">
       <UniqueIdentifier>{203f6293-1a54-49e6-bfc0-9780067891ff}</UniqueIdentifier>
     </Filter>
@@ -417,9 +414,6 @@
     <ClInclude Include="..\Public\MonsterPart_EN00_Weapon.h">
       <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\01. Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\PlayerState_Attack3_End.h">
-      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\PlayerGroundStates.h">
       <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground</Filter>
     </ClInclude>
@@ -524,9 +518,6 @@
     </ClInclude>
     <ClInclude Include="AnimObjects.h">
       <Filter>02. GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Environment_BaseRoad.h">
-      <Filter>02. GameObjects\98. NonAnimObject\00. Map\BaseRoad</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Environment_Barricade.h">
       <Filter>02. GameObjects\98. NonAnimObject\05. Barricade</Filter>
@@ -677,9 +668,6 @@
     <ClCompile Include="..\Private\MonsterPart_EN00_Weapon.cpp">
       <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\01. Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\PlayerState_Attack3_End.cpp">
-      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\PlayerState_NormalAttackBase.cpp">
       <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack</Filter>
     </ClCompile>
@@ -772,9 +760,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Field.cpp">
       <Filter>96. Tool\01. Field</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Environment_BaseRoad.cpp">
-      <Filter>02. GameObjects\98. NonAnimObject\00. Map\BaseRoad</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Environment_BrokenBarricade.cpp">
       <Filter>02. GameObjects\98. NonAnimObject\05. Barricade\Broken</Filter>

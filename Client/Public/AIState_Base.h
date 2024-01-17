@@ -11,6 +11,7 @@ class CTransform;
 class CRigidBody;
 class CGameObject;
 class CGameInstance;
+
 END
 
 BEGIN(Client)
@@ -26,6 +27,7 @@ protected:
 	_bool		Detect(CGameObject* pTarget, const string& strDetectRangeKey);
 	_vector		Chase(CGameObject* pTarget);
 	_bool		AttackEnable(_float3 vDistance, const string& strAttackRangeKey);
+	void		KeepEye(CGameObject* pTarget);
 
 
 protected:

@@ -38,6 +38,7 @@ public:
     _bool   Mouse_Pressing(MOUSEKEYSTATE eMouse);
     _bool   Mouse_Down(MOUSEKEYSTATE eMouse);
     _bool   Mouse_Up(MOUSEKEYSTATE eMouse);
+    void    Mouse_Fix();
 
     _byte   Get_DIKeyState(_ubyte byKeyID)
     {
@@ -71,6 +72,7 @@ private:
     _byte                m_byKeyState[256];
     DIMOUSESTATE         m_tMouseState;
     _bool                m_bMouseData[DIM_END];
+    HWND                 m_Hwnd;
 
 
 

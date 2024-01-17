@@ -33,5 +33,5 @@ _bool CEN00_Control_Arrival::Control_Function()
 		return pOwnerTransform->HasArrived(vCurrentPos, vTargetPos, 5.f);
 	}
 	else
-		return false;
+		return true;
 }

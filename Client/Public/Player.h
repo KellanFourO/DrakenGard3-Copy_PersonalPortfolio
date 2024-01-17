@@ -14,8 +14,9 @@ END
 
 BEGIN(Client)
 
-
+class CCamera_Target;
 class CPlayerPart_Body;
+
 
 
 class CPlayer final : public CAnimObject
@@ -37,7 +38,7 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	class CCamera_Target*	Get_Cam() { return m_pCamera; }
+	CCamera_Target*	Get_Cam() { return m_pCamera; }
 	void					Set_Cam(class CCamera_Target* pCam);
 	CPartObject*			Find_PartObject(const wstring& strPartTag);
 	LEVEL					Get_LevelID() { return m_eCurrentLevelID; }
@@ -57,7 +58,7 @@ private:
 	CRigidBody*			m_pRigidBodyCom  = { nullptr };
 	CStateMachine*		m_pStateCom		 = { nullptr };
 
-	class CCamera_Target*		m_pCamera		= { nullptr };
+	CCamera_Target*		m_pCamera		= { nullptr };
 private:
 	_bool				m_bAdmin = false;
 	_float				m_fAccTime = 0.f;

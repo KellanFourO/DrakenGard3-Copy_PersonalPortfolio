@@ -3,6 +3,7 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "Animation.h"
+#include "Navigation.h"
 
 BrainTree::Node::Status CAIState_Base::update()
 {
@@ -68,4 +69,32 @@ _bool CAIState_Base::AttackEnable(_float3 vDistance, const string& strAttackRang
 	}
 
 	return false;
+}
+
+void CAIState_Base::KeepEye(CGameObject* pTarget)
+{
+	_vector vTargetPos = pTarget->Get_Transform()->Get_State(CTransform::STATE_POSITION);
+	CTransform* pTransform = blackboard->GetTransform();
+
+
+
+	_vector vPosition = pTransform->Get_State(CTransform::STATE_POSITION);
+	_vector vRight = pTransform->Get_State(CTransform::STATE_RIGHT);
+
+	vPosition += XMVector3Normalize(vRight) * blackboard->getFloat("Speed") * blackboard->GetTimeDelta();
+
+	CNavigation* pNavigation = blackboard->GetNavigation();
+
+	if (nullptr != pNavigation)
+	{
+
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+	}
+	pTransform->Look_At(vTargetPos);
+	pTransform->Set_State(CTransform::STATE_POSITION, vPosition);
 }

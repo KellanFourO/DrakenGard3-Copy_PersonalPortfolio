@@ -9,10 +9,14 @@ BrainTree::Node::Status CEN00_Task_UpperAttack::update()
 
 BrainTree::Node::Status CEN00_Task_UpperAttack::Task()
 {
+    NotLoop();
     SetAnimation(15);
-
-    if(true == EndAnim())
+    OneLook();
+    if (true == EndAnim())
+    {
+        m_bOneTick = true;
         return BrainTree::Node::Status::Success;
+    }
     else
         return BrainTree::Node::Status::Running;
     

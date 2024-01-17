@@ -66,6 +66,46 @@ namespace Engine
 		return S_OK;
 	}
 
+	template<typename T>
+	T Random(initializer_list<T> _il)
+	{
+		assert(0 < _il.size());
+
+		auto it = _il.begin();
+		std::advance(it, rand() % _il.size());
+
+		return *it;
+	}
+
+	template<typename T>
+	typename std::enable_if<std::is_arithmetic<T>::value || std::is_enum<T>::value, _bool>::type
+		InRange(T value, T low, T high, const string& range = "[)")
+	{
+		if (range == "()") {
+			return value > low && value < high;
+		}
+		else if (range == "(]") {
+			return value > low && value <= high;
+		}
+		else if (range == "[)") {
+			return value >= low && value < high;
+		}
+		else if (range == "[]") {
+			return value >= low && value <= high;
+		}
+		else
+		{
+			throw std::invalid_argument("Function::InRange: Invalid Range Option");
+		}
+	}
+
+	template<typename T>
+	typename std::enable_if<std::is_arithmetic<T>::value, T>::type
+		Clamp(T low, T high, T value)
+	{
+		return min(max(value, low), high);
+	}
+
 #pragma region 컴파일러용 캐스팅 함수
 	// static_cast
 	template<typename Return, typename T>

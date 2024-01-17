@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Camera_Target.h"
 #include "GameInstance.h"
-#include "GameObject.h"
+
 #include "Transform.h"
 #include "Player.h"
 
@@ -40,7 +40,7 @@ HRESULT CCamera_Target::Initialize(void* pArg)
 	m_fSpringConstant = 500.f;
 	m_fDampConstant = 2.0f * sqrt(m_fSpringConstant);
 
-	XMStoreFloat3(&m_vOffset, XMVectorSet(0.f, 3.f, -3.f, 0.f));
+	XMStoreFloat3(&m_vOffset, XMVectorSet(0.f, 5.f, -5.f, 0.f));
 
 	CTransform* pTargetTransform = m_pTarget->Get_Transform();
 
@@ -62,15 +62,27 @@ void CCamera_Target::Priority_Tick(_float fTimeDelta)
 
 void CCamera_Target::Tick(_float fTimeDelta)
 {
+	
+	
+	
+}
+
+void CCamera_Target::Late_Tick(_float fTimeDelta)
+{
 	if (m_pTarget != nullptr)
 	{
+
+		if (m_pGameInstance->Key_Down(DIK_R))
+			m_bMouseFix = !m_bMouseFix;
+
+		if (true == m_bMouseFix)
+			m_pGameInstance->Mouse_Fix();
+
 		LEVEL eTargetLevel = dynamic_cast<CPlayer*>(m_pTarget)->Get_LevelID();
 
 		if (eTargetLevel != LEVEL_TOOL)
 		{
-			if (m_pGameInstance->Key_Down(DIK_TAB))
-				m_bAdmin = !m_bAdmin;
-
+			
 
 			_vector vActualPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);  //! 이게 현재 위치
 			XMStoreFloat3(&m_vActualPos, vActualPos);
@@ -104,8 +116,8 @@ void CCamera_Target::Tick(_float fTimeDelta)
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, vActualPos); //! 실제위치 셋.
 			//XMStoreFloat3(&m_vTargetPos, vLookActualPos);
 
-			m_pTransformCom->Look_At(vLookDisplacement);
-			//m_pTransformCom->Look_At(XMLoadFloat3(&m_vTargetPos));
+			//m_pTransformCom->Look_At(vLookDisplacement);
+			m_pTransformCom->Look_At(vTargetPos);
 			//! 타겟 포지션 룩엣도 보정을 해줘야한다.
 
 
@@ -113,12 +125,6 @@ void CCamera_Target::Tick(_float fTimeDelta)
 			__super::Tick(fTimeDelta);
 		}
 	}
-	
-	
-}
-
-void CCamera_Target::Late_Tick(_float fTimeDelta)
-{
 }
 
 void CCamera_Target::KeyInput(_float fTimeDelta)

@@ -4,6 +4,7 @@
 #include "Animation.h"
 #include "StateMachine.h"
 #include "GameInstance.h"
+#include "Camera_Target.h"
 
 CPlayerState_NormalAttackBase::CPlayerState_NormalAttackBase()
 {
@@ -20,12 +21,14 @@ HRESULT CPlayerState_NormalAttackBase::Initialize(CPlayer* pPlayer)
 
 HRESULT CPlayerState_NormalAttackBase::StartState()
 {
-        
+    m_pOwnerModelCom->Set_AnimationSpeed(2.f);
+
     return S_OK;
 }
 
 HRESULT CPlayerState_NormalAttackBase::EndState()
 {
+    m_pOwnerModelCom->Reset_AnimationSpeed();
     return S_OK;
 }
 
@@ -36,6 +39,11 @@ void CPlayerState_NormalAttackBase::Tick(const _float& fTimeDelta)
 
 void CPlayerState_NormalAttackBase::NextComboOrIdle(CModel* pOwnerModel, class CStateMachine* pOwnerStateMachine, const wstring& strNextComboStateTag, _int iEndAnimIndex)
 {
+    _float3 vCamLook;
+    XMStoreFloat3(&vCamLook, m_pOwnerCam->Get_Transform()->Get_State(CTransform::STATE_LOOK));
+
+    m_pOwnerTransform->Look_At_CamLook(vCamLook);
+
     //! 콤보공격 중 선입력을 받자
     if (m_pGameInstance->Mouse_Down(DIM_LB))
     {
@@ -48,13 +56,14 @@ void CPlayerState_NormalAttackBase::NextComboOrIdle(CModel* pOwnerModel, class C
        //! 선입력이 있었다면
         if (true == m_bInput)
         {
+            
             pOwnerStateMachine->Transition(CStateMachine::STATE_GROUND, strNextComboStateTag);
         }
         ////! 선입력이 없었다면
         else if(false == m_bInput)
         {
-            pOwnerModel->Set_Animation(iEndAnimIndex);
             m_pOwnerModelCom->Root_MotionEnd();
+            pOwnerModel->Set_Animation(iEndAnimIndex);
             m_isEnd = true;
         }
             
@@ -64,7 +73,8 @@ void CPlayerState_NormalAttackBase::NextComboOrIdle(CModel* pOwnerModel, class C
     if (true == m_isEnd && true == m_pOwnerModelCom->Get_CurrentAnimation()->Get_Finished())
     {
         pOwnerStateMachine->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_Idle"));
-        m_pOwnerModelCom->Root_MotionStart();
+        m_pOwnerModelCom->Root_MotionEnd();
+        
     }
 
     

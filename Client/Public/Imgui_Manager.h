@@ -3,6 +3,11 @@
 #include "Client_Defines.h"
 #include "GameObject.h"
 
+BEGIN(Engine)
+class CCell;
+class CNavigation;
+END
+
 BEGIN(Client)
 class CImgui_Manager final : public CBase
 {
@@ -52,7 +57,7 @@ private:
 	class CDynamic_Terrain* m_pDynamic_Terrain = { nullptr };
 	class CField*	m_pField = { nullptr };
 	class CCamera_MapTool* m_pCamera = { nullptr };
-	class CNavigation*		m_pNavigation = { nullptr };
+	CNavigation*		m_pNavigation = { nullptr };
 	
 private:
 	ID3D11Device* m_pDevice = { nullptr };
@@ -196,24 +201,36 @@ private: //TODO 내비게이션 툴 #내비게이션툴
 	void					ImGui_NaviToolTick();
 	void					Create_Navi_Mode_Tick();
 	void					Delete_Navi_Mode_Tick();
+	void					Select_Navi_CellModeTick();
 	void					Set_CCW(_float3* vPoint);
 	void					Reset_NaviPicking();
 	void					Find_NearPointPos(_float3* fPickedPos);
-	CCell*					Find_NearCell(_float3 fPickedPos);
+	class CCell*			Find_NearCell(_float3 fPickedPos);
 
 	void					SaveNavi(string strFullPath);
 	void					LoadNavi(string strFullPath);
+
+	void					LoadCells();
+	
 
 private:
 	_int						m_iNaviToolMode = 0;
 	_int						m_iCurrentPickingIndex = 0;
 	_int						m_iTargetIndex = 0;
 	_int						m_iNaviIndex = 0;
+	_int						m_iCellIndex = 0;
+	_int						m_iPointIndex = 0;
+
+	
+
 	_float3						m_fNaviPickingPos;
 	_float						m_fCombinationRange = 3.f; //! 결합 범위
 
 	class CGameObject*			m_pNaviTargetObject = nullptr;
 	
+	vector<CCell*>				m_vecCells;
+	vector<string>				m_vecCellIndexs;
+
 	vector<_float3>				m_vecPickedPoints;
 	vector<string>				m_vecPickingListBox;
 	_int						m_iNaviPickingIndex = 0;

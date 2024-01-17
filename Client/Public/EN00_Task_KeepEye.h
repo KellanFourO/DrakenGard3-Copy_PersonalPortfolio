@@ -14,6 +14,7 @@ private:
 
 private:
 	_bool	m_bMoving = false;	
+	_uint	m_iRandomAnimIndex = -1;
 };
 
 END

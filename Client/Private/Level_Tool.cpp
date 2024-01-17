@@ -31,6 +31,18 @@ HRESULT CLevel_Tool::Initialize()
 	
 		return E_FAIL;
 	}
+
+	LIGHT_DESC			LightDesc{};
+
+	LightDesc.eType = LIGHT_DESC::TYPE_DIRECTIONAL;
+	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	LightDesc.vDiffuse = _float4(0.8f, 0.8f, 0.8f, 1.f);
+	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+
+	if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+		return E_FAIL;
+
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 

@@ -26,7 +26,7 @@ _bool CEN00_Control_AttackRange::Control_Function()
 	_float3 vDistance;
 	XMStoreFloat3(&vDistance, XMVector3Length(vTargetPos - vOwnerPos));
 
-	if (XMVectorGetX(XMLoadFloat3(&vDistance)) < blackboard->getFloat("Attack_Range"))
+	if (XMVectorGetX(XMLoadFloat3(&vDistance)) < blackboard->getFloat("Keep_Range"))
 	{
 		m_bCheck = true;
 	}

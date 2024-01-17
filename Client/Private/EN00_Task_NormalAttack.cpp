@@ -9,10 +9,12 @@ BrainTree::Node::Status CEN00_Task_NormalAttack::update()
 
 BrainTree::Node::Status CEN00_Task_NormalAttack::Task()
 {
+    NotLoop();
+
     if (true == m_bOneTick)
     {
         SetAnimation(7);
-        m_bOneTick = false;
+        OneLook();
     }
 
     if (false == m_bOneTick && true == EndAnim())

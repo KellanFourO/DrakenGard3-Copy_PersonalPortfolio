@@ -1502,8 +1502,12 @@ void CImgui_Manager::LoadNonAnimObject(string strPath, string strFileName)
 		pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
 
 		m_vecNonAnimObjects.push_back(pGameObject);
-
 	}
+
+	m_pNaviTargetObject = m_vecNonAnimObjects[0];
+	m_iTargetIndex = 0;
+	m_pNavigation = dynamic_cast<CEnvironment_Object*>(m_pNaviTargetObject)->Get_NaviCom();
+	LoadCells();
 }
 
 void CImgui_Manager::ClearAnimObjects()
@@ -2217,7 +2221,7 @@ void CImgui_Manager::ImGui_NaviToolTick()
 
 		if (ImGui::Button(u8"저장하기")) { m_eDialogMode = CImgui_Manager::DIALOG_SAVE; OpenDialog(m_eToolID); } ImGui::SameLine(); if (ImGui::Button(u8"불러오기")) { m_eDialogMode = CImgui_Manager::DIALOG_LOAD; OpenDialog(m_eToolID); }
 
-		ImGui::RadioButton(u8"만들기", &m_iNaviToolMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"삭제", &m_iNaviToolMode, 1);
+		ImGui::RadioButton(u8"만들기", &m_iNaviToolMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"선택", &m_iNaviToolMode, 1);  ImGui::SameLine(); ImGui::RadioButton(u8"삭제", &m_iNaviToolMode, 2);
 
 		ImGui::Text(u8"마우스 X : %f", m_fNaviPickingPos.x);
 		ImGui::Text(u8"마우스 Y : %f", m_fNaviPickingPos.y);
@@ -2230,11 +2234,18 @@ void CImgui_Manager::ImGui_NaviToolTick()
 
 		else if (m_iNaviToolMode == 1)
 		{
+			Select_Navi_CellModeTick();
+		}
+
+		else if (m_iNaviToolMode == 2)
+		{
 			Delete_Navi_Mode_Tick();
 		}
 
+#ifdef _DEBUG
 		if(nullptr != m_pNavigation)
 		m_pNavigation->Render();
+#endif
 
 		ImGui::EndTabItem();
 	}
@@ -2299,6 +2310,18 @@ void CImgui_Manager::Create_Navi_Mode_Tick()
 				ImGui::Text(u8"픽킹 X : %f", m_vecPickedPoints[m_iNaviListBoxIndex].x);
 				ImGui::Text(u8"픽킹 Y : %f", m_vecPickedPoints[m_iNaviListBoxIndex].y);
 				ImGui::Text(u8"픽킹 Z : %f", m_vecPickedPoints[m_iNaviListBoxIndex].z);
+
+				_float vPoints[3] = { m_vecPickedPoints[m_iNaviListBoxIndex].x, m_vecPickedPoints[m_iNaviListBoxIndex].y, m_vecPickedPoints[m_iNaviListBoxIndex].z };
+				
+				if (ImGui::InputFloat3(u8"포인트값변경", vPoints))
+				{
+					m_vecPickedPoints[m_iNaviListBoxIndex].x = vPoints[0];
+					m_vecPickedPoints[m_iNaviListBoxIndex].y = vPoints[1];
+					m_vecPickedPoints[m_iNaviListBoxIndex].z = vPoints[2];
+				}
+
+				
+				
 			}
 
 			if (ImGui::Button(u8"픽킹인덱스 삭제"))
@@ -2485,6 +2508,91 @@ void CImgui_Manager::Delete_Navi_Mode_Tick()
 	
 }
 
+void CImgui_Manager::Select_Navi_CellModeTick()
+{
+
+	if (m_pGameInstance->Mouse_Down(DIM_LB) && true == ImGui_MouseInCheck())
+	{
+		_bool bIsPicking = false;
+		_float3 fPickedPos = {};
+
+		if (m_pNaviTargetObject->Picking(_float3(), dynamic_cast<CModel*>(m_pNaviTargetObject->Find_Component(TEXT("Com_Model"))), &fPickedPos))
+		{
+			Find_NearPointPos(&fPickedPos);
+
+			m_fNaviPickingPos = fPickedPos;
+			bIsPicking = true;
+		}
+
+		if (true == bIsPicking)
+		{
+			CCell* pTargetCell = Find_NearCell(fPickedPos);
+
+			if (nullptr == pTargetCell)
+				return;
+
+			m_iCellIndex = pTargetCell->Get_Index();
+			m_vecCells[m_iCellIndex]->Set_Picking(true);
+		}
+	}
+	
+
+	_int iCellSize = m_vecCellIndexs.size();
+
+	if (nullptr != m_pNaviTargetObject)
+	{
+		if (ImGui::BeginListBox(u8""))
+		{
+			for (_int i = 0; i < iCellSize; ++i)
+			{
+				const _bool isSelected = (m_iCellIndex == i);
+
+				if (ImGui::Selectable(m_vecCellIndexs[i].c_str(), isSelected))
+				{
+					
+					m_iCellIndex = i;
+
+					m_vecCells[m_iCellIndex]->Set_Picking(true);
+					
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+
+				if(i == m_iCellIndex)
+					continue;
+				else
+					m_vecCells[i]->Set_Picking(false);
+			
+				
+			}
+
+			ImGui::EndListBox();
+		}
+
+		ImGui::RadioButton(u8"포인트 A", &m_iPointIndex, 0); ImGui::SameLine(); ImGui::RadioButton(u8"포인트 B", &m_iPointIndex, 1);  ImGui::SameLine(); ImGui::RadioButton(u8"포인트 C", &m_iPointIndex, 2);
+
+		ImGui::NewLine();
+		
+		_float3 vPoint = *m_vecCells[m_iCellIndex]->Get_Point((CCell::POINT)m_iPointIndex);
+
+		_float vPoints[3] = { vPoint.x, vPoint.y, vPoint.z };
+
+		if (ImGui::DragFloat3(u8"포인트값변경", vPoints, 0.1f))
+		{
+			_float3 vPassPoint = { vPoints[0], vPoints[1], vPoints[2] };
+
+			//m_vecCells[m_iCellIndex]->Set_Point(CCell::POINT_A, vPassPoint);
+			//m_vecCells[m_iCellIndex]->Set_Point((CCell::POINT)m_iPointIndex, vPassPoint);
+
+			m_pNavigation->InRangeCellChange(m_vecCells[m_iCellIndex], m_iPointIndex, vPassPoint);
+		}
+
+	}
+
+	
+
+}
+
 void CImgui_Manager::Set_CCW(_float3* vPoint)
 {
 	_vector vPositionFromVector[3];
@@ -2630,6 +2738,20 @@ void CImgui_Manager::SaveNavi(string strFullPath)
 
 void CImgui_Manager::LoadNavi(string strFullPath)
 {
+}
+
+void CImgui_Manager::LoadCells()
+{
+	vector<CCell*> vecCells = m_pNavigation->Get_Cells();
+
+	_int iCellSize = vecCells.size();
+
+	for (_int i = 0; i < iCellSize; ++i)
+	{
+		m_vecCells.push_back(vecCells[i]);
+		m_vecCellIndexs.push_back(to_string(m_vecCells[i]->Get_Index()));
+	}
+
 }
 
 wstring CImgui_Manager::SliceObjectTag(const wstring& strObjectTag)

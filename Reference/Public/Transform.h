@@ -105,9 +105,17 @@ public:
 	void    Add_LookPos(_float3& _vAddPos);
 
 public:
+	void	Go_Player_Straight(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
+	void	Go_Player_Left(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
+	void	Go_Player_Right(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
+	void	Go_Player_Backward(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
+	void	Go_Player_Up(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
+	void	Go_Player_Down(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
+
 	void	Go_Straight(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
 	void	Go_Left(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
 	void	Go_Right(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
+	void	KeepEye(_float fTimeDelta, _bool bRight = false, class CNavigation* pNavigation = nullptr);
 	void	Go_Backward(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
 	void	Go_Up(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
 	void	Go_Down(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
@@ -122,6 +130,7 @@ public:
 	void	Go_Target_Navi(_fvector vTargetPos, _float fTimeDelta, class CNavigation* pNavigation, _float fSpare = 0.1f);
 
 	void	Look_At(_fvector vTargetPos);
+	void	Look_At_CamLook(_float3 vCamLook);
 	void	Look_At_OnLand(_fvector vTargetPos);
 	_bool	HasArrived(const DirectX::XMFLOAT3& _vCurrentPos, const DirectX::XMFLOAT3& _vTargetPos, _float fArrivalThreshold);
 

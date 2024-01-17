@@ -1,10 +1,12 @@
 #pragma once
-#include "Client_Defines.h"
 #include "Camera.h"
+#include "Client_Defines.h"
 
 BEGIN(Engine)
-
 class CGameObject;
+END
+
+BEGIN(Client)
 
 class CCamera_Target final : public CCamera
 {
@@ -33,6 +35,7 @@ public:
 private:
 	void	KeyInput(_float fTimeDelta);
 	_vector	MouseInput(_float fTimeDelta);
+	
 
 private:
 	_float			m_fMouseSensitivity = { 0.0f };
@@ -51,6 +54,8 @@ private:
 
 	_float3			m_vOffset;
 	_float3			m_vActualPos;
+
+	_bool			m_bMouseFix = true;
 
 
 

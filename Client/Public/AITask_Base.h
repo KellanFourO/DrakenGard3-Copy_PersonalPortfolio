@@ -17,7 +17,10 @@ protected:
 protected:
 	void	SetAnimation(_int iAnimIndex);
 	void	NotLoop();
+	void	StartLoop();
 	_bool	EndAnim();
+	void	OneLook();
+	void	KeepEye(CGameObject* pTarget);
 	_int	Get_RandomNumber(_int MaxCount);
 	
 protected:

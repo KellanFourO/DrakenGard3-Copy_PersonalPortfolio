@@ -48,6 +48,7 @@ public: /* For.Timer_Manager */
 
 public: /* For.Level_Manager */
 	HRESULT Open_Level(_uint iCurrentLevelIndex, class CLevel* pNewLevel);
+	_uint	Get_CurrentLevelIndex();
 
 public: /* For.Object_Manager */
 	HRESULT				Add_Prototype(const wstring& strPrototypeTag, class CGameObject* pPrototype, _bool bAddData = false, _bool bModelType = false);
@@ -101,6 +102,7 @@ public: /* For.Input_Device */
 	_bool	Mouse_Pressing(MOUSEKEYSTATE eMouse);
 	_bool	Mouse_Down(MOUSEKEYSTATE eMouse);
 	_bool	Mouse_Up(MOUSEKEYSTATE eMouse);
+	void	Mouse_Fix();
 
 public:	/* For.Font_Manager */
 	HRESULT Add_Font(const wstring & strFontTag, const wstring & strFontFilePath);
@@ -116,6 +118,7 @@ public: /* For.Target_Manager */
 	HRESULT Begin_MRT(const wstring & strMRTTag);
 	HRESULT End_MRT();
 	HRESULT Bind_RenderTarget_ShaderResource(const wstring & strTargetTag, class CShader* pShader, const _char * pConstantName);
+
 #ifdef _DEBUG
 	HRESULT Ready_RenderTarget_Debug(const wstring & strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT Render_Debug_RTVs(const wstring & strMRTTag, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);

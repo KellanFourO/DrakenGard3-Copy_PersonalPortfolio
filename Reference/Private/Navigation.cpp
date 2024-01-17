@@ -1,6 +1,6 @@
 #include "Navigation.h"
-#include "Cell.h"
 #include "GameInstance.h"
+#include "Cell.h"
 
 _float4x4	CNavigation::m_WorldMatrix = {};
 
@@ -101,12 +101,13 @@ HRESULT CNavigation::Initialize(void* pArg)
     return S_OK;
 }
 
+#ifdef _DEBUG
 HRESULT CNavigation::Render()
 {
-    if(m_Cells.empty())
+    if (m_Cells.empty())
         return E_FAIL;
 
-    _float4 vColor = { 0.f, 0.f, 0.f, 1.f};
+    _float4 vColor = { 0.f, 0.f, 0.f, 1.f };
 
     if (m_iCurrentIndex == -1)
     {
@@ -118,6 +119,7 @@ HRESULT CNavigation::Render()
         vColor = _float4(1.f, 0.f, 0.f, 1.f);
         m_WorldMatrix.m[3][1] = m_WorldMatrix.m[3][1] + 0.1f;
     }
+
 
     //! 내비게이션을 그릴때도 월드위치 던져줘야지.
 
@@ -138,23 +140,35 @@ HRESULT CNavigation::Render()
         {
             if (nullptr != pCell)
             {
-                if (true == pCell->Is_Picking())
+                if (m_pGameInstance->Get_CurrentLevelIndex() == 4)
                 {
-                    vColor = _float4(0.f, 0.f, 1.f, 1.f);
-                    m_pShader->Bind_RawValue("g_vColor", &vColor, sizeof(_float4));
-                }
-                    
 
+                    if (true == pCell->Is_Picking())
+                    {
+                        vColor = _float4(0.f, 0.f, 1.f, 1.f);
+                        m_pShader->Bind_RawValue("g_vColor", &vColor, sizeof(_float4));
+                    }
+                    else
+                    {
+                        vColor = _float4(0.f, 1.f, 0.f, 1.f);
+                        m_pShader->Bind_RawValue("g_vColor", &vColor, sizeof(_float4));
+                    }
+
+                    m_pShader->Begin(0);
+                }
+                
                 pCell->Render();
             }
         }
     }
     else
         m_Cells[m_iCurrentIndex]->Render();
-    
+
 
     return S_OK;
 }
+#endif // _DEBUG
+
 
 void CNavigation::Update(_fmatrix WorldMatrix)
 {
@@ -223,13 +237,56 @@ HRESULT CNavigation::Delete_Cell(const _uint iIndex)
     return E_FAIL;
 }
 
-const _int CNavigation::Find_Cell(_float3 vWorldPos)
+void CNavigation::InRangeCellChange(CCell* pCell, _int ePoint, _float3 vChangePos)
 {
-    _int iIndex = -1;
-  
+    _int iCellSize = m_Cells.size();
 
-    return iIndex;
+
+    _float3 vPosition = *pCell->Get_Point(CCell::POINT(ePoint));
+
+    vector<CCell::POINT> vecPoints;
+    vector<_int> vecIndexs;
+
+    for (_int i = 0; i < iCellSize; ++i)
+    {
+        _float3 vPointA = *m_Cells[i]->Get_Point(CCell::POINT_A);
+        _float3 vPointB = *m_Cells[i]->Get_Point(CCell::POINT_B);
+        _float3 vPointC = *m_Cells[i]->Get_Point(CCell::POINT_C);
+
+        CCell* pTargetCell = m_Cells[i];
+
+        _float3 vPointBool = pTargetCell->Get_Compare_Point(&vPosition);
+
+        if (vPointBool.x == 1.f)
+        {
+            vecPoints.push_back(CCell::POINT_A);
+            vecIndexs.push_back(i);
+            
+        }
+        else if (vPointBool.y == 1.f)
+        {
+            vecPoints.push_back(CCell::POINT_B);
+            vecIndexs.push_back(i);
+        }
+        else if (vPointBool.z == 1.f)
+        {
+            vecPoints.push_back(CCell::POINT_C);
+            vecIndexs.push_back(i);
+        }
+    }
+
+    _int iVectorSize = vecPoints.size();
+
+
+    for (_int i = 0; i < iVectorSize; ++i)
+    {
+        m_Cells[vecIndexs[i]]->Set_Point(vecPoints[i], vChangePos);
+    }
+
+
+    Make_Neighbors();
 }
+
 
 
 

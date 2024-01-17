@@ -14,6 +14,18 @@ CCell::CCell(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	Safe_AddRef(m_pContext);
 }
 
+void CCell::Set_Point(POINT ePoint, _float3 vPoint)
+{
+	 m_vPoints[ePoint] = vPoint;
+	 m_pVIBuffer->Update(&m_vPoints[ePoint]);
+}
+
+void CCell::Set_PointY(POINT ePoint, _float fY)
+{
+	m_vPoints[ePoint].y = fY;
+	m_pVIBuffer->Update(&m_vPoints[ePoint]);
+}
+
 
 HRESULT CCell::Initialize(const _float3* pPoints, _uint iIndex)
 {
@@ -53,35 +65,85 @@ _bool CCell::Compare_Points(const _float3* pSourPoint, const _float3* pDestPoint
 	//!XMVector3Eqaul은 결과값으로 x,y,z,w가 모두 같다면 true 아니면 false를 리턴하는 형태
 
 	//!Navigation이 가지고있는 셀들을 이중 순회한다. #셀이중순회
+	
+	_float3 vPoints[POINT_END] = { m_vPoints[POINT_A], m_vPoints[POINT_B], m_vPoints[POINT_C] };
 
-	if (true == XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_A]), XMLoadFloat3(pSourPoint)))
+	for (_int i = 0; i < POINT_END; ++i)
 	{
-		if(true == XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_B]), XMLoadFloat3(pDestPoint)))
+		vPoints[i].y = 0.f;
+	}
+
+	_float3 vSourPoint = *pSourPoint;
+	_float3 vDestPoint = *pDestPoint;
+
+	vSourPoint.y = 0.f;
+	vDestPoint.y = 0.f;
+	
+
+	_int i = 0;
+
+	if (true == XMVector3Equal(XMLoadFloat3(&vPoints[POINT_A]), XMLoadFloat3(&vSourPoint)))
+	{
+		if(true == XMVector3Equal(XMLoadFloat3(&vPoints[POINT_B]), XMLoadFloat3(&vDestPoint)))
 			return true;
 
-		if (true == XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_C]), XMLoadFloat3(pDestPoint)))
+		if (true == XMVector3Equal(XMLoadFloat3(&vPoints[POINT_C]), XMLoadFloat3(&vDestPoint)))
 			return true;
 	}
 	
-	if (true == XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_B]), XMLoadFloat3(pSourPoint)))
+	if (true == XMVector3Equal(XMLoadFloat3(&vPoints[POINT_B]), XMLoadFloat3(&vSourPoint)))
 	{
-		if (true == XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_C]), XMLoadFloat3(pDestPoint)))
+		if (true == XMVector3Equal(XMLoadFloat3(&vPoints[POINT_C]), XMLoadFloat3(&vDestPoint)))
 			return true;
 
-		if (true == XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_A]), XMLoadFloat3(pDestPoint)))
+		if (true == XMVector3Equal(XMLoadFloat3(&vPoints[POINT_A]), XMLoadFloat3(&vDestPoint)))
 			return true;
 	}
 
-	if (true == XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_C]), XMLoadFloat3(pSourPoint)))
+	if (true == XMVector3Equal(XMLoadFloat3(&vPoints[POINT_C]), XMLoadFloat3(&vSourPoint)))
 	{
-		if (true == XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_A]), XMLoadFloat3(pDestPoint)))
+		if (true == XMVector3Equal(XMLoadFloat3(&vPoints[POINT_A]), XMLoadFloat3(&vDestPoint)))
 			return true;
 
-		if (true == XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_B]), XMLoadFloat3(pDestPoint)))
+		if (true == XMVector3Equal(XMLoadFloat3(&vPoints[POINT_B]), XMLoadFloat3(&vDestPoint)))
 			return true;
 	}
 
 	return false;
+}
+
+_float3 CCell::Get_Compare_Point(const _float3* pPoint)
+{
+
+	_float3 vPoints[POINT_END] = { m_vPoints[POINT_A], m_vPoints[POINT_B], m_vPoints[POINT_C] };
+
+	for (_int i = 0; i < POINT_END; ++i)
+	{
+		vPoints[i].y = 0.f;
+	}
+
+	_float3 vSourPoint = *pPoint;
+
+	vSourPoint.y = 0.f;
+	
+	_float3 vPointBool = { 0.f, 0.f, 0.f};
+
+	if (true == XMVector3Equal(XMLoadFloat3(&vPoints[POINT_A]), XMLoadFloat3(&vSourPoint)))
+	{
+		vPointBool.x = 1.f;
+	}
+
+	if (true == XMVector3Equal(XMLoadFloat3(&vPoints[POINT_B]), XMLoadFloat3(&vSourPoint)))
+	{
+		vPointBool.y = 1.f;
+	}
+
+	if (true == XMVector3Equal(XMLoadFloat3(&vPoints[POINT_C]), XMLoadFloat3(&vSourPoint)))
+	{
+		vPointBool.z = 1.f;
+	}
+
+	return vPointBool;
 }
 
 _bool CCell::isIn(_fvector vPosition, _fmatrix WorldMatrix, _int* pNeighborIndex)

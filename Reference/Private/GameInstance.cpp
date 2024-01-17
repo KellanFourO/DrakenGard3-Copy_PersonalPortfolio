@@ -238,6 +238,11 @@ HRESULT CGameInstance::Open_Level(_uint iCurrentLevelIndex, CLevel* pNewLevel)
 	return m_pLevel_Manager->Open_Level(iCurrentLevelIndex, pNewLevel);
 }
 
+_uint CGameInstance::Get_CurrentLevelIndex()
+{
+	return m_pLevel_Manager->Get_CurrentLevelIndex();
+}
+
 HRESULT CGameInstance::Add_Prototype(const wstring& strPrototypeTag, CGameObject* pPrototype, _bool bAddData, _bool bModelType)
 {
 	if(nullptr == m_pObject_Manager)
@@ -526,6 +531,14 @@ _bool CGameInstance::Mouse_Up(MOUSEKEYSTATE eMouse)
 	return m_pInput_Device->Mouse_Up(eMouse);
 }
 
+void CGameInstance::Mouse_Fix()
+{
+	if (nullptr == m_pInput_Device)
+		return;
+
+	m_pInput_Device->Mouse_Fix();
+}
+
 HRESULT CGameInstance::Add_Font(const wstring& strFontTag, const wstring& strFontFilePath)
 {
 	return m_pFont_Manager->Add_Font(strFontTag, strFontFilePath);
@@ -608,6 +621,8 @@ HRESULT CGameInstance::Render_Debug_RTVs(const wstring& strMRTTag, CShader* pSha
 
 	return m_pTarget_Manager->Render_Debug(strMRTTag, pShader, pVIBuffer);
 }
+#endif 
+
 HRESULT CGameInstance::Add_Light(const LIGHT_DESC& LightDesc)
 {
 	if (nullptr == m_pLight_Manager)
@@ -622,7 +637,7 @@ HRESULT CGameInstance::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer
 
 	return m_pLight_Manager->Render(pShader, pVIBuffer);
 }
-#endif 
+
 
 void CGameInstance::Release_Manager()
 {

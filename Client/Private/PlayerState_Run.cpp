@@ -9,6 +9,7 @@
 #include "Transform.h"
 #include "Navigation.h"
 #include "RigidBody.h"
+#include "Camera_Target.h"
 
 CPlayerState_Run::CPlayerState_Run()
 {
@@ -27,8 +28,8 @@ HRESULT CPlayerState_Run::Initialize(CPlayer* pPlayer)
 HRESULT CPlayerState_Run::StartState()
 {
 	m_pOwnerModelCom->Set_Animation(76);
-    m_pOwnerModelCom->Set_AnimationSpeed(4.f);
-	m_pOwnerTransform->Set_SpeedPerSec(8.5f);
+    m_pOwnerModelCom->Set_AnimationSpeed(3.f);
+	m_pOwnerTransform->Set_SpeedPerSec(12.f);
 	m_pOwnerTransform->Set_RotationPerSec(XMConvertToRadians(90.0f));
 
 	return S_OK;
@@ -38,6 +39,8 @@ HRESULT CPlayerState_Run::EndState()
 {
 	m_fLastInputTime = 0.f;
 	m_fAccTime = 0.f;
+    
+    m_pOwnerModelCom->Reset_AnimationSpeed();
 
 	return S_OK;
 }
@@ -64,6 +67,11 @@ void CPlayerState_Run::Late_Tick(const _float& fTimeDelta)
 void CPlayerState_Run::KeyInput(const _float& fTimeDelta)
 {
 
+    if (m_pGameInstance->Key_Down(DIK_LSHIFT))
+    {
+        m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Run"));
+    }
+
     if (m_pGameInstance->Key_Pressing(DIK_W))
     {
 
@@ -75,7 +83,10 @@ void CPlayerState_Run::KeyInput(const _float& fTimeDelta)
             Vertical_Camera_Rotate();
         }
 
-        m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
+        _float3 vCamLook;
+        XMStoreFloat3(&vCamLook, m_pOwnerCam->Get_Transform()->Get_State(CTransform::STATE_LOOK));
+
+        m_pOwnerTransform->Go_Player_Straight(fTimeDelta, vCamLook, m_pOwnerNavagation);
         m_fLastInputTime = fTimeDelta;
     }
 
@@ -90,7 +101,15 @@ void CPlayerState_Run::KeyInput(const _float& fTimeDelta)
             Horizon_Camera_Rotate();
         }
 
-        m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
+        _vector vCamLook = m_pOwnerCam->Get_Transform()->Get_State(CTransform::STATE_LOOK);
+        _vector vCamUp = m_pOwnerCam->Get_Transform()->Get_State(CTransform::STATE_UP);
+
+        _float3 vCamLeft;
+        XMStoreFloat3(&vCamLeft, XMVector3Cross(vCamLook, vCamUp));
+
+
+
+        m_pOwnerTransform->Go_Player_Straight(fTimeDelta, vCamLeft, m_pOwnerNavagation);
         m_fLastInputTime = fTimeDelta;
     }
 
@@ -119,19 +138,26 @@ void CPlayerState_Run::KeyInput(const _float& fTimeDelta)
             Horizon_Camera_Rotate();
         }
 
-        m_pOwnerTransform->Go_Straight(fTimeDelta, m_pOwnerNavagation);
+        _vector vCamLook = m_pOwnerCam->Get_Transform()->Get_State(CTransform::STATE_LOOK);
+        _vector vCamUp = m_pOwnerCam->Get_Transform()->Get_State(CTransform::STATE_UP);
+
+        _float3 vCamRight;
+        XMStoreFloat3(&vCamRight, XMVector3Cross(vCamUp, vCamLook));
+
+
+        m_pOwnerTransform->Go_Player_Straight(fTimeDelta, vCamRight, m_pOwnerNavagation);
         m_fLastInputTime = fTimeDelta;
     }
 
-	//if (m_pGameInstance->Key_Down(DIK_SPACE))
-	//{
-	//	m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_AIR, TEXT("PlayerState_Jump"));
-	//}
-    //
-	if (m_pGameInstance->Mouse_Down(DIM_LB))
-	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
-	}
+    //if (m_pGameInstance->Key_Down(DIK_SPACE))
+    //{
+    //    m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_AIR, TEXT("PlayerState_Jump"));
+    //}
+
+    if (m_pGameInstance->Mouse_Down(DIM_LB))
+    {
+        m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
+    }
 }
 
 CPlayerState_Run* CPlayerState_Run::Create(CPlayer* pPlayer)

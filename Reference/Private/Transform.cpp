@@ -65,6 +65,175 @@ void CTransform::Add_LookPos(_float3& _vAddPos) //! 바라보는 방향으로 위치값을 �
 	
 }
 
+void CTransform::Go_Player_Straight(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation)
+{
+	//TODO 방향벡터를 만들어서 가게하면된다.
+
+	//! 내 위치 벡터와 룩 벡터를 만들고. 바라보는 방향으로 가게 하는 것.
+	Look_At_CamLook(vCamLook);
+	_vector vLook = Get_State(STATE_LOOK);
+	_vector vPosition = Get_State(STATE_POSITION);
+
+
+
+	//! 룩 벡터를 정규화하지 않았다면 바로 그 위치로 이동되버린다. 그래서 정규화 시킨 후에 바라보는 방향을 시간값에 비례한 속도로 이동시키는 것.
+	vPosition += XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+
+	//TODO 네비게이션 매쉬 검사
+	//! 내가 가려고 하는 위치가 갈수있는 위치인지 검사 하고 갈 수 있는  위치라면 Set_State 해주는 것.
+	if (nullptr != pNavigation)
+	{
+		if (false == pNavigation->isMove(vPosition))
+			return;
+		else
+		{
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+		}
+	}
+
+	//! 위에서 연산을 끝낸 벡터를 실제 월드행렬의 위치벡터에게 적용시킨다. 
+	Set_State(STATE_POSITION, vPosition);
+}
+
+void CTransform::Go_Player_Left(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation)
+{
+	
+	_vector vPosition = Get_State(STATE_POSITION);
+	_vector vRight = Get_State(STATE_RIGHT);
+
+	vPosition -= XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
+
+	if (nullptr != pNavigation)
+	{
+		if (false == pNavigation->isMove(vPosition))
+			return;
+		else
+		{
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+		}
+	}
+
+	Set_State(STATE_POSITION, vPosition);
+}
+
+void CTransform::Go_Player_Right(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation)
+{
+	Look_At_CamLook(vCamLook);
+
+	_vector vPosition = Get_State(STATE_POSITION);
+	_vector vRight = Get_State(STATE_RIGHT);
+
+	vPosition += XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
+
+	if (nullptr != pNavigation)
+	{
+		if (false == pNavigation->isMove(vPosition))
+			return;
+		else
+		{
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+		}
+	}
+
+	Set_State(STATE_POSITION, vPosition);
+}
+
+void CTransform::Go_Player_Backward(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation)
+{
+	//TODO 방향벡터를 만들어서 가게하면된다.
+
+		//! 내 위치 벡터와 룩 벡터를 만들고. 바라보는 방향으로 가게 하는 것.
+	_vector vPosition = Get_State(STATE_POSITION);
+	_vector vLook = Get_State(STATE_LOOK);
+
+	//! 룩 벡터를 정규화하지 않았다면 바로 그 위치로 이동되버린다. 그래서 정규화 시킨 후에 바라보는 방향을 시간값에 비례한 속도로 이동시키는 것.
+	vPosition -= XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+
+	if (nullptr != pNavigation)
+	{
+		if (false == pNavigation->isMove(vPosition))
+			return;
+		else
+		{
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+		}
+	}
+
+	//! 위에서 연산을 끝낸 벡터를 실제 월드행렬의 위치벡터에게 적용시킨다. 
+	Set_State(STATE_POSITION, vPosition);
+}
+
+void CTransform::Go_Player_Up(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation)
+{
+	_vector vPosition = Get_State(STATE_POSITION);
+	_vector vUp = Get_State(CTransform::STATE_UP);
+
+	vPosition += XMVector3Normalize(vUp) * m_fSpeedPerSec * fTimeDelta;
+
+	if (nullptr != pNavigation)
+	{
+		if (false == pNavigation->isMove(vPosition))
+			return;
+		else
+		{
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+		}
+	}
+
+	Set_State(STATE_POSITION, vPosition);
+}
+
+void CTransform::Go_Player_Down(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation)
+{
+	_vector vPosition = Get_State(STATE_POSITION);
+	_vector vUp = Get_State(CTransform::STATE_UP);
+
+
+	vPosition -= XMVector3Normalize(vUp) * m_fSpeedPerSec * fTimeDelta;
+
+	if (nullptr != pNavigation)
+	{
+		if (false == pNavigation->isMove(vPosition))
+			return;
+		else
+		{
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+		}
+	}
+
+	Set_State(STATE_POSITION, vPosition);
+}
+
 void CTransform::Go_Straight(_float fTimeDelta, class CNavigation* pNavigation)
 {
 	//TODO 방향벡터를 만들어서 가게하면된다.
@@ -144,6 +313,31 @@ void CTransform::Go_Right(_float fTimeDelta, class CNavigation* pNavigation)
 
 			vPosition.m128_f32[1] = fY;
 		}
+	}
+
+	Set_State(STATE_POSITION, vPosition);
+}
+
+void CTransform::KeepEye(_float fTimeDelta, _bool bRight, CNavigation* pNavigation)
+{
+	_vector vPosition = Get_State(STATE_POSITION);
+	_vector vRight = Get_State(STATE_RIGHT);
+
+	if(false == bRight)
+		vPosition -= XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
+	else
+		vPosition += XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
+
+
+	if (nullptr != pNavigation)
+	{
+		
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
+
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
 	}
 
 	Set_State(STATE_POSITION, vPosition);
@@ -351,6 +545,24 @@ void CTransform::Look_At(_fvector vTargetPos)
 	Set_State(STATE_RIGHT, vRight);
 	Set_State(STATE_UP, vUp);
 	Set_State(STATE_LOOK, vLook);
+}
+
+void CTransform::Look_At_CamLook(_float3 vCamLook)
+{
+	_float3 vMyScale = Get_Scaled();
+
+	_vector vMyLook = Get_State(CTransform::STATE_LOOK);
+	
+
+	_vector vNewLook = XMVector3Normalize(XMVectorLerp(vMyLook, XMLoadFloat3(&vCamLook), 0.1f) * vMyScale.z);
+	vNewLook.m128_f32[1] = vMyLook.m128_f32[1];
+
+	_vector	vMyRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vNewLook)) * vMyScale.x;
+	_vector	vMyUp = XMVector3Normalize(XMVector3Cross(vNewLook, vMyRight)) * vMyScale.y;
+
+	Set_State(STATE_RIGHT, vMyRight);
+	Set_State(STATE_UP, vMyUp);
+	Set_State(STATE_LOOK, vNewLook);
 }
 
 void CTransform::Look_At_OnLand(_fvector vTargetPos)

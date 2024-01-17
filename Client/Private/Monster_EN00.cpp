@@ -265,13 +265,18 @@ HRESULT CMonster_EN00::Ready_BehaviorTree()
 	EN00_BlackBoard->setFloat("Max_HP", 100.f);
 	EN00_BlackBoard->setFloat("Current_HP", 100.f);
 	EN00_BlackBoard->setFloat("Attack_Range", 3.f);
-	EN00_BlackBoard->setFloat("Detect_Range", 5.f);
+	EN00_BlackBoard->setFloat("Keep_Range", 3.5f);
+	EN00_BlackBoard->setFloat("Detect_Range", 10.f);
+	EN00_BlackBoard->setFloat("Speed", m_pTransformCom->Get_Speed());
+	EN00_BlackBoard->setFloat("RotateSpeed", m_pTransformCom->Get_RotationSpeed());
+
 	EN00_BlackBoard->setFloat3("TargetPostion", _float3(0.f, 0.f, 0.f));
 
 	EN00_BlackBoard->setBool("Is_Hit", false); //! 피격중인가
 	EN00_BlackBoard->setBool("Is_Ground", true);
 	EN00_BlackBoard->setBool("Is_Dead", false);
 	EN00_BlackBoard->setBool("Is_TargetPosition", false); //! 목표로 하는 지점이 있는가
+	EN00_BlackBoard->setBool("Is_Patrol", false); //! 순찰해야하는가?
 
 
 	EN00_BlackBoard->setOwner(this);

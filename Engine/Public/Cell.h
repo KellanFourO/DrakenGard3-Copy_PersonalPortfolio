@@ -15,6 +15,8 @@ private:
 
 public:
 	const _float3*	Get_Point(POINT ePoint) const { return &m_vPoints[ePoint]; }
+	void			Set_Point(POINT ePoint, _float3 vPoint);
+	void			Set_PointY(POINT ePoint, _float fY);
 	const _float3*  Get_Points() { return m_vPoints; }
 
 	const _float3*	Get_Normal(LINE eLine) const { return &m_vPoints[eLine]; }
@@ -24,9 +26,12 @@ public:
 
 	_bool			Is_Picking() { return m_bPicking; }
 
+	void			Set_Picking(_bool bPicking) { m_bPicking = bPicking; }
+
 public:
 	HRESULT Initialize(const _float3* pPoints, _uint iIndex);
 	_bool	Compare_Points(const _float3* pSourPoint, const _float3* pDestPoint);
+	_float3 Get_Compare_Point(const _float3* pPoint);
 	_bool	isIn(_fvector vPosition, _fmatrix WorldMatrix, _int* pNeighborIndex);
 	void	Reset_Line();
 
@@ -48,6 +53,8 @@ private:
 	_int					m_iNeighbors[LINE_END] = { -1, -1, -1};
 	_float3					m_vNormals[LINE_END] = {};
 	_uint					m_iIndex = { 0 };
+
+	
 
 	_bool					m_bPicking = false;
 

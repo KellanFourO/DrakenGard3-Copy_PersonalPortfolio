@@ -9,6 +9,7 @@
 #include "Transform.h"
 #include "Navigation.h"
 #include "RigidBody.h"
+#include "Camera_Target.h"
 
 CPlayerState_Idle::CPlayerState_Idle()
 {
@@ -27,11 +28,13 @@ HRESULT CPlayerState_Idle::StartState()
 {
 	m_pOwnerModelCom->Set_Animation(73);
 	m_pOwnerModelCom->Set_Loop(true);
+	m_pOwnerModelCom->Root_MotionEnd();
 	return S_OK;
 }
 
 HRESULT CPlayerState_Idle::EndState()
 {
+	
 	
 	m_fAccTime = 0.f;
 	m_fLastInputTime = 0.f;
@@ -46,6 +49,11 @@ void CPlayerState_Idle::Tick(const _float& fTimeDelta)
 
 void CPlayerState_Idle::KeyInput(const _float& fTimeDelta)
 {
+	
+	_float3 vCamLook;
+	XMStoreFloat3(&vCamLook, m_pOwnerCam->Get_Transform()->Get_State(CTransform::STATE_LOOK));
+	m_pOwnerTransform->Look_At_CamLook(vCamLook);
+
 	if (m_pGameInstance->Key_Down(DIK_W))
 	{
 		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Walk"));

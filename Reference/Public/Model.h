@@ -53,13 +53,14 @@ public:
 	void	Set_Loop(_bool bLoop) { m_isLoop = bLoop; }
 	void	Set_Animation(_uint iAnimIndex, _uint iStartKeyIndex = 0, _float fBlendTime = 0.1f);
 	void	Set_AnimationSpeed(_float fAnimationSpeed);
+	void	Reset_AnimationSpeed() { m_fAnimationSpeed = 1.5f; }
 	_bool	Get_FinishedAnim() { return m_isFinished; }
 
 	void	Root_MotionStart() { m_bRootMotionStart = true;}
 	void	Root_MotionChange() { m_isRootAnim = true; }
 	void	Root_MotionEnd() { m_bRootMotionStart = false; }
 	//void	Root_Motion(CTransform* pTransform);
-	void	Reset_RootMotion();
+	//void	Reset_RootMotion();
 
 public:
 	//! 셰이더에 던질 뼈행렬은 특정매시에게 영향을 주는 뼈행렬을 던질 거라고했다. 모델에서 던지는것이아닌 매쉬 클래스를 통해 현재 클래스를 거쳐서 던져주는 행위를 하는 것이다.
