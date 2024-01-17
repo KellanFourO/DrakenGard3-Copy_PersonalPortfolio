@@ -193,6 +193,9 @@
     <Filter Include="01. Utility\08. Lights\Manager">
       <UniqueIdentifier>{f84ff549-8be2-4052-aae1-a227a64fe8f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\02. GameObjects\03. Alpha">
+      <UniqueIdentifier>{6be02d60-beee-4ce4-9133-43dc5d42d541}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -390,6 +393,9 @@
     <ClInclude Include="..\Public\Light.h">
       <Filter>01. Utility\08. Lights</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\쥬신 스터디\수업자료\9개월차\240117_이펙트_노말맵핑\Framework\Engine\Public\AlphaObject.h">
+      <Filter>01. Utility\02. GameObjects\03. Alpha</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -559,6 +565,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Light.cpp">
       <Filter>01. Utility\08. Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AlphaObject.cpp">
+      <Filter>01. Utility\02. GameObjects\03. Alpha</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

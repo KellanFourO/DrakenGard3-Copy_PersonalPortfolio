@@ -84,10 +84,10 @@ void CPlayerState_Base::MouseInput(const _float& fTimeDelta)
 	
 }
 
-void CPlayerState_Base::RootMotion()
-{
-	m_pOwnerModelCom->Root_Motion(m_pOwnerTransform);
-}
+//void CPlayerState_Base::RootMotion()
+//{
+//	m_pOwnerModelCom->Root_Motion(m_pOwnerTransform);
+//}
 
 
 void CPlayerState_Base::Vertical_Camera_Rotate()

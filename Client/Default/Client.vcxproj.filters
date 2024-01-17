@@ -253,6 +253,9 @@
     <Filter Include="02. GameObjects\05. Effects\Particles\Red">
       <UniqueIdentifier>{55049603-f789-48d4-9a73-a0c3aa9b793d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Explosion">
+      <UniqueIdentifier>{b8d05546-3dd4-4a95-9a5c-b2159c909f43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -543,6 +546,9 @@
     <ClInclude Include="..\Public\Particle_Red.h">
       <Filter>02. GameObjects\05. Effects\Particles\Red</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Effect_Explosion.h">
+      <Filter>02. GameObjects\05. Effects\Explosion</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -787,6 +793,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Particle_Red.cpp">
       <Filter>02. GameObjects\05. Effects\Particles\Red</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Explosion.cpp">
+      <Filter>02. GameObjects\05. Effects\Explosion</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

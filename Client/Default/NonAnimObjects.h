@@ -18,6 +18,7 @@
 #include "Environment_BrokenBarricade.h"
 
 //!이펙트
+#include "Effect_Explosion.h"
 
 //! 파티클
 #include "Particle_Blue.h"

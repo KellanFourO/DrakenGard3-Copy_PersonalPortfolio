@@ -33,7 +33,7 @@ public:
 protected:
 	virtual void	KeyInput(const _float& fTimeDelta);
 	void			MouseInput(const _float& fTimeDelta);
-	void			RootMotion();
+	//void			RootMotion();
 
 protected:
 	void			Vertical_Camera_Rotate(); //! 카메라 룩 벡터 기준으로 수직 회전

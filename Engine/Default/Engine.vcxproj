@@ -183,6 +183,7 @@ xcopy "$(SolutionDir)Engine\Bin\ShaderFiles\*.*" "$(SolutionDir)Client\Bin\Shade
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\쥬신 스터디\수업자료\9개월차\240117_이펙트_노말맵핑\Framework\Engine\Public\AlphaObject.h" />
     <ClInclude Include="..\..\..\..\쥬신 스터디\참고자료\DX11_TeamProject_Thymesia-main\DX11_TeamProject_Thymesia-main\DX11_Thymesia_Framework\Engine\Public\Json\json.hpp" />
     <ClInclude Include="..\..\..\..\쥬신 스터디\참고자료\DX11_TeamProject_Thymesia-main\DX11_TeamProject_Thymesia-main\DX11_Thymesia_Framework\Engine\Public\Json\Json_Utility.h" />
     <ClInclude Include="..\public\Animation.h" />
@@ -251,6 +252,7 @@ xcopy "$(SolutionDir)Engine\Bin\ShaderFiles\*.*" "$(SolutionDir)Client\Bin\Shade
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Reference\Private\Json\Json_Utility.cpp" />
+    <ClCompile Include="..\Private\AlphaObject.cpp" />
     <ClCompile Include="..\private\Animation.cpp" />
     <ClCompile Include="..\private\Base.cpp" />
     <ClCompile Include="..\Private\Bone.cpp" />

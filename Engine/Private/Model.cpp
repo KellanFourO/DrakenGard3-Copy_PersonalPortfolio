@@ -148,62 +148,62 @@ void CModel::Set_AnimationSpeed(_float fAnimationSpeed)
 	m_fAnimationSpeed = fAnimationSpeed;
 }
 
-void CModel::Root_Motion(CTransform* pTransform)
-{
-	
-
-	if (false == m_isBlend)
-	{
-		//TODO 위치가 갱신되나 다시 이전 위치로 돌아가는 현상.
-			//! 현재 루트 본의 위치를 구하자
-		_float3 vCurrentRootPosition;
-		XMStoreFloat3(&vCurrentRootPosition, m_pRootTranslateBone->Get_CombinedTransformationMatrix().r[3]);
-
-		//! 현재 루트본의 위치와 이전 루트본의 위치를 이용해서 감산값을 구하자
-		_float3 vDeltaPosition;
-		XMStoreFloat3(&vDeltaPosition, (XMLoadFloat3(&vCurrentRootPosition) - XMLoadFloat3(&m_vPrevRootPosition)));
-
-		//!기존에 월드 위치를 구해주자
-		_float3 vCurrentWorldPosition;
-		XMStoreFloat3(&vCurrentWorldPosition, pTransform->Get_State(CTransform::STATE_POSITION));
-
-
-		_float3 vTargetLook;
-		XMStoreFloat3(&vTargetLook, pTransform->Get_State(CTransform::STATE_LOOK));
-
-		//! 기존에 객체가 바라보고있던	방향으로 이동량을 더할 수있게 이동량에다가 기존 바라보고있던 방향을 곱해주자
-		_float3 vMoveDirection;
-		XMStoreFloat3(&vMoveDirection, (XMLoadFloat3(&vDeltaPosition) * XMLoadFloat3(&vTargetLook)));
-
-		//! 위에서 구한 방향 이동량으로 갱신해주자
-
-		XMStoreFloat3(&vCurrentWorldPosition, (XMLoadFloat3(&vCurrentWorldPosition) + XMLoadFloat3(&vMoveDirection)));
-
-
-		//! 기존 월드 행렬에 이동량이 더해진 월드위치로 바꿔주자
-		_float4x4 vCurrentWorldMatrix;
-
-		XMStoreFloat4x4(&vCurrentWorldMatrix, pTransform->Get_WorldMatrix());
-
-
-		vCurrentWorldMatrix._41 = vCurrentWorldPosition.x;
-		vCurrentWorldMatrix._42 = vCurrentWorldPosition.y;
-		vCurrentWorldMatrix._43 = vCurrentWorldPosition.z;
-
-		pTransform->Set_WorldFloat4x4(vCurrentWorldMatrix);
-
-		//! 이전 위치는 현재 위치가 된다.
-		m_vPrevRootPosition = vCurrentRootPosition;
-
-// 		_float3 vZeroPosition = { 0.f, 0.f, 0.f };
-// 		m_pRootTranslateBone->Set_Position(vZeroPosition);
-	}
-		
-		
-	//}
-	//else 
-	//	return;
-}
+// void CModel::Root_Motion(CTransform* pTransform)
+// {
+// 	
+// 
+// 	if (false == m_isBlend)
+// 	{
+// 		//TODO 위치가 갱신되나 다시 이전 위치로 돌아가는 현상.
+// 			//! 현재 루트 본의 위치를 구하자
+// 		_float3 vCurrentRootPosition;
+// 		XMStoreFloat3(&vCurrentRootPosition, m_pRootTranslateBone->Get_CombinedTransformationMatrix().r[3]);
+// 
+// 		//! 현재 루트본의 위치와 이전 루트본의 위치를 이용해서 감산값을 구하자
+// 		_float3 vDeltaPosition;
+// 		XMStoreFloat3(&vDeltaPosition, (XMLoadFloat3(&vCurrentRootPosition) - XMLoadFloat3(&m_vPrevRootPosition)));
+// 
+// 		//!기존에 월드 위치를 구해주자
+// 		_float3 vCurrentWorldPosition;
+// 		XMStoreFloat3(&vCurrentWorldPosition, pTransform->Get_State(CTransform::STATE_POSITION));
+// 
+// 
+// 		_float3 vTargetLook;
+// 		XMStoreFloat3(&vTargetLook, pTransform->Get_State(CTransform::STATE_LOOK));
+// 
+// 		//! 기존에 객체가 바라보고있던	방향으로 이동량을 더할 수있게 이동량에다가 기존 바라보고있던 방향을 곱해주자
+// 		_float3 vMoveDirection;
+// 		XMStoreFloat3(&vMoveDirection, (XMLoadFloat3(&vDeltaPosition) * XMLoadFloat3(&vTargetLook)));
+// 
+// 		//! 위에서 구한 방향 이동량으로 갱신해주자
+// 
+// 		XMStoreFloat3(&vCurrentWorldPosition, (XMLoadFloat3(&vCurrentWorldPosition) + XMLoadFloat3(&vMoveDirection)));
+// 
+// 
+// 		//! 기존 월드 행렬에 이동량이 더해진 월드위치로 바꿔주자
+// 		_float4x4 vCurrentWorldMatrix;
+// 
+// 		XMStoreFloat4x4(&vCurrentWorldMatrix, pTransform->Get_WorldMatrix());
+// 
+// 
+// 		vCurrentWorldMatrix._41 = vCurrentWorldPosition.x;
+// 		vCurrentWorldMatrix._42 = vCurrentWorldPosition.y;
+// 		vCurrentWorldMatrix._43 = vCurrentWorldPosition.z;
+// 
+// 		pTransform->Set_WorldFloat4x4(vCurrentWorldMatrix);
+// 
+// 		//! 이전 위치는 현재 위치가 된다.
+// 		m_vPrevRootPosition = vCurrentRootPosition;
+// 
+// // 		_float3 vZeroPosition = { 0.f, 0.f, 0.f };
+// // 		m_pRootTranslateBone->Set_Position(vZeroPosition);
+// 	}
+// 		
+// 		
+// 	//}
+// 	//else 
+// 	//	return;
+// }
 
 void CModel::Reset_RootMotion()
 {

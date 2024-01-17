@@ -57,13 +57,48 @@ HRESULT CLevel_GamePlay::Ready_LightDesc()
 
 	LightDesc.eType = LIGHT_DESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.4f, 0.4f, 0.4f, 1.f);
+	LightDesc.vDiffuse = _float4(0.8f, 0.8f, 0.8f, 1.f);
+	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
 	if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
 		return E_FAIL;
 	
+	//!ZeroMemory(&LightDesc, sizeof LightDesc);
+	//!
+	//!LightDesc.eType = LIGHT_DESC::TYPE_POINT;
+	//!LightDesc.vPosition = _float4(30.f, 3.f, 30.f, 1.f);
+	//!LightDesc.fRange = 20.f;
+	//!LightDesc.vDiffuse = _float4(1.f, 0.0f, 0.0f, 1.f);
+	//!LightDesc.vAmbient = _float4(0.4f, 0.1f, 0.1f, 1.f);
+	//!LightDesc.vSpecular = LightDesc.vDiffuse;
+	//!
+	//!if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+	//!	return E_FAIL;
+	//!
+	//!LightDesc.eType = LIGHT_DESC::TYPE_POINT;
+	//!LightDesc.vPosition = _float4(50.f, 3.f, 30.f, 1.f);
+	//!LightDesc.fRange = 20.f;
+	//!LightDesc.vDiffuse = _float4(0.0f, 1.f, 0.0f, 1.f);
+	//!LightDesc.vAmbient = _float4(0.1f, 0.4f, 0.1f, 1.f);
+	//!LightDesc.vSpecular = LightDesc.vDiffuse;
+	//!
+	//!if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+	//!	return E_FAIL;
+	//!
+	//!if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+	//!	return E_FAIL;
+	//!
+	//!LightDesc.eType = LIGHT_DESC::TYPE_POINT;
+	//!LightDesc.vPosition = _float4(70.f, 10.f, 30.f, 1.f);
+	//!LightDesc.fRange = 20.f;
+	//!LightDesc.vDiffuse = _float4(1.f, 0.0f, 1.f, 1.f);
+	//!LightDesc.vAmbient = _float4(0.4f, 0.1f, 0.4f, 1.f);
+	//!LightDesc.vSpecular = LightDesc.vDiffuse;
+	//!
+	//!if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+	//!	return E_FAIL;
+
 	return S_OK;
 }
 
@@ -123,6 +158,12 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const wstring& strLayerTag)
 
 	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Particle_Red"))))
 		return E_FAIL;
+
+	for (size_t i = 0; i < 30; i++)
+	{
+		if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Effect_Explosion"))))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
