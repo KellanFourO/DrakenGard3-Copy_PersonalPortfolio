@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine_Defines.h"
 
+
 namespace Client 
 {
 	static const unsigned int	g_iWinSizeX = 1280;	//! 윈도우 창 가로 사이즈 전역

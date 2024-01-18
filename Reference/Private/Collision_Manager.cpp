@@ -14,11 +14,11 @@ CCollision_Manager::CCollision_Manager()
 	Safe_AddRef(m_pGameInstance);
 }
 
-void CCollision_Manager::Update_CollisionMgr(_uint iLevelIndex)
+void CCollision_Manager::Update_CollisionMgr(_uint iLevelIndex, _float fTimeDelta)
 {
 	for (auto& pair : m_ColLayers)
 	{
-		Collision_GroupUpdate(pair.first, pair.second, iLevelIndex);
+		Collision_GroupUpdate(pair.first, pair.second, iLevelIndex, fTimeDelta);
 	}
 
 }
@@ -37,11 +37,16 @@ HRESULT CCollision_Manager::Add_Check_CollisionGroup(const _tchar* LeftLayerTag,
 	return S_OK;
 }
 
-void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tchar* RightTag, _uint iLevelIndex)
+void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tchar* RightTag, _uint iLevelIndex, _float fTimeDelta)
 {
 	//! 레프트 레이어태그가 플레이어라면
 	//! 레프트 콜라이더는  웨폰.
 	//! 라이트 콜라이더는 바디.
+
+	
+
+	wstring strLeftTag = LeftTag;
+	wstring strRightTag = RightTag;
 
 	CLayer* pLeftLayer = m_pGameInstance->Find_Layer(iLevelIndex, LeftTag);
 	CLayer* pRightLayer = m_pGameInstance->Find_Layer(iLevelIndex, RightTag);
@@ -49,19 +54,25 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 	list<CGameObject*> pLeftObjectList = pLeftLayer->Get_ObjectList();
 	list<CGameObject*> pRightObjectList = pRightLayer->Get_ObjectList();
 
+
+
 	map<ULONGLONG, _bool>::iterator iter;
+
+	CCollider* pLeftCol = nullptr;
 
 	for (auto& pLeftGameObject : pLeftObjectList)
 	{
+		pLeftCol = pLeftGameObject->Find_Collider(true);
+
+		if (false == pLeftCol->isOnCollider())
+			continue;
+
 		for (auto& pRightGameObject : pRightObjectList)
 		{
 			if(pLeftGameObject == pRightGameObject)
 				continue;
-			
-			//! 충돌 검사는 레프트는 무기가 될 것이고. 라이트는 바디가 될것이다.
 
-			CCollider* pLeftCol = dynamic_cast<CCollider*>(pLeftGameObject->Find_PartObject(TEXT("Part_Weapon"))->Find_Component(TEXT("Com_Collider")));
-			CCollider* pRightCol = dynamic_cast<CCollider*>(pRightGameObject->Find_PartObject(TEXT("Part_Body"))->Find_Component(TEXT("Com_Collider")));
+			CCollider* pRightCol = pRightGameObject->Find_Collider(false);
 
 			COLLIDER_ID ID;
 
@@ -78,12 +89,18 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 
 			_float fX(0.f), fY(0.f), fZ(0.f);
 
-			if (Is_Collision(pLeftCol, pRightCol, &fX, &fY, &fZ))
+			
+			
+
+			if (true == Is_Collision(pLeftCol, pRightCol, &fX, &fY, &fZ))
 			{
 				if (iter->second) // 충돌했고 이미 충돌 true인 경우
 				{
 					if (pLeftGameObject->Is_Dead() || pRightGameObject->Is_Dead())
 					{
+						
+						pLeftGameObject->On_CollisionExit(pLeftGameObject, strLeftTag, pRightGameObject, strRightTag);
+
 						pLeftCol->On_CollisionExit(pRightCol, fX, fY, fZ);
 						pRightCol->On_CollisionExit(pLeftCol, fX, fY, fZ);
 						iter->second = false;
@@ -91,17 +108,42 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 
 					else
 					{
-						pLeftCol->On_Collision(pRightCol, fX, fY, fZ);
-						pRightCol->On_Collision(pLeftCol, fX, fY, fZ);
+						if (true == pLeftCol->isAccCollider())
+						{
+							_float fHitTick = pLeftCol->Get_HitTick();
+							m_fAccTime += fTimeDelta;
+
+							if (m_fAccTime >= fHitTick)
+							{
+								pLeftGameObject->On_Collision(pLeftGameObject, strLeftTag, pRightGameObject, strRightTag);
+								
+								pLeftCol->On_Collision(pRightCol, fX, fY, fZ);
+								pRightCol->On_Collision(pLeftCol, fX, fY, fZ);
+
+								
+								m_fAccTime = 0.f;
+							}
+						}
+						else
+						{
+							pLeftGameObject->On_Collision(pLeftGameObject, strLeftTag, pRightGameObject, strRightTag);
+							pRightCol->OffCollider();
+							pLeftCol->On_Collision(pRightCol, fX, fY, fZ);
+							pRightCol->On_Collision(pLeftCol, fX, fY, fZ);
+						}
 					}
 				}
 
 				else // 충돌했는데 충돌 정보에 false로 기록된 경우
 				{
-					if (!pLeftGameObject->Is_Dead() && !pRightGameObject->Is_Dead())
+					if (!pLeftGameObject->Is_Dead() && !pRightGameObject->Is_Dead() && true == pRightCol->isOnCollider())
 					{
+						pLeftGameObject->On_CollisionEnter(pLeftGameObject, strLeftTag, pRightGameObject, strRightTag);
+						
 						pLeftCol->On_CollisionEnter(pRightCol, fX, fY, fZ);
 						pRightCol->On_CollisionEnter(pLeftCol, fX, fY, fZ);
+						
+
 						iter->second = true;
 					}
 				}
@@ -111,13 +153,22 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 			{
 				if (iter->second)
 				{
+					pLeftGameObject->On_CollisionExit(pLeftGameObject, strLeftTag, pRightGameObject, strRightTag);
+					
 					pLeftCol->On_CollisionExit(pRightCol, fX, fY, fZ);
 					pRightCol->On_CollisionExit(pLeftCol, fX, fY, fZ);
+					pRightCol->OnCollider();
+					
 					iter->second = false;
+
 				}
 			}
 		}
 	}
+	
+	//! 플레이어의 충돌체가 On이 되었고. 피격대상인 모든 RightObject와 충돌검사를 한 뒤에 플레이어의 충돌체를 꺼준다.
+	
+	
 }
 
 bool CCollision_Manager::Is_Collision(CCollider* pLeftCol, CCollider* pRightCol, _float* fX, _float* fY, _float* fZ)
@@ -193,11 +244,15 @@ XMVECTOR CCollision_Manager::Get_Min_Vector(CCollider* Col)
 	if (nullptr == Col)
 		return Min;
 
-	BoundingBox* pAABB = dynamic_cast<CBoundingBox_AABB*>(Col->Get_Bounding())->Get_Bounding();
-	BoundingOrientedBox* pOBB = dynamic_cast<CBoundingBox_OBB*>(Col->Get_Bounding())->Get_Bounding();
+	
+
+	
+	
 
 	if (Col->Get_ColliderType() == CCollider::TYPE_AABB)
 	{
+		BoundingBox* pAABB = dynamic_cast<CBoundingBox_AABB*>(Col->Get_Bounding())->Get_Bounding();
+
 		_float3 coners[8];
 		pAABB->GetCorners(coners);
 		for (size_t i = 0; i < pAABB->CORNER_COUNT; ++i)
@@ -208,6 +263,8 @@ XMVECTOR CCollision_Manager::Get_Min_Vector(CCollider* Col)
 
 	else if (Col->Get_ColliderType() == CCollider::TYPE_OBB)
 	{
+		BoundingOrientedBox* pOBB = dynamic_cast<CBoundingBox_OBB*>(Col->Get_Bounding())->Get_Bounding();
+
 		_float3 coners[8];
 		pOBB->GetCorners(coners);
 		for (size_t i = 0; i < pOBB->CORNER_COUNT; ++i)
@@ -226,11 +283,10 @@ XMVECTOR CCollision_Manager::Get_Max_Vector(CCollider* Col)
 	if (nullptr == Col)
 		return Max;
 
-	BoundingBox* pAABB = dynamic_cast<CBoundingBox_AABB*>(Col->Get_Bounding())->Get_Bounding();
-	BoundingOrientedBox* pOBB = dynamic_cast<CBoundingBox_OBB*>(Col->Get_Bounding())->Get_Bounding();
-
 	if (Col->Get_ColliderType() == CCollider::TYPE_AABB)
 	{
+		BoundingBox* pAABB = dynamic_cast<CBoundingBox_AABB*>(Col->Get_Bounding())->Get_Bounding();
+
 		_float3 coners[8];
 		pAABB->GetCorners(coners);
 		for (size_t i = 0; i < pAABB->CORNER_COUNT; ++i)
@@ -241,6 +297,8 @@ XMVECTOR CCollision_Manager::Get_Max_Vector(CCollider* Col)
 
 	else if (Col->Get_ColliderType() == CCollider::TYPE_OBB)
 	{
+		BoundingOrientedBox* pOBB = dynamic_cast<CBoundingBox_OBB*>(Col->Get_Bounding())->Get_Bounding();
+
 		_float3 coners[8];
 		pOBB->GetCorners(coners);
 		for (size_t i = 0; i < pOBB->CORNER_COUNT; ++i)
@@ -273,16 +331,16 @@ bool CCollision_Manager::Intersects(CCollider* pLeftCol, CCollider* pRightCol, _
 	XMVECTOR CenterB = {};
 	XMVECTOR ExtentsB = {};
 
-	BoundingBox* pLeftAABB = dynamic_cast<CBoundingBox_AABB*>(pLeftCol->Get_Bounding())->Get_Bounding();
-	BoundingBox* pRightAABB = dynamic_cast<CBoundingBox_AABB*>(pRightCol->Get_Bounding())->Get_Bounding();
-
-	BoundingOrientedBox* pLeftOBB = dynamic_cast<CBoundingBox_OBB*>(pLeftCol->Get_Bounding())->Get_Bounding();
-	BoundingOrientedBox* pRightOBB = dynamic_cast<CBoundingBox_OBB*>(pRightCol->Get_Bounding())->Get_Bounding();
-
-	
+	BoundingBox* pLeftAABB = nullptr;
+	BoundingBox* pRightAABB = nullptr;
+	BoundingOrientedBox* pLeftOBB = nullptr;
+	BoundingOrientedBox* pRightOBB = nullptr;
 
 	if (pLeftCol->Get_ColliderType() == CCollider::TYPE_AABB && pRightCol->Get_ColliderType() == CCollider::TYPE_AABB)
 	{
+		pLeftAABB = dynamic_cast<CBoundingBox_AABB*>(pLeftCol->Get_Bounding())->Get_Bounding();
+		pRightAABB = dynamic_cast<CBoundingBox_AABB*>(pRightCol->Get_Bounding())->Get_Bounding();
+
 		CenterA = XMLoadFloat3(&pLeftAABB->Center);
 
 		CenterA = XMLoadFloat3(&pLeftAABB->Center);
@@ -294,6 +352,9 @@ bool CCollision_Manager::Intersects(CCollider* pLeftCol, CCollider* pRightCol, _
 
 	else if (pLeftCol->Get_ColliderType() == CCollider::TYPE_AABB && pRightCol->Get_ColliderType() == CCollider::TYPE_OBB)
 	{
+		pLeftAABB = dynamic_cast<CBoundingBox_AABB*>(pLeftCol->Get_Bounding())->Get_Bounding();
+		pRightOBB = dynamic_cast<CBoundingBox_OBB*>(pRightCol->Get_Bounding())->Get_Bounding();
+
 		CenterA = XMLoadFloat3(&pLeftAABB->Center);
 		ExtentsA = XMLoadFloat3(&pLeftAABB->Extents);
 
@@ -303,6 +364,9 @@ bool CCollision_Manager::Intersects(CCollider* pLeftCol, CCollider* pRightCol, _
 
 	else if (pLeftCol->Get_ColliderType() == CCollider::TYPE_OBB && pRightCol->Get_ColliderType() == CCollider::TYPE_AABB)
 	{
+		pLeftOBB = dynamic_cast<CBoundingBox_OBB*>(pLeftCol->Get_Bounding())->Get_Bounding();
+		pRightAABB = dynamic_cast<CBoundingBox_AABB*>(pRightCol->Get_Bounding())->Get_Bounding();
+
 		CenterA = XMLoadFloat3(&pLeftOBB->Center);
 		ExtentsA = XMLoadFloat3(&pLeftOBB->Extents);
 
@@ -312,6 +376,9 @@ bool CCollision_Manager::Intersects(CCollider* pLeftCol, CCollider* pRightCol, _
 
 	else if (pLeftCol->Get_ColliderType() == CCollider::TYPE_OBB && pRightCol->Get_ColliderType() == CCollider::TYPE_OBB)
 	{
+		pLeftOBB = dynamic_cast<CBoundingBox_OBB*>(pLeftCol->Get_Bounding())->Get_Bounding();
+		pRightOBB = dynamic_cast<CBoundingBox_OBB*>(pRightCol->Get_Bounding())->Get_Bounding();
+
 		CenterA = XMLoadFloat3(&pLeftOBB->Center);
 		ExtentsA = XMLoadFloat3(&pLeftOBB->Extents);
 

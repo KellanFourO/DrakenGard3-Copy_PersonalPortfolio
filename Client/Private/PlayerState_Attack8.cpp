@@ -26,6 +26,7 @@ HRESULT CPlayerState_Attack8::Initialize(CPlayer* pPlayer)
 
 HRESULT CPlayerState_Attack8::StartState()
 {
+	m_pOwnerColliderCom->OnCollider();
 	m_pOwnerModelCom->Set_AnimationSpeed(1.75f);
 	m_pOwnerModelCom->Set_Animation(104);
 	m_pOwnerModelCom->Set_Loop(false);

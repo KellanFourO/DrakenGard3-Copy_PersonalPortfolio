@@ -4,6 +4,7 @@
 
 BEGIN(Engine)
 
+class CCollider;
 
 class ENGINE_DLL CGameObject abstract : public CBase
 {
@@ -42,12 +43,19 @@ public:
 public:
 	_bool	Picking(_float3 vPickPos, class CModel* pModelCom, _float3* pOut);
 
+
 public:
 	virtual void	  Write_Json(json& Out_Json) override;
 	virtual void	  Load_FromJson(const json& In_Json) override;
 	class CComponent* Find_Component(const wstring& strComTag);
 	class CPartObject* Find_PartObject(const wstring& strPartTag);
 	
+	class CCollider*	Find_Collider(_bool bPartType);
+	
+public:
+	virtual void On_Collision(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag); // call on collising
+	virtual void On_CollisionEnter(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag);
+	virtual void On_CollisionExit(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag);
 
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -58,7 +66,7 @@ protected:
 
 protected:
 	class CTransform*			m_pTransformCom = { nullptr };
-	
+
 	map<const wstring, class CComponent*>		m_Components;
 	map<const wstring, class CPartObject*>		m_PartObjects;
 
@@ -66,7 +74,7 @@ protected:
 	_bool						m_isCloned = { false };
 	_bool						m_isPlayer = { false };
 	_bool						m_isDead = { false };
-
+	
 
 protected:
 	HRESULT Add_Component(_uint iLevelIndex, const wstring& strPrototypeTag,

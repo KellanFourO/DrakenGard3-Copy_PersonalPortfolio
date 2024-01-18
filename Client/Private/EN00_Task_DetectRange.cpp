@@ -14,6 +14,7 @@ BrainTree::Node::Status CEN00_Task_DetectRange::Task()
     StartLoop();
     SetAnimation(3);
 
+    //! 
 
     CTransform* pTargetTransform = blackboard->GetTarget()->Get_Transform();
     CTransform* pOwnerTransform = blackboard->GetTransform();
@@ -29,11 +30,11 @@ BrainTree::Node::Status CEN00_Task_DetectRange::Task()
     _float3 vDistance;
     XMStoreFloat3(&vDistance, XMVector3Length(vTargetPos - vOwnerPos));
     
-    if((XMVectorGetX(XMLoadFloat3(&vDistance)) < blackboard->getFloat("Detect_Range")))
+    if(!(XMVectorGetX(XMLoadFloat3(&vDistance)) < blackboard->getFloat("Detect_Range")))
     {
-        return BrainTree::Node::Status::Failure;
-    }
-    else
         return BrainTree::Node::Status::Success;
+    }
+    
+        
     
 }

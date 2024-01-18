@@ -339,9 +339,6 @@
     <ClInclude Include="..\Public\BoundingBox_Sphere.h">
       <Filter>01. Utility\03. Components\06. Collider\00. BoundingType\02. SPHERE</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\RigidBody.h">
-      <Filter>01. Utility\03. Components\07. RigidBody</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\StateBase.h">
       <Filter>01. Utility\03. Components\08. StateMachine\00. StateBase</Filter>
     </ClInclude>
@@ -395,6 +392,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\쥬신 스터디\수업자료\9개월차\240117_이펙트_노말맵핑\Framework\Engine\Public\AlphaObject.h">
       <Filter>01. Utility\02. GameObjects\03. Alpha</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RigidBody.h">
+      <Filter>01. Utility\03. Components\07. RigidBody</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -521,9 +521,6 @@
     <ClCompile Include="..\Private\BoundingBox_Sphere.cpp">
       <Filter>01. Utility\03. Components\06. Collider\00. BoundingType\02. SPHERE</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\RigidBody.cpp">
-      <Filter>01. Utility\03. Components\07. RigidBody</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\StateBase.cpp">
       <Filter>01. Utility\03. Components\08. StateMachine\00. StateBase</Filter>
     </ClCompile>
@@ -568,6 +565,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AlphaObject.cpp">
       <Filter>01. Utility\02. GameObjects\03. Alpha</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RigidBody.cpp">
+      <Filter>01. Utility\03. Components\07. RigidBody</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

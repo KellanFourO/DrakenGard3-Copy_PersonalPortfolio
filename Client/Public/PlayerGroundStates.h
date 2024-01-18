@@ -5,6 +5,11 @@
 #include "PlayerState_Run.h"
 #include "PlayerState_Jump.h"
 
+#include "PlayerState_DashLeft.h"
+#include "PlayerState_DashRight.h"
+#include "PlayerState_DashFront.h"
+#include "PlayerState_DashBack.h"
+
 #include "PlayerState_Attack1.h"
 #include "PlayerState_Attack2.h"
 #include "PlayerState_Attack3.h"

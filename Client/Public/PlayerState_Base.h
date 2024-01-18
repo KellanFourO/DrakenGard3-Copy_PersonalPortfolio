@@ -7,6 +7,7 @@ class CStateMachine;
 class CTransform;
 class CNavigation;
 class CRigidBody;
+class CCollider;
 END
 
 BEGIN(Client)
@@ -47,6 +48,7 @@ protected:
 	CTransform*		m_pOwnerTransform = { nullptr };
 	CNavigation*	m_pOwnerNavagation = { nullptr };
 	CRigidBody*		m_pOwnerRigidBody = { nullptr };
+	CCollider*		m_pOwnerColliderCom = { nullptr };
 
 	class CCamera_Target* m_pOwnerCam = { nullptr };
 	

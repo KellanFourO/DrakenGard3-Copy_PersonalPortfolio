@@ -1,5 +1,9 @@
+
 #include "RigidBody.h"
+
+#include "GameObject.h"
 #include "Transform.h"
+#include "Navigation.h"
 
 CRigidBody::CRigidBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice, pContext)
@@ -8,115 +12,164 @@ CRigidBody::CRigidBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 CRigidBody::CRigidBody(const CRigidBody& rhs)
 	: CComponent(rhs)
-	, m_fGravityAcc(rhs.m_fGravityAcc)
-	, m_fHeavy(rhs.m_fHeavy)
-	, m_pOwnerTransformCom(rhs.m_pOwnerTransformCom)
-	, m_vNetPower(rhs.m_vNetPower)
+	, m_eType(rhs.m_eType)
+	, m_bSleep(rhs.m_bSleep)
+	, m_bUseGravity(rhs.m_bUseGravity)
+	, m_bKinematic(rhs.m_bKinematic)
+	, m_fFriction(rhs.m_fFriction)
+	, m_fMass(rhs.m_fMass)
+	, m_fGravitionalConstant(rhs.m_fGravitionalConstant)
+	, m_byConstraints(rhs.m_byConstraints)
+	, m_vLinearAcceleration(rhs.m_vLinearAcceleration)
+	, m_vLinearVelocity(rhs.m_vLinearVelocity)
+	, m_fSleepThreshold(rhs.m_fSleepThreshold)
 {
-	Safe_AddRef(m_pOwnerTransformCom);
+
 }
 
 HRESULT CRigidBody::Initialize_Prototype()
 {
-	ZeroMemory(&m_vNetPower, sizeof(_float3));
-
-	
 	return S_OK;
 }
 
 HRESULT CRigidBody::Initialize(void* pArg)
 {
+	if (nullptr == pArg)
+		return E_FAIL;
 
-	m_pOwnerTransformCom = static_cast<CTransform*>(pArg);
-
-	AddRefIfNotNull(m_pOwnerTransformCom);
+	memmove(&m_eType, pArg, sizeof(RIGIDBODY_TYPE));
 
 	return S_OK;
 }
 
-void CRigidBody::Priority_Tick(_float fTimeDelta)
-{
-}
-
 void CRigidBody::Tick(_float fTimeDelta)
 {
-	m_fGravityAcc = m_fHeavy * -9.8f * 1.3f;
-	if (m_isKinematic)
-	{
-		//Get_Transform()->Translate(fTimeDelta * m_vNetPower);
-		if (nullptr != m_pOwnerTransformCom)
-		{
-			m_pOwnerTransformCom->Translate(fTimeDelta * XMLoadFloat3(&m_vNetPower));
-		}
-	}
-	if (m_UseGravity)
-	{
-		m_vNetPower.y += fTimeDelta * m_fGravityAcc;
-		// 임시 중력 해제
-		/*if (m_pTransformCom->m_vInfo[INFO_POS].y >= m_pTransformCom->LocalScale().y + 2.1f)
-			m_vNetPower.y += fTimeDelta * m_fGravityAcc;*/
-		if (m_vNetPower.y < m_fGravityAcc)
-			m_vNetPower.y = m_fGravityAcc;
-	}
-	/*else
-	{
-		Get_Transform()->Translate(fTimeDelta * m_vNetPower);
+	if (Check_Sleep() || m_eType == RIGIDBODY_TYPE::STATIC)
+		return;
 
-	}*/
+	m_bKinematic ? Update_Kinematic(fTimeDelta) : Update_Kinetic(fTimeDelta);
+}
 
-	if (nullptr != m_pOwnerTransformCom)
+void CRigidBody::Add_Force(const _float3& vForce, const FORCE_MODE& eMode)
+{
+	_vector vVector = XMLoadFloat3(&vForce);
+
+	switch (eMode)
 	{
-
-		/*_vector Get_State(STATE eState)
-		{
-			return XMVectorSet
-			(
-				m_WorldMatrix.m[eState][0],
-				m_WorldMatrix.m[eState][1],
-				m_WorldMatrix.m[eState][2],
-				m_WorldMatrix.m[eState][3]
-			);
-		}*/
-		_float3 vPosition;
-		XMStoreFloat3(&vPosition, m_pOwnerTransformCom->Get_State(CTransform::STATE_POSITION));
-		
-		if (vPosition.y < 1.f)
-		{
-			vPosition.y = 1.f;
-
-			m_pOwnerTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat3(&vPosition));
-		
-		}
+	case FORCE_MODE::FORCE:
+		XMStoreFloat3(&m_vLinearAcceleration, (XMLoadFloat3(&m_vLinearAcceleration) += vVector / m_fMass));
+		break;
+	case FORCE_MODE::IMPULSE:
+		XMStoreFloat3(&m_vLinearVelocity, (XMLoadFloat3(&m_vLinearVelocity) += vVector / m_fMass));
+		break;
+	case FORCE_MODE::ACCELERATION:
+		XMStoreFloat3(&m_vLinearAcceleration, (XMLoadFloat3(&m_vLinearAcceleration) += vVector));
+		break;
+	case FORCE_MODE::VELOCITY_CHANGE:
+		XMStoreFloat3(&m_vLinearVelocity, (XMLoadFloat3(&m_vLinearVelocity) += vVector));
+		break;
+	default:
+		break;
 	}
 
+	Wake();
+}
 
-	//if (Get_Transform()->m_vInfo[INFO_POS].y < 1.f)
-	//	Get_Transform()->m_vInfo[INFO_POS].y = 1.f;
+void CRigidBody::Clear_Force(const FORCE_MODE& eMode)
+{
+	switch (eMode)
+	{
+	case FORCE_MODE::FORCE:
+		::ZeroMemory(&m_vLinearAcceleration, sizeof(_float3));
+		break;
+	case FORCE_MODE::IMPULSE:
+		::ZeroMemory(&m_vLinearVelocity, sizeof(_float3));
+		break;
+	case FORCE_MODE::ACCELERATION:
+		::ZeroMemory(&m_vLinearAcceleration, sizeof(_float3));
+		break;
+	case FORCE_MODE::VELOCITY_CHANGE:
+		::ZeroMemory(&m_vLinearVelocity, sizeof(_float3));
+		break;
+	default:
+		break;
+	}
+}
 
+void CRigidBody::Clear_NetPower()
+{
+	ZeroMemory(&m_vLinearAcceleration, sizeof(_float3));
+	ZeroMemory(&m_vLinearVelocity, sizeof(_float3));
+}
+
+void CRigidBody::Update_Kinetic(const _float& fTimeDelta)
+{
 	
+	_vector vPos = m_pOwner->Get_Transform()->Get_State(CTransform::STATE_POSITION);
+	
+
+	if (m_bUseGravity && vPos.m128_f32[1] > 0.f)
+		m_vLinearVelocity.y += m_fGravitionalConstant * fTimeDelta;
+
+	XMStoreFloat3(&m_vLinearVelocity, XMLoadFloat3(&m_vLinearVelocity) + (XMLoadFloat3(&m_vLinearAcceleration) * fTimeDelta));
+//	m_vLinearVelocity += m_vLinearAcceleration * fTimeDelta;
+
+	const _float fLinearResistance = m_fFriction;
+
+	XMStoreFloat3(&m_vLinearVelocity, (fLinearResistance < 1.f) ? (XMLoadFloat3(&m_vLinearVelocity) * (1.f - fLinearResistance)) : (XMLoadFloat3(&m_vLinearVelocity) = XMVectorZero()));
+
+	if (m_byConstraints)
+	{
+		_int i = 0;
+		while (i < 3)
+			(m_byConstraints & 1 << i) ? (*(((_float*)&m_vLinearVelocity) + i++) = 0) : i++;
+	}
+
+	Update_Transform(fTimeDelta);
 }
 
-void CRigidBody::Late_Tick(_float fTimeDelta)
+void CRigidBody::Update_Kinematic(const _float& fTimeDelta)
 {
+	Clear_Force(FORCE_MODE::VELOCITY_CHANGE);
 }
 
-void CRigidBody::Add_Force(_float3 _vForce)
+void CRigidBody::Update_Transform(const _float& fTimeDelta)
 {
-	_vector vAddForce = XMLoadFloat3(&m_vNetPower) + XMLoadFloat3(&_vForce);
+	CNavigation* pNavigation = dynamic_cast<CNavigation*>(m_pOwner->Find_Component(TEXT("Com_Navigation")));
 
-	XMStoreFloat3(&m_vNetPower, vAddForce);
+	_vector vPos = XMLoadFloat3(&m_vLinearVelocity) * fTimeDelta;
+	
+	_float3 vRealPos;
+	XMStoreFloat3(&vRealPos, vPos);
+	
+
+	m_pOwner->Get_Transform()->Translate(vRealPos, pNavigation);
+}
+
+const _bool CRigidBody::Check_Sleep()
+{
+	if (m_bSleep)
+		return TRUE;
+
+	if (!m_bUseGravity && m_fSleepThreshold > XMVectorGetX(XMVector3Length(XMLoadFloat3(&m_vLinearVelocity))))
+	{
+		Sleep();
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 CRigidBody* CRigidBody::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CRigidBody* pInstance = new CRigidBody(pDevice, pContext);
 
-	/* 원형객체를 초기화한다.  */
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CRigidBody");
 		Safe_Release(pInstance);
 	}
+
 	return pInstance;
 }
 
@@ -124,18 +177,16 @@ CComponent* CRigidBody::Clone(void* pArg)
 {
 	CRigidBody* pInstance = new CRigidBody(*this);
 
-	/* 원형객체를 초기화한다.  */
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
 		MSG_BOX("Failed to Cloned : CRigidBody");
 		Safe_Release(pInstance);
 	}
+
 	return pInstance;
 }
 
 void CRigidBody::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pOwnerTransformCom);
 }

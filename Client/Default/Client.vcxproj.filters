@@ -253,6 +253,9 @@
     <Filter Include="02. GameObjects\05. Effects\Explosion">
       <UniqueIdentifier>{b8d05546-3dd4-4a95-9a5c-b2159c909f43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash">
+      <UniqueIdentifier>{6cde0625-5f53-4b11-987b-ee1444f4bd3e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -540,6 +543,18 @@
     <ClInclude Include="..\Public\Effect_Explosion.h">
       <Filter>02. GameObjects\05. Effects\Explosion</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_DashLeft.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_DashBack.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_DashFront.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_DashRight.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -781,6 +796,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\Effect_Explosion.cpp">
       <Filter>02. GameObjects\05. Effects\Explosion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_DashBack.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_DashFront.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_DashLeft.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_DashRight.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

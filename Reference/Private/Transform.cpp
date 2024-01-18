@@ -62,7 +62,53 @@ void CTransform::Add_LookPos(_float3& _vAddPos) //! 바라보는 방향으로 위치값을 �
 	m_WorldMatrix._41 += _vAddPos.x;
 	m_WorldMatrix._42 += _vAddPos.y;
 	m_WorldMatrix._43 += _vAddPos.z;
+}
+
+_float3 CTransform::Get_MoveAxisPos(_float fDistance, STATE eState, _bool bAddType, _float3 vCamLook)
+{
 	
+	Look_At_CamLook(vCamLook);
+
+	_float3 vMove = {};
+
+	switch (eState)
+	{
+	case Engine::CTransform::STATE_RIGHT:
+	{
+		vMove = bAddType ? _float3(fDistance, 0.f, 0.f) : _float3(-fDistance, 0.f, 0.f);
+		break;
+	}
+
+	case Engine::CTransform::STATE_UP:
+	{
+		vMove = bAddType ? _float3(0.f, fDistance, 0.f) : _float3(0.f, -fDistance, 0.f);
+		break;
+	}
+
+	case Engine::CTransform::STATE_LOOK:
+	{
+		vMove = bAddType ? _float3(0.f, 0.f, fDistance) : _float3(0.f, 0.f, -fDistance);
+		break;
+	}
+
+	case Engine::CTransform::STATE_POSITION:
+		return _float3(); // 이동하지 않음
+
+	default:
+		break;
+	}
+
+	// vMove를 vCamLook 기준으로 변환
+	// vMove를 vCamLook 방향으로 회전시킨 후 거리를 적용합니다.
+	XMVECTOR moveVector = XMLoadFloat3(&vMove);
+	XMVECTOR lookVector = XMLoadFloat3(&vCamLook);
+
+	XMVECTOR rotatedMove = XMVector3TransformCoord(moveVector, XMMatrixRotationRollPitchYawFromVector(lookVector));
+
+	_float3 movedPosition;
+	XMStoreFloat3(&movedPosition, rotatedMove * fDistance);
+
+	return movedPosition;
 }
 
 void CTransform::Go_Player_Straight(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation)
@@ -595,14 +641,40 @@ _bool CTransform::HasArrived(const DirectX::XMFLOAT3& _vCurrentPos, const Direct
 	return DirectX::XMVectorGetX(vDistance) <= fArrivalThreshold;
 }
 
-void CTransform::Translate(_fvector& _vTranslation)
+void CTransform::Translate(const _float3& vTranslation, class CNavigation* pNavigation, _bool bNotAgent)
 {
-	_vector vAddPostion = Get_State(CTransform::STATE_POSITION) += _vTranslation;
-	
-	Set_State(CTransform::STATE_POSITION, vAddPostion);
+	/* Check NavMeshAgent */
+	if (nullptr != pNavigation)
+	{
+		_vector vPos = Get_State(CTransform::STATE_POSITION);
+		
+		
 
+		vPos = XMLoadFloat3(&vTranslation) + vPos;
+		
+		
+		//Vec3 vTemp = vTranslation + Vec4(m_WorldMatrix.m[3]).xyz();
+
+		if (false == pNavigation->isMove(vPos))
+			return;
+
+		//_float3 vRealPos;
+		//XMStoreFloat3(&vRealPos, vPos);
+
+		
+		//_float fY = pNavigation->Compute_Height(vRealPos);
+		////
+		//vPos.m128_f32[1] = fY;
+
+		Set_State(CTransform::STATE_POSITION, vPos);
+	}
+
+		//vPos = vPos + XMLoadFloat3(&vTranslation);
+		//
+		//Set_State(CTransform::STATE_POSITION, vPos);
 	
 }
+
 
 
 void CTransform::Write_Json(json& Out_Json)

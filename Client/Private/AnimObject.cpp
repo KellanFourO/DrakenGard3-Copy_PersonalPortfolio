@@ -11,3 +11,15 @@ CAnimObject::CAnimObject(const CAnimObject& rhs)
 	, m_eCurrentLevelID(rhs.m_eCurrentLevelID)
 {
 }
+
+void CAnimObject::On_Collision(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+{
+}
+
+void CAnimObject::On_CollisionEnter(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+{
+}
+
+void CAnimObject::On_CollisionExit(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+{
+}

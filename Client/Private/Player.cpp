@@ -2,7 +2,7 @@
 #include "..\Public\Player.h"
 #include "GameInstance.h"
 #include "PartObject.h"
-
+#include <iostream>
 //TODO 컴포넌트
 
 //TODO 파츠
@@ -13,6 +13,8 @@
 #include "PlayerGroundStates.h"
 
 #include "Camera_Target.h"
+#include "Collider.h"
+#include "RigidBody.h"
 
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice, pContext)
@@ -62,6 +64,10 @@ HRESULT CPlayer::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
+	m_pRigidBodyCom->Clear_NetPower();
+	m_pRigidBodyCom->Set_UseGravity(true);
+	
+
 	return S_OK;
 }
 
@@ -87,6 +93,8 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
+	m_pRigidBodyCom->Tick(fTimeDelta);
+	
 	
 
 	Key_Input(fTimeDelta);
@@ -106,13 +114,13 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 	m_fAccTime += fTimeDelta;
 
-	if (m_fAccTime > 0.2f)
-	{
-		//printf(m_pStateCom->Get_aNI);
-		printf(ConvertWstrToStrTest(m_pStateCom->Get_StateTag()).c_str());
-		printf("\n\n");
-		m_fAccTime = 0.f;
-	}
+	//if (m_fAccTime > 0.2f)
+	//{
+	//	//printf(m_pStateCom->Get_aNI);
+	//	printf(ConvertWstrToStrTest(m_pStateCom->Get_StateTag()).c_str());
+	//	printf("\n\n");
+	//	m_fAccTime = 0.f;
+	//}
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return ;
@@ -127,6 +135,22 @@ HRESULT CPlayer::Render()
 
 	return S_OK;
 }
+
+void CPlayer::On_Collision(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+{
+	//wcout << LeftTag.c_str() << TEXT(" On_Collision is ") << RightTag.c_str() << endl;
+}
+
+void CPlayer::On_CollisionEnter(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+{
+	wcout << LeftTag.c_str() << TEXT(" On_CollisionEnter is ") << RightTag.c_str() << endl;
+}
+
+void CPlayer::On_CollisionExit(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+{
+	wcout << LeftTag.c_str() << TEXT(" On_CollisionExit is ") << RightTag.c_str() << endl;
+}
+
 
 void CPlayer::Set_Cam(CCamera_Target* pCam)
 {
@@ -165,15 +189,17 @@ HRESULT CPlayer::Ready_Components()
 		TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
 		return E_FAIL;
 
-	//TODO 리지드바디
-	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_RigidBody"),
-		TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), m_pTransformCom)))
-		return E_FAIL;
+	m_pColliderCom->Set_PartType(CCollider::PART_BODY);
 
-	///TODO 상태머신
-	//f (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_StateMachine"),
-	//	TEXT("Com_StateMachine"), reinterpret_cast<CComponent**>(&m_pStateCom), this)))
-	//	return E_FAIL;
+	
+	CRigidBody::RIGIDBODY_TYPE eType = CRigidBody::RIGIDBODY_TYPE::DYNAMIC;
+
+	////TODO 리지드바디
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_RigidBody"),
+		TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &eType)))
+		return E_FAIL;
+	
+	m_pRigidBodyCom->Set_Owner(this);
 	
 	//TODO 상태머신
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_StateMachine"),
@@ -190,14 +216,12 @@ HRESULT CPlayer::Ready_PartObjects()
 
 	BodyDesc.m_pParentTransform = m_pTransformCom;
 	BodyDesc.m_pParentNavigation = m_pNavigationCom;
+	
 
 	if(FAILED(Add_PartObject(TEXT("Prototype_PartObject_PlayerBody"), TEXT("Part_Body"), &BodyDesc)))
 		return E_FAIL;
 
-	//! For.Part_Weapon
-	CPartObject::PART_DESC WeaponDesc = {};
-
-	WeaponDesc.m_pParentTransform = m_pTransformCom;
+	
 
 	CPlayerPart_Body* pBody = dynamic_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
 
@@ -207,6 +231,9 @@ HRESULT CPlayer::Ready_PartObjects()
 	
 	if(nullptr == pSwordBone)
 		return E_FAIL;
+	
+	//! For.Part_Weapon
+	CPartObject::PART_DESC WeaponDesc = {};
 	
 	WeaponDesc.m_pSocketBone = pSwordBone;
 	WeaponDesc.m_pParentTransform = m_pTransformCom;
@@ -232,6 +259,18 @@ HRESULT CPlayer::Ready_States()
 		return E_FAIL;
 
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Jump"), CPlayerState_Jump::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_DashFront"), CPlayerState_DashFront::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_DashBack"), CPlayerState_DashBack::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_DashLeft"), CPlayerState_DashLeft::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_DashRight"), CPlayerState_DashRight::Create(this))))
 		return E_FAIL;
 
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack1"), CPlayerState_Attack1::Create(this))))

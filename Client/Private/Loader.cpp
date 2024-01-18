@@ -435,6 +435,7 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_RigidBody"),
 		CRigidBody::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	
 
 	lstrcpy(m_szLoadingText, TEXT("상태머신(을) 로드하는 중입니다."));
 

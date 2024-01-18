@@ -193,6 +193,44 @@ CPartObject* CGameObject::Find_PartObject(const wstring& strPartTag)
 	return iter->second;
 }
 
+CCollider* CGameObject::Find_Collider(_bool bPartType)
+{
+	CComponent* pFindCom = nullptr;
+
+	if (true == bPartType) //! 찾고자하는 콜라이더가 웨폰일경우
+	{
+		for (auto& Pair : m_PartObjects)
+		{
+			pFindCom = dynamic_cast<CPartObject*>(Pair.second)->Find_Component(TEXT("Com_Collider"));
+			
+
+			if (nullptr != pFindCom)
+			{
+				return dynamic_cast<CCollider*>(pFindCom);
+
+			}
+		}
+	}
+	else
+	{
+		pFindCom = Find_Component(TEXT("Com_Collider"));
+		return dynamic_cast<CCollider*>(pFindCom);
+	}
+	
+	return nullptr;
+}
+
+void CGameObject::On_Collision(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+{
+}
+
+void CGameObject::On_CollisionEnter(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+{
+}
+
+void CGameObject::On_CollisionExit(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+{
+}
 
 
 void CGameObject::Free()

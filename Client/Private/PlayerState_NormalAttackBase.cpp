@@ -22,6 +22,7 @@ HRESULT CPlayerState_NormalAttackBase::Initialize(CPlayer* pPlayer)
 HRESULT CPlayerState_NormalAttackBase::StartState()
 {
     m_pOwnerModelCom->Set_AnimationSpeed(2.f);
+    m_pOwnerColliderCom->OnCollider();
 
     return S_OK;
 }
@@ -29,6 +30,7 @@ HRESULT CPlayerState_NormalAttackBase::StartState()
 HRESULT CPlayerState_NormalAttackBase::EndState()
 {
     m_pOwnerModelCom->Reset_AnimationSpeed();
+    m_pOwnerColliderCom->OffCollider();
     return S_OK;
 }
 
@@ -56,12 +58,12 @@ void CPlayerState_NormalAttackBase::NextComboOrIdle(CModel* pOwnerModel, class C
        //! 선입력이 있었다면
         if (true == m_bInput)
         {
-            
             pOwnerStateMachine->Transition(CStateMachine::STATE_GROUND, strNextComboStateTag);
         }
         ////! 선입력이 없었다면
         else if(false == m_bInput)
         {
+            m_pOwnerColliderCom->OffCollider();
             m_pOwnerModelCom->Root_MotionEnd();
             pOwnerModel->Set_Animation(iEndAnimIndex);
             m_isEnd = true;

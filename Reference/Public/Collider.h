@@ -15,6 +15,7 @@ class ENGINE_DLL CCollider final : public CComponent
 {
 public:
 	enum TYPE { TYPE_Sphere, TYPE_AABB, TYPE_OBB, TYPE_END };
+	enum PARTTYPE { PART_BODY, PART_WEAPON, PARTTYPE_END };
 
 public:
 	enum COLLISION_STATE
@@ -38,6 +39,9 @@ public:
 
 	class CBoundParent* Get_Bounding() { return m_pBounding; }
 
+	PARTTYPE Get_PartType() const { return m_ePartType; }
+	void	 Set_PartType(PARTTYPE ePartType) { m_ePartType = ePartType; }
+
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eType);
 	virtual HRESULT Initialize(void* pArg);
@@ -46,12 +50,23 @@ public:
 	void	Update(_fmatrix TransformMatrix);
 	_bool	Collision(CCollider* pTargetCollider);
 
+	_bool   isOnCollider() { return m_bOnCollider; }
+	void	OnCollider() { m_bOnCollider = true; }
+	void    OffCollider() { m_bOnCollider = false; }
+
+	_bool	isAccCollider() { return m_bAccCollider; }
+	void	OnAccCollider(_float fHitTick) { m_bAccCollider = true; m_fHitTickTime = fHitTick; }
+	void	OffAccCollider() { m_bAccCollider = false; m_fHitTickTime = 0.f;}
+
+	_float	Get_HitTick() { return m_fHitTickTime; }
+	
+
+
 public:
 	void On_Collision(CCollider* pOther, const _float& fX, const _float& fY, const _float& fZ); // call on collising
 	void On_CollisionEnter(CCollider* pOther, const _float& fX, const _float& fY, const _float& fZ);
 	void On_CollisionExit(CCollider* pOther, const _float& fX, const _float& fY, const _float& fZ);
-
-
+	
 public:
 	static	_uint			g_iColliderID;
 	_uint					m_iID = { 0 };
@@ -63,9 +78,18 @@ public:
 
 private:
 	TYPE					m_eType = { TYPE_END };
+	PARTTYPE				m_ePartType = { PARTTYPE_END };
 	class CBoundParent*		m_pBounding = { nullptr };
 	_bool					m_isCollision = { false };
+
+	_bool					m_bOnCollider = false;
+
 	COLLISION_STATE			m_eState = { COLLISION_STATE_END };
+	
+
+	_bool					m_bAccCollider = false; //! 만약, 데미지가 누적해서 들어가야 한다면.
+	_float					m_fHitTickTime = 0.f; //! 일정시간 마다 데미지가 한번씩 들어가게 하자.
+	
 	
 
 private:

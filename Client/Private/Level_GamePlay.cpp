@@ -34,6 +34,10 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
+	
+	if (FAILED(Ready_Layer_Collider()))
+		return E_FAIL; 
+
  	
 
 
@@ -263,6 +267,17 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const wstring& strLayerTag)
 		pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
 	}
 
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Layer_Collider()
+{
+	if(FAILED(m_pGameInstance->Add_Check_CollisionGroup(TEXT("Layer_Player"), TEXT("Layer_Monster"))))
+		return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Add_Check_CollisionGroup(TEXT("Layer_Monster"), TEXT("Layer_Player"))))
+	//	return E_FAIL;
 
 	return S_OK;
 }

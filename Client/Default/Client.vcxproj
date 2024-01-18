@@ -250,6 +250,10 @@
     <ClInclude Include="..\Public\PlayerState_Attack7.h" />
     <ClInclude Include="..\Public\PlayerState_Attack8.h" />
     <ClInclude Include="..\public\PlayerState_Base.h" />
+    <ClInclude Include="..\Public\PlayerState_DashBack.h" />
+    <ClInclude Include="..\Public\PlayerState_DashFront.h" />
+    <ClInclude Include="..\Public\PlayerState_DashLeft.h" />
+    <ClInclude Include="..\Public\PlayerState_DashRight.h" />
     <ClInclude Include="..\Public\PlayerState_Idle.h" />
     <ClInclude Include="..\Public\PlayerState_Jump.h" />
     <ClInclude Include="..\Public\PlayerState_NormalAttackBase.h" />
@@ -338,6 +342,10 @@
     <ClCompile Include="..\Private\PlayerState_Attack7.cpp" />
     <ClCompile Include="..\Private\PlayerState_Attack8.cpp" />
     <ClCompile Include="..\Private\PlayerState_Base.cpp" />
+    <ClCompile Include="..\Private\PlayerState_DashBack.cpp" />
+    <ClCompile Include="..\Private\PlayerState_DashFront.cpp" />
+    <ClCompile Include="..\Private\PlayerState_DashLeft.cpp" />
+    <ClCompile Include="..\Private\PlayerState_DashRight.cpp" />
     <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
     <ClCompile Include="..\Private\PlayerState_Jump.cpp" />
     <ClCompile Include="..\Private\PlayerState_NormalAttackBase.cpp" />

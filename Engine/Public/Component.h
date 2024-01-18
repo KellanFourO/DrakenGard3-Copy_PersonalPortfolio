@@ -6,6 +6,8 @@ BEGIN(Engine)
 
 class ENGINE_DLL CComponent abstract : public CBase
 {
+
+
 protected:
 	CComponent(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CComponent(const CComponent& rhs);

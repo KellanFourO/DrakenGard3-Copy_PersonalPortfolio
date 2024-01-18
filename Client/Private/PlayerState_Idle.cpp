@@ -50,9 +50,9 @@ void CPlayerState_Idle::Tick(const _float& fTimeDelta)
 void CPlayerState_Idle::KeyInput(const _float& fTimeDelta)
 {
 	
-	_float3 vCamLook;
-	XMStoreFloat3(&vCamLook, m_pOwnerCam->Get_Transform()->Get_State(CTransform::STATE_LOOK));
-	m_pOwnerTransform->Look_At_CamLook(vCamLook);
+	//_float3 vCamLook;
+	//XMStoreFloat3(&vCamLook, m_pOwnerCam->Get_Transform()->Get_State(CTransform::STATE_LOOK));
+	//m_pOwnerTransform->Look_At_CamLook(vCamLook);
 
 	if (m_pGameInstance->Key_Down(DIK_W))
 	{

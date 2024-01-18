@@ -47,6 +47,7 @@ HRESULT CPlayerState_Walk::EndState()
 	m_fAccTime = 0.f;
     m_pOwnerModelCom->Reset_AnimationSpeed();
 
+ 
     
 
 	return S_OK;
@@ -81,6 +82,13 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
 
     if (m_pGameInstance->Key_Pressing(DIK_W))
     {
+        if (m_pGameInstance->Key_Pressing(DIK_SPACE))
+        {
+            m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_DashFront"));
+        }
+       
+
+        
 
         m_ePrevDir = m_eCurrentDir;
         m_eCurrentDir = CPlayerState_Base::FRONT;
@@ -99,6 +107,12 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
 
     if (m_pGameInstance->Key_Pressing(DIK_A))
     {
+
+        if (m_pGameInstance->Key_Pressing(DIK_SPACE))
+        {
+            m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_DashLeft"));
+        }
+
 
         m_ePrevDir = m_eCurrentDir;
         m_eCurrentDir = CPlayerState_Base::LEFT;
@@ -123,6 +137,11 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
     if (m_pGameInstance->Key_Pressing(DIK_S))
     {
 
+        if (m_pGameInstance->Key_Pressing(DIK_SPACE))
+        {
+            m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_DashBack"));
+        }
+
         m_ePrevDir = m_eCurrentDir;
         m_eCurrentDir = CPlayerState_Base::BACK;
 
@@ -137,6 +156,12 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
 
     if (m_pGameInstance->Key_Pressing(DIK_D))
     {
+
+        if (m_pGameInstance->Key_Pressing(DIK_SPACE))
+        {
+            m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_DashRight"));
+        }
+
         m_ePrevDir = m_eCurrentDir;
         m_eCurrentDir = CPlayerState_Base::RIGHT;
 

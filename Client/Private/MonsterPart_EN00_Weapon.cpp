@@ -54,6 +54,8 @@ HRESULT CMonsterPart_EN00_Weapon::Initialize(void* pArg)
 	if (FAILED(__super::Add_Component(m_eCurrentLevelIndex, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
 		return E_FAIL;
 
+	m_pColliderCom->Set_PartType(CCollider::PART_WEAPON);
+
 	m_pTransformCom->Set_Scaling(1.f, 1.f, 1.f);
 	//m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-180.0f));
 	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.7f, 0.f, 0.f, 1.f));

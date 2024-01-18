@@ -21,6 +21,8 @@ public:
 	wstring			Get_StateTag() { return m_strCurrentStateTag; }
 	void			Set_StateTag(const wstring& strStateTag) { m_strCurrentStateTag = strStateTag;}
 
+	wstring			Get_PrevStateTag() { return m_strPrevStateTag;}
+
 	HRESULT			Add_State(const wstring& strStateTag, CStateBase* pAddState);
 	HRESULT			Set_InitState(const wstring& strStateTag);
 	HRESULT			Transition(STATETYPE eStateType, const wstring& strStateTag);
@@ -50,6 +52,7 @@ private:
 	HRESULT			Replaceability(STATETYPE eStateType); //! 현재 상태에서 다음 상태로 교체가 가능한지의 대한 여부를 체크하는 함수
 	
 private:
+	wstring			m_strPrevStateTag;
 	wstring			m_strCurrentStateTag;
 	_int			m_iCurrentAnimIndex = { 0 };
 	STATETYPE		m_eCurrentStateType = { STATE_END };

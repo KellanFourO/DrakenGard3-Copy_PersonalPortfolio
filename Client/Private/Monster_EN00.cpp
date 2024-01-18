@@ -230,6 +230,9 @@ HRESULT CMonster_EN00::Ready_Components()
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Collider_AABB"),
 		TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
 		return E_FAIL;
+
+	m_pColliderCom->Set_PartType(CCollider::PART_BODY);
+	m_pColliderCom->OnCollider();
 	
 	return S_OK;
 }

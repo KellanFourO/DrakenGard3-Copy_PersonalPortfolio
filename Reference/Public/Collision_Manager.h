@@ -24,11 +24,11 @@ private:
 
 
 public:
-	void		Update_CollisionMgr(_uint iLevelIndex);
+	void		Update_CollisionMgr(_uint iLevelIndex, _float fTimeDelta);
 	HRESULT		Add_Check_CollisionGroup(const _tchar* LeftLayerTag, const _tchar* RightLayerTag);
 
 public:
-	void		Collision_GroupUpdate(const _tchar* LeftTag, const _tchar* RightTag, _uint iLevelIndex);
+	void		Collision_GroupUpdate(const _tchar* LeftTag, const _tchar* RightTag, _uint iLevelIndex, _float fTimeDelta);
 	bool		Is_Collision(CCollider* pLeftCol, CCollider* pRightCol, _float* fX, _float* fY, _float* fZ);
 	void		Get_Min_Max(CCollider* Col, _vector& vMin, _vector& vMax);
 	XMVECTOR	Get_Min_Vector(CCollider* Col);
@@ -49,6 +49,9 @@ public:
 
 private:
 	class CGameInstance*	m_pGameInstance = { nullptr };
+
+private:
+	_float	m_fAccTime = 0.f;
 
 public:
 	static CCollision_Manager* Create();

@@ -12,6 +12,7 @@
 #include "Transform.h"
 #include "Navigation.h"
 #include "StateMachine.h"
+#include "Collider.h"
 #include "Camera_Target.h"
 
 
@@ -27,6 +28,7 @@ HRESULT CPlayerState_Base::Initialize(CPlayer* pPlayer)
 	m_pOwnerNavagation = dynamic_cast<CNavigation*>(pPlayer->Find_Component(TEXT("Com_Navigation")));
 	m_pOwnerRigidBody = dynamic_cast<CRigidBody*>(pPlayer->Find_Component(TEXT("Com_RigidBody")));
 	m_pOwnerModelCom = dynamic_cast<CModel*>(pPlayer->Find_PartObject(TEXT("Part_Body"))->Find_Component(TEXT("Com_Model")));
+	m_pOwnerColliderCom = dynamic_cast<CCollider*>(pPlayer->Find_PartObject(TEXT("Part_Weapon"))->Find_Component(TEXT("Com_Collider")));
 	m_pOwnerCam = pPlayer->Get_Cam();
 
 	if(__super::Initialize(m_pOwnerModelCom))
@@ -37,10 +39,13 @@ HRESULT CPlayerState_Base::Initialize(CPlayer* pPlayer)
 		return E_FAIL;
 	if (FAILED(AddRefIfNotNull(m_pOwnerNavagation)))
 		return E_FAIL;
+	if (FAILED(AddRefIfNotNull(m_pOwnerColliderCom)))
+		return E_FAIL;
 	if (FAILED(AddRefIfNotNull(m_pOwnerRigidBody)))
 		return E_FAIL;
 	if (FAILED(AddRefIfNotNull(m_pOwnerCam)))
 		return E_FAIL;
+	
 
 
 	
@@ -139,6 +144,7 @@ void CPlayerState_Base::Free()
 	Safe_Release(m_pOwnerStateCom);
 	Safe_Release(m_pOwnerTransform);
 	Safe_Release(m_pOwnerRigidBody);
+	Safe_Release(m_pOwnerColliderCom);
 	Safe_Release(m_pOwnerNavagation);
 	Safe_Release(m_pOwnerCam);
 }

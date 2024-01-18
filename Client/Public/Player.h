@@ -38,7 +38,12 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	CCamera_Target*	Get_Cam() { return m_pCamera; }
+	virtual void On_Collision(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag) override; // call on collising
+	virtual void On_CollisionEnter(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag) override;
+	virtual void On_CollisionExit(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag) override;
+
+public:
+	CCamera_Target*			Get_Cam() { return m_pCamera; }
 	void					Set_Cam(class CCamera_Target* pCam);
 	CPartObject*			Find_PartObject(const wstring& strPartTag);
 	LEVEL					Get_LevelID() { return m_eCurrentLevelID; }

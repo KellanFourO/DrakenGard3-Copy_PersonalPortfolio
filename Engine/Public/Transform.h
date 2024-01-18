@@ -103,6 +103,7 @@ public:
 	void Set_RotationPerSec(_float fRotationPerSec) { m_fRotationPerSec = fRotationPerSec; }
 
 	void    Add_LookPos(_float3& _vAddPos);
+	_float3 Get_MoveAxisPos(_float fDistance, STATE eState, _bool bAddType, _float3 vCamLook);
 
 public:
 	void	Go_Player_Straight(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
@@ -135,7 +136,13 @@ public:
 	_bool	HasArrived(const DirectX::XMFLOAT3& _vCurrentPos, const DirectX::XMFLOAT3& _vTargetPos, _float fArrivalThreshold);
 
 	//TODO Translate
-	void			Translate(_fvector& _vTranslation);
+	void	Translate(const _float3& vTranslation, class CNavigation* pNavigation, _bool bNotAgent = FALSE);
+
+	void	Translate(const _float4& vTranslation, class CNavigation* pNavigation, _bool bNotAgent = FALSE)
+	{ 	
+		Translate(_float3(vTranslation.x, vTranslation.y, vTranslation.z), pNavigation, bNotAgent);
+	}
+	
 
 public:
 	virtual void Write_Json(json& Out_Json) override;

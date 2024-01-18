@@ -104,7 +104,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pObject_Manager->Late_Tick(fTimeDelta);
 
-	m_pCollision_Manager->Update_CollisionMgr(m_pLevel_Manager->Get_CurrentLevelIndex());
+	m_pCollision_Manager->Update_CollisionMgr(m_pLevel_Manager->Get_CurrentLevelIndex(), fTimeDelta);
 
 	m_pLevel_Manager->Tick(fTimeDelta);
 
@@ -555,6 +555,14 @@ HRESULT CGameInstance::Add_Check_CollisionGroup(const _tchar* LeftLayerTag, cons
 		return E_FAIL;
 
 	return m_pCollision_Manager->Add_Check_CollisionGroup(LeftLayerTag, RightLayerTag);
+}
+
+void CGameInstance::Update_CollisionMgr(_uint iLevelIndex, _float fTimeDelta)
+{
+	if (nullptr == m_pCollision_Manager)
+		return;
+
+	return m_pCollision_Manager->Update_CollisionMgr(iLevelIndex, fTimeDelta);
 }
 
 void CGameInstance::Reset_CollisionGroup()

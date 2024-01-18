@@ -110,6 +110,7 @@ public:	/* For.Font_Manager */
 
 public: /* For.Collision_Manager*/
 	HRESULT Add_Check_CollisionGroup(const _tchar * LeftLayerTag, const _tchar * RightLayerTag);
+	void	Update_CollisionMgr(_uint iLevelIndex, _float fTimeDelta);
 	void	Reset_CollisionGroup();
 
 public: /* For.Target_Manager */

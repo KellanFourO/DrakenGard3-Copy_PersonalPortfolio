@@ -76,6 +76,8 @@ HRESULT CStateMachine::Transition(STATETYPE eStateType, const wstring& strStateT
 
 	m_pCurrentState->EndState();
 
+	m_strPrevStateTag = m_strCurrentStateTag;
+
 	m_pCurrentState = iter->second;
 	m_strCurrentStateTag = strStateTag;
 	m_eCurrentStateType = eStateType;
@@ -93,45 +95,84 @@ HRESULT CStateMachine::Replaceability(STATETYPE eStateType)
 		return S_OK;
 	}
 
-
 	switch (eStateType)
 	{
-		case STATE_GROUND:
-		{
-			//TODO 다음상태가 GROUND 타입이라면.
+	case STATE_GROUND:
+	{
+		//TODO 다음상태가 GROUND 타입이라면.
 
-			//!현재 상태가 GROUND 타입이고, 사용중이 아니라면 // 언제든지 바뀌어도 되는 상태의 경우에는 m_isUsing은 항상 false 일것.
-			if (m_eCurrentStateType == CStateMachine::STATE_GROUND && !m_isFinished)
-				return S_OK;
+		//!현재 상태가 GROUND 타입이고, 사용중이 아니라면 // 언제든지 바뀌어도 되는 상태의 경우에는 m_isUsing은 항상 false 일것.
+		if (m_eCurrentStateType == CStateMachine::STATE_GROUND)
+			return S_OK;
 
-			//! 현재 상태가 AIR 타입이며,  땅을 밟고있지 않은 상태면 // AIR타입이면서 갑자기 땅으로 찍어내리는 애니메이션이라면 사용이 끝났을 경우에만 교체가 가능하도록 하자
-			else if (!m_isGround && m_eCurrentStateType == CStateMachine::STATE_AIR && !m_isFinished)
-				return E_FAIL;
+		//! 현재 상태가 AIR 타입이며,  땅을 밟고있지 않은 상태면 // AIR타입이면서 갑자기 땅으로 찍어내리는 애니메이션이라면 사용이 끝났을 경우에만 교체가 가능하도록 하자
+		else if (!m_isGround && m_eCurrentStateType == CStateMachine::STATE_AIR)
+			return E_FAIL;
 
-			else
-				return E_FAIL;
+		else
+			return E_FAIL;
 
-			break;
-		}
+		break;
+	}
 
-		case STATE_AIR:
-		{
-			//TODO 다음상태가 AIR 타입이라면.
+	case STATE_AIR:
+	{
+		//TODO 다음상태가 AIR 타입이라면.
 
-			if (m_eCurrentStateType == CStateMachine::STATE_AIR && !m_isFinished)
-				return S_OK;
+		if (m_eCurrentStateType == CStateMachine::STATE_AIR)
+			return S_OK;
 
-			//! 현재 상태가 GROUND 타입이며,  땅을 밟고있는 상태이면서,  사용중이 아니라면 // 언제든지 바뀌어도 되는 상태의 경우에는 m_isUsing은 항상 false 일것.
-			else if (m_isGround && m_eCurrentStateType == CStateMachine::STATE_GROUND && !m_isFinished)
-				return S_OK;
+		//! 현재 상태가 GROUND 타입이며,  땅을 밟고있는 상태이면서,  사용중이 아니라면 // 언제든지 바뀌어도 되는 상태의 경우에는 m_isUsing은 항상 false 일것.
+		else if (m_isGround && m_eCurrentStateType == CStateMachine::STATE_GROUND)
+			return S_OK;
 
-			else
-				return E_FAIL;
+		else
+			return E_FAIL;
 
-			break;
-		}
+		break;
+	}
 
 	}
+
+
+	//switch (eStateType)
+	//{
+	//	case STATE_GROUND:
+	//	{
+	//		//TODO 다음상태가 GROUND 타입이라면.
+
+	//		//!현재 상태가 GROUND 타입이고, 사용중이 아니라면 // 언제든지 바뀌어도 되는 상태의 경우에는 m_isUsing은 항상 false 일것.
+	//		if (m_eCurrentStateType == CStateMachine::STATE_GROUND && !m_isFinished)
+	//			return S_OK;
+
+	//		//! 현재 상태가 AIR 타입이며,  땅을 밟고있지 않은 상태면 // AIR타입이면서 갑자기 땅으로 찍어내리는 애니메이션이라면 사용이 끝났을 경우에만 교체가 가능하도록 하자
+	//		else if (!m_isGround && m_eCurrentStateType == CStateMachine::STATE_AIR && !m_isFinished)
+	//			return E_FAIL;
+
+	//		else
+	//			return E_FAIL;
+
+	//		break;
+	//	}
+
+	//	case STATE_AIR:
+	//	{
+	//		//TODO 다음상태가 AIR 타입이라면.
+
+	//		if (m_eCurrentStateType == CStateMachine::STATE_AIR && !m_isFinished)
+	//			return S_OK;
+
+	//		//! 현재 상태가 GROUND 타입이며,  땅을 밟고있는 상태이면서,  사용중이 아니라면 // 언제든지 바뀌어도 되는 상태의 경우에는 m_isUsing은 항상 false 일것.
+	//		else if (m_isGround && m_eCurrentStateType == CStateMachine::STATE_GROUND && !m_isFinished)
+	//			return S_OK;
+
+	//		else
+	//			return E_FAIL;
+
+	//		break;
+	//	}
+
+	//}
 }
 
 HRESULT CStateMachine::Add_State(const wstring& strStateTag, CStateBase* pAddState)
