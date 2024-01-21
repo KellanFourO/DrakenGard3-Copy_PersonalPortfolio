@@ -37,6 +37,7 @@ public:
 
 private:
 	_uint m_iNumLevels = { 0 };
+	
 
 private:
 	map<const wstring, class CGameObject*>		m_Prototypes;

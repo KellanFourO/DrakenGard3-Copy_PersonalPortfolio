@@ -33,26 +33,18 @@ public:
 	virtual void Init_Desc() override;
 	
 public:
-	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType) override; // call on collising
-	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType) override;
-	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType) override;
+	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit) override; // call on collising
+	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit) override;
+	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit) override;
 
 private:
 	HRESULT			Ready_Components();
 	HRESULT			Ready_PartObjects();
-	virtual HRESULT	Ready_BehaviorTree() override;
+	virtual HRESULT	Ready_BehaviorTree_V2() override;
 
 	HRESULT			Add_PartObject(const wstring& strPrototypeTag, const wstring& strPartTag, void* pArg);
 	
 	HRESULT			Bind_ShaderResources();
-
-	void			Debug_KeyInput();
-
-
-
-private:
-	//map<const wstring, class CPartObject*>	m_PartObjects;
-	
 
 public:
 	/* 원형객체를 생성한다. */

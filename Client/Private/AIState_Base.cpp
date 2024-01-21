@@ -5,7 +5,7 @@
 #include "Animation.h"
 #include "Navigation.h"
 
-BrainTree::Node::Status CAIState_Base::update()
+BrainTree::Node::Status CAIState_Base::update(_float fTimeDelta)
 {
 	cout << "AIState_Base" << endl;
 	

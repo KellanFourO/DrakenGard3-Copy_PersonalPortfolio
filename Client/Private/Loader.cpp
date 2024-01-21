@@ -162,11 +162,23 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00"),
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("EN00"), pFilePathData, true), PivotMatrix)));
-	//
-	////!Prototype_Component_Model_Monster_EN00
+	
+	////!Prototype_Component_Model_Monster_EN00_Weapon
 	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00_Weapon"),
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("EN00_Weapon"), pFilePathData), PivotMatrix)));
+
+	////!Prototype_Component_Model_Monster_EN70
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN70"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("EN070"), pFilePathData, false), PivotMatrix)));
+	
+	////!Prototype_Component_Model_Monster_EN070_Weapon
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN70_Weapon"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("EN070_Weapon"), pFilePathData), PivotMatrix)));
+
+	
 
 
 	lstrcpy(m_szLoadingText, TEXT("지형 모델(을) 로드하는 중입니다."));
@@ -488,6 +500,15 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	//
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_Monster_EN00_Weapon"),
 		CMonsterPart_EN00_Weapon::Create(m_pDevice, m_pContext, eLevel), true)))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_Monster_EN00 */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_EN70"),
+		CMonster_EN70::Create(m_pDevice, m_pContext, eLevel), true, true)))
+		return E_FAIL;
+	//
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_Monster_EN70_Weapon"),
+		CMonsterPart_EN70_Weapon::Create(m_pDevice, m_pContext, eLevel), true)))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("지형 원형(을) 로드하는 중입니다."));

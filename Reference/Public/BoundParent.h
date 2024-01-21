@@ -7,9 +7,15 @@ BEGIN(Engine)
 class CBoundParent abstract : public CBase
 {
 public:
+	enum PARTTYPE_BOUND { PART_BODY, PART_WEAPON, PARTTYPE_END };
+
+public:
 	typedef struct
 	{
 		_float3		vCenter;
+		PARTTYPE_BOUND ePartType;
+		_int		iNumCollider;
+
 	}BOUNDING_DESC;
 
 protected:

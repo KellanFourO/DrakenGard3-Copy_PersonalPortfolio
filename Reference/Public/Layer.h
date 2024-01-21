@@ -26,6 +26,8 @@ public:
 
 private:
 	list<class CGameObject*>	m_GameObjects;
+	
+	_float						m_fTimeAcc = 0.f;
 
 public:
 	static CLayer* Create();

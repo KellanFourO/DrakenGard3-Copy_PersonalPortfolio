@@ -27,6 +27,7 @@ HRESULT CPlayerState_Run::Initialize(CPlayer* pPlayer)
 
 HRESULT CPlayerState_Run::StartState()
 {
+    m_pOwnerModelCom->Set_Loop(true);
 	m_pOwnerModelCom->Set_Animation(76);
     m_pOwnerModelCom->Set_AnimationSpeed(3.f);
 	m_pOwnerTransform->Set_SpeedPerSec(12.f);

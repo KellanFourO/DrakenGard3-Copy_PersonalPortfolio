@@ -28,7 +28,6 @@ CCollider::CCollider(const CCollider& rhs)
 HRESULT CCollider::Initialize_Prototype(TYPE eType)
 {
 	m_eType = eType;
-
 #ifdef _DEBUG
 	m_pBatch = new PrimitiveBatch<VertexPositionColor>(m_pContext); //! 버텍스 버퍼와 인덱스 버퍼를 알아서 셋팅해줌.  
 	m_pEffect = new BasicEffect(m_pDevice); //! 기본적인 셰이더를 제공해줌
@@ -49,6 +48,8 @@ HRESULT CCollider::Initialize_Prototype(TYPE eType)
 HRESULT CCollider::Initialize(void* pArg)
 {
 	CBoundParent::BOUNDING_DESC*	pBoundingDesc = static_cast<CBoundParent::BOUNDING_DESC*>(pArg);
+
+	m_ePartType = CCollider::PARTTYPE(pBoundingDesc->ePartType);
 
 	switch (m_eType)
 	{

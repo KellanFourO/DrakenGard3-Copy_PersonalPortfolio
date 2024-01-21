@@ -2,6 +2,8 @@
 #include "AnimObject.h"
 #include "BrainTree/BrainTree.h"
 
+using namespace BrainTree;
+
 BEGIN(Engine)
 class CShader;
 class CCollider;
@@ -34,12 +36,16 @@ public:
 	virtual void		Init_Desc();
 
 public:
-	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType) override; // call on collising
-	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType) override;
-	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType) override;
+	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit) override; // call on collising
+	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit) override;
+	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit) override;
+
+public:
+	virtual void Transition(_int iAnimIndex, _float fSpeed = 1.5f);
 
 protected:
 	virtual HRESULT						Ready_BehaviorTree();
+	virtual HRESULT						Ready_BehaviorTree_V2();
 
 protected:
 	CShader*							m_pShaderCom	= { nullptr };
@@ -48,7 +54,7 @@ protected:
 	CRigidBody*							m_pRigidBodyCom = { nullptr };
 
 	CNavigation*						m_pNavigationCom = { nullptr };
-	shared_ptr<BrainTree::BehaviorTree> m_BehaviorTree	= { nullptr };
+	shared_ptr<Node>					m_pBehaviorTree = { nullptr };
 
 private:
 	//STATE_LINK_MONSTER_DESC      m_tLinkStateDesc;

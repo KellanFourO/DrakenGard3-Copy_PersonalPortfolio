@@ -1365,6 +1365,8 @@ void CImgui_Manager::SaveObject(string strPath, string strFileName)
 		AnimationJson[i].emplace("Index", i);
 		AnimationJson[i].emplace("LayerTag", m_vecCreateAnimObjectLayerTag[i]);
 		AnimationJson[i].emplace("ObjectTag", m_vecCreateAnimObjectTags[i]);
+		_int iCellIndex = m_pNavigation->Get_SelectRangeCellIndex(m_vecAnimObjects[i]);
+		m_vecAnimObjects[i]->Set_CellIndex(iCellIndex);
 		m_vecAnimObjects[i]->Write_Json(AnimationJson[i]);
 	}
 	
@@ -1436,8 +1438,11 @@ void CImgui_Manager::LoadAnimObject(string strPath, string strFileName)
 
 		wstring wstrLayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
 		wstring wstrObjectTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
+		
+		
 
 		m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObjectTag, &Desc, &pGameObject);
+		pGameObject->Set_CellIndex(LoadJson[i]["CellIndex"]);
 
 		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
 

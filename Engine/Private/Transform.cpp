@@ -374,7 +374,7 @@ void CTransform::KeepEye(_float fTimeDelta, _bool bRight, CNavigation* pNavigati
 	else
 		vPosition += XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
 
-
+	
 	if (nullptr != pNavigation)
 	{
 		
@@ -658,13 +658,13 @@ void CTransform::Translate(const _float3& vTranslation, class CNavigation* pNavi
 		if (false == pNavigation->isMove(vPos))
 			return;
 
-		//_float3 vRealPos;
-		//XMStoreFloat3(&vRealPos, vPos);
+		_float3 vRealPos;
+		XMStoreFloat3(&vRealPos, vPos);
 
 		
-		//_float fY = pNavigation->Compute_Height(vRealPos);
-		////
-		//vPos.m128_f32[1] = fY;
+		_float fY = pNavigation->Compute_Height(vRealPos);
+		
+		vPos.m128_f32[1] = fY;
 
 		Set_State(CTransform::STATE_POSITION, vPos);
 	}

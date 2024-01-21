@@ -182,7 +182,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const wstring& strLayerTag)
 	
 	json LoadJson;
 
-	CJson_Utility::Load_Json("../Bin/DataFiles/35_Anim.json", LoadJson);
+	CJson_Utility::Load_Json("../Bin/DataFiles/37_Anim.json", LoadJson);
 
 	_int LoadSize = LoadJson.size();
 
@@ -194,14 +194,28 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const wstring& strLayerTag)
 		CGameObject::GAMEOBJECT_DESC Desc;
 		Desc.iCellIndex = LoadJson[i]["CellIndex"];
 		
+		
 		wstring LayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
 		wstring ObjectTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
 
-		//pGameObject->Set_CellIndex(LoadJson[i]["CellIndex"]);
 
+		if (ObjectTag == TEXT("Prototype_GameObject_Monster_EN00"))
+		{
+			Desc.fSpeedPerSec = 1.8f;
+			Desc.fRotationPerSec = XMConvertToRadians(60.f);
+		}
+		else if (ObjectTag == TEXT("Prototype_GameObject_Monster_EN70"))
+		{
+			Desc.fSpeedPerSec = 3.f;
+			Desc.fRotationPerSec = XMConvertToRadians(90.f);
+		}
+
+		
 		
 		if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, LayerTag, ObjectTag, &Desc, &pGameObject)))
 			return E_FAIL;
+			
+		pGameObject->Set_CellIndex(LoadJson[i]["CellIndex"]);
 
 		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
 
@@ -282,6 +296,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Collider()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Check_CollisionGroup(TEXT("Layer_Monster"), TEXT("Layer_Player"))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Check_CollisionGroup(TEXT("Layer_Monster"), TEXT("Layer_Monster"))))
 		return E_FAIL;
 
 	return S_OK;

@@ -117,11 +117,12 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 
 								if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
 								{
-									pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, false);
+									pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, false, false);
 								}
 								else if(pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
 								{
-									pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, true);
+									pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, true, false);
+									pRightGameObject->On_CollisionExit(pLeftGameObject, strLeftTag, strRightTag, true, true);
 								}
 								
 
@@ -147,11 +148,13 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 										
 										if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
 										{
-											pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, false);
+											pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, false, false);
 										}
 										else if (pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
 										{
-											pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, true);
+											pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, true, false);
+											pRightGameObject->On_Collision(pLeftGameObject, strLeftTag, strRightTag, vCollisionPos, true, true);
+
 										}
 
 										pLeftCol->On_Collision(pRightCol, fX, fY, fZ);
@@ -165,11 +168,13 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 								{
 									if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
 									{
-										pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, false);
+										pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, false, false);
 									}
 									else if (pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
 									{
-										pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, true);
+										pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, true, false);
+
+										pRightGameObject->On_Collision(pLeftGameObject, strLeftTag, strRightTag, vCollisionPos, true, true);
 									}
 
 
@@ -189,11 +194,13 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 
 								if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
 								{
-									pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag, false);
+									pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag, false, false);
+									
 								}
 								else if (pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
 								{
-									pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag, true);
+									pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag, true, false);
+									pRightGameObject->On_CollisionEnter(pLeftGameObject, strLeftTag, strRightTag, true, true);
 								}
 								
 
@@ -212,11 +219,12 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 
 							if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
 							{
-								pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, false);
+								pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, false, false);
 							}
 							else if (pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
 							{
-								pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, true);
+								pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, true, false);
+								pRightGameObject->On_CollisionExit(pLeftGameObject, strLeftTag, strRightTag, true, true);
 							}
 
 							pLeftCol->On_CollisionExit(pRightCol, fX, fY, fZ);

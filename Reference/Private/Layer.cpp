@@ -50,18 +50,21 @@ HRESULT CLayer::Add_GameObject(CGameObject* pGameObject)
 
 HRESULT CLayer::Erase_GameObject(CGameObject* pGameObject)
 {
-	if(nullptr == pGameObject)
-		return E_FAIL;
-	
-	auto iter = find(m_GameObjects.begin(), m_GameObjects.end(), pGameObject);
-	
-	if(iter == m_GameObjects.end())
+	if (nullptr == pGameObject)
 		return E_FAIL;
 
+	auto iter = find(m_GameObjects.begin(), m_GameObjects.end(), pGameObject);
+
+	if (iter == m_GameObjects.end())
+		return E_FAIL;
+
+	// 게임 오브젝트를 삭제
 	Safe_Release(*iter);
+
+	// 반복자를 무효화하기 전에 삭제 작업을 수행
 	m_GameObjects.erase(iter);
 
-	
+
 	return S_OK;
 }
 
@@ -76,10 +79,33 @@ void CLayer::Priority_Tick(_float fTimeDelta)
 
 void CLayer::Tick(_float fTimeDelta)
 {
+	vector<CGameObject*> vecDeleteObjects;
+
 	for (auto& pGameObject : m_GameObjects)
 	{
 		if (nullptr != pGameObject)
+		{
+
 			pGameObject->Tick(fTimeDelta);
+
+			if (true == pGameObject->Is_Dead())
+			{	
+				_float fLifeTime = pGameObject->Get_LifeTime();
+				
+				m_fTimeAcc += fTimeDelta;
+				if (m_fTimeAcc >= fLifeTime)
+				{
+					vecDeleteObjects.push_back(pGameObject);
+
+					m_fTimeAcc = 0.f;
+				}
+			}
+		}
+	}
+
+	for (auto& pGameObject : vecDeleteObjects)
+	{
+		Erase_GameObject(pGameObject);
 	}
 }
 

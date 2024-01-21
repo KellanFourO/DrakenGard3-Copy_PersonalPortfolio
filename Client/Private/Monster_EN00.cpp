@@ -1,14 +1,12 @@
 #include "stdafx.h"
 #include "Monster_EN00.h"
 #include "GameInstance.h"
-#include "EN00State_Idle.h"
-#include "EN00State_Chase.h"
-#include "EN00State_Attack.h"
-
-#include "EN00States.h"
 
 #include "PartObject.h"
 #include "Bone.h"
+#include "Animation.h"
+
+
 
 CMonster_EN00::CMonster_EN00(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CMonster(pDevice,pContext)
@@ -52,16 +50,12 @@ HRESULT CMonster_EN00::Initialize(void* pArg)
 
 	if (m_eCurrentLevelID != LEVEL_TOOL)
 	{
-		if (FAILED(Ready_BehaviorTree()))
+
+		if(FAILED(Ready_BehaviorTree_V2()))
 			return E_FAIL;
 	}
 
 	m_pModelCom->Root_MotionStart();
-
-	//m_pModelCom->Set_Animation(rand() % 20);
-
-	// 클라 테스트용 m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 20, 3.f, rand() % 20, 1.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 20, 0.f, rand() % 20, 1.f));
 
 	return S_OK;
 }
@@ -80,10 +74,19 @@ void CMonster_EN00::Tick(_float fTimeDelta)
 {
 	if (m_eCurrentLevelID != LEVEL_TOOL)
 	{
-		m_BehaviorTree->getBlackboard()->setTimeDelta(fTimeDelta);
-		BrainTree::Node::Status TreeStatus = m_BehaviorTree->update();
+		Blackboard::Ptr pBlackBoard = m_pBehaviorTree->getBlackboard();
+		
+		_float3 vMyPos, vTargetPos;
+		XMStoreFloat3(&vMyPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		XMStoreFloat3(&vTargetPos, pBlackBoard->GetTarget()->Get_Transform()->Get_State(CTransform::STATE_POSITION));
+		
+		pBlackBoard->setFloat3("MyPosition", vMyPos);
+		pBlackBoard->setFloat3("TargetPosition", vTargetPos);
 
-		Debug_KeyInput();
+		
+
+		Node::Status TreeStatus = m_pBehaviorTree->update(fTimeDelta);
+
 	}
 
 	
@@ -100,7 +103,9 @@ void CMonster_EN00::Tick(_float fTimeDelta)
 	m_pModelCom->Play_Animation(fTimeDelta, vPos);
 
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
-	m_pRigidBodyCom->Tick(fTimeDelta);
+
+	if(m_eCurrentLevelID != LEVEL_TOOL)
+		m_pRigidBodyCom->Tick(fTimeDelta);
 
 	if(true == m_bMove)
 	m_pTransformCom->Add_LookPos(vPos);
@@ -115,15 +120,6 @@ void CMonster_EN00::Late_Tick(_float fTimeDelta)
 			Pair.second->Late_Tick(fTimeDelta);
 	}
 
-	if (m_eCurrentLevelID != LEVEL_TOOL)
-	{
-		CCollider* pTargetCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_PartComponent(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_Collider"), TEXT("Part_Weapon")));
-
-		if (m_pColliderCom->Collision(pTargetCollider))
-		{
-			int i = 0;
-		}
-	}
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return;
@@ -165,68 +161,66 @@ void CMonster_EN00::Write_Json(json& Out_Json)
 {
 	__super::Write_Json(Out_Json);
 	
-	//Out_Json["MonsterDesc"]["MonsterType"] =		m_tLinkStateDesc.eMonType;
-	//Out_Json["MonsterDesc"]["IdleType_Monster"] =	m_tLinkStateDesc.eNorMonIdleType;
-	//Out_Json["MonsterDesc"]["IdleType_Boss"] =		m_tLinkStateDesc.eBossStartType;
-	//Out_Json["MonsterDesc"]["Patrol"] =				m_tLinkStateDesc.bPatrol;
-	//Out_Json["MonsterDesc"]["SectionIndex"] =		m_tLinkStateDesc.iSectionIndex;
-
-	//auto iter = Out_Json["Component"].find("Model");
-	//Out_Json["Component"].erase(iter);
 }
 
 void CMonster_EN00::Load_FromJson(const json& In_Json)
 {
 	__super::Load_FromJson(In_Json);
 
-	
-	//m_tLinkStateDesc.Reset();
-	//
-	//m_tLinkStateDesc.eMonType = In_Json["MonsterDesc"]["MonsterType"];
-	//m_tLinkStateDesc.eNorMonIdleType = In_Json["MonsterDesc"]["IdleType_Monster"];
-	//m_tLinkStateDesc.eBossStartType = In_Json["MonsterDesc"]["IdleType_Boss"];
-	//
-	//if (In_Json["MonsterDesc"].end() != In_Json["MonsterDesc"].find("Patrol"))
-	//	m_tLinkStateDesc.bPatrol = In_Json["MonsterDesc"]["Patrol"];
-	//
-	//if (In_Json["MonsterDesc"].end() != In_Json["MonsterDesc"].find("SectionIndex"))
-	//	m_tLinkStateDesc.iSectionIndex = In_Json["MonsterDesc"]["SectionIndex"];
-	//
-	//XMStoreFloat4(&m_tLinkStateDesc.m_fStartPositon, m_pTransformCom.lock()->Get_State(CTransform::STATE_TRANSLATION));
-	//
-	//GET_SINGLE(CGameManager)->Registration_Section(m_tLinkStateDesc.iSectionIndex, Weak_Cast<CGameObject>(m_this));
-	//
-	//Init_Desc();
 }
 
 void CMonster_EN00::Init_Desc()
 {
-	//m_pStatus.lock()->Init_Status(&m_tLinkStateDesc);
+
 }
 
-void CMonster_EN00::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType)
+void CMonster_EN00::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
 {
-	__super::On_Collision(pCollisionObject, LeftTag, RightTag, vCollisionPos, bType);
+	__super::On_Collision(pCollisionObject, LeftTag, RightTag, vCollisionPos, bType, bHit);
 
-	_float magnitude = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCollisionPos)));
+	if (RightTag == TEXT("Layer_Player"))
+	{
+		_float magnitude = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCollisionPos)));
 
-	_vector vLook = pCollisionObject->Get_Transform()->Get_State(CTransform::STATE_LOOK);
-	_vector vForceDir = vLook * magnitude;
 
-	_float3 vCalcPos;
-	XMStoreFloat3(&vCalcPos, vForceDir);
+		_vector vLook = pCollisionObject->Get_Transform()->Get_State(CTransform::STATE_LOOK);
+		_vector vForceDir = vLook * magnitude;
 
-	m_pRigidBodyCom->Add_Force(vCalcPos, CRigidBody::FORCE_MODE::FORCE);
+		_float3 vCalcPos;
+		XMStoreFloat3(&vCalcPos, vForceDir);
+
+		m_pRigidBodyCom->Add_Force(vCalcPos, CRigidBody::FORCE_MODE::FORCE);
+	}
+
+	if (RightTag == TEXT("Layer_Monster"))
+	{
+		_float magnitude = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCollisionPos)));
+
+		_vector vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
+		_vector vForceDir = vRight * magnitude;
+
+		_float3 vCalcPos;
+		XMStoreFloat3(&vCalcPos, vForceDir);
+		m_pRigidBodyCom->Add_Force(vCalcPos, CRigidBody::FORCE_MODE::FORCE);
+
+		vCalcPos = { -vCalcPos.x, -vCalcPos.y, -vCalcPos.z };
+
+		CRigidBody* pTargetBody = dynamic_cast<CRigidBody*>(pCollisionObject->Find_Component(TEXT("Com_RigidBody")));
+		
+		pTargetBody->Add_Force(vCalcPos, CRigidBody::FORCE_MODE::FORCE);
+
+	}
 }
 
-void CMonster_EN00::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
+void CMonster_EN00::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
 {
-	__super::On_CollisionEnter(pCollisionObject, LeftTag, RightTag, bType);
+	
+	__super::On_CollisionEnter(pCollisionObject, LeftTag, RightTag, bType, bHit);
 }
 
-void CMonster_EN00::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
+void CMonster_EN00::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
 {
-	__super::On_CollisionExit(pCollisionObject, LeftTag, RightTag, bType);
+	__super::On_CollisionExit(pCollisionObject, LeftTag, RightTag, bType, bHit);
 
 	m_pRigidBodyCom->Clear_NetPower();
 }
@@ -256,6 +250,7 @@ HRESULT CMonster_EN00::Ready_Components()
 
 	BoundingDesc.vExtents = _float3(0.4f, 0.7f, 0.4f);
 	BoundingDesc.vCenter = _float3(0.f, BoundingDesc.vExtents.y, 0.f);
+	BoundingDesc.ePartType = CBoundParent::PARTTYPE_BOUND::PART_BODY;
 
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Collider_AABB"),
 		TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
@@ -302,148 +297,395 @@ HRESULT CMonster_EN00::Ready_PartObjects()
 	return S_OK;
 }
 
-HRESULT CMonster_EN00::Ready_BehaviorTree()
+
+
+HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 {
-	m_BehaviorTree = std::make_shared<BrainTree::BehaviorTree>();
-	
-	BrainTree::Blackboard::Ptr EN00_BlackBoard = m_BehaviorTree->getBlackboard();
-	
-	EN00_BlackBoard->setString("Name", "EN00");
-	EN00_BlackBoard->setFloat("Max_HP", 100.f);
-	EN00_BlackBoard->setFloat("Current_HP", 100.f);
-	EN00_BlackBoard->setFloat("Attack_Range", 3.f);
-	EN00_BlackBoard->setFloat("Keep_Range", 3.5f);
-	EN00_BlackBoard->setFloat("Detect_Range", 10.f);
-	EN00_BlackBoard->setFloat("Speed", m_pTransformCom->Get_Speed());
-	EN00_BlackBoard->setFloat("RotateSpeed", m_pTransformCom->Get_RotationSpeed());
+	m_pBehaviorTree = std::make_shared<BrainTree::BehaviorTree>();
 
-	EN00_BlackBoard->setFloat3("TargetPostion", _float3(0.f, 0.f, 0.f));
+	 BrainTree::Blackboard::Ptr EN00_BlackBoard = m_pBehaviorTree->getBlackboard();
+	 	
+	 EN00_BlackBoard->setString("Name", "EN00");
+	 EN00_BlackBoard->setFloat("Max_HP", 100.f);
+	 EN00_BlackBoard->setFloat("Current_HP", 100.f);
+	 EN00_BlackBoard->setFloat("Attack_Range", 3.f);
+	 EN00_BlackBoard->setFloat("Keep_Range", 3.5f);
+	 EN00_BlackBoard->setFloat("Detect_Range", 10.f);
+	 EN00_BlackBoard->setFloat("Speed", m_pTransformCom->Get_Speed());
+	 EN00_BlackBoard->setFloat("RotateSpeed", m_pTransformCom->Get_RotationSpeed());
+	 
 
-	EN00_BlackBoard->setBool("Is_Hit", false); //! 피격중인가
-	EN00_BlackBoard->setBool("Is_Ground", true);
-	EN00_BlackBoard->setBool("Is_Dead", false);
-	EN00_BlackBoard->setBool("Is_TargetPosition", false); //! 목표로 하는 지점이 있는가
-	EN00_BlackBoard->setBool("Is_Patrol", false); //! 순찰해야하는가?
+	 CGameObject* pTarget = nullptr;
 
+	 pTarget = m_pGameInstance->Get_Player(m_eCurrentLevelID);
 
-	EN00_BlackBoard->setOwner(this);
-	EN00_BlackBoard->setModel(m_pModelCom);
-	EN00_BlackBoard->setShader(m_pShaderCom);
-	EN00_BlackBoard->setCollider(m_pColliderCom);
-	EN00_BlackBoard->setTransform(m_pTransformCom);
-	EN00_BlackBoard->setGameInstance(m_pGameInstance);
-	EN00_BlackBoard->setNavigation(m_pNavigationCom);
+	 if (nullptr != pTarget)
+	 {
+		 EN00_BlackBoard->setTarget(pTarget);
+	 }
 
-	
+	 _float3 vMyPos, vTargetPos;
+	 
+	 XMStoreFloat3(&vMyPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	 XMStoreFloat3(&vTargetPos, pTarget->Get_Transform()->Get_State(CTransform::STATE_POSITION));
 
+	 EN00_BlackBoard->setFloat3("MyPosition", vMyPos);
+	 EN00_BlackBoard->setFloat3("TargetPosition", vTargetPos);
 
-	CGameObject* pTarget = nullptr;
+	 //EN00_BlackBoard->setFloat3("TargetPostion", _float3(0.f, 0.f, 0.f));
+	 
+	 EN00_BlackBoard->setBool("Is_Hit", false); //! 피격중인가
+	 EN00_BlackBoard->setBool("Is_Ground", true);
+	 EN00_BlackBoard->setBool("Is_Dead", false);
+	 //EN00_BlackBoard->setBool("Is_TargetPosition", false); //! 목표로 하는 지점이 있는가
+	 EN00_BlackBoard->setBool("Is_Patrol", false); //! 순찰해야하는가?
+	 EN00_BlackBoard->setBool("Is_OneTick", true);
+	 EN00_BlackBoard->setInt("iRandomIndex", -1);
+	 EN00_BlackBoard->setOwner(this);
+	 EN00_BlackBoard->setModel(m_pModelCom);
+	 EN00_BlackBoard->setShader(m_pShaderCom);
+	 EN00_BlackBoard->setCollider(m_pColliderCom);
+	 EN00_BlackBoard->setTransform(m_pTransformCom);
+	 EN00_BlackBoard->setGameInstance(m_pGameInstance);
+	 EN00_BlackBoard->setNavigation(m_pNavigationCom);
+	 EN00_BlackBoard->setRigidBody(m_pRigidBodyCom);
 
-	
-	pTarget = m_pGameInstance->Get_Player(m_eCurrentLevelID);
+	 
+	 
+	 FUNCTION_NODE Control_IsDead
+	 = FUNCTION_NODE_MAKE
+	 {
+		 if (true == pBlackboard->getBool("Is_Dead"))
+		 {
+			m_pModelCom->Set_Loop(false);
+			Transition(38);
+			 return BT_STATUS::Success;
+		 }
+		 else
+			return BT_STATUS::Failure;
+	 };
 
-	if (nullptr != pTarget)
-	{
-		EN00_BlackBoard->setTarget(pTarget);
-	}
+	FUNCTION_NODE Task_IsDead
+		 = FUNCTION_NODE_MAKE
+	 {
+			Die(5.f);
+			return BT_STATUS::Success;
+	 };
 
+	 FUNCTION_NODE Control_IsHit
+	 = FUNCTION_NODE_MAKE
+	 {
+		 if (true == pBlackboard->getBool("Is_Hit"))
+		 {	
+			_vector vTargetPos = XMLoadFloat3(&pBlackboard->getFloat3("TargetPosition"));
+			vTargetPos.m128_f32[3] = 1;
+			
 
-	
-	/* BrainTree 최상위 생성 */
-	BrainTree::Builder EN00_Builder(EN00_BlackBoard);
-	
-	//// 셀렉터를 루트로 설정
-	auto selectorBuilder = EN00_Builder.composite<BrainTree::Selector>();  //! 
+			m_pModelCom->Set_Loop(false);
 
-	//TODO  첫 번째 시퀀스 추가 
-	//!	( 죽었는가, 죽는 액션 및 소멸 처리 )
-	selectorBuilder.composite<BrainTree::Sequence>() 
-		.leaf<CEN00_Control_Dead>()  // 첫 번째 리프 노드 추가
-		.leaf<CEN00_Task_Dead>() // 두 번째 리프 노드 추가
-		.end() 
+			if (true == pBlackboard->getBool("Is_OneTick"))
+			{
+				_int iRandomHitIndex = Random({ 26, 28, 29, 30, 36 });
+				pBlackboard->setInt("iRandomIndex", iRandomHitIndex);
 
-		.composite<BrainTree::Sequence>() 
-		.leaf<CEN00_Control_Ground>()
-		.composite<BrainTree::Selector>()  //! 셀렉터 4
-		.composite<BrainTree::Sequence>()
-		.leaf<CEN00_Control_Hit>()
-		.leaf<CEN00_Task_Hit>()
-		.end()
+				m_pTransformCom->Look_At(vTargetPos);
+				Transition(iRandomHitIndex, 1.7f);
+				pBlackboard->setBool("Is_OneTick", false);
+				
+			}
+
+			 if (true == m_pModelCom->Get_CurrentAnimation()->Get_Finished())
+			 {
+				 m_pModelCom->Set_Loop(true);
+				 pBlackboard->setBool("Is_Hit", false);
+				 pBlackboard->setBool("Is_OneTick", true);
+				return BT_STATUS::Success;
+			 }
+			 else
+				return BT_STATUS::Running;
+		 }
+		 else
+		 {
+			pBlackboard->setBool("Is_OneTick", true);
+			return BT_STATUS::Failure;
+	     }
+			
+			
+	 };
+
+	 FUNCTION_NODE Task_IsHit
+	 = FUNCTION_NODE_MAKE
+	 {
+		if (0 >= pBlackboard->getFloat("Current_HP"))
+		{
+			pBlackboard->setBool("Is_Dead", true);
+			return BT_STATUS::Success;
+		}
+		else
+			return BT_STATUS::Failure;
+	 };
+
+	 FUNCTION_NODE Control_InAttackRange
+		 = FUNCTION_NODE_MAKE
+	 {
+		   _vector vTargetPosition = XMLoadFloat3(&pBlackboard->getFloat3("TargetPosition"));
+			vTargetPosition.m128_f32[3] = 1.f;
+		   _vector vPosition = XMLoadFloat3(&pBlackboard->getFloat3("MyPosition"));
+		   vPosition.m128_f32[3] = 1.f;
+
+		   if (InRange(XMVectorGetX(XMVector3Length(vPosition - vTargetPosition)), 0.f, 3.f, "[]"))
+		   {
+				return BT_STATUS::Success;
+		   }
+		   else
+			   return BT_STATUS::Failure;
+	 };
+
+	 FUNCTION_NODE Control_RandomTry
+		= FUNCTION_NODE_MAKE
+	 {
+		_bool bRandomTry = Random({true, false, true, false, false, true, true, false, true, false});
 		
-		.composite<BrainTree::Sequence>()  //! 시퀀스 5
-		.leaf< CEN00_Control_AttackRange>()
-		.composite<BrainTree::Selector>() //! 셀렉터 6
+		_vector vTargetPosition = XMLoadFloat3(&pBlackboard->getFloat3("TargetPosition"));
+		vTargetPosition.m128_f32[3] = 1.f;
+	 
+		m_pTransformCom->Look_At(vTargetPosition);
 
-		.composite<BrainTree::Sequence>() //! 시퀀스 7
-		.leaf< CEN00_Control_KeepEye>()
-		.leaf< CEN00_Task_KeepEye>()
-		.end()
+
+		if(true == bRandomTry)
+			return BT_STATUS::Success;
+
+		else 
+			return BT_STATUS::Failure;
+	 };
+
+
+	 FUNCTION_NODE Task_KeepEye
+		= FUNCTION_NODE_MAKE
+	 {
 		
-
-		.composite<BrainTree::Selector>()//! 셀렉터 8
-
-		.composite<BrainTree::Sequence>()//! 시퀀스 9
-		.leaf<CEN00_Control_NormalAttack>()
-		.leaf<CEN00_Task_NormalAttack>()
-		.end()
-
-		.composite<BrainTree::Sequence>() //! 시퀀스 10
-		.leaf<CEN00_Control_UpperAttack>()
-		.leaf<CEN00_Task_UpperAttack>()
-		.end()
-
-		.composite<BrainTree::Sequence>()//! 시퀀스 1
-		.leaf<CEN00_Control_ChargeAttack>()
-		.leaf<CEN00_Task_ChargeAttack>()
-		.end()
-		.end()
-		.end()
-		.end()
 		
+		m_pModelCom->Set_Loop(false);
 
-		.composite<BrainTree::Sequence>() //! 시퀀스 12
-		.leaf<CEN00_Control_DetectRange>()
-		.leaf<CEN00_Task_DetectRange>()
-		.end()
+		if (true == pBlackboard->getBool("Is_OneTick"))
+		{
+			_int iRandomKeepEyeIndex = Random({ 4, 5, 4, 5, 4, 5, 4, 5, 4, 5 });
+			pBlackboard->setInt("iRandomIndex", iRandomKeepEyeIndex);
+			m_pTransformCom->Set_SpeedPerSec(1.5f);
+			m_pTransformCom->Set_RotationPerSec(XMConvertToRadians(55.f));
 
-		.composite<BrainTree::Sequence>() //! 시퀀스 13
-		.leaf<CEN00_Control_PlayerDead>()
-		.composite<BrainTree::Selector>() //! 셀렉터 14
+			_vector vTargetPosition = XMLoadFloat3(&pBlackboard->getFloat3("TargetPosition"));
+			vTargetPosition.m128_f32[3] = 1.f;
+			m_pTransformCom->Look_At(vTargetPosition);
+			Transition(iRandomKeepEyeIndex);
+			pBlackboard->setBool("Is_OneTick", false);
+		}
 
-		.composite<BrainTree::Sequence>() //! 시퀀스 15
-		.leaf<CEN00_Control_Arrival>()
-		.leaf<CEN00_Task_Idle>()
-		.end()
+		if (true == pBlackboard->getBool("Is_Hit") || 0 >= pBlackboard->getFloat("Current_HP")) 
+		{
+			pBlackboard->setBool("Is_OneTick", true);
+			return BT_STATUS::Success;
+		}
 
-		.composite<BrainTree::Sequence>()//! 시퀀스 16
-		.leaf<CEN00_Control_SetTargetPosition>()
-		.leaf<CEN00_Task_MoveToTarget>()
-		.end()
-		.end()
-		.end()
-		.end()
-		.end()
-		.end();
+		_int iRandomIndex = pBlackboard->getInt("iRandomIndex");
 
-	BrainTree::Node::Ptr RootNode = EN00_Builder.build();
 
-	m_BehaviorTree->setRoot(RootNode);
+		if (iRandomIndex == 4)
+			m_pTransformCom->KeepEye(fTimeDelta, false, pBlackboard->GetNavigation());
+		else
+			m_pTransformCom->KeepEye(fTimeDelta, pBlackboard->GetNavigation());
 
+
+		if (true == m_pModelCom->Get_CurrentAnimation()->Get_Finished())
+		{
+			m_pModelCom->Set_Loop(true);
+			pBlackboard->setBool("Is_OneTick", true);
+			return BT_STATUS::Success;
+		}
+		else
+			return BT_STATUS::Running;
+	 };
+
+	 FUNCTION_NODE Task_NormalAttack
+		 = FUNCTION_NODE_MAKE
+	 {
+		Transition(7);
+
+		 m_pModelCom->Set_Loop(false);
+
+		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
+		 {
+			 m_pModelCom->Set_Loop(true);
+			 m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
+			 return BT_STATUS::Success;
+		 }
+		else if(true == pBlackboard->getBool("Is_Hit") || 0 >= pBlackboard->getFloat("Current_HP"))
+			return BT_STATUS::Failure;
+		else
+			return BT_STATUS::Running;
+	 };
+
+	 FUNCTION_NODE Task_NormalAttackEnd
+		 = FUNCTION_NODE_MAKE
+	 {
+		Transition(8);
+		m_pModelCom->Set_Loop(false);
+
+		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
+		{
+		 m_pModelCom->Set_Loop(true);
+		 m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
+		 return BT_STATUS::Success;
+		}
+		 else if (true == pBlackboard->getBool("Is_Hit") || 0 >= pBlackboard->getFloat("Current_HP"))
+			 return BT_STATUS::Failure;
+		 else
+			 return BT_STATUS::Running;
+	 };
+
+	 FUNCTION_NODE Task_UpperAttack
+		 = FUNCTION_NODE_MAKE
+	 {
+		Transition(15);
+		m_pModelCom->Set_Loop(false);
+
+		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
+		{
+			m_pModelCom->Set_Loop(true);
+			 return BT_STATUS::Success;
+		}
+		 else if (true == pBlackboard->getBool("Is_Hit") || 0 >= pBlackboard->getFloat("Current_HP"))
+			 return BT_STATUS::Failure;
+		 else
+			 return BT_STATUS::Running;
+	 };
+
+	 FUNCTION_NODE Task_ChargeAttack
+		 = FUNCTION_NODE_MAKE
+	 {
+		Transition(16);
+		m_pModelCom->Set_Loop(false);
+
+		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
+		{
+			m_pModelCom->Set_Loop(true);
+			 return BT_STATUS::Success;
+		}
+		 else if (true == pBlackboard->getBool("Is_Hit") || 0 >= pBlackboard->getFloat("Current_HP"))
+			 return BT_STATUS::Failure;
+		 else
+			 return BT_STATUS::Running;
+	 };
+
+	 FUNCTION_NODE Control_InChaseRange
+	 = FUNCTION_NODE_MAKE
+	 {		
+		   _vector vTargetPosition = XMLoadFloat3(&pBlackboard->getFloat3("TargetPosition"));
+		   _vector vPosition = XMLoadFloat3(&pBlackboard->getFloat3("MyPosition"));
+
+		   vTargetPosition.m128_f32[3] = 1.f;
+		   vPosition.m128_f32[3] = 1.f;
+		   m_pModelCom->Set_Loop(true);
+		   
+		 //_vector vDir = XMLoadFloat3(&pBlackboard->getFloat3("TargetPosition")) - XMLoadFloat3(&pBlackboard->getFloat3("MyPosition"));
+		 //_float fDistance = XMVectorGetX(XMVector3Length(vDir));
+
+		 if (InRange(XMVectorGetX(XMVector3Length(vPosition - vTargetPosition)), 0.f, 12.0f, "[]"))
+		 {
+			Transition(3);
+			return BT_STATUS::Success;
+		 }
+		 else
+			 return BT_STATUS::Failure;
+	 };
+
+	 FUNCTION_NODE Task_InChaseRange
+		 = FUNCTION_NODE_MAKE
+	 {
+
+		 if (true == pBlackboard->getBool("Is_Hit") || 0 >= pBlackboard->getFloat("Current_HP"))
+			 return BT_STATUS::Success;
+
+		_vector vTargetPosition = XMLoadFloat3(&pBlackboard->getFloat3("TargetPosition"));
+		vTargetPosition.m128_f32[3] = 1.f;
+
+		m_pTransformCom->Go_Target_Navi(vTargetPosition, fTimeDelta, pBlackboard->GetNavigation());
+			
+		return BT_STATUS::Success;
+	 };
+
+	 FUNCTION_NODE Control_PlayerIsDead
+		= FUNCTION_NODE_MAKE
+	 {
+		 if(pBlackboard->GetTarget()->Is_Dead())
+			return BT_STATUS::Success;
+		 else
+			return BT_STATUS::Failure;
+	 };
+
+	 FUNCTION_NODE Task_Idle
+		= FUNCTION_NODE_MAKE
+	 {
+
+	  if (true == pBlackboard->getBool("Is_Hit") || 0 >= pBlackboard->getFloat("Current_HP"))
+			 return BT_STATUS::Success;
+
+		 Transition(0);
+
+
+		 return BT_STATUS::Success;
+	 };
+
+
+
+
+	 m_pBehaviorTree = Builder(EN00_BlackBoard)
+		.composite<Selector>()
+			.composite<Sequence>()	
+				.leaf<FunctionNode>(Control_IsDead)
+				.leaf<FunctionNode>(Task_IsDead)
+			.end()
+			.composite<Sequence>()
+				.leaf<FunctionNode>(Control_IsHit)
+				.leaf<FunctionNode>(Task_IsHit)
+			.end()
+			.composite<Sequence>()
+				.composite<Sequence>()
+					.leaf<FunctionNode>(Control_InAttackRange)
+					.composite<Selector>()
+						.composite<Sequence>()
+							.leaf<FunctionNode>(Control_RandomTry)
+							.leaf<FunctionNode>(Task_KeepEye)
+						.end()
+						.composite<Sequence>()
+							.leaf<FunctionNode>(Control_RandomTry)
+							.leaf<FunctionNode>(Task_NormalAttack)
+							.leaf<FunctionNode>(Task_NormalAttackEnd)
+						.end()
+						.composite<Sequence>()
+						.leaf<FunctionNode>(Control_RandomTry)
+						.leaf<FunctionNode>(Task_UpperAttack)
+						.end()
+						.composite<Sequence>()
+						.leaf<FunctionNode>(Control_RandomTry)
+						.leaf<FunctionNode>(Task_ChargeAttack)
+						.end()
+					.end()
+				.end()
+			.end()
+			.composite<Sequence>()
+				.leaf<FunctionNode>(Control_InChaseRange)
+				.leaf<FunctionNode>(Task_InChaseRange)
+			.end()
+			.leaf<FunctionNode>(Task_Idle)
+		.end()
+	.build();
+	
 	
 	return S_OK;
 }
 
 
-//HRESULT CMonster_EN00::Ready_States()
-//{
-//	if (FAILED(m_pStateCom->Add_State(TEXT("EN00State_Idle"), CEN00State_Idle::Create(this))))
-//		return E_FAIL;
-//	
-//	if(FAILED(m_pStateCom->Set_InitState(TEXT("EN00State_Idle"))))
-//		return E_FAIL;
-//
-//	return S_OK;
-//}
 
 HRESULT CMonster_EN00::Add_PartObject(const wstring& strPrototypeTag, const wstring& strPartTag, void* pArg)
 {
@@ -472,45 +714,7 @@ HRESULT CMonster_EN00::Bind_ShaderResources()
 	return S_OK;
 }
 
-void CMonster_EN00::Debug_KeyInput()
-{
-	BrainTree::Blackboard::Ptr pBlackBoard = m_BehaviorTree->getBlackboard();
 
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
-	{
-		pBlackBoard->setBool("Is_Dead", true);
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD8))
-	{
-		pBlackBoard->setBool("Is_Dead", false);
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
-	{
-		pBlackBoard->setBool("Is_Hit", true);
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
-	{
-		pBlackBoard->setBool("Is_Hit", false);
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
-	{
-		pBlackBoard->setBool("Is_TargetPosition", true);
-		_float3 vTargetPos;
-		XMStoreFloat3(&vTargetPos, pBlackBoard->GetTarget()->Get_Transform()->Get_State(CTransform::STATE_POSITION));
-		pBlackBoard->setFloat3("TargetPostion", vTargetPos);
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
-	{
-		pBlackBoard->setBool("Is_TargetPosition", false);
-
-		pBlackBoard->setFloat3("TargetPostion", _float3(0.f, 0.f, 0.f));
-	}
-}
 
 
 CMonster_EN00* CMonster_EN00::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel)

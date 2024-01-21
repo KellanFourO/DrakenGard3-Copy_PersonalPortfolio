@@ -55,6 +55,8 @@ void CRigidBody::Add_Force(const _float3& vForce, const FORCE_MODE& eMode)
 {
 	_vector vVector = XMLoadFloat3(&vForce);
 
+	
+
 	switch (eMode)
 	{
 	case FORCE_MODE::FORCE:

@@ -65,6 +65,8 @@ void CGameObject::Priority_Tick(_float fTimeDelta)
 
 void CGameObject::Tick(_float fTimeDelta)
 {
+	
+	
 	// 	for (size_t i = 0; m_UpdateComponents.size(); i++)
 	// 	{
 	// 		m_UpdateComponents[i]->Tick(fTimeDelta);
@@ -142,7 +144,7 @@ void CGameObject::Load_FromJson(const json& In_Json)
 HRESULT CGameObject::Add_Component(_uint iLevelIndex, const wstring& strPrototypeTag, const wstring& strComTag, _Inout_ CComponent** ppOut, void* pArg)
 {
 	//! 이미 같은 사본 컴포넌트가 있을경우 예외처리
-	if (nullptr != Find_Component(strComTag))
+ 	if (nullptr != Find_Component(strComTag))
 		return E_FAIL;
 
 	//! 원형객체를 복사한 사본객체를 만들어낸다.
@@ -236,15 +238,15 @@ void CGameObject::Find_Collider()
 	//return nullptr;
 }
 
-void CGameObject::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType)
+void CGameObject::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
 {
 }
 
-void CGameObject::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
+void CGameObject::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
 {
 }
 
-void CGameObject::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
+void CGameObject::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
 {
 }
 

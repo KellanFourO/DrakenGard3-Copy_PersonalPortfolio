@@ -31,7 +31,7 @@ HRESULT CPlayerState_Walk::StartState()
 {
 	m_pOwnerModelCom->Set_Animation(67);
     
-    
+    m_pOwnerModelCom->Set_Loop(true);   
     
 
     m_pOwnerModelCom->Set_AnimationSpeed(1.5f);

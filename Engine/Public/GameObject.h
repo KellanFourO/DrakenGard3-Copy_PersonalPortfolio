@@ -30,10 +30,12 @@ protected:
 public:
 	class CTransform*		Get_Transform() { return m_pTransformCom; }
 	vector<class CCollider*>& Get_Colliders() { return m_vecColliders; }
+	_float					Get_LifeTime() { return m_fLifeTime; }
+
 	_bool					Is_Player() { return m_isPlayer; }
 	_bool					Is_Dead()	{ return m_isDead; }
 	void					Set_Move(_bool bMove) { m_bMove = bMove; }
-	void					Die() { m_isDead = true; }
+	void					Die(_float fLifeTime) { m_fLifeTime = fLifeTime; m_isDead = true; }
 	void					Set_CellIndex(_int iCellIndex ) { m_iCellIndex = iCellIndex; }
 
 public:
@@ -57,9 +59,9 @@ public:
 	void			   Find_Collider();
 	
 public:
-	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType); // call on collising
-	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType);
-	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType);
+	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit); // call on collising
+	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit);
+	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit);
 
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -83,6 +85,7 @@ protected:
 	_bool						m_bMove = true;
 	_int						m_iCellIndex = -1;
 	
+	_float						m_fLifeTime = 5.f;
 	
 
 protected:

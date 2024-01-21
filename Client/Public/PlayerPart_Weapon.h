@@ -31,6 +31,7 @@ public:
 
 private:
 	CCollider*			m_pColliderCom = { nullptr };
+	CCollider*			m_pColliders[6] = {};
 
 public:
 	/* 원형객체를 생성한다. */

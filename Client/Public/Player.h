@@ -38,9 +38,9 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType) override; // call on collising
-	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType) override;
-	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType) override;
+	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit) override; // call on collising
+	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit) override;
+	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit) override;
 
 public:
 	CCamera_Target*			Get_Cam() { return m_pCamera; }
@@ -60,6 +60,7 @@ private:
 private:
 	CNavigation*		m_pNavigationCom = { nullptr };
 	CCollider*			m_pColliderCom	 = { nullptr };
+	
 	CRigidBody*			m_pRigidBodyCom  = { nullptr };
 	CStateMachine*		m_pStateCom		 = { nullptr };
 

@@ -45,11 +45,10 @@ HRESULT CMonsterPart_EN00_Weapon::Initialize(void* pArg)
 	/* For.Com_Collider */
 	CBoundingBox_OBB::BOUNDING_OBB_DESC BoundingDesc = {};
 
-	
-
-	BoundingDesc.vExtents = _float3(0.2f, 0.5f, 0.2f);
+	BoundingDesc.vExtents = _float3(0.3f, 0.5f, 0.3f);
 	BoundingDesc.vCenter = _float3(0.f, 0.f, -0.6f);
 	BoundingDesc.vRotation = _float3(XMConvertToRadians(90.f), 0.f, 0.f);
+	BoundingDesc.ePartType = CBoundParent::PARTTYPE_BOUND::PART_WEAPON;
 
 	if (FAILED(__super::Add_Component(m_eCurrentLevelIndex, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
 		return E_FAIL;

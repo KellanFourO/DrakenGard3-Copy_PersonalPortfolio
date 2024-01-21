@@ -12,6 +12,8 @@ HRESULT CBoundingBox_Sphere::Initialize(BOUNDING_DESC * pBoundingDesc)
 {
 	BOUNDING_SPHERE_DESC* pDesc = (BOUNDING_SPHERE_DESC*)pBoundingDesc;
 
+	
+
 	m_pOriginBoundingSphere = new BoundingSphere(pDesc->vCenter, pDesc->fRadius);	
 	m_pBoundingSphere = new BoundingSphere(*m_pOriginBoundingSphere);
 

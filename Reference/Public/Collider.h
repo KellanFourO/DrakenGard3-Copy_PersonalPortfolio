@@ -13,6 +13,8 @@ BEGIN(Engine)
 
 class ENGINE_DLL CCollider final : public CComponent
 {
+
+
 public:
 	enum TYPE { TYPE_Sphere, TYPE_AABB, TYPE_OBB, TYPE_END };
 	enum PARTTYPE { PART_BODY, PART_WEAPON, PARTTYPE_END };
@@ -51,6 +53,10 @@ public:
 	_bool	Collision(CCollider* pTargetCollider);
 
 	_bool   isOnCollider() { return m_bOnCollider; }
+	_bool	isAttackBody() { return m_isAttackBody; }
+
+	void	OnAttackBody() { m_isAttackBody = true;}
+	void    OffAttackBody() { m_isAttackBody = false;}
 	void	OnCollider() { m_bOnCollider = true; }
 	void    OffCollider() { m_bOnCollider = false; }
 
@@ -80,9 +86,14 @@ private:
 	TYPE					m_eType = { TYPE_END };
 	PARTTYPE				m_ePartType = { PARTTYPE_END };
 	class CBoundParent*		m_pBounding = { nullptr };
+	
+	vector<class CBoundParent*> m_vecBoundings;
+	
+	
 	_bool					m_isCollision = { false };
 
 	_bool					m_bOnCollider = false;
+	_bool					m_isAttackBody = false;
 
 	COLLISION_STATE			m_eState = { COLLISION_STATE_END };
 	

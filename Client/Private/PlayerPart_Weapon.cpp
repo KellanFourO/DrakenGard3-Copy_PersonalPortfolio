@@ -46,9 +46,10 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	/* For.Com_Collider */
 	CBoundingBox_OBB::BOUNDING_OBB_DESC		BoundingDesc = {};
 
-	BoundingDesc.vExtents = _float3(0.2f, 0.5f, 0.2f);
+	BoundingDesc.vExtents = _float3(0.3f, 0.5f, 0.3f);
 	BoundingDesc.vCenter = _float3(0.f, 0.f, -0.6f);
 	BoundingDesc.vRotation = _float3(XMConvertToRadians(90.f), 0.f, 0.f);
+	BoundingDesc.ePartType = CBoundParent::PARTTYPE_BOUND::PART_WEAPON;
 
 	if (FAILED(__super::Add_Component(m_eCurrentLevelIndex, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
 		return E_FAIL;
@@ -58,6 +59,7 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	//m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-180.0f));
 	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.7f, 0.f, 0.f, 1.f));
 
+	
 	return S_OK;
 }
 

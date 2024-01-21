@@ -136,33 +136,33 @@ HRESULT CPlayer::Render()
 	return S_OK;
 }
 
-void CPlayer::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType)
+void CPlayer::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
 {
 	//! 내 바디와 상대 바디 끼리 충돌했을 경우
-	
 
-	
+
+
 
 	//m_pRigidBodyCom->Add_Force(vCollisionPos, CRigidBody::FORCE_MODE::FORCE);
 
 	//wcout << LeftTag.c_str() << TEXT(" On_Collision is ") << RightTag.c_str() << endl;
 }
 
-void CPlayer::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
+void CPlayer::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
 {
 	if (bType == false)
 	{
 		CPlayerPart_Body* pBody = dynamic_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
 		pBody->Set_Move(false);
 	}
-		
+
 
 
 	wcout << LeftTag.c_str() << TEXT(" On_CollisionEnter is ") << RightTag.c_str() << endl;
 
 }
 
-void CPlayer::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
+void CPlayer::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
 {
 	if (bType == false)
 	{
@@ -173,6 +173,7 @@ void CPlayer::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, 
 	wcout << LeftTag.c_str() << TEXT(" On_CollisionExit is ") << RightTag.c_str() << endl;
 
 
+	m_pRigidBodyCom->Clear_NetPower();
 	
 }
 
@@ -209,6 +210,7 @@ HRESULT CPlayer::Ready_Components()
 	BoundingDesc.vExtents = _float3(0.5f, 0.7f, 0.5f);
 	BoundingDesc.vCenter = _float3(0.f, BoundingDesc.vExtents.y, 0.f);
 	BoundingDesc.vRotation = _float3(0.f, XMConvertToRadians(45.0f), 0.f);
+	BoundingDesc.ePartType = CBoundParent::PARTTYPE_BOUND::PART_BODY;
 
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Collider_OBB"),
 		TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))

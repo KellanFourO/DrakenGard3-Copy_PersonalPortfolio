@@ -156,6 +156,7 @@ void CObject_Manager::Priority_Tick(_float fTimeDelta)
 
 void CObject_Manager::Tick(_float fTimeDelta)
 {
+
 	for (size_t i = 0; i < m_iNumLevels; ++i)
 	{
 		for (auto& Pair : m_pLayers[i])
@@ -163,6 +164,8 @@ void CObject_Manager::Tick(_float fTimeDelta)
 			Pair.second->Tick(fTimeDelta);
 		}
 	}
+
+	
 }
 
 void CObject_Manager::Late_Tick(_float fTimeDelta)

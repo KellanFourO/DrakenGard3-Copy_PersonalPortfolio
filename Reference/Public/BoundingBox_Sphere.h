@@ -8,8 +8,10 @@ class CBoundingBox_Sphere final : public CBoundParent
 {
 public:
 	typedef struct : public BOUNDING_DESC
-	{
+	{	
+		_int		iIndex = -1;
 		_float		fRadius;
+		_float		fSpacing = 2.f;
 	}BOUNDING_SPHERE_DESC;
 private:
 	CBoundingBox_Sphere(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);	

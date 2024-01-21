@@ -158,17 +158,17 @@ public:
     }
     Blackboard::Ptr getBlackboard() const { return blackboard; }
 
-    virtual Status update() = 0;
+    virtual Status update(_float fTimeDelta) = 0;
     virtual void initialize() {}
     virtual void terminate(Status s) {}
 
-    Status tick()
+    Status tick(_float fTimeDelta)
     {
         if (status != Status::Running) {
             initialize();
         }
 
-        status = update();
+        status = update(fTimeDelta);
 
         if (status != Status::Running) {
             terminate(status);
@@ -237,7 +237,7 @@ public:
     }
     BehaviorTree(const Node::Ptr &rootNode) : BehaviorTree() { root = rootNode; }
     
-    Status update() { return root->tick(); }
+    Status update(_float fTimeDelta) { return root->tick(fTimeDelta); }
     
     void setRoot(const Node::Ptr &node) { root = node; }
     
@@ -337,7 +337,7 @@ private:
 class Builder
 {
 public:
-    Builder(const BrainTree::Blackboard::Ptr& blackboard)
+    Builder(Blackboard::Ptr& blackboard)
     {
         tree = std::make_shared<BehaviorTree>();
         tree->setBlackboard(blackboard);
@@ -390,12 +390,12 @@ public:
         it = children.begin();
     }
 
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         assert(hasChildren() && "Composite has no children");
 
         while (it != children.end()) {
-            auto status = (*it)->tick();
+            auto status = (*it)->tick(fTimeDelta);
 
             if (status != Status::Failure) {
                 return status;
@@ -420,12 +420,12 @@ public:
         it = children.begin();
     }
 
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         assert(hasChildren() && "Composite has no children");
 
         while (it != children.end()) {
-            auto status = (*it)->tick();
+            auto status = (*it)->tick(fTimeDelta);
 
             if (status != Status::Success) {
                 return status;
@@ -445,12 +445,12 @@ public:
 class StatefulSelector : public Composite
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         assert(hasChildren() && "Composite has no children");
 
         while (it != children.end()) {
-            auto status = (*it)->tick();
+            auto status = (*it)->tick(fTimeDelta);
 
             if (status != Status::Failure) {
                 return status;
@@ -471,12 +471,12 @@ public:
 class StatefulSequence : public Composite
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         assert(hasChildren() && "Composite has no children");
 
         while (it != children.end()) {
-            auto status = (*it)->tick();
+            auto status = (*it)->tick(fTimeDelta);
 
             if (status != Status::Success) {
                 return status;
@@ -496,7 +496,7 @@ public:
     ParallelSequence(bool successOnAll = true, bool failOnAll = true) : useSuccessFailPolicy(true), successOnAll(successOnAll), failOnAll(failOnAll) {}
     ParallelSequence(int minSuccess, int minFail) : minSuccess(minSuccess), minFail(minFail) {}
 
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         assert(hasChildren() && "Composite has no children");
 
@@ -523,7 +523,7 @@ public:
         int total_fail = 0;
 
         for (auto &child : children) {
-            auto status = child->tick();
+            auto status = child->tick(fTimeDelta);
             if (status == Status::Success) {
                 total_success++;
             }
@@ -554,9 +554,9 @@ private:
 class Succeeder : public Decorator
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
-        child->tick();
+        child->tick(fTimeDelta);
         return Status::Success;
     }
 };
@@ -565,9 +565,9 @@ public:
 class Failer : public Decorator
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
-        child->tick();
+        child->tick(fTimeDelta);
         return Status::Failure;
     }
 };
@@ -577,9 +577,9 @@ public:
 class Inverter : public Decorator
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
-        auto s = child->tick();
+        auto s = child->tick(fTimeDelta);
 
         if (s == Status::Success) {
             return Status::Failure;
@@ -603,9 +603,9 @@ public:
         counter = 0;
     }
 
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
-        child->tick();
+        child->tick(fTimeDelta);
 
         if (limit > 0 && ++counter == limit) {
             return Status::Success;
@@ -623,10 +623,10 @@ protected:
 class UntilSuccess : public Decorator
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         while (1) {
-            auto status = child->tick();
+            auto status = child->tick(fTimeDelta);
 
             if (status == Status::Success) {
                 return Status::Success;
@@ -639,10 +639,10 @@ public:
 class UntilFailure : public Decorator
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         while (1) {
-            auto status = child->tick();
+            auto status = child->tick(fTimeDelta);
 
             if (status == Status::Failure) {
                 return Status::Success;
@@ -650,5 +650,28 @@ public:
         }
     }
 };
+
+
+
+
+class FunctionNode final : public Node
+{
+public:
+    FunctionNode(function<Status(BrainTree::Blackboard::Ptr pBlackboard, _float fTimeDelta)> function) { m_Function = function; };
+    FunctionNode() {};
+
+    Status update(_float fTimeDelta) override
+    {
+        return m_Function(blackboard, fTimeDelta);
+    }
+
+private:
+    function<Status(Blackboard::Ptr pBlackboard, _float fTimeDelta)> m_Function = { nullptr };
+};
+
+typedef function<Node::Status(Blackboard::Ptr pBlackboard, _float fTimeDelta)> FUNCTION_NODE;
+#define FUNCTION_NODE_MAKE [&,this](Blackboard::Ptr pBlackboard, _float fTimeDelta)->Node::Status
+#define BT_STATUS Node::Status
+
 
 } // namespace BrainTree

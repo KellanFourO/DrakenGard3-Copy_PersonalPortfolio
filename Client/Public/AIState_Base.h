@@ -20,7 +20,7 @@ class CAIState_Base abstract : public BrainTree::Node
 {
 
 public:
-	BrainTree::Node::Status update() override;
+	BrainTree::Node::Status update(_float fTimeDelta) override;
 
 protected:
 	void		SetAnimation(_int iAnimIndex);
