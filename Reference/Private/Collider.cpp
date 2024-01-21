@@ -86,6 +86,7 @@ _bool CCollider::Collision(CCollider* pTargetCollider)
 
 void CCollider::On_Collision(CCollider* pOther, const _float& fX, const _float& fY, const _float& fZ)
 {
+	
 	m_eState = COLLISION_STATE_ON;
 }
 

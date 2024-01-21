@@ -25,7 +25,7 @@ BrainTree::Node::Status CEN00_Task_DetectRange::Task()
     _vector vTargetPos = pTargetTransform->Get_State(CTransform::STATE_POSITION);
     _vector vOwnerPos = pOwnerTransform->Get_State(CTransform::STATE_POSITION);
 
-    pOwnerTransform->Go_Target(vTargetPos, blackboard->GetTimeDelta());
+    pOwnerTransform->Go_Target_Navi(vTargetPos, blackboard->GetTimeDelta(), blackboard->GetNavigation());
 
     _float3 vDistance;
     XMStoreFloat3(&vDistance, XMVector3Length(vTargetPos - vOwnerPos));

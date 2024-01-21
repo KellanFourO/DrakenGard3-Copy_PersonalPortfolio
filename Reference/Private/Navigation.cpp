@@ -1,6 +1,8 @@
 #include "Navigation.h"
 #include "GameInstance.h"
 #include "Cell.h"
+#include "GameObject.h"
+#include "Transform.h"
 
 _float4x4	CNavigation::m_WorldMatrix = {};
 
@@ -45,7 +47,11 @@ void CNavigation::SaveData(wstring strSavePath)
         vPoints[2] = *m_Cells[i]->Get_Point(CCell::POINT_C);
 
         WriteFile(hFile, vPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+
+        
     }
+
+    WriteFile(hFile, &m_iCurrentIndex, sizeof(_int), &dwByte, nullptr);
 
     CloseHandle(hFile);
 
@@ -77,6 +83,10 @@ HRESULT CNavigation::Initialize_Prototype(const wstring& strNavigationFilePath)
 
         m_Cells.push_back(pCell);
     }
+
+
+
+    ReadFile(hFile, &m_iCurrentIndex, sizeof(_int), &dwByte, nullptr);
 
     CloseHandle(hFile);
 
@@ -287,6 +297,24 @@ void CNavigation::InRangeCellChange(CCell* pCell, _int ePoint, _float3 vChangePo
     Make_Neighbors();
 }
 
+_int CNavigation::Get_SelectRangeCellIndex(class CGameObject* pTargetObject)
+{
+    _int iCellSize = m_Cells.size();
+    
+    CTransform* pTransform = pTargetObject->Get_Transform();
+
+    _vector vPos = pTransform->Get_State(CTransform::STATE_POSITION);
+    
+    for (_int i = 0; i < iCellSize; ++i)
+    {
+
+       if( true == m_Cells[i]->isInRange(vPos, XMLoadFloat4x4(&m_WorldMatrix)))
+            return m_Cells[i]->Get_Index();
+    }
+
+    return -1;
+}
+
 
 
 
@@ -294,6 +322,9 @@ _float CNavigation::Compute_Height(_float3 vPosition)
 {
     _vector vPlane = {};
     
+    if(m_iCurrentIndex == -1)
+        return _float();
+
     CCell* pCell = m_Cells[m_iCurrentIndex];
 
     _vector vA = XMVectorSetW(XMLoadFloat3(pCell->Get_Point(CCell::POINT_A)), 1.f);

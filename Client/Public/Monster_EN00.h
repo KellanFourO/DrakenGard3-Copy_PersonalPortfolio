@@ -32,6 +32,11 @@ public:
 	virtual void Load_FromJson(const json& In_Json) override;
 	virtual void Init_Desc() override;
 	
+public:
+	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType) override; // call on collising
+	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType) override;
+	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType) override;
+
 private:
 	HRESULT			Ready_Components();
 	HRESULT			Ready_PartObjects();
@@ -43,8 +48,10 @@ private:
 
 	void			Debug_KeyInput();
 
+
+
 private:
-	map<const wstring, class CPartObject*>	m_PartObjects;
+	//map<const wstring, class CPartObject*>	m_PartObjects;
 	
 
 public:

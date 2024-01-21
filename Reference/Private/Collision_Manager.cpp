@@ -25,12 +25,12 @@ void CCollision_Manager::Update_CollisionMgr(_uint iLevelIndex, _float fTimeDelt
 
 HRESULT CCollision_Manager::Add_Check_CollisionGroup(const _tchar* LeftLayerTag, const _tchar* RightLayerTag)
 {
-	for (auto& pair : m_ColLayers)
-	{
-		if ((!lstrcmp(pair.first, LeftLayerTag) && !lstrcmp(pair.second, RightLayerTag))
-			|| (!lstrcmp(pair.second, LeftLayerTag) && !lstrcmp(pair.first, RightLayerTag)))
-			return E_FAIL;
-	}
+	//for (auto& pair : m_ColLayers)
+	//{
+	//	if ((!lstrcmp(pair.first, LeftLayerTag) && !lstrcmp(pair.second, RightLayerTag))
+	//		|| (!lstrcmp(pair.second, LeftLayerTag) && !lstrcmp(pair.first, RightLayerTag)))
+	//		return E_FAIL;
+	//}
 
 	m_ColLayers.push_back({ LeftLayerTag, RightLayerTag });
 
@@ -43,18 +43,20 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 	//! 레프트 콜라이더는  웨폰.
 	//! 라이트 콜라이더는 바디.
 
+	//! 차라리 각 객체당 콜라이더가 존재하는 친구들은 전부 순회해버릴까?
+	//! 
 	
 
 	wstring strLeftTag = LeftTag;
 	wstring strRightTag = RightTag;
 
-	CLayer* pLeftLayer = m_pGameInstance->Find_Layer(iLevelIndex, LeftTag);
-	CLayer* pRightLayer = m_pGameInstance->Find_Layer(iLevelIndex, RightTag);
+	CLayer* pLeftLayer = m_pGameInstance->Find_Layer(iLevelIndex, LeftTag); //! 플레이어
+	CLayer* pRightLayer = m_pGameInstance->Find_Layer(iLevelIndex, RightTag); //! 몬스터
 
 	list<CGameObject*> pLeftObjectList = pLeftLayer->Get_ObjectList();
 	list<CGameObject*> pRightObjectList = pRightLayer->Get_ObjectList();
 
-
+	
 
 	map<ULONGLONG, _bool>::iterator iter;
 
@@ -62,105 +64,169 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 
 	for (auto& pLeftGameObject : pLeftObjectList)
 	{
-		pLeftCol = pLeftGameObject->Find_Collider(true);
 
-		if (false == pLeftCol->isOnCollider())
-			continue;
+		vector<CCollider*> pLeftColliders = pLeftGameObject->Get_Colliders();
 
-		for (auto& pRightGameObject : pRightObjectList)
+		_int iColliderSize = pLeftColliders.size();
+		
+		for (_int i = 0; i < iColliderSize; ++i)
 		{
-			if(pLeftGameObject == pRightGameObject)
+			pLeftCol = pLeftColliders[i];
+
+			if (false == pLeftCol->isOnCollider())
 				continue;
 
-			CCollider* pRightCol = pRightGameObject->Find_Collider(false);
-
-			COLLIDER_ID ID;
-
-			ID.Left_id = pLeftCol->Get_ID();
-			ID.Right_id = pRightCol->Get_ID();
-
-			iter = m_mapColInfo.find(ID.ID);
-
-			if (m_mapColInfo.end() == iter)
+			for (auto& pRightGameObject : pRightObjectList)
 			{
-				m_mapColInfo.insert({ ID.ID, false });
-				iter = m_mapColInfo.find(ID.ID);
-			}
+				if (pLeftGameObject == pRightGameObject)
+					continue;
 
-			_float fX(0.f), fY(0.f), fZ(0.f);
+				vector<CCollider*> pRightColliders = pRightGameObject->Get_Colliders();
+				_int iRightColliderSize = pRightColliders.size();
 
-			
-			
-
-			if (true == Is_Collision(pLeftCol, pRightCol, &fX, &fY, &fZ))
-			{
-				if (iter->second) // 충돌했고 이미 충돌 true인 경우
+				for (_int i = 0; i < iRightColliderSize; ++i)
 				{
-					if (pLeftGameObject->Is_Dead() || pRightGameObject->Is_Dead())
-					{
-						
-						pLeftGameObject->On_CollisionExit(pLeftGameObject, strLeftTag, pRightGameObject, strRightTag);
+					CCollider* pRightCol = pRightColliders[i];
 
-						pLeftCol->On_CollisionExit(pRightCol, fX, fY, fZ);
-						pRightCol->On_CollisionExit(pLeftCol, fX, fY, fZ);
-						iter->second = false;
+					COLLIDER_ID ID;
+
+					ID.Left_id = pLeftCol->Get_ID();
+					ID.Right_id = pRightCol->Get_ID();
+
+					iter = m_mapColInfo.find(ID.ID);
+
+					if (m_mapColInfo.end() == iter)
+					{
+						m_mapColInfo.insert({ ID.ID, false });
+						iter = m_mapColInfo.find(ID.ID);
 					}
 
-					else
+					_float fX(0.f), fY(0.f), fZ(0.f);
+
+
+					
+
+
+					if (true == Is_Collision(pLeftCol, pRightCol, &fX, &fY, &fZ))
 					{
-						if (true == pLeftCol->isAccCollider())
+						if (iter->second) // 충돌했고 이미 충돌 true인 경우
 						{
-							_float fHitTick = pLeftCol->Get_HitTick();
-							m_fAccTime += fTimeDelta;
-
-							if (m_fAccTime >= fHitTick)
+							if (pLeftGameObject->Is_Dead() || pRightGameObject->Is_Dead())
 							{
-								pLeftGameObject->On_Collision(pLeftGameObject, strLeftTag, pRightGameObject, strRightTag);
-								
-								pLeftCol->On_Collision(pRightCol, fX, fY, fZ);
-								pRightCol->On_Collision(pLeftCol, fX, fY, fZ);
+								//pLeftCol->Get_PartType()
 
+								if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
+								{
+									pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, false);
+								}
+								else if(pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
+								{
+									pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, true);
+								}
 								
-								m_fAccTime = 0.f;
+
+								pLeftCol->On_CollisionExit(pRightCol, fX, fY, fZ);
+								pRightCol->On_CollisionExit(pLeftCol, fX, fY, fZ);
+								iter->second = false;
+							}
+
+							else
+							{
+
+								_float3 vCollisionPos = { fX, fY, fZ };
+
+								if (true == pLeftCol->isAccCollider())
+								{
+									_float fHitTick = pLeftCol->Get_HitTick();
+									m_fAccTime += fTimeDelta;
+
+									if (m_fAccTime >= fHitTick)
+									{
+										//! 레프트는 플레이어다
+										//! 플레이어의 바디와 몬스터의 바디가 충돌했다면.
+										
+										if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
+										{
+											pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, false);
+										}
+										else if (pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
+										{
+											pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, true);
+										}
+
+										pLeftCol->On_Collision(pRightCol, fX, fY, fZ);
+										pRightCol->On_Collision(pLeftCol, fX, fY, fZ);
+
+
+										m_fAccTime = 0.f;
+									}
+								}
+								else
+								{
+									if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
+									{
+										pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, false);
+									}
+									else if (pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
+									{
+										pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, true);
+									}
+
+
+									//pRightCol->OffCollider();
+
+									pLeftCol->On_Collision(pRightCol, fX, fY, fZ);
+									pRightCol->On_Collision(pLeftCol, fX, fY, fZ);
+								}
 							}
 						}
-						else
+
+						else // 충돌했는데 충돌 정보에 false로 기록된 경우
 						{
-							pLeftGameObject->On_Collision(pLeftGameObject, strLeftTag, pRightGameObject, strRightTag);
-							pRightCol->OffCollider();
-							pLeftCol->On_Collision(pRightCol, fX, fY, fZ);
-							pRightCol->On_Collision(pLeftCol, fX, fY, fZ);
+							if (!pLeftGameObject->Is_Dead() && !pRightGameObject->Is_Dead() && true == pRightCol->isOnCollider())
+							{
+								
+
+								if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
+								{
+									pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag, false);
+								}
+								else if (pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
+								{
+									pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag, true);
+								}
+								
+
+								pLeftCol->On_CollisionEnter(pRightCol, fX, fY, fZ);
+								pRightCol->On_CollisionEnter(pLeftCol, fX, fY, fZ);
+
+								iter->second = true;
+							}
 						}
 					}
-				}
 
-				else // 충돌했는데 충돌 정보에 false로 기록된 경우
-				{
-					if (!pLeftGameObject->Is_Dead() && !pRightGameObject->Is_Dead() && true == pRightCol->isOnCollider())
+					else // 충돌하지 않은 경우
 					{
-						pLeftGameObject->On_CollisionEnter(pLeftGameObject, strLeftTag, pRightGameObject, strRightTag);
-						
-						pLeftCol->On_CollisionEnter(pRightCol, fX, fY, fZ);
-						pRightCol->On_CollisionEnter(pLeftCol, fX, fY, fZ);
-						
+						if (iter->second)
+						{
 
-						iter->second = true;
+							if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
+							{
+								pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, false);
+							}
+							else if (pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
+							{
+								pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, true);
+							}
+
+							pLeftCol->On_CollisionExit(pRightCol, fX, fY, fZ);
+							pRightCol->On_CollisionExit(pLeftCol, fX, fY, fZ);
+							pRightCol->OnCollider();
+
+							iter->second = false;
+
+						}
 					}
-				}
-			}
-
-			else // 충돌하지 않은 경우
-			{
-				if (iter->second)
-				{
-					pLeftGameObject->On_CollisionExit(pLeftGameObject, strLeftTag, pRightGameObject, strRightTag);
-					
-					pLeftCol->On_CollisionExit(pRightCol, fX, fY, fZ);
-					pRightCol->On_CollisionExit(pLeftCol, fX, fY, fZ);
-					pRightCol->OnCollider();
-					
-					iter->second = false;
-
 				}
 			}
 		}
@@ -200,9 +266,9 @@ bool CCollision_Manager::Is_Collision(CCollider* pLeftCol, CCollider* pRightCol,
 			return false;*/
 
 		// 밀어낼 정도를 계산하여 반환
-		/*fX = Get_Min(XMVectorGetX(vLeftMax), XMVectorGetX(vRightMax) - Get_Max(XMVectorGetX(vLeftMin), XMVectorGetX(vRightMin)));
+		*fX = Get_Min(XMVectorGetX(vLeftMax), XMVectorGetX(vRightMax) - Get_Max(XMVectorGetX(vLeftMin), XMVectorGetX(vRightMin)));
 		*fY = Get_Min(XMVectorGetY(vLeftMax), XMVectorGetY(vRightMax) - Get_Max(XMVectorGetY(vLeftMin), XMVectorGetY(vRightMin)));
-		*fZ = Get_Min(XMVectorGetZ(vLeftMax), XMVectorGetZ(vRightMax) - Get_Max(XMVectorGetZ(vLeftMin), XMVectorGetZ(vRightMin)));*/
+		*fZ = Get_Min(XMVectorGetZ(vLeftMax), XMVectorGetZ(vRightMax) - Get_Max(XMVectorGetZ(vLeftMin), XMVectorGetZ(vRightMin)));
 	}
 
 	return result;

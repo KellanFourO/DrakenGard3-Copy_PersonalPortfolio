@@ -39,6 +39,8 @@ HRESULT CGameObject::Initialize(void* pArg)
 	if (nullptr != pArg)
 		Desc = *(GAMEOBJECT_DESC*)pArg;
 
+	m_iCellIndex = Desc.iCellIndex;
+
 	m_pTransformCom = CTransform::Create(m_pDevice, m_pContext, Desc.fSpeedPerSec, Desc.fRotationPerSec);
 	if (nullptr == m_pTransformCom)
 		return E_FAIL;
@@ -114,12 +116,15 @@ _bool CGameObject::Picking(_float3 vPickPos, class CModel* pModelCom, _float3* p
 
 void CGameObject::Write_Json(json& Out_Json)
 {
-	//Out_Json.emplace("PrototypeTag", )
+	
 
 	for (auto& pComponent : m_Components)
 	{
 		pComponent.second->Write_Json(Out_Json["Component"]);
 	}
+
+	Out_Json.emplace("CellIndex", m_iCellIndex);
+	
 }
 
 void CGameObject::Load_FromJson(const json& In_Json)
@@ -128,6 +133,8 @@ void CGameObject::Load_FromJson(const json& In_Json)
 	{
 		pComponent.second->Load_FromJson(In_Json["Component"]);
 	}
+
+	m_iCellIndex = In_Json["CellIndex"];
 }
 
 
@@ -193,12 +200,12 @@ CPartObject* CGameObject::Find_PartObject(const wstring& strPartTag)
 	return iter->second;
 }
 
-CCollider* CGameObject::Find_Collider(_bool bPartType)
+void CGameObject::Find_Collider()
 {
 	CComponent* pFindCom = nullptr;
 
-	if (true == bPartType) //! 찾고자하는 콜라이더가 웨폰일경우
-	{
+	//if (true == bPartType) //! 찾고자하는 콜라이더가 웨폰일경우
+	//{
 		for (auto& Pair : m_PartObjects)
 		{
 			pFindCom = dynamic_cast<CPartObject*>(Pair.second)->Find_Component(TEXT("Com_Collider"));
@@ -206,29 +213,38 @@ CCollider* CGameObject::Find_Collider(_bool bPartType)
 
 			if (nullptr != pFindCom)
 			{
-				return dynamic_cast<CCollider*>(pFindCom);
+				CCollider* pCollider = dynamic_cast<CCollider*>(pFindCom);
+				m_vecColliders.push_back(pCollider);
+
+				//return dynamic_cast<CCollider*>(pFindCom);
 
 			}
 		}
-	}
-	else
-	{
+	//}
+	//else
+	//{
 		pFindCom = Find_Component(TEXT("Com_Collider"));
-		return dynamic_cast<CCollider*>(pFindCom);
-	}
+
+		CCollider* pCollider = dynamic_cast<CCollider*>(pFindCom);
+		m_vecColliders.push_back(pCollider);
+
+		//return dynamic_cast<CCollider*>(pFindCom);
+	//}
+
 	
-	return nullptr;
+	
+	//return nullptr;
 }
 
-void CGameObject::On_Collision(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+void CGameObject::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType)
 {
 }
 
-void CGameObject::On_CollisionEnter(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+void CGameObject::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
 {
 }
 
-void CGameObject::On_CollisionExit(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+void CGameObject::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
 {
 }
 

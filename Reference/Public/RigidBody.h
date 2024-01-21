@@ -4,6 +4,7 @@
 
 BEGIN(Engine)
 class CGameObject;
+class CNavigation;
 
 
 class ENGINE_DLL CRigidBody final : public CComponent
@@ -46,6 +47,7 @@ class ENGINE_DLL CRigidBody final : public CComponent
 	
 	public:
 		void					Set_Owner(class CGameObject* pOwner) { m_pOwner = pOwner; }
+		void					Set_OwnerNavigation(CNavigation* pNavigation) { m_pOwnerNavigation = pNavigation; }
 		void					Set_Kinematic(const _bool & bKinematic) { m_bKinematic = bKinematic; }
 		void					Set_UseGravity(const _bool & bUse) { m_bUseGravity = bUse; }
 		void					Set_Gravity(const _float & fGravity) { m_fGravitionalConstant = fGravity; }
@@ -84,7 +86,8 @@ class ENGINE_DLL CRigidBody final : public CComponent
 		_bool					m_bKinematic = FALSE;
 		_float					m_fFriction = 0.1f;
 		_float					m_fMass = 10.f;
-		_float					m_fGravitionalConstant = -9.8f;
+		//_float					m_fGravitionalConstant = -9.8f;
+		_float					m_fGravitionalConstant = -14.8f;
 	
 		_byte					m_byConstraints = 0;
 	
@@ -93,7 +96,8 @@ class ENGINE_DLL CRigidBody final : public CComponent
 	
 		_float					m_fSleepThreshold = 0.05f;
 	
-		CGameObject*		m_pOwner = { nullptr };
+		CGameObject*			m_pOwner = { nullptr };
+		CNavigation*			m_pOwnerNavigation = { nullptr };
 
 	public:
 		static	CRigidBody* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);

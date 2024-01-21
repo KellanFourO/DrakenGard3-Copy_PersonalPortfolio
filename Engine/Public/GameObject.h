@@ -18,6 +18,7 @@ public:
 		_float fSpeedPerSec		= 0.f;
 		_float fRotationPerSec	= 0.f;
 		_uint  iLevelIndex = 0;
+		_uint  iCellIndex = -1;
 	
 	}GAMEOBJECT_DESC;
 
@@ -28,9 +29,12 @@ protected:
 
 public:
 	class CTransform*		Get_Transform() { return m_pTransformCom; }
+	vector<class CCollider*>& Get_Colliders() { return m_vecColliders; }
 	_bool					Is_Player() { return m_isPlayer; }
 	_bool					Is_Dead()	{ return m_isDead; }
+	void					Set_Move(_bool bMove) { m_bMove = bMove; }
 	void					Die() { m_isDead = true; }
+	void					Set_CellIndex(_int iCellIndex ) { m_iCellIndex = iCellIndex; }
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -50,12 +54,12 @@ public:
 	class CComponent* Find_Component(const wstring& strComTag);
 	class CPartObject* Find_PartObject(const wstring& strPartTag);
 	
-	class CCollider*	Find_Collider(_bool bPartType);
+	void			   Find_Collider();
 	
 public:
-	virtual void On_Collision(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag); // call on collising
-	virtual void On_CollisionEnter(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag);
-	virtual void On_CollisionExit(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag);
+	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType); // call on collising
+	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType);
+	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType);
 
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -69,11 +73,16 @@ protected:
 
 	map<const wstring, class CComponent*>		m_Components;
 	map<const wstring, class CPartObject*>		m_PartObjects;
+	vector<class CCollider*>					m_vecColliders;
+	
 
 protected:
 	_bool						m_isCloned = { false };
 	_bool						m_isPlayer = { false };
 	_bool						m_isDead = { false };
+	_bool						m_bMove = true;
+	_int						m_iCellIndex = -1;
+	
 	
 
 protected:

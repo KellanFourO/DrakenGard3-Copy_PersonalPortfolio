@@ -39,13 +39,27 @@ HRESULT CPlayerState_DashFront::StartState()
 
     m_pOwnerTransform->Set_RotationPerSec(XMConvertToRadians(60.0f));
 
-    _float3 vCamLook;
-    XMStoreFloat3(&vCamLook, m_pOwnerCam->Get_Transform()->Get_State(CTransform::STATE_LOOK));
+    //_float3 vCamLook;
+    //XMStoreFloat3(&vCamLook, m_pOwnerCam->Get_Transform()->Get_State(CTransform::STATE_LOOK));
     
-    m_pOwnerTransform->Look_At_CamLook(vCamLook);
+    //m_pOwnerTransform->Look_At_CamLook(vCamLook);
     //_float3 vAddLookPos = m_pOwnerTransform->Get_MoveAxisPos(10.f, CTransform::STATE_LOOK, true, vCamLook);
 
-    m_pOwnerRigidBody->Add_Force(_float3(0.f, 0.f, 300.f), CRigidBody::FORCE_MODE::IMPULSE);
+    //CTransform* pCamTransform = m_pOwnerCam->Get_Transform();
+    //
+    //_vector vCamRight = pCamTransform->Get_State(CTransform::STATE_RIGHT);
+    //
+    //m_pOwnerTransform->RotationOfCameraDir(vCamRight, -45.f);
+
+    _float3 vAddFos = _float3(0.f, 0.f, 300.f);
+    _float magnitude = XMVectorGetZ(XMVector3Length(XMLoadFloat3(&vAddFos)));
+    _vector vLook = m_pOwnerTransform->Get_State(CTransform::STATE_LOOK);
+    _vector vForceDir = vLook * magnitude;
+    _float3 vCalcPos;
+    XMStoreFloat3(&vCalcPos, vForceDir);
+
+
+    m_pOwnerRigidBody->Add_Force(vCalcPos, CRigidBody::FORCE_MODE::IMPULSE);
     return S_OK;
 }
 

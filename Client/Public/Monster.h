@@ -7,6 +7,7 @@ class CShader;
 class CCollider;
 class CModel;
 class CNavigation;
+class CRigidBody;
 END
 
 
@@ -32,6 +33,11 @@ public:
 	virtual void		Load_FromJson(const json& In_Json);
 	virtual void		Init_Desc();
 
+public:
+	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType) override; // call on collising
+	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType) override;
+	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType) override;
+
 protected:
 	virtual HRESULT						Ready_BehaviorTree();
 
@@ -39,6 +45,8 @@ protected:
 	CShader*							m_pShaderCom	= { nullptr };
 	CModel*								m_pModelCom		= { nullptr }; //#버퍼컴에서_모델컴으로_변경됨
 	CCollider*							m_pColliderCom	= { nullptr };
+	CRigidBody*							m_pRigidBodyCom = { nullptr };
+
 	CNavigation*						m_pNavigationCom = { nullptr };
 	shared_ptr<BrainTree::BehaviorTree> m_BehaviorTree	= { nullptr };
 

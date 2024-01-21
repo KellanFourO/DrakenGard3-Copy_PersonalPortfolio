@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "Navigation.h"
+#include "Cell.h"
 
 CRigidBody::CRigidBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice, pContext)
@@ -104,11 +105,13 @@ void CRigidBody::Clear_NetPower()
 
 void CRigidBody::Update_Kinetic(const _float& fTimeDelta)
 {
-	
 	_vector vPos = m_pOwner->Get_Transform()->Get_State(CTransform::STATE_POSITION);
+	_float3 vRealPos;
+	XMStoreFloat3(&vRealPos, vPos);
 	
+	_float fY = m_pOwnerNavigation->Compute_Height(vRealPos);
 
-	if (m_bUseGravity && vPos.m128_f32[1] > 0.f)
+	if (m_bUseGravity && vPos.m128_f32[1] > fY)
 		m_vLinearVelocity.y += m_fGravitionalConstant * fTimeDelta;
 
 	XMStoreFloat3(&m_vLinearVelocity, XMLoadFloat3(&m_vLinearVelocity) + (XMLoadFloat3(&m_vLinearAcceleration) * fTimeDelta));
@@ -135,15 +138,12 @@ void CRigidBody::Update_Kinematic(const _float& fTimeDelta)
 
 void CRigidBody::Update_Transform(const _float& fTimeDelta)
 {
-	CNavigation* pNavigation = dynamic_cast<CNavigation*>(m_pOwner->Find_Component(TEXT("Com_Navigation")));
-
 	_vector vPos = XMLoadFloat3(&m_vLinearVelocity) * fTimeDelta;
 	
 	_float3 vRealPos;
 	XMStoreFloat3(&vRealPos, vPos);
-	
 
-	m_pOwner->Get_Transform()->Translate(vRealPos, pNavigation);
+	m_pOwner->Get_Transform()->Translate(vRealPos, m_pOwnerNavigation);
 }
 
 const _bool CRigidBody::Check_Sleep()

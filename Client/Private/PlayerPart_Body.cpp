@@ -70,7 +70,7 @@ void CPlayerPart_Body::Tick(_float fTimeDelta)
 	vRealPos.m128_f32[2] += vPos.z;
 	vRealPos.m128_f32[3] = 1.f;
 
-	if(true == m_pParentNavigationCom->isMove(vRealPos))
+	if(true == m_pParentNavigationCom->isMove(vRealPos) && true == m_bMove)
 		m_pParentTransformCom->Add_LookPos(vPos);
 }
 

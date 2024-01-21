@@ -38,15 +38,19 @@ public:
 	
 public:
 	vector<class CCell*>	Get_Cells() { return m_Cells; }
+	class CCell*	Get_CurrentCell() { return m_Cells[m_iCurrentIndex];}
 	_int	Get_CellSize() { return m_Cells.size(); };
 	void	Update(_fmatrix WorldMatrix);
 	_bool	isMove(_fvector vPosition);
 	void	AddCell(class CCell* pCell);
 	HRESULT	Delete_Cell(const _uint iIndex);
 
+	void	Set_CurrentIndex(_int iIndex) { m_iCurrentIndex = iIndex; }
+
 
 public:
-	void	InRangeCellChange(class CCell* pCell, _int ePoint, _float3 vChangePos);
+	void	InRangeCellChange(class CCell* pCell, _int ePoint, _float3 vSearchPos);
+	_int	Get_SelectRangeCellIndex(class CGameObject* pTargetObject);
 	
 
 	_float Compute_Height(_float3 vPosition);

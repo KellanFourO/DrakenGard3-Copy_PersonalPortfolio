@@ -63,6 +63,32 @@ void CMonster::Init_Desc()
 {
 }
 
+void CMonster::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType)
+{
+	
+}
+
+void CMonster::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
+{
+	if (bType == false)
+	{
+		m_bMove = false;
+	}
+
+
+	wcout << LeftTag.c_str() << TEXT(" On_CollisionExit is ") << RightTag.c_str() << endl;
+}
+
+void CMonster::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
+{
+	if (bType == false)
+	{
+		m_bMove = true;
+	}
+
+	wcout << LeftTag.c_str() << TEXT(" On_CollisionExit is ") << RightTag.c_str() << endl;
+}
+
 HRESULT CMonster::Ready_BehaviorTree()
 {
 	return S_OK;
@@ -73,6 +99,7 @@ void CMonster::Free()
 	__super::Free();
 
 	Safe_Release(m_pColliderCom);
+	Safe_Release(m_pRigidBodyCom);
 	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);

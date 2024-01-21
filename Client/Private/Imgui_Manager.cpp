@@ -972,6 +972,8 @@ void CImgui_Manager::CreateObjectFunction()
 
 					wstr = ConvertStrToWstr(m_vecAnimObjectTags[m_iSelectTagIndex]);
 
+
+
 					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pGameObject))))
 						return;
 
@@ -982,6 +984,12 @@ void CImgui_Manager::CreateObjectFunction()
 					m_vecCreateAnimObjectTags.push_back(SliceTag);
 					m_vecCreateAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
 					m_vecAnimObjects.push_back(pGameObject);
+
+					pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(vHighestPickesPos.x, vHighestPickesPos.y, vHighestPickesPos.z, 1.f));
+					_int iCellIndex = m_pNavigation->Get_SelectRangeCellIndex(pGameObject);
+
+					pGameObject->Set_CellIndex(iCellIndex);
+					
 				}
 
 				else
@@ -1003,6 +1011,8 @@ void CImgui_Manager::CreateObjectFunction()
 					m_vecCreateNonAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
 					m_vecNonAnimObjects.push_back(pGameObject);
 				}
+
+				
 
 				pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(vHighestPickesPos.x, vHighestPickesPos.y, vHighestPickesPos.z, 1.f));
 			}

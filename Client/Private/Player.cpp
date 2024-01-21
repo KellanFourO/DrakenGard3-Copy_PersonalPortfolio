@@ -57,6 +57,7 @@ HRESULT CPlayer::Initialize(void* pArg)
 	if (FAILED(Ready_PartObjects()))
 		return E_FAIL;
 
+	Find_Collider();
 	
 	if (FAILED(Ready_Camera()))
 			return E_FAIL;
@@ -64,8 +65,7 @@ HRESULT CPlayer::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
-	m_pRigidBodyCom->Clear_NetPower();
-	m_pRigidBodyCom->Set_UseGravity(true);
+	
 	
 
 	return S_OK;
@@ -136,19 +136,44 @@ HRESULT CPlayer::Render()
 	return S_OK;
 }
 
-void CPlayer::On_Collision(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+void CPlayer::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType)
 {
+	//! 내 바디와 상대 바디 끼리 충돌했을 경우
+	
+
+	
+
+	//m_pRigidBodyCom->Add_Force(vCollisionPos, CRigidBody::FORCE_MODE::FORCE);
+
 	//wcout << LeftTag.c_str() << TEXT(" On_Collision is ") << RightTag.c_str() << endl;
 }
 
-void CPlayer::On_CollisionEnter(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+void CPlayer::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
 {
+	if (bType == false)
+	{
+		CPlayerPart_Body* pBody = dynamic_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
+		pBody->Set_Move(false);
+	}
+		
+
+
 	wcout << LeftTag.c_str() << TEXT(" On_CollisionEnter is ") << RightTag.c_str() << endl;
+
 }
 
-void CPlayer::On_CollisionExit(CGameObject* pLeftObject, wstring& LeftTag, CGameObject* pRightObject, wstring& RightTag)
+void CPlayer::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
 {
+	if (bType == false)
+	{
+		CPlayerPart_Body* pBody = dynamic_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
+		pBody->Set_Move(true);
+	}
+	
 	wcout << LeftTag.c_str() << TEXT(" On_CollisionExit is ") << RightTag.c_str() << endl;
+
+
+	
 }
 
 
@@ -191,6 +216,7 @@ HRESULT CPlayer::Ready_Components()
 
 	m_pColliderCom->Set_PartType(CCollider::PART_BODY);
 
+	m_pColliderCom->OnCollider();
 	
 	CRigidBody::RIGIDBODY_TYPE eType = CRigidBody::RIGIDBODY_TYPE::DYNAMIC;
 
@@ -200,6 +226,9 @@ HRESULT CPlayer::Ready_Components()
 		return E_FAIL;
 	
 	m_pRigidBodyCom->Set_Owner(this);
+	m_pRigidBodyCom->Set_OwnerNavigation(m_pNavigationCom);
+	m_pRigidBodyCom->Clear_NetPower();
+	m_pRigidBodyCom->Set_UseGravity(true);
 	
 	//TODO 상태머신
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_StateMachine"),

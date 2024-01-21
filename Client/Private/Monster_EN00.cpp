@@ -48,6 +48,7 @@ HRESULT CMonster_EN00::Initialize(void* pArg)
 	if (FAILED(Ready_PartObjects()))
 		return E_FAIL;
 
+	Find_Collider();
 
 	if (m_eCurrentLevelID != LEVEL_TOOL)
 	{
@@ -99,7 +100,9 @@ void CMonster_EN00::Tick(_float fTimeDelta)
 	m_pModelCom->Play_Animation(fTimeDelta, vPos);
 
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
+	m_pRigidBodyCom->Tick(fTimeDelta);
 
+	if(true == m_bMove)
 	m_pTransformCom->Add_LookPos(vPos);
 }
 
@@ -201,10 +204,37 @@ void CMonster_EN00::Init_Desc()
 	//m_pStatus.lock()->Init_Status(&m_tLinkStateDesc);
 }
 
+void CMonster_EN00::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType)
+{
+	__super::On_Collision(pCollisionObject, LeftTag, RightTag, vCollisionPos, bType);
+
+	_float magnitude = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCollisionPos)));
+
+	_vector vLook = pCollisionObject->Get_Transform()->Get_State(CTransform::STATE_LOOK);
+	_vector vForceDir = vLook * magnitude;
+
+	_float3 vCalcPos;
+	XMStoreFloat3(&vCalcPos, vForceDir);
+
+	m_pRigidBodyCom->Add_Force(vCalcPos, CRigidBody::FORCE_MODE::FORCE);
+}
+
+void CMonster_EN00::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
+{
+	__super::On_CollisionEnter(pCollisionObject, LeftTag, RightTag, bType);
+}
+
+void CMonster_EN00::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType)
+{
+	__super::On_CollisionExit(pCollisionObject, LeftTag, RightTag, bType);
+
+	m_pRigidBodyCom->Clear_NetPower();
+}
+
 HRESULT CMonster_EN00::Ready_Components()
 {
 	CNavigation::NAVI_DESC		NaviDesc = {};
-	NaviDesc.iCurrentIndex = 0;
+	NaviDesc.iCurrentIndex = m_iCellIndex;
 
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Navigation"),
 		TEXT("Com_Navigation"), reinterpret_cast<CComponent**>(&m_pNavigationCom), &NaviDesc)))
@@ -231,8 +261,22 @@ HRESULT CMonster_EN00::Ready_Components()
 		TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
 		return E_FAIL;
 
+
 	m_pColliderCom->Set_PartType(CCollider::PART_BODY);
 	m_pColliderCom->OnCollider();
+
+	CRigidBody::RIGIDBODY_TYPE eType = CRigidBody::RIGIDBODY_TYPE::DYNAMIC;
+
+	////TODO 리지드바디
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_RigidBody"),
+		TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &eType)))
+		return E_FAIL;
+
+	m_pRigidBodyCom->Set_Owner(this);
+
+	m_pRigidBodyCom->Set_OwnerNavigation(m_pNavigationCom);
+	m_pRigidBodyCom->Clear_NetPower();
+	m_pRigidBodyCom->Set_UseGravity(true);
 	
 	return S_OK;
 }
@@ -348,7 +392,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree()
 		.leaf<CEN00_Task_UpperAttack>()
 		.end()
 
-		.composite<BrainTree::Sequence>()//! 시퀀스 11
+		.composite<BrainTree::Sequence>()//! 시퀀스 1
 		.leaf<CEN00_Control_ChargeAttack>()
 		.leaf<CEN00_Task_ChargeAttack>()
 		.end()

@@ -84,11 +84,18 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
     {
         if (m_pGameInstance->Key_Pressing(DIK_SPACE))
         {
+            m_ePrevDir = m_eCurrentDir;
+            m_eCurrentDir = CPlayerState_Base::FRONT;
+            if (m_ePrevDir != m_eCurrentDir)
+            {
+                Vertical_Camera_Rotate();
+            }
+
             m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_DashFront"));
+
+           
         }
        
-
-        
 
         m_ePrevDir = m_eCurrentDir;
         m_eCurrentDir = CPlayerState_Base::FRONT;
@@ -110,7 +117,15 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
 
         if (m_pGameInstance->Key_Pressing(DIK_SPACE))
         {
+            m_ePrevDir = m_eCurrentDir;
+            m_eCurrentDir = CPlayerState_Base::LEFT;
+
+            if (m_ePrevDir != m_eCurrentDir)
+            {
+                Horizon_Camera_Rotate();
+            }
             m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_DashLeft"));
+           
         }
 
 
@@ -139,7 +154,15 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
 
         if (m_pGameInstance->Key_Pressing(DIK_SPACE))
         {
+            m_ePrevDir = m_eCurrentDir;
+            m_eCurrentDir = CPlayerState_Base::BACK;
+            if (m_ePrevDir != m_eCurrentDir)
+            {
+                Vertical_Camera_Rotate();
+            }
+
             m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_DashBack"));
+        
         }
 
         m_ePrevDir = m_eCurrentDir;
@@ -159,6 +182,13 @@ void CPlayerState_Walk::KeyInput(const _float& fTimeDelta)
 
         if (m_pGameInstance->Key_Pressing(DIK_SPACE))
         {
+            m_ePrevDir = m_eCurrentDir;
+            m_eCurrentDir = CPlayerState_Base::RIGHT;
+
+            if (m_ePrevDir != m_eCurrentDir)
+            {
+                Horizon_Camera_Rotate();
+            }
             m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_DashRight"));
         }
 

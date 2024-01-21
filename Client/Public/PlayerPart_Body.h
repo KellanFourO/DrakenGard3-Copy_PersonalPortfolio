@@ -15,6 +15,7 @@ private:
 public:
 	void	Set_Loop(_bool bLoop) { m_bLoop = bLoop; }
 	
+	
 
 
 public:
@@ -33,6 +34,7 @@ public:
 
 private:
 	_bool			m_bLoop = true;
+	
 	
 
 

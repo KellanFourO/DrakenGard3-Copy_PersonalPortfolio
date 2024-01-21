@@ -182,7 +182,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const wstring& strLayerTag)
 	
 	json LoadJson;
 
-	CJson_Utility::Load_Json("../Bin/DataFiles/Stage1Monster.json", LoadJson);
+	CJson_Utility::Load_Json("../Bin/DataFiles/35_Anim.json", LoadJson);
 
 	_int LoadSize = LoadJson.size();
 
@@ -191,12 +191,16 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const wstring& strLayerTag)
 		CGameObject* pGameObject = nullptr;
 
 		
+		CGameObject::GAMEOBJECT_DESC Desc;
+		Desc.iCellIndex = LoadJson[i]["CellIndex"];
 		
 		wstring LayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
 		wstring ObjectTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
 
+		//pGameObject->Set_CellIndex(LoadJson[i]["CellIndex"]);
 
-		if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, LayerTag, ObjectTag, nullptr, &pGameObject)))
+		
+		if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, LayerTag, ObjectTag, &Desc, &pGameObject)))
 			return E_FAIL;
 
 		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
@@ -211,6 +215,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const wstring& strLayerTag)
 			}
 		}
 
+		
 		pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
 	}
 
@@ -276,8 +281,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Collider()
 	if(FAILED(m_pGameInstance->Add_Check_CollisionGroup(TEXT("Layer_Player"), TEXT("Layer_Monster"))))
 		return E_FAIL;
 
-	//if (FAILED(m_pGameInstance->Add_Check_CollisionGroup(TEXT("Layer_Monster"), TEXT("Layer_Player"))))
-	//	return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_Check_CollisionGroup(TEXT("Layer_Monster"), TEXT("Layer_Player"))))
+		return E_FAIL;
 
 	return S_OK;
 }

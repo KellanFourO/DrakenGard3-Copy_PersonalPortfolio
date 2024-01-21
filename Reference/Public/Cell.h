@@ -33,6 +33,7 @@ public:
 	_bool	Compare_Points(const _float3* pSourPoint, const _float3* pDestPoint);
 	_float3 Get_Compare_Point(const _float3* pPoint);
 	_bool	isIn(_fvector vPosition, _fmatrix WorldMatrix, _int* pNeighborIndex);
+	_bool	isInRange(_fvector vPosition, _fmatrix WorldMatrix);
 	void	Reset_Line();
 
 	//void    Compute_Height(_float3& vPosition, _float& fY);
