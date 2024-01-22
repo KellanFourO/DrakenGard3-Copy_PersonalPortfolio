@@ -168,6 +168,21 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN00_Weapon"),
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("EN00_Weapon"), pFilePathData), PivotMatrix)));
 
+	////!Prototype_Component_Model_Monster_EN01
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN01"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, *CreateDataPath(TEXT("EN01"), pFilePathData, true), PivotMatrix)));
+
+	////!Prototype_Component_Model_Monster_EN01_Weapon
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN01_Weapon"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("EN01_Weapon"), pFilePathData), PivotMatrix)));
+
+	////!Prototype_Component_Model_Monster_EN01_Weapon_Arrow
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN01_Weapon_Arrow"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("EN01_Weapon_Arrow"), pFilePathData), PivotMatrix)));
+
 	////!Prototype_Component_Model_Monster_EN70
 	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Monster_EN70"),
@@ -501,6 +516,22 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_Monster_EN00_Weapon"),
 		CMonsterPart_EN00_Weapon::Create(m_pDevice, m_pContext, eLevel), true)))
 		return E_FAIL;
+
+	/* For.Prototype_GameObject_Monster_EN00 */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_EN01"),
+		CMonster_EN01::Create(m_pDevice, m_pContext, eLevel), true, true)))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_Monster_EN01_Arrow */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_EN01_Arrow"),
+		CEN01_Arrow::Create(m_pDevice, m_pContext, eLevel), true)))
+		return E_FAIL;
+	
+	/* For.Prototype_PartObject_Monster_EN01_Weapon */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_Monster_EN01_Weapon"),
+		CMonsterPart_EN01_Weapon::Create(m_pDevice, m_pContext, eLevel), true)))
+		return E_FAIL;
+
 
 	/* For.Prototype_GameObject_Monster_EN00 */
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_EN70"),

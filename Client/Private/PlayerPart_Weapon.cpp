@@ -51,6 +51,11 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	BoundingDesc.vRotation = _float3(XMConvertToRadians(90.f), 0.f, 0.f);
 	BoundingDesc.ePartType = CBoundParent::PARTTYPE_BOUND::PART_WEAPON;
 
+	//CBoundingBox_Sphere::BOUNDING_SPHERE_DESC		BoundingDesc = {};
+	//BoundingDesc.fRadius = 0.5f;
+	//BoundingDesc.vCenter = _float3(0.f, BoundingDesc.fRadius, 0.f);
+	//BoundingDesc.ePartType = CBoundParent::PARTTYPE_BOUND::PART_WEAPON;
+
 	if (FAILED(__super::Add_Component(m_eCurrentLevelIndex, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
 		return E_FAIL;
 

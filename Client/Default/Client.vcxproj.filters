@@ -178,9 +178,6 @@
     <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash">
       <UniqueIdentifier>{6cde0625-5f53-4b11-987b-ee1444f4bd3e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\01. EN70">
-      <UniqueIdentifier>{f9577f29-18a9-4896-aa42-f2c4378b81b5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\99. AIState">
       <UniqueIdentifier>{f2106f62-feee-4e6d-92ff-72dbe6d5b4b6}</UniqueIdentifier>
     </Filter>
@@ -189,6 +186,18 @@
     </Filter>
     <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\99. AIState\01. Task">
       <UniqueIdentifier>{25e47424-5c35-4db9-88b8-c09749a9a9a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\02. EN70">
+      <UniqueIdentifier>{f9577f29-18a9-4896-aa42-f2c4378b81b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\01. EN01">
+      <UniqueIdentifier>{b2e96c03-f4d8-4d68-a44b-17584cb10e76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Bullets">
+      <UniqueIdentifier>{99b41ced-dff5-4b5e-b0ec-e66e61a8eee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Bullets\00. EN01_Arrow">
+      <UniqueIdentifier>{5b392ff1-6cb6-4ef7-9ad6-21e0546a8167}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -424,10 +433,22 @@
       <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Monster_EN70.h">
-      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. EN70</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\02. EN70</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MonsterPart_EN70_Weapon.h">
-      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. EN70</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\02. EN70</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MonsterPart_EN01_Weapon.h">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. EN01</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Monster_EN01.h">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. EN01</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Bullet.h">
+      <Filter>02. GameObjects\06. Bullets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\EN01_Arrow.h">
+      <Filter>02. GameObjects\06. Bullets\00. EN01_Arrow</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -621,10 +642,22 @@
       <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Monster_EN70.cpp">
-      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. EN70</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\02. EN70</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MonsterPart_EN70_Weapon.cpp">
-      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. EN70</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\02. EN70</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster_EN01.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. EN01</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MonsterPart_EN01_Weapon.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. EN01</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Bullet.cpp">
+      <Filter>02. GameObjects\06. Bullets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN01_Arrow.cpp">
+      <Filter>02. GameObjects\06. Bullets\00. EN01_Arrow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

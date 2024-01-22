@@ -21,6 +21,8 @@ void CCollision_Manager::Update_CollisionMgr(_uint iLevelIndex, _float fTimeDelt
 		Collision_GroupUpdate(pair.first, pair.second, iLevelIndex, fTimeDelta);
 	}
 
+
+ 	_int i = 0;
 }
 
 HRESULT CCollision_Manager::Add_Check_CollisionGroup(const _tchar* LeftLayerTag, const _tchar* RightLayerTag)
@@ -52,6 +54,9 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 
 	CLayer* pLeftLayer = m_pGameInstance->Find_Layer(iLevelIndex, LeftTag); //! 플레이어
 	CLayer* pRightLayer = m_pGameInstance->Find_Layer(iLevelIndex, RightTag); //! 몬스터
+
+	if(nullptr == pLeftLayer || nullptr == pRightLayer)
+		return;
 
 	list<CGameObject*> pLeftObjectList = pLeftLayer->Get_ObjectList();
 	list<CGameObject*> pRightObjectList = pRightLayer->Get_ObjectList();
@@ -104,11 +109,15 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 					_float fX(0.f), fY(0.f), fZ(0.f);
 
 
-					
+					if (LeftTag == TEXT("Layer_Bullet") && RightTag == TEXT("Layer_Player"))
+						_int i = 0;
 
 
 					if (true == Is_Collision(pLeftCol, pRightCol, &fX, &fY, &fZ))
 					{
+						if(LeftTag == TEXT("Layer_Bullet") && RightTag == TEXT("Layer_Player"))
+							_int i = 0;
+
 						if (iter->second) // 충돌했고 이미 충돌 true인 경우
 						{
 							if (pLeftGameObject->Is_Dead() || pRightGameObject->Is_Dead())

@@ -303,8 +303,8 @@ HRESULT CMonster_EN70::Ready_BehaviorTree_V2()
 	 BrainTree::Blackboard::Ptr EN00_BlackBoard = m_pBehaviorTree->getBlackboard();
 	 	
 	 EN00_BlackBoard->setString("Name", "EN70");
-	 EN00_BlackBoard->setFloat("Max_HP", 100.f);
-	 EN00_BlackBoard->setFloat("Current_HP", 100.f);
+	 EN00_BlackBoard->setFloat("Max_HP", 200.f);
+	 EN00_BlackBoard->setFloat("Current_HP", 200.f);
 	 EN00_BlackBoard->setFloat("Attack_Range", 3.f);
 	 EN00_BlackBoard->setFloat("Keep_Range", 3.5f);
 	 EN00_BlackBoard->setFloat("Detect_Range", 10.f);

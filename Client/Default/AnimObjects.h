@@ -10,6 +10,13 @@
 #include "Monster_EN00.h"
 #include "MonsterPart_EN00_Weapon.h"
 
+//! ±Ãº´
+#include "Monster_EN01.h"
+#include "MonsterPart_EN01_Weapon.h"
+#include "EN01_Arrow.h"
+
+
 //! ±âº´
 #include "Monster_EN70.h"
 #include "MonsterPart_EN70_Weapon.h"
+

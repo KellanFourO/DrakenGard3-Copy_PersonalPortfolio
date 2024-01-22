@@ -109,7 +109,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>../../Reference/Imgui/;../../Reference/Librarys/;../../Reference/Private/;../../Reference/Public/;../Public/;../Default/</AdditionalIncludeDirectories>
-      <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/std:c++17 /bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -157,6 +157,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>../../Reference/Imgui/; ../../Reference/Librarys/;../../Reference/Public/;../Public/;../Default/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/std:c++17 /bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -199,6 +200,7 @@
     <ClInclude Include="..\public\AITask_Base.h" />
     <ClInclude Include="..\public\AnimObject.h" />
     <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\Bullet.h" />
     <ClInclude Include="..\public\Camera_Dynamic.h" />
     <ClInclude Include="..\Public\Camera_MapTool.h" />
     <ClInclude Include="..\Public\Camera_Target.h" />
@@ -206,14 +208,17 @@
     <ClInclude Include="..\Public\CustomDialogFont.h" />
     <ClInclude Include="..\public\Dynamic_Terrain.h" />
     <ClInclude Include="..\Public\Effect_Explosion.h" />
+    <ClInclude Include="..\public\EN01_Arrow.h" />
     <ClInclude Include="..\Public\Environment_Barricade.h" />
     <ClInclude Include="..\Public\Environment_BrokenBarricade.h" />
     <ClInclude Include="..\public\Environment_Object.h" />
     <ClInclude Include="..\Public\Field.h" />
     <ClInclude Include="..\Public\Imgui_Manager.h" />
     <ClInclude Include="..\Public\MonsterPart_EN00_Weapon.h" />
+    <ClInclude Include="..\Public\MonsterPart_EN01_Weapon.h" />
     <ClInclude Include="..\Public\MonsterPart_EN70_Weapon.h" />
     <ClInclude Include="..\Public\Monster_EN00.h" />
+    <ClInclude Include="..\Public\Monster_EN01.h" />
     <ClInclude Include="..\Public\Monster_EN70.h" />
     <ClInclude Include="..\Public\Particle_Blue.h" />
     <ClInclude Include="..\Public\Particle_Red.h" />
@@ -274,20 +279,24 @@
     <ClCompile Include="..\Private\AITask_Base.cpp" />
     <ClCompile Include="..\Private\AnimObject.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\Bullet.cpp" />
     <ClCompile Include="..\Private\Camera_Dynamic.cpp" />
     <ClCompile Include="..\Private\Camera_MapTool.cpp" />
     <ClCompile Include="..\Private\Camera_Target.cpp" />
     <ClCompile Include="..\Private\CustomDialogFont.cpp" />
     <ClCompile Include="..\Private\Dynamic_Terrain.cpp" />
     <ClCompile Include="..\Private\Effect_Explosion.cpp" />
+    <ClCompile Include="..\Private\EN01_Arrow.cpp" />
     <ClCompile Include="..\Private\Environment_Barricade.cpp" />
     <ClCompile Include="..\Private\Environment_BrokenBarricade.cpp" />
     <ClCompile Include="..\private\Environment_Object.cpp" />
     <ClCompile Include="..\Private\Field.cpp" />
     <ClCompile Include="..\Private\Imgui_Manager.cpp" />
     <ClCompile Include="..\Private\MonsterPart_EN00_Weapon.cpp" />
+    <ClCompile Include="..\Private\MonsterPart_EN01_Weapon.cpp" />
     <ClCompile Include="..\Private\MonsterPart_EN70_Weapon.cpp" />
     <ClCompile Include="..\Private\Monster_EN00.cpp" />
+    <ClCompile Include="..\Private\Monster_EN01.cpp" />
     <ClCompile Include="..\Private\Monster_EN70.cpp" />
     <ClCompile Include="..\Private\Particle_Blue.cpp" />
     <ClCompile Include="..\Private\Particle_Red.cpp" />

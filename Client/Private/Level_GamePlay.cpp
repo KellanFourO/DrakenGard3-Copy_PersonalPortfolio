@@ -182,7 +182,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const wstring& strLayerTag)
 	
 	json LoadJson;
 
-	CJson_Utility::Load_Json("../Bin/DataFiles/37_Anim.json", LoadJson);
+	CJson_Utility::Load_Json("../Bin/DataFiles/38_Anim.json", LoadJson);
 
 	_int LoadSize = LoadJson.size();
 
@@ -208,6 +208,12 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const wstring& strLayerTag)
 		{
 			Desc.fSpeedPerSec = 3.f;
 			Desc.fRotationPerSec = XMConvertToRadians(90.f);
+		}
+
+		else if (ObjectTag == TEXT("Prototype_GameObject_Monster_EN01"))
+		{
+			Desc.fSpeedPerSec = 1.3f;
+			Desc.fRotationPerSec = XMConvertToRadians(60.f);
 		}
 
 		
@@ -299,6 +305,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Collider()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Check_CollisionGroup(TEXT("Layer_Monster"), TEXT("Layer_Monster"))))
+		return E_FAIL;
+
+	if(FAILED(m_pGameInstance->Add_Check_CollisionGroup(TEXT("Layer_Bullet"), TEXT("Layer_Player"))))
 		return E_FAIL;
 
 	return S_OK;
