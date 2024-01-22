@@ -108,15 +108,8 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 
 					_float fX(0.f), fY(0.f), fZ(0.f);
 
-
-					if (LeftTag == TEXT("Layer_Bullet") && RightTag == TEXT("Layer_Player"))
-						_int i = 0;
-
-
 					if (true == Is_Collision(pLeftCol, pRightCol, &fX, &fY, &fZ))
 					{
-						if(LeftTag == TEXT("Layer_Bullet") && RightTag == TEXT("Layer_Player"))
-							_int i = 0;
 
 						if (iter->second) // 충돌했고 이미 충돌 true인 경우
 						{

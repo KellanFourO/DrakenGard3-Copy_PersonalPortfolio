@@ -200,6 +200,8 @@
     <ClInclude Include="..\public\AITask_Base.h" />
     <ClInclude Include="..\public\AnimObject.h" />
     <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\BossPart_EN131_Weapon.h" />
+    <ClInclude Include="..\Public\Boss_EN131.h" />
     <ClInclude Include="..\Public\Bullet.h" />
     <ClInclude Include="..\public\Camera_Dynamic.h" />
     <ClInclude Include="..\Public\Camera_MapTool.h" />
@@ -209,6 +211,7 @@
     <ClInclude Include="..\public\Dynamic_Terrain.h" />
     <ClInclude Include="..\Public\Effect_Explosion.h" />
     <ClInclude Include="..\public\EN01_Arrow.h" />
+    <ClInclude Include="..\Public\EN131_Breath.h" />
     <ClInclude Include="..\Public\Environment_Barricade.h" />
     <ClInclude Include="..\Public\Environment_BrokenBarricade.h" />
     <ClInclude Include="..\public\Environment_Object.h" />
@@ -279,6 +282,8 @@
     <ClCompile Include="..\Private\AITask_Base.cpp" />
     <ClCompile Include="..\Private\AnimObject.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\BossPart_EN131_Weapon.cpp" />
+    <ClCompile Include="..\Private\Boss_EN131.cpp" />
     <ClCompile Include="..\Private\Bullet.cpp" />
     <ClCompile Include="..\Private\Camera_Dynamic.cpp" />
     <ClCompile Include="..\Private\Camera_MapTool.cpp" />
@@ -287,6 +292,7 @@
     <ClCompile Include="..\Private\Dynamic_Terrain.cpp" />
     <ClCompile Include="..\Private\Effect_Explosion.cpp" />
     <ClCompile Include="..\Private\EN01_Arrow.cpp" />
+    <ClCompile Include="..\Private\EN131_Breath.cpp" />
     <ClCompile Include="..\Private\Environment_Barricade.cpp" />
     <ClCompile Include="..\Private\Environment_BrokenBarricade.cpp" />
     <ClCompile Include="..\private\Environment_Object.cpp" />

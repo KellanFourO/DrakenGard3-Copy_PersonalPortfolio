@@ -31,6 +31,7 @@ public:
 	class CModel* Get_ModelCom() { return m_pModelCom; }
 	void		 SetUp_Animation(_uint iAnimIndex);
 	class CBone* Get_BonePtr(const _char* pBoneName);
+	void		 Set_SocketBone(class CBone* pSocketBone) { m_pSocketBone = pSocketBone; }
 	
 
 protected:

@@ -182,7 +182,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const wstring& strLayerTag)
 	
 	json LoadJson;
 
-	CJson_Utility::Load_Json("../Bin/DataFiles/38_Anim.json", LoadJson);
+	//CJson_Utility::Load_Json("../Bin/DataFiles/39_Anim.json", LoadJson);
+	CJson_Utility::Load_Json("../Bin/DataFiles/41_Anim.json", LoadJson);
 
 	_int LoadSize = LoadJson.size();
 
@@ -308,6 +309,12 @@ HRESULT CLevel_GamePlay::Ready_Layer_Collider()
 		return E_FAIL;
 
 	if(FAILED(m_pGameInstance->Add_Check_CollisionGroup(TEXT("Layer_Bullet"), TEXT("Layer_Player"))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Check_CollisionGroup(TEXT("Layer_Boss"), TEXT("Layer_Player"))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Check_CollisionGroup(TEXT("Layer_Player"), TEXT("Layer_Boss"))))
 		return E_FAIL;
 
 	return S_OK;

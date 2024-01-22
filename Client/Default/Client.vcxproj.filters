@@ -199,6 +199,9 @@
     <Filter Include="02. GameObjects\06. Bullets\00. EN01_Arrow">
       <UniqueIdentifier>{5b392ff1-6cb6-4ef7-9ad6-21e0546a8167}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\02. Boss">
+      <UniqueIdentifier>{411e0535-389d-4fc3-b83f-14094cd4b0cb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -450,6 +453,15 @@
     <ClInclude Include="..\public\EN01_Arrow.h">
       <Filter>02. GameObjects\06. Bullets\00. EN01_Arrow</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Boss_EN131.h">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BossPart_EN131_Weapon.h">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN131_Breath.h">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -658,6 +670,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\EN01_Arrow.cpp">
       <Filter>02. GameObjects\06. Bullets\00. EN01_Arrow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Boss_EN131.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BossPart_EN131_Weapon.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN131_Breath.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

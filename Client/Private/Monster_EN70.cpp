@@ -106,8 +106,18 @@ void CMonster_EN70::Tick(_float fTimeDelta)
 	if (m_eCurrentLevelID != LEVEL_TOOL)
 		m_pRigidBodyCom->Tick(fTimeDelta);
 
-	if(true == m_bMove)
-	m_pTransformCom->Add_LookPos(vPos);
+	_vector vRealPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+	vRealPos.m128_f32[0] += vPos.x;
+	vRealPos.m128_f32[1] += vPos.y;
+	vRealPos.m128_f32[2] += vPos.z;
+	vRealPos.m128_f32[3] = 1.f;
+
+	if (m_eCurrentLevelID != LEVEL_TOOL)
+	{
+		if (true == m_pNavigationCom->isMove(vRealPos) && true == m_bMove)
+			m_pTransformCom->Add_LookPos(vPos);
+	}
 }
 
 void CMonster_EN70::Late_Tick(_float fTimeDelta)

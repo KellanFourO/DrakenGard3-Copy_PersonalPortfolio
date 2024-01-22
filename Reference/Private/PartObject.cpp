@@ -63,7 +63,9 @@ void CPartObject::Free()
 	Safe_Release(m_pParentTransformCom);
 	Safe_Release(m_pSocketBone);
 	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pModelCom);
+
+	if(nullptr != m_pModelCom)
+		Safe_Release(m_pModelCom);
 
 	__super::Free();
 }

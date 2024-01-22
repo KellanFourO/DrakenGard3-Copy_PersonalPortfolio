@@ -59,6 +59,7 @@ public:
 	void	Root_MotionStart() { m_bRootMotionStart = true;}
 	void	Root_MotionChange() { m_isRootAnim = true; }
 	void	Root_MotionEnd() { m_bRootMotionStart = false; }
+	_bool	Is_FinishedRootMotion () { return m_bRootMotionStart; }
 	//void	Root_Motion(CTransform* pTransform);
 	//void	Reset_RootMotion();
 

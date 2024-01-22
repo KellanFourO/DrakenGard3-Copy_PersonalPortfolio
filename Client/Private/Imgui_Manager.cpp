@@ -11,6 +11,8 @@
 #include "Model.h"
 #include "MonsterPart_EN00_Weapon.h"
 #include "Monster_EN00.h"
+#include "Boss_EN131.h"
+#include "BossPart_EN131_Weapon.h"
 
 #include "BoundingBox_AABB.h"
 #include "Layer.h"
@@ -1093,22 +1095,22 @@ void CImgui_Manager::SelectObjectFunction()
 			static _float TestInput[3];
 			static _float TestCenter[3];
 
-			m_PartObject = dynamic_cast<CMonster_EN00*>(m_PickingObject)->Find_PartObject(TEXT("Part_Weapon"));
+			m_PartObject = dynamic_cast<CBoss_EN131*>(m_PickingObject)->Find_PartObject(TEXT("Part_Weapon1"));
 
 
 			ImGui::InputFloat3(u8"테스트Extents", TestInput);
 			ImGui::InputFloat3(u8"테스트Center", TestCenter);
 
-			CBoundParent* pBound = dynamic_cast<CMonsterPart_EN00_Weapon*>(m_PartObject)->Get_Collider()->Get_Bounding();
+			CBoundParent* pBound = dynamic_cast<CBossPart_EN131_Weapon*>(m_PartObject)->Get_Collider()->Get_Bounding();
 
-			CBoundingBox_AABB* pAABBBox = dynamic_cast<CBoundingBox_AABB*>(pBound);
+			CBoundingBox_OBB* pOBBBox = dynamic_cast<CBoundingBox_OBB*>(pBound);
 
 			
 
 			_float3 vTest = { TestInput[0],TestInput[1], TestInput[2] };
 			_float3 vTestCenter = { TestCenter[0], TestCenter[1], TestCenter[2] };
 
-			BoundingBox* pBox = pAABBBox->Get_Bounding();
+			BoundingOrientedBox* pBox = pOBBBox->Get_Bounding();
 
 			pBox->Extents = vTest;
 			pBox->Center = vTestCenter;
