@@ -47,6 +47,9 @@ public:
 	void					Set_Cam(class CCamera_Target* pCam);
 	CPartObject*			Find_PartObject(const wstring& strPartTag);
 	LEVEL					Get_LevelID() { return m_eCurrentLevelID; }
+		_float				Get_Dmg() { return m_tStatus.fDmg; }
+	STATUS_DESC::ATTACKTYPE Get_AttackType() { return m_tStatus.eAttackType; }
+	void					Init_Status(_float fMaxHp, _float fDmg);
 
 private:
 	HRESULT			Ready_Components();
@@ -68,6 +71,9 @@ private:
 private:
 	_bool				m_bAdmin = false;
 	_float				m_fAccTime = 0.f;
+
+	STATUS_DESC							m_tStatus = {};
+	STATUS_DESC							m_tOriginStatus = {};
 
 private:
 	//map<const wstring, class CPartObject*>			m_PartObjects;

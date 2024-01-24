@@ -57,6 +57,8 @@ HRESULT CMonster_EN00::Initialize(void* pArg)
 
 	m_pModelCom->Root_MotionStart();
 
+	Init_Status(100.f, 20.f);
+
 	return S_OK;
 }
 
@@ -82,7 +84,7 @@ void CMonster_EN00::Tick(_float fTimeDelta)
 		
 		pBlackBoard->setFloat3("MyPosition", vMyPos);
 		pBlackBoard->setFloat3("TargetPosition", vTargetPos);
-
+		pBlackBoard->setFloat("CurrentTrackPosition", m_pModelCom->Get_CurrentAnimation()->Get_TrackPosition());
 		
 
 		Node::Status TreeStatus = m_pBehaviorTree->update(fTimeDelta);
@@ -189,6 +191,8 @@ void CMonster_EN00::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag
 {
 	__super::On_Collision(pCollisionObject, LeftTag, RightTag, vCollisionPos, bType, bHit);
 
+	
+
 	if (RightTag == TEXT("Layer_Player"))
 	{
 		_float magnitude = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCollisionPos)));
@@ -203,7 +207,9 @@ void CMonster_EN00::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag
 		m_pRigidBodyCom->Add_Force(vCalcPos, CRigidBody::FORCE_MODE::FORCE);
 	}
 
-	if (RightTag == TEXT("Layer_Monster"))
+	
+
+	if (RightTag == TEXT("Layer_Monster") && false == bHit)
 	{
 		_float magnitude = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCollisionPos)));
 
@@ -225,7 +231,53 @@ void CMonster_EN00::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag
 
 void CMonster_EN00::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
 {
-	
+
+	if (RightTag == TEXT("Layer_Player") && bHit == false)
+	{
+		CRigidBody* pTargetBody = dynamic_cast<CRigidBody*>(pCollisionObject->Find_Component(TEXT("Com_RigidBody")));
+
+
+		_vector vLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
+
+		switch (m_tStatus.eAttackType)
+		{
+			case tagStatusDesc::UPPER_ATTACK:
+			{
+				vLook.m128_f32[0] *= 100.f;
+				vLook.m128_f32[1] *= 300.f;
+				vLook.m128_f32[2] *= 100.f;
+				break;
+			}
+
+			case tagStatusDesc::CHARGE_ATTACK:
+			{
+				vLook.m128_f32[0] *= 100.f;
+				vLook.m128_f32[1] *= 0.f;
+				vLook.m128_f32[2] *= 100.f;
+				break;
+			}
+
+			case tagStatusDesc::NORMAL_ATTACK:
+			{
+				vLook.m128_f32[0] *= 50.f;
+				vLook.m128_f32[1] *= 0.f;
+				vLook.m128_f32[2] *= 50.f;
+				break;
+			}
+
+		}
+
+
+
+		_float3 vForce;
+		XMStoreFloat3(&vForce, vLook);
+
+		pTargetBody->Add_Force(vForce, CRigidBody::FORCE_MODE::IMPULSE);
+
+
+
+	}
+
 	__super::On_CollisionEnter(pCollisionObject, LeftTag, RightTag, bType, bHit);
 }
 
@@ -235,6 +287,8 @@ void CMonster_EN00::On_CollisionExit(CGameObject* pCollisionObject, wstring& Lef
 
 	m_pRigidBodyCom->Clear_NetPower();
 }
+
+
 
 HRESULT CMonster_EN00::Ready_Components()
 {
@@ -342,7 +396,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 
 	 EN00_BlackBoard->setFloat3("MyPosition", vMyPos);
 	 EN00_BlackBoard->setFloat3("TargetPosition", vTargetPos);
-
+	 EN00_BlackBoard->setFloat("CurrentTrackPosition", 0.f);
 	 //EN00_BlackBoard->setFloat3("TargetPostion", _float3(0.f, 0.f, 0.f));
 	 
 	 EN00_BlackBoard->setBool("Is_Hit", false); //! 피격중인가
@@ -351,6 +405,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 	 //EN00_BlackBoard->setBool("Is_TargetPosition", false); //! 목표로 하는 지점이 있는가
 	 EN00_BlackBoard->setBool("Is_Patrol", false); //! 순찰해야하는가?
 	 EN00_BlackBoard->setBool("Is_OneTick", true);
+	 EN00_BlackBoard->setBool("Is_Swing", false);
 	 EN00_BlackBoard->setInt("iRandomIndex", -1);
 	 EN00_BlackBoard->setOwner(this);
 	 EN00_BlackBoard->setModel(m_pModelCom);
@@ -373,7 +428,10 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 			 return BT_STATUS::Success;
 		 }
 		 else
+		 {
+			Set_Move(true);
 			return BT_STATUS::Failure;
+		}
 	 };
 
 	FUNCTION_NODE Task_IsDead
@@ -396,10 +454,13 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 
 			if (true == pBlackboard->getBool("Is_OneTick"))
 			{
+				
+
 				_int iRandomHitIndex = Random({ 26, 28, 29, 30, 36 });
 				pBlackboard->setInt("iRandomIndex", iRandomHitIndex);
 
 				m_pTransformCom->Look_At(vTargetPos);
+
 				Transition(iRandomHitIndex, 1.7f);
 				pBlackboard->setBool("Is_OneTick", false);
 				
@@ -411,6 +472,10 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 				 pBlackboard->setBool("Is_Hit", false);
 				 pBlackboard->setBool("Is_OneTick", true);
 				return BT_STATUS::Success;
+			 }
+			 else if (true == pBlackboard->getBool("Is_Dead"))
+			 {
+				 return BT_STATUS::Success;
 			 }
 			 else
 				return BT_STATUS::Running;
@@ -520,12 +585,27 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 	 FUNCTION_NODE Task_NormalAttack
 		 = FUNCTION_NODE_MAKE
 	 {
+
+
 		Transition(7);
 
+
+
+		 m_tStatus.eAttackType = tagStatusDesc::NORMAL_ATTACK;
 		 m_pModelCom->Set_Loop(false);
+
+		 if (101.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Swing"))
+		 {
+			Get_WeaponCollider()->OnCollider();
+
+			 pBlackboard->setBool("Is_Swing", true);
+		 }
+		 
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
+			 Get_WeaponCollider()->OffCollider();
+			 pBlackboard->setBool("Is_Swing", false);
 			 m_pModelCom->Set_Loop(true);
 			 m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
 			 return BT_STATUS::Success;
@@ -559,10 +639,24 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 	 {
 		Transition(15);
 		m_pModelCom->Set_Loop(false);
+		Set_Move(true);
+
+		m_tStatus.eAttackType = tagStatusDesc::UPPER_ATTACK;
+
+		if (142.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Swing"))
+		{
+			Get_WeaponCollider()->OnCollider();
+
+			pBlackboard->setBool("Is_Swing", true);
+		}
+
 
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
+			Get_WeaponCollider()->OffCollider();
+			pBlackboard->setBool("Is_Swing", false);
 			m_pModelCom->Set_Loop(true);
+			Set_Move(false);
 			 return BT_STATUS::Success;
 		}
 		 else if (true == pBlackboard->getBool("Is_Hit") || 0 >= pBlackboard->getFloat("Current_HP"))
@@ -577,8 +671,20 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 		Transition(16);
 		m_pModelCom->Set_Loop(false);
 
+		m_tStatus.eAttackType = tagStatusDesc::CHARGE_ATTACK;
+
+		if (128.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Swing"))
+		{
+			Get_WeaponCollider()->OnCollider();
+
+			pBlackboard->setBool("Is_Swing", true);
+		}
+
+
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
+			Get_WeaponCollider()->OffCollider();
+			pBlackboard->setBool("Is_Swing", false);
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		}

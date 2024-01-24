@@ -120,6 +120,8 @@ void CBoss_EN131::Tick(_float fTimeDelta)
 	if (m_eCurrentLevelID != LEVEL_TOOL)
 	{
 		if (true == m_pNavigationCom->isMove(vRealPos) && true == m_bMove)
+			vPos.x *= 0.75f;
+			vPos.z *= 0.75f;
 			m_pTransformCom->Add_LookPos(vPos);
 	}
 
@@ -355,7 +357,8 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	 EN131_BlackBoard->setFloat("Speed", m_pTransformCom->Get_Speed());
 	 EN131_BlackBoard->setFloat("RotateSpeed", m_pTransformCom->Get_RotationSpeed());
 
-
+	 //!EN00_BlackBoard->setFloat3("DashRushTargetPosition", vTargetPos);
+	 //!EN00_BlackBoard->setFloat3("EscapePosition", _float3());
 	 CGameObject* pTarget = nullptr;
 
 	 pTarget = m_pGameInstance->Get_Player(m_eCurrentLevelID);
@@ -502,10 +505,12 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	{
 		   Transition(3);
 		   m_pModelCom->Set_Loop(false);
+		   m_pModelCom->Root_MotionStart();
 		   Set_Move(true);
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
+			 m_pModelCom->Root_MotionEnd();
 			 m_pModelCom->Set_Loop(true);
 			 Set_Move(false);
 			 return BT_STATUS::Success;
@@ -519,10 +524,12 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	{
 		 Transition(5);
 		 m_pModelCom->Set_Loop(false);
+		 m_pModelCom->Root_MotionStart();
 		 Set_Move(true);
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
+			 m_pModelCom->Root_MotionEnd();
 			 m_pModelCom->Set_Loop(true);
 			 Set_Move(false);
 			 return BT_STATUS::Success;
@@ -536,12 +543,15 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	{
 			Transition(4);
 		  m_pModelCom->Set_Loop(false);
+		  m_pModelCom->Root_MotionStart();
 		  Set_Move(true);
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
+			 m_pModelCom->Root_MotionEnd();
 			 m_pModelCom->Set_Loop(true);
 			 Set_Move(false);
+			 
 			 return BT_STATUS::Success;
 		 }
 		 else
@@ -934,6 +944,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		 if (InRange(XMVectorGetX(XMVector3Length(vPosition - vTargetPosition)), 0.f, pBlackboard->getFloat("Detect_Range"), "[]"))
 		 {
+			 m_pModelCom->Root_MotionStart();
 				m_pModelCom->Set_Loop(false);
 				m_pTransformCom->Look_At(vTargetPosition);
 				Transition(2);
@@ -942,6 +953,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 			if (true == m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 			{
+				m_pModelCom->Root_MotionEnd();
 				m_pModelCom->Set_Loop(true);
 				Set_Move(false);
 				return BT_STATUS::Success;
@@ -951,7 +963,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		 }
 		 else
 		 {
-			Set_Move(true);
+			 Set_Move(true);
 			 m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Failure;
 		 }

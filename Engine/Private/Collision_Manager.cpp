@@ -110,6 +110,10 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 
 					if (true == Is_Collision(pLeftCol, pRightCol, &fX, &fY, &fZ))
 					{
+						if (pLeftCol->Get_PartType() == CCollider::PART_BODY && true == pLeftCol->isAttackBody())
+						{
+							_int i = 0;
+						}
 
 						if (iter->second) // 충돌했고 이미 충돌 true인 경우
 						{
@@ -119,6 +123,12 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 
 								if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
 								{
+									if (true == pLeftCol->isAttackBody())
+									{
+										pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, false, false);
+										pRightGameObject->On_CollisionExit(pLeftGameObject, strLeftTag, strRightTag, false, true);
+									}
+
 									pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, false, false);
 								}
 								else if(pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
@@ -150,6 +160,12 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 										
 										if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
 										{
+											if (true == pLeftCol->isAttackBody())
+											{
+												pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, false, false);
+												pRightGameObject->On_Collision(pLeftGameObject, strLeftTag, strRightTag, vCollisionPos, false, true);
+											}
+
 											pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, false, false);
 										}
 										else if (pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
@@ -170,6 +186,12 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 								{
 									if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
 									{
+										if (true == pLeftCol->isAttackBody())
+										{
+											pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, false, false);
+											pRightGameObject->On_Collision(pLeftGameObject, strLeftTag, strRightTag, vCollisionPos, false, true);
+										}
+
 										pLeftGameObject->On_Collision(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, false, false);
 									}
 									else if (pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
@@ -196,6 +218,12 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 
 								if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
 								{
+									if (true == pLeftCol->isAttackBody())
+									{
+										pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag,  false, false);
+										pRightGameObject->On_CollisionEnter(pLeftGameObject, strLeftTag, strRightTag,  false, true);
+									}
+
 									pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag, false, false);
 									
 								}
@@ -221,6 +249,12 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 
 							if (pLeftCol->Get_PartType() == CCollider::PART_BODY && pRightCol->Get_PartType() == CCollider::PART_BODY)
 							{
+								if (true == pLeftCol->isAttackBody())
+								{
+									pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, false, false);
+									pRightGameObject->On_CollisionExit(pLeftGameObject, strLeftTag, strRightTag, false, true);
+								}
+
 								pLeftGameObject->On_CollisionExit(pRightGameObject, strLeftTag, strRightTag, false, false);
 							}
 							else if (pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)

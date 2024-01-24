@@ -337,9 +337,10 @@ void CModel::Play_Animation(_float fTimeDelta, _float3& vRootOutPos)
 		
 
 		vRootOutPos = vCalcPos;
-
 	}
-		m_vPrevRootPosition = vPos;
+	
+
+	m_vPrevRootPosition = vPos;
 	
 
 	

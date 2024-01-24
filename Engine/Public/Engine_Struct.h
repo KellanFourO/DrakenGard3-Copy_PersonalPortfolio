@@ -17,6 +17,17 @@ namespace Engine
 		class CTexture*	pMtrlTextures[AI_TEXTURE_TYPE_MAX]; //! 어심프라이브러리에서 제공하는 재질 텍스처타입 열거체
 	}MATERIAL_DESC;
 
+	typedef struct tagStatusDesc
+	{
+		enum ATTACKTYPE { NORMAL_ATTACK, RUSH_ATTACK, CHARGE_ATTACK, UPPER_ATTACK, DOWN_ATTACK, ATTACKTYPE_END  };
+
+		_float fMaxHp;
+		_float fCurrentHp;
+		_float fDmg;
+		ATTACKTYPE eAttackType;
+
+	}STATUS_DESC;
+
 // 	typedef struct tagPassDesc
 // 	{
 // 		ID3D11VertexShader* VertexShader = { nullptr };

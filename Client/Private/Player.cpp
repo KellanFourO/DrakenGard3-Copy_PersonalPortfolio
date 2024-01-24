@@ -16,6 +16,9 @@
 #include "Collider.h"
 #include "RigidBody.h"
 
+#include "Monster.h"
+#include "Bullet.h"
+
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice, pContext)
 {
@@ -65,7 +68,7 @@ HRESULT CPlayer::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
-	
+	Init_Status(500.f, 20.f);
 	
 
 	return S_OK;
@@ -140,9 +143,6 @@ void CPlayer::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstr
 {
 	//! 내 바디와 상대 바디 끼리 충돌했을 경우
 
-
-
-
 	//m_pRigidBodyCom->Add_Force(vCollisionPos, CRigidBody::FORCE_MODE::FORCE);
 
 	//wcout << LeftTag.c_str() << TEXT(" On_Collision is ") << RightTag.c_str() << endl;
@@ -156,6 +156,65 @@ void CPlayer::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag,
 		pBody->Set_Move(false);
 	}
 
+	if (LeftTag == TEXT("Layer_Monster") || LeftTag == TEXT("Layer_Bullet") && bHit == true)
+	{	
+		
+		CMonster* pMonster = dynamic_cast<CMonster*>(pCollisionObject);
+		CBullet* pBullet = dynamic_cast<CBullet*>(pCollisionObject);
+		
+		STATUS_DESC::ATTACKTYPE eHitType;
+		_float fDmg;
+
+		if (LeftTag == TEXT("Layer_Monster"))
+		{
+			eHitType = pMonster->Get_AttackType();
+			fDmg = pMonster->Get_Dmg();
+		}
+		else if (LeftTag == TEXT("Layer_Bullet"))
+		{
+			eHitType = pBullet->Get_AttackType();
+			fDmg = pBullet->Get_Dmg();
+		}
+
+		
+		 
+
+		if (STATUS_DESC::ATTACKTYPE::NORMAL_ATTACK == eHitType)
+		{
+			if (fDmg <= 15.f)
+			{
+				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreMoreWeakHit"));
+			}
+			else
+				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreWeakHit"));
+		}
+		else if (STATUS_DESC::ATTACKTYPE::CHARGE_ATTACK == eHitType)
+		{
+			m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_WeakHit"));
+		}
+		else if (STATUS_DESC::ATTACKTYPE::RUSH_ATTACK == eHitType)
+		{
+			m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_BlowAwayHit"));
+		}
+
+		else if (STATUS_DESC::ATTACKTYPE::UPPER_ATTACK == eHitType)
+		{
+			m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_UpperHit"));
+			
+		}
+
+		else if (STATUS_DESC::ATTACKTYPE::DOWN_ATTACK == eHitType)
+		{
+			m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_DownHit"));
+
+		}
+				
+
+		m_tStatus.fCurrentHp -= fDmg;
+		
+
+		
+	}
 
 
 	wcout << LeftTag.c_str() << TEXT(" On_CollisionEnter is ") << RightTag.c_str() << endl;
@@ -173,7 +232,7 @@ void CPlayer::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, 
 	wcout << LeftTag.c_str() << TEXT(" On_CollisionExit is ") << RightTag.c_str() << endl;
 
 
-	m_pRigidBodyCom->Clear_NetPower();
+	
 	
 }
 
@@ -192,6 +251,14 @@ CPartObject* CPlayer::Find_PartObject(const wstring& strPartTag)
 		return nullptr;
 	
 	return iter->second;
+}
+
+void CPlayer::Init_Status(_float fMaxHp, _float fDmg)
+{
+	m_tStatus.fMaxHp = fMaxHp;
+	m_tStatus.fDmg = fDmg;
+
+	m_tOriginStatus = m_tStatus;
 }
 
 HRESULT CPlayer::Ready_Components()
@@ -328,9 +395,38 @@ HRESULT CPlayer::Ready_States()
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Attack8"), CPlayerState_Attack8::Create(this))))
 		return E_FAIL;
 
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_MoreMoreWeakHit"), CPlayerState_MoreMoreWeakHit::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_MoreWeakHit"), CPlayerState_MoreWeakHit::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_WeakHit"), CPlayerState_WeakHit::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_BlowAwayHit"), CPlayerState_BlowAwayHit::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_BreakFall"), CPlayerState_BreakFall::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Sturn"), CPlayerState_Sturn::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Dead"), CPlayerState_Dead::Create(this))))
+		return E_FAIL;
+	
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_UpperHit"), CPlayerState_UpperHit::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_DownHit"), CPlayerState_DownHit::Create(this))))
+		return E_FAIL;
 	
 	m_pStateCom->Set_InitState(TEXT("PlayerState_Idle"));
 	
+	CPlayerPart_Body* pBody = dynamic_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
+	
+	dynamic_cast<CModel*>(pBody->Find_Component(TEXT("Com_Model")))->Set_Animation(73);
 
 	return S_OK;
 }

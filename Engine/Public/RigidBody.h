@@ -54,11 +54,14 @@ class ENGINE_DLL CRigidBody final : public CComponent
 		void					Set_Mass(const _float & fMass) { m_fMass = fMass; }
 		void					Set_Friction(const _float & fFriction) { m_fFriction = fFriction; }
 	
+		void					Reset_OneTick() { m_bOneTick = true; }
+		void					Reset_AccelZero() { m_bAccelerationZero = false; }
 		void					Set_LinearVelocity(const _float3& vLinearVelocity) { m_vLinearVelocity = vLinearVelocity; }
 		void					Set_LinearAxisVelocity(AXIS_TYPE eAxis, _float fVelocity) { *((_float*)&m_vLinearVelocity + (_int)eAxis) = fVelocity; }
 		void					Set_FreezePosition(AXIS_TYPE eAxis) { m_byConstraints ^= 1 << (_int)eAxis; }
 	
 	public:
+		const _bool&			Is_AccelZero() { return m_bAccelerationZero; }
 		const _bool&			Is_UseGravity() const { return m_bUseGravity; }
 		const _bool&			Is_Kinematic() const { return m_bKinematic; }
 		_bool					Is_FrozePosition(AXIS_TYPE eAxis) { return m_byConstraints & 1 << (_int)eAxis; }
@@ -81,9 +84,13 @@ class ENGINE_DLL CRigidBody final : public CComponent
 	private:
 		RIGIDBODY_TYPE			m_eType = RIGIDBODY_TYPE::TYPEEND;
 		_bool					m_bSleep = FALSE;
-	
+		
+		
 		_bool					m_bUseGravity = FALSE;
 		_bool					m_bKinematic = FALSE;
+
+		_bool					m_bOneTick = false;
+		_bool					m_bAccelerationZero = false;
 		_float					m_fFriction = 0.1f;
 		_float					m_fMass = 10.f;
 		//_float					m_fGravitionalConstant = -9.8f;
@@ -91,6 +98,7 @@ class ENGINE_DLL CRigidBody final : public CComponent
 	
 		_byte					m_byConstraints = 0;
 	
+		_float3					m_vForce; //! 충격 당했을때를 기록해주자.
 		_float3					m_vLinearAcceleration;
 		_float3					m_vLinearVelocity;
 	

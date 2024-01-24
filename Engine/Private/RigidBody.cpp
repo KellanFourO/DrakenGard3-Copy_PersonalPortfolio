@@ -60,13 +60,20 @@ void CRigidBody::Add_Force(const _float3& vForce, const FORCE_MODE& eMode)
 	switch (eMode)
 	{
 	case FORCE_MODE::FORCE:
+		m_bOneTick = true;
 		XMStoreFloat3(&m_vLinearAcceleration, (XMLoadFloat3(&m_vLinearAcceleration) += vVector / m_fMass));
+		m_bAccelerationZero = false;
 		break;
 	case FORCE_MODE::IMPULSE:
+		m_bOneTick = true;
 		XMStoreFloat3(&m_vLinearVelocity, (XMLoadFloat3(&m_vLinearVelocity) += vVector / m_fMass));
+		m_bAccelerationZero = false;
+
 		break;
 	case FORCE_MODE::ACCELERATION:
+		
 		XMStoreFloat3(&m_vLinearAcceleration, (XMLoadFloat3(&m_vLinearAcceleration) += vVector));
+		m_bAccelerationZero = false;
 		break;
 	case FORCE_MODE::VELOCITY_CHANGE:
 		XMStoreFloat3(&m_vLinearVelocity, (XMLoadFloat3(&m_vLinearVelocity) += vVector));
@@ -84,12 +91,14 @@ void CRigidBody::Clear_Force(const FORCE_MODE& eMode)
 	{
 	case FORCE_MODE::FORCE:
 		::ZeroMemory(&m_vLinearAcceleration, sizeof(_float3));
+		m_bAccelerationZero = true;
 		break;
 	case FORCE_MODE::IMPULSE:
 		::ZeroMemory(&m_vLinearVelocity, sizeof(_float3));
 		break;
 	case FORCE_MODE::ACCELERATION:
 		::ZeroMemory(&m_vLinearAcceleration, sizeof(_float3));
+		m_bAccelerationZero = true;
 		break;
 	case FORCE_MODE::VELOCITY_CHANGE:
 		::ZeroMemory(&m_vLinearVelocity, sizeof(_float3));
@@ -103,6 +112,7 @@ void CRigidBody::Clear_NetPower()
 {
 	ZeroMemory(&m_vLinearAcceleration, sizeof(_float3));
 	ZeroMemory(&m_vLinearVelocity, sizeof(_float3));
+	m_bAccelerationZero = true;
 }
 
 void CRigidBody::Update_Kinetic(const _float& fTimeDelta)
@@ -131,6 +141,14 @@ void CRigidBody::Update_Kinetic(const _float& fTimeDelta)
 	}
 
 	Update_Transform(fTimeDelta);
+
+	if (true == m_bOneTick && XMVector3Equal(XMLoadFloat3(&m_vLinearAcceleration), XMVectorZero()))
+	{
+		// 가속도가 0이 되었음을 나타내는 bool 변수를 true로 설정
+		m_bAccelerationZero = true;
+		m_bOneTick = false;
+	}
+	
 }
 
 void CRigidBody::Update_Kinematic(const _float& fTimeDelta)

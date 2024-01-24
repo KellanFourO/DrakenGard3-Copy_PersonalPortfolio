@@ -59,6 +59,8 @@ HRESULT CMonster_EN01::Initialize(void* pArg)
 
 	m_pModelCom->Root_MotionStart();
 
+	Init_Status(80.f, 0.f);
+
 	return S_OK;
 }
 
@@ -229,6 +231,8 @@ void CMonster_EN01::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag
 void CMonster_EN01::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
 {
 	
+
+	
 	__super::On_CollisionEnter(pCollisionObject, LeftTag, RightTag, bType, bHit);
 }
 
@@ -373,7 +377,7 @@ HRESULT CMonster_EN01::Ready_BehaviorTree_V2()
 		 if (true == pBlackboard->getBool("Is_Dead"))
 		 {
 			m_pModelCom->Set_Loop(false);
-			Transition(30);
+			Transition(31);
 			 return BT_STATUS::Success;
 		 }
 		 else
@@ -415,6 +419,10 @@ HRESULT CMonster_EN01::Ready_BehaviorTree_V2()
 				 pBlackboard->setBool("Is_Hit", false);
 				 pBlackboard->setBool("Is_OneTick", true);
 				return BT_STATUS::Success;
+			 }
+			 else if (true == pBlackboard->getBool("Is_Dead"))
+			 {
+				 return BT_STATUS::Success;
 			 }
 			 else
 				return BT_STATUS::Running;
@@ -479,13 +487,24 @@ HRESULT CMonster_EN01::Ready_BehaviorTree_V2()
 		 = FUNCTION_NODE_MAKE
 	 {
 		Transition(6);
+		
+		_vector vTargetPos = XMLoadFloat3(&Get_TargetPosition());
+		vTargetPos.m128_f32[3] = 1.f;
+
+		m_pTransformCom->TurnToTarget(vTargetPos, fTimeDelta);
 
 		 m_pModelCom->Set_Loop(false);
 
+		 if (101.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Shot"))
+		 {
+			 pBlackboard->setBool("Is_Shot", true);
+			 ChargeNormalShot();
+		 }
+
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
-			 NormalShot();
 			 m_pModelCom->Set_Loop(true);
+			 pBlackboard->setBool("Is_Shot", false);
 			 m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
 			 return BT_STATUS::Success;
 		 }
@@ -498,6 +517,10 @@ HRESULT CMonster_EN01::Ready_BehaviorTree_V2()
 	 FUNCTION_NODE Task_NormalShotEnd
 		 = FUNCTION_NODE_MAKE
 	 {
+		_vector vTargetPos = XMLoadFloat3(&Get_TargetPosition());
+		vTargetPos.m128_f32[3] = 1.f;
+
+		m_pTransformCom->TurnToTarget(vTargetPos, fTimeDelta);
 		Transition(7);
 		m_pModelCom->Set_Loop(false);
 
@@ -517,13 +540,24 @@ HRESULT CMonster_EN01::Ready_BehaviorTree_V2()
 	 FUNCTION_NODE Task_ParabolicShot1
 		 = FUNCTION_NODE_MAKE
 	 {
+		_vector vTargetPos = XMLoadFloat3(&Get_TargetPosition());
+		vTargetPos.m128_f32[3] = 1.f;
+
+		m_pTransformCom->TurnToTarget(vTargetPos, fTimeDelta);
+
 		Transition(8);
 		m_pModelCom->Set_Loop(false);
 
+		if (99.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Shot"))
+		{
+			pBlackboard->setBool("Is_Shot", true);
+			ParabolicShot();
+		}
+
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
-			ParabolicShot();
 			m_pModelCom->Set_Loop(true);
+			pBlackboard->setBool("Is_Shot", false);
 			 return BT_STATUS::Success;
 		}
 		 else if (true == pBlackboard->getBool("Is_Hit") || 0 >= pBlackboard->getFloat("Current_HP"))
@@ -535,6 +569,11 @@ HRESULT CMonster_EN01::Ready_BehaviorTree_V2()
 	 FUNCTION_NODE Task_ParabolicShot2
 		 = FUNCTION_NODE_MAKE
 	 {
+		_vector vTargetPos = XMLoadFloat3(&Get_TargetPosition());
+		vTargetPos.m128_f32[3] = 1.f;
+
+		m_pTransformCom->TurnToTarget(vTargetPos, fTimeDelta);
+
 		Transition(9);
 		m_pModelCom->Set_Loop(false);
 
@@ -555,6 +594,10 @@ HRESULT CMonster_EN01::Ready_BehaviorTree_V2()
 	 FUNCTION_NODE Task_ChargeNormalShot
 		 = FUNCTION_NODE_MAKE
 	 {
+		_vector vTargetPos = XMLoadFloat3(&Get_TargetPosition());
+		vTargetPos.m128_f32[3] = 1.f;
+
+		m_pTransformCom->TurnToTarget(vTargetPos, fTimeDelta);
 		Transition(10);
 		m_pModelCom->Set_Loop(false);
 
@@ -580,6 +623,10 @@ HRESULT CMonster_EN01::Ready_BehaviorTree_V2()
 	 FUNCTION_NODE Task_ChargeParabolicShot
 		 = FUNCTION_NODE_MAKE
 	 {
+		_vector vTargetPos = XMLoadFloat3(&Get_TargetPosition());
+		vTargetPos.m128_f32[3] = 1.f;
+
+		m_pTransformCom->TurnToTarget(vTargetPos, fTimeDelta);
 		Transition(11);
 		m_pModelCom->Set_Loop(false);
 

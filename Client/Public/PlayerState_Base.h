@@ -41,6 +41,10 @@ protected:
 	void			Vertical_Camera_RotateTest(); //! 카메라 룩 벡터 기준으로 수직 회전
 
 	void			Horizon_Camera_Rotate(); //! 카메라 룩 벡터 기준 수평 90도 회전
+
+	_bool			Is_Current_AnimEnd();
+
+	void			Transition(CStateMachine::STATETYPE eStateType, const wstring& strStateTag);
 	
 
 protected:

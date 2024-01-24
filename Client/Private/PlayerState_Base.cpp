@@ -133,6 +133,18 @@ void CPlayerState_Base::Horizon_Camera_Rotate()
 	m_pOwnerTransform->RotationOfCameraDir(vCamLook, XMConvertToRadians(fRoationAngle)); //! XMConvertToRadian을 해봤더니 무조건 아래 방향만 보게된다.
 }
 
+_bool CPlayerState_Base::Is_Current_AnimEnd()
+{
+
+	return m_pOwnerModelCom->Get_CurrentAnimation()->Get_Finished();
+	
+}
+
+void CPlayerState_Base::Transition(CStateMachine::STATETYPE eStateType, const wstring& strStateTag)
+{
+	m_pOwnerStateCom->Transition(eStateType, strStateTag);
+}
+
 
 
 

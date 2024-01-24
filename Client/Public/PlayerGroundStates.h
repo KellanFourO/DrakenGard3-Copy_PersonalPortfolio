@@ -18,3 +18,13 @@
 #include "PlayerState_Attack6.h"
 #include "PlayerState_Attack7.h"
 #include "PlayerState_Attack8.h"
+
+#include "PlayerState_BlowAwayHit.h"
+#include "PlayerState_MoreMoreWeakHit.h"
+#include "PlayerState_MoreWeakHit.h"
+#include "PlayerState_WeakHit.h"
+#include "PlayerState_BreakFall.h"
+#include "PlayerState_Sturn.h"
+#include "PlayerState_Dead.h"
+#include "PlayerState_UpperHit.h"
+#include "PlayerState_DownHit.h"

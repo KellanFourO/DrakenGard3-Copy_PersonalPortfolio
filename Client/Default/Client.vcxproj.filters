@@ -202,6 +202,36 @@
     <Filter Include="02. GameObjects\99. AnimModelObject\02. Boss">
       <UniqueIdentifier>{411e0535-389d-4fc3-b83f-14094cd4b0cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit">
+      <UniqueIdentifier>{fcb6a86b-aa58-4665-8cee-f20634fadd2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\06. BreakFall">
+      <UniqueIdentifier>{ffb3be40-d600-4902-a5b7-caac05618d2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\WeakHit">
+      <UniqueIdentifier>{92ad488d-1172-46a7-874c-d67ed783d2fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\MoreWeakHit">
+      <UniqueIdentifier>{83c48bbb-cc2c-4c8d-b83f-f443b7ec488f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\MoreMoreWeakHit">
+      <UniqueIdentifier>{c3eaace2-6dc6-48d6-8142-512c558c59fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\Sturn">
+      <UniqueIdentifier>{00035af0-8197-47f7-a123-42565d048658}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\07. Dead">
+      <UniqueIdentifier>{4dba9e3a-d70e-4e9a-a34b-a3e5fc0dbc8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\BlowAwayHit">
+      <UniqueIdentifier>{de50f48d-da97-4bbd-a927-90fd4d2dfdb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\UpperHit">
+      <UniqueIdentifier>{684798bd-ac1c-4877-be67-4bf9c4f88e7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\DownHit">
+      <UniqueIdentifier>{7f741fc4-2629-4d9c-8456-368a2bc3dba2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -462,6 +492,33 @@
     <ClInclude Include="..\Public\EN131_Breath.h">
       <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Dead.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\07. Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_MoreMoreWeakHit.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\MoreMoreWeakHit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_WeakHit.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\WeakHit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_MoreWeakHit.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\MoreWeakHit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Sturn.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\Sturn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BreakFall.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\06. BreakFall</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BlowAwayHit.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\BlowAwayHit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_UpperHit.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\UpperHit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_DownHit.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\DownHit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -679,6 +736,33 @@
     </ClCompile>
     <ClCompile Include="..\Private\EN131_Breath.cpp">
       <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_MoreMoreWeakHit.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\MoreMoreWeakHit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_MoreWeakHit.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\MoreWeakHit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_WeakHit.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\WeakHit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Sturn.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\Sturn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BlowAwayHit.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\BlowAwayHit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Dead.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\07. Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BreakFall.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\06. BreakFall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_UpperHit.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\UpperHit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_DownHit.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\DownHit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

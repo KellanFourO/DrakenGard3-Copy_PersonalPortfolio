@@ -48,6 +48,53 @@ HRESULT CEN01_Arrow::Initialize(void* pArg)
 	else
 		Initialize_Pos(vRealPos);
 	
+	
+	Init_Status(0.f, 10.f);
+
+	
+	_float fMaxHeight = 0.f;
+	_float fMaxTime = 0.f;
+
+	switch (m_eArrowType)
+	{
+	case Client::CEN01_Arrow::ARROW_PARABOLIC:
+		fMaxHeight = 5.f;
+		fMaxTime = 0.5f;
+		break;
+	
+	case Client::CEN01_Arrow::ARROW_C_PARABOLIC:
+		fMaxHeight = 7.f;
+		fMaxTime = 0.4f;
+		break;
+	
+	}
+
+	if (m_eArrowType == CEN01_Arrow::ARROW_PARABOLIC || m_eArrowType == CEN01_Arrow::ARROW_C_PARABOLIC)
+	{
+		_float fEndHeight = m_vTargetPos.y - m_vPrevPos.y;
+		_float fCalcHeight = fMaxHeight - m_vPrevPos.y;
+
+		_float fEndTime = 0.f;
+
+		_float fCalcGravity = 2 * fCalcHeight / (fMaxTime * fMaxTime);
+
+		_float fA, fB, fC;
+
+		m_vVelocity.y = sqrtf(2 * fCalcGravity * fCalcHeight);
+
+		fA = fCalcGravity;
+		fB = -2 * m_vVelocity.y;
+		fC = 2 * fEndHeight;
+
+		fEndTime = (-fB + sqrtf(fB * fB - 4 * fA * fC)) / (2 * fA);
+
+		m_vVelocity.x = -(m_vPrevPos.x - m_vTargetPos.x) / fEndTime;
+		m_vVelocity.z = -(m_vPrevPos.z - m_vTargetPos.z) / fEndTime;
+
+		m_fGravitionalConstant = fCalcGravity;
+		m_fLifeTime = fEndTime + 0.5f;
+
+	}
 
     return S_OK;
 }
@@ -62,21 +109,25 @@ void CEN01_Arrow::Tick(_float fTimeDelta)
 	{
 		case Client::CEN01_Arrow::ARROW_NORMAL:
 		{
+			m_tStatus.eAttackType = tagStatusDesc::NORMAL_ATTACK;
 			__super::Go_Straight(fTimeDelta);
 			break;
 		}
 		case Client::CEN01_Arrow::ARROW_PARABOLIC:
 		{
+			m_tStatus.eAttackType = tagStatusDesc::DOWN_ATTACK;
 			__super::Go_Parabolic(fTimeDelta);
 			break;
 		}
 		case Client::CEN01_Arrow::ARROW_C_NORMAL:
 		{
+			m_tStatus.eAttackType = tagStatusDesc::CHARGE_ATTACK;
 			__super::Go_Straight(fTimeDelta);
 			break;
 		}
 		case Client::CEN01_Arrow::ARROW_C_PARABOLIC:
 		{
+			m_tStatus.eAttackType = tagStatusDesc::DOWN_ATTACK;
 			__super::Go_Parabolic(fTimeDelta);
 			break;
 		}
@@ -124,6 +175,33 @@ void CEN01_Arrow::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, 
 
 void CEN01_Arrow::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
 {
+	if (RightTag == TEXT("Layer_Player") && bHit == false)
+	{
+		CRigidBody* pTargetBody = dynamic_cast<CRigidBody*>(pCollisionObject->Find_Component(TEXT("Com_RigidBody")));
+
+
+		
+
+		if (m_tStatus.eAttackType == tagStatusDesc::CHARGE_ATTACK)
+		{
+			_vector vLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
+
+			vLook.m128_f32[0] *= 100.f;
+			vLook.m128_f32[1] *= 0.f;
+			vLook.m128_f32[2] *= 100.f;
+
+			_float3 vForce;
+			XMStoreFloat3(&vForce, vLook);
+
+			pTargetBody->Add_Force(vForce, CRigidBody::FORCE_MODE::IMPULSE);
+		}
+
+		
+
+
+
+	}
+
 	__super::On_CollisionEnter(pCollisionObject, LeftTag, RightTag, bType, bHit);
 }
 

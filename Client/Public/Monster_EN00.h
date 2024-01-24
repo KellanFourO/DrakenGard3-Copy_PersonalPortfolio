@@ -37,6 +37,7 @@ public:
 	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit) override;
 	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit) override;
 
+	
 private:
 	HRESULT			Ready_Components();
 	HRESULT			Ready_PartObjects();

@@ -470,6 +470,8 @@ void CTransform::Go_Down(_float fTimeDelta, class CNavigation* pNavigation)
 	Set_State(STATE_POSITION, vPosition);
 }
 
+
+
 void CTransform::Turn(_fvector vAxis, _float fTimeDelta)
 {
 	//TODO 임의의축으로 회전하게 하는 함수이다.
@@ -486,11 +488,10 @@ void CTransform::Turn(_fvector vAxis, _float fTimeDelta)
 	Set_State(STATE_LOOK, XMVector3TransformNormal(vLook, RotationMatrix));
 }
 
-_float CTransform::CalculateAngleBetweenVectors(const _vector& v1, const _vector& v2)
-{
-	// 두 벡터 사이의 각도를 계산
-	return acos(XMVectorGetX(XMVector3Dot(XMVector3Normalize(v1), XMVector3Normalize(v2))));
-}
+
+
+
+
 
 void CTransform::Rotation(_fvector vAxis, _float fRadian)
 {
@@ -536,6 +537,39 @@ void CTransform::RotationOfCameraDir(_fvector vCamLook, _float fRadian)
 
 }
 
+_bool CTransform::TurnToTarget(const _fvector& vTargetPosition, _float fTimeDelta)
+{
+	_vector vCurrentPosition = Get_State(STATE_POSITION);
+	_vector vLook = Get_State(STATE_LOOK);
+
+	// 목표 위치와 현재 위치를 벡터로 표현
+	_vector vToTarget = vTargetPosition - vCurrentPosition;
+
+	// 목표 방향 벡터를 정규화
+	vToTarget = XMVector3Normalize(vToTarget);
+
+	// 현재 방향 벡터와 목표 방향 벡터 간의 각도를 계산
+	_float fDot = XMVectorGetX(XMVector3Dot(vLook, vToTarget));
+
+	// 각도가 일정 값 이내라면 이미 목표 지점을 향해 바라보고 있는 것으로 판단
+	if (fDot > 0.99f)
+	{
+		return true;
+	}
+
+	// 현재 방향과 목표 방향 벡터 간의 축을 계산wA
+	_vector vRotationAxis = XMVector3Normalize(XMVector3Cross(vLook, vToTarget));
+
+	// 회전 각도를 계산 (acos 함수를 이용하여 두 벡터 간의 각도를 계산)
+	_float fRotationAngle = acosf(fDot) * fTimeDelta;
+
+	
+	// 회전을 수행
+	Turn(vRotationAxis, fRotationAngle);
+
+	return false; // 아직 목표 지점을 향해 바라보고 있지 않음
+}
+
 
 void CTransform::Go_Target(_fvector vTargetPos, _float fTimeDelta, _float fSpare)
 {
@@ -563,16 +597,23 @@ void CTransform::Go_Target_Navi(_fvector vTargetPos, _float fTimeDelta, CNavigat
 
 	_float fDistance = XMVectorGetX(XMVector3Length(vDir));
 
-	
-
 	if (fDistance >= fSpare)
 		vPosition += XMVector3Normalize(vDir) * m_fSpeedPerSec * fTimeDelta;
 
-	_float3 vPos;
-	XMStoreFloat3(&vPos, vPosition);
+	if (nullptr != pNavigation)
+	{
+		if (false == pNavigation->isMove(vPosition))
+			return;
+		else
+		{
+			_float3 vPos;
+			XMStoreFloat3(&vPos, vPosition);
 
-	_float fY = pNavigation->Compute_Height(vPos);
-	XMVectorSetY(vPosition, fY);
+			_float fY = pNavigation->Compute_Height(vPos);
+
+			vPosition.m128_f32[1] = fY;
+		}
+	}
 
 	Look_At(vTargetPos);
 	Set_State(STATE_POSITION, vPosition);
@@ -653,14 +694,18 @@ void CTransform::Translate(const _float3& vTranslation, class CNavigation* pNavi
 		vPos = XMLoadFloat3(&vTranslation) + vPos;
 		
 		
+		
 		//Vec3 vTemp = vTranslation + Vec4(m_WorldMatrix.m[3]).xyz();
 
 		if (false == pNavigation->isMove(vPos))
 			return;
 
+		
+
 		_float3 vRealPos;
 		XMStoreFloat3(&vRealPos, vPos);
 
+		m_vTranslatePos = vRealPos;
 		
 		_float fY = pNavigation->Compute_Height(vRealPos);
 		

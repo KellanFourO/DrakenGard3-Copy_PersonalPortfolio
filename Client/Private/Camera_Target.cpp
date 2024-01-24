@@ -63,12 +63,6 @@ void CCamera_Target::Priority_Tick(_float fTimeDelta)
 void CCamera_Target::Tick(_float fTimeDelta)
 {
 	
-	
-	
-}
-
-void CCamera_Target::Late_Tick(_float fTimeDelta)
-{
 	if (m_pTarget != nullptr)
 	{
 
@@ -82,7 +76,7 @@ void CCamera_Target::Late_Tick(_float fTimeDelta)
 
 		if (eTargetLevel != LEVEL_TOOL)
 		{
-			
+
 
 			_vector vActualPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);  //! 이게 현재 위치
 			XMStoreFloat3(&m_vActualPos, vActualPos);
@@ -125,6 +119,12 @@ void CCamera_Target::Late_Tick(_float fTimeDelta)
 			__super::Tick(fTimeDelta);
 		}
 	}
+	
+}
+
+void CCamera_Target::Late_Tick(_float fTimeDelta)
+{
+	
 }
 
 void CCamera_Target::KeyInput(_float fTimeDelta)

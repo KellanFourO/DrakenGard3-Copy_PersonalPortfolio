@@ -45,7 +45,7 @@ HRESULT CMonsterPart_EN70_Weapon::Initialize(void* pArg)
 	/* For.Com_Collider */
 	CBoundingBox_OBB::BOUNDING_OBB_DESC BoundingDesc = {};
 
-	BoundingDesc.vExtents = _float3(0.3f, 0.5f, 0.3f);
+	BoundingDesc.vExtents = _float3(0.7f, 0.5f, 0.7f);
 	BoundingDesc.vCenter = _float3(0.f, 0.f, -0.6f);
 	BoundingDesc.vRotation = _float3(XMConvertToRadians(90.f), 0.f, 0.f);
 	BoundingDesc.ePartType = CBoundParent::PARTTYPE_BOUND::PART_WEAPON;

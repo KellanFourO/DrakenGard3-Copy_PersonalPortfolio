@@ -69,6 +69,8 @@ public:
 		);
 	}
 
+	_float3	Get_TranslatePos() { return m_vTranslatePos; }
+
 	_matrix Get_WorldMatrix()
 	{
 		return XMLoadFloat4x4(&m_WorldMatrix);
@@ -120,11 +122,15 @@ public:
 	void	Go_Backward(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
 	void	Go_Up(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
 	void	Go_Down(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
+	
+	
 
 	void	Turn(_fvector vAxis, _float fTimeDelta);
-	_float  CalculateAngleBetweenVectors(const _vector& v1, const _vector& v2);
+	_bool	AreVectorsAligned(const _fvector& v1, const _fvector& v2, _float fTolerance = 0.001f);
 	void	Rotation(_fvector vAxis, _float fRadian);
 	void	RotationOfCameraDir(_fvector vCamLook, _float fRadian);
+	_bool	TurnToTarget(const _fvector& vTargetPosition, _float fTimeDelta);
+	
 	
 
 	void	Go_Target(_fvector vTargetPos, _float fTimeDelta, _float fSpare = 0.1f);
@@ -157,6 +163,8 @@ public:
 private:
 	_float				m_fSpeedPerSec = { 0.0f };
 	_float				m_fRotationPerSec = { 0.0f };
+	
+	_float3				m_vTranslatePos = {};
 
 	_float4x4			m_WorldMatrix;
 

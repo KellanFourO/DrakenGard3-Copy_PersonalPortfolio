@@ -38,8 +38,14 @@ HRESULT CBullet::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+	CPlayer* pPlayer = dynamic_cast<CPlayer*>(m_pGameInstance->Get_Player(m_eCurrentLevelID));
 
 
+	
+	_vector vPlayerPos = pPlayer->Get_Transform()->Get_State(CTransform::STATE_POSITION);
+	vPlayerPos.m128_f32[1] += 1.f;
+	XMStoreFloat4(&m_vTargetPos, vPlayerPos);
+	
 	return S_OK;
 }
 
@@ -81,20 +87,41 @@ void CBullet::Go_Parabolic(_float fTimeDelta)
 {
 	m_fTimeAcc += fTimeDelta;
 
-	if (m_fTimeAcc >= m_fLookTime && true == m_bOneTick)
-	{
-		CPlayer* pPlayer = dynamic_cast<CPlayer*>(m_pGameInstance->Get_Player(m_eCurrentLevelID));
+	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 
-		_vector vPlayerPos = pPlayer->Get_Transform()->Get_State(CTransform::STATE_POSITION);
-		vPlayerPos.m128_f32[1] += 1.f;
+	vPos.m128_f32[0] = m_vPrevPos.x + m_vVelocity.x * m_fTimeAcc;
+	vPos.m128_f32[1] = m_vPrevPos.y + (m_vVelocity.y * m_fTimeAcc) - (0.5f * m_fGravitionalConstant * m_fTimeAcc * m_fTimeAcc);
+	vPos.m128_f32[2] = m_vPrevPos.z + m_vVelocity.z * m_fTimeAcc;
 
-		m_pTransformCom->Look_At(vPlayerPos);
+	m_pTransformCom->Look_At(XMLoadFloat4(&m_vTargetPos));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
 
-		m_fTimeAcc = 0.f;
-		m_bOneTick = false;
-	}
+	//m_pTransformCom->Go_Parabola(m_vVelocity, m_fGravitionalConstant, fTimeDelta);
 
-	m_pTransformCom->Go_Straight(fTimeDelta);
+
+	//m_fTimeAcc += fTimeDelta;
+	
+
+	//if (m_fTimeAcc >= m_fLookTime && true == m_bOneTick)
+	//{
+	//	CPlayer* pPlayer = dynamic_cast<CPlayer*>(m_pGameInstance->Get_Player(m_eCurrentLevelID));
+	//
+	//	_vector vPlayerPos = pPlayer->Get_Transform()->Get_State(CTransform::STATE_POSITION);
+	//	vPlayerPos.m128_f32[1] += 1.f;
+	//
+	//	m_pTransformCom->Look_At(vPlayerPos);
+	//
+	//
+	//	m_fTimeAcc = 0.f;
+	//	m_bOneTick = false;
+	//}
+	
+	
+	//_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	//vPos.m128_f32[1] += m_fGravitionalConstant * fTimeDelta;
+	//
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
+	//m_pTransformCom->Go_Straight(fTimeDelta);
 }
 
 void CBullet::Dead_Range(_float fRange)
@@ -130,6 +157,15 @@ void CBullet::Initialize_Pos(_fvector vIntializePos)
 	vPlayerPos.m128_f32[1] += 1.f;
 	m_pTransformCom->Look_At(vPlayerPos);
 }
+
+void CBullet::Init_Status(_float fMaxHp, _float fDmg)
+{
+	m_tStatus.fMaxHp = fMaxHp;
+	m_tStatus.fDmg = fDmg;
+
+	m_tOriginStatus = m_tStatus;
+}
+
 
 void CBullet::Free()
 {

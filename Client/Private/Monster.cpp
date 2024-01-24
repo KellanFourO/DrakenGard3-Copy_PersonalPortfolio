@@ -2,6 +2,9 @@
 #include "Monster.h"
 #include "GameInstance.h"
 #include "Player.h"
+#include "Model.h"
+#include "Animation.h"
+#include "PartObject.h"
 
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice,pContext)
@@ -64,6 +67,56 @@ void CMonster::Init_Desc()
 {
 }
 
+void CMonster::Init_Status(_float fMaxHp, _float fDmg)
+{
+	m_tStatus.fMaxHp = fMaxHp;
+	m_tStatus.fDmg = fDmg;
+	m_tStatus.eAttackType = tagStatusDesc::ATTACKTYPE_END;
+	m_tOriginStatus = m_tStatus;
+
+}
+
+
+_float4 CMonster::Create_RandomPosition(_float3 vCurrentPosition, _float fMinDistance, _float fMaxDistance)
+{
+	std::mt19937 generator(static_cast<unsigned int>(std::time(0))); // 난수 생성기 초기화
+	std::uniform_real_distribution<float> distribution(0.0f, 1.0f); // 0.0에서 1.0 사이의 균일 분포
+
+	// 랜덤한 방향과 거리 생성
+	float randomAngle = 2.0f * XM_PI * distribution(generator); // 0에서 2*pi 사이의 랜덤한 각도
+	float randomDistance = fMinDistance + (fMaxDistance - fMinDistance) * distribution(generator);
+	float randomZ = fMinDistance + (fMaxDistance - fMinDistance) * distribution(generator); 
+
+	// 랜덤한 위치 생성
+	XMFLOAT4 randomPosition;
+	randomPosition.x = vCurrentPosition.x + randomDistance * cosf(randomAngle);
+	randomPosition.y = vCurrentPosition.y;
+	randomPosition.z = vCurrentPosition.z + randomZ;
+	randomPosition.w = 1.f;
+
+	return randomPosition;
+	
+}
+
+_bool CMonster::Is_CurrentAnimEnd()
+{
+	return m_pModelCom->Get_CurrentAnimation()->Get_Finished();
+	
+}
+
+void CMonster::Set_AnimSpeed(_float fSpeed)
+{
+	m_pModelCom->Set_AnimationSpeed(fSpeed);
+}
+
+CCollider* CMonster::Get_WeaponCollider()
+{
+	
+
+	return dynamic_cast<CCollider*>(Find_PartObject(TEXT("Part_Weapon"))->Find_Component(TEXT("Com_Collider")));
+
+}
+
 void CMonster::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
 {
 	
@@ -79,12 +132,21 @@ void CMonster::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag
 	{
 		if (typeid(*pCollisionObject) == typeid(CPlayer))
 		{
+			
 			Blackboard::Ptr pBlackBoard = m_pBehaviorTree->getBlackboard();
-			pBlackBoard->setBool("Is_Hit", true);
-			_float fHp = pBlackBoard->getFloat("Current_HP");
-			fHp -= 50.f;
+			
+			_float fCurrentHp = pBlackBoard->getFloat("Current_HP");
+			_float fCalcHp = fCurrentHp - 50.f;
 
-			pBlackBoard->setFloat("Current_HP", fHp);
+			if (fCalcHp <= 0)
+			{
+				pBlackBoard->setBool("Is_Dead", true);
+			}
+			else
+				pBlackBoard->setBool("Is_Hit", true);
+				
+
+			pBlackBoard->setFloat("Current_HP", fCalcHp);
 		}
 	}
 

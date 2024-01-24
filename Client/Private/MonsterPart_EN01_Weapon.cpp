@@ -161,7 +161,7 @@ CGameObject* CMonsterPart_EN01_Weapon::CreateChargeNormalArrow()
 	Desc.fRange = 30.f;
 	XMStoreFloat4(&Desc.vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
 	Desc.OwnerWorldMatrix = m_WorldMatrix;
-	Desc.fSpeedPerSec = 20.f;
+	Desc.fSpeedPerSec = 25.f;
 	Desc.fRotationPerSec = XMConvertToRadians(150.f);
 	Desc.eArrowType = CEN01_Arrow::ARROW_C_NORMAL;
 

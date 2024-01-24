@@ -34,6 +34,21 @@ public:
 	virtual void		Write_Json(json& Out_Json);
 	virtual void		Load_FromJson(const json& In_Json);
 	virtual void		Init_Desc();
+	virtual void		Init_Status(_float fMaxHp, _float fDmg);
+
+	_float				Get_CurrentHpRatio() { return m_pBehaviorTree->getBlackboard()->getFloat("Current_HP") / m_pBehaviorTree->getBlackboard()->getFloat("Max_HP"); } ;
+	_float3				Get_TargetPosition() { return m_pBehaviorTree->getBlackboard()->getFloat3("TargetPosition"); }
+	_float3				Get_MyPosition() { return m_pBehaviorTree->getBlackboard()->getFloat3("MyPosition"); }
+	_float3				Get_DashPosition() { return m_pBehaviorTree->getBlackboard()->getFloat3("DashRushTargetPosition"); }
+	_float3				Get_EscapePosition() { return m_pBehaviorTree->getBlackboard()->getFloat3("EscapePosition"); }
+	_float4				Create_RandomPosition(_float3 vCurrentPosition, _float fMinDistance, _float fMaxDistance);
+	_bool				Is_CurrentAnimEnd();
+	void				Set_AnimSpeed(_float fSpeed);
+	void				Reset_AnimSpeed() { m_pModelCom->Set_AnimationSpeed(1.5f);}
+
+	_float				Get_Dmg() { return m_tStatus.fDmg; }
+	STATUS_DESC::ATTACKTYPE Get_AttackType() { return m_tStatus.eAttackType;}
+	CCollider* Get_WeaponCollider();
 
 public:
 	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit) override; // call on collising
@@ -56,6 +71,8 @@ protected:
 	CNavigation*						m_pNavigationCom = { nullptr };
 	shared_ptr<Node>					m_pBehaviorTree = { nullptr };
 
+	STATUS_DESC							m_tStatus = {};
+	STATUS_DESC							m_tOriginStatus = {};
 private:
 	//STATE_LINK_MONSTER_DESC      m_tLinkStateDesc;
 
