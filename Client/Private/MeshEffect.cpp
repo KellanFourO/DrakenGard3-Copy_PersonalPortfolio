@@ -26,10 +26,25 @@ HRESULT CMeshEffect::Initialize(void* pArg)
 {
 	CMeshEffect::MESH_EFFECTDESC Desc = {};
 	
-	if (nullptr != pArg)
+	if (nullptr == pArg)
 		return E_FAIL;
 
 	Desc = *(MESH_EFFECTDESC*)pArg;
+
+	//typedef struct tagMesh_EffectDesc : public CGameObject::GAMEOBJECT_DESC
+	//{
+	//	wstring	strModelTag;
+	//	_uint	iShaderPassIndex;
+	//	_float3 vCenter;
+	//	_float  fRange;
+	//	_float2 vSpeed;
+	//	_float2 vScale;
+	//	_float3 vRotation;
+	//	_float4	vColor;
+	//	_float2 vLifeTime;
+	//	_float	fAge;
+	//
+	//}MESH_EFFECTDESC;
 
 	m_strModelTag = Desc.strModelTag;
 	m_iShaderPassIndex = Desc.iShaderPassIndex;
@@ -37,6 +52,11 @@ HRESULT CMeshEffect::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+	_vector vPos = XMLoadFloat3(&Desc.vCenter);
+	vPos.m128_f32[3] = 1.f;
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
+	m_fLifeTime = Desc.vLifeTime.y;
 	//m_pTransformCom->Set_WorldFloat4x4(m_WorldMatrix);
 
 	if (FAILED(Ready_Components()))
@@ -56,6 +76,11 @@ void CMeshEffect::Priority_Tick(_float fTimeDelta)
 
 void CMeshEffect::Tick(_float fTimeDelta)
 {
+
+	m_fAge += fTimeDelta;
+
+	if(m_fAge >= m_fLifeTime)
+		Set_Dead();
 }
 
 void CMeshEffect::Late_Tick(_float fTimeDelta)
@@ -74,6 +99,7 @@ HRESULT CMeshEffect::Render()
 	for (size_t i = 0; i < iNumMeshes; i++)
 	{
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
 
 		m_pShaderCom->Begin(0);
 

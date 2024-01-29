@@ -30,10 +30,12 @@ HRESULT CParticle_Object::Initialize_Prototype(LEVEL eLevel)
 
 HRESULT CParticle_Object::Initialize(void* pArg)
 {	
+	m_tParticleDesc = *(PARTICLE_DESC*)pArg;
+
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 	
-	m_tParticleDesc = *(PARTICLE_DESC*)pArg;
+	
 
 	if (FAILED(Ready_Components(pArg)))
 		return E_FAIL;
@@ -53,7 +55,7 @@ void CParticle_Object::Priority_Tick(_float fTimeDelta)
 
 void CParticle_Object::Tick(_float fTimeDelta)
 {
-	if(true ==m_bParticleStart)
+	//if(true == m_bParticleStart)
 	 m_pVIBufferCom->Update(fTimeDelta);
 
 
@@ -92,6 +94,7 @@ HRESULT CParticle_Object::Ready_Components(void* pArg)
 	CVIBuffer_Particle_Point::PARTICLE_POINT_DESC ParticleDesc = *(CVIBuffer_Particle_Point::PARTICLE_POINT_DESC*)pArg;
 
 	/* For.Com_VIBuffer */
+	ParticleDesc.iNumInstance = m_tParticleDesc.iNumInstance;
 	ParticleDesc.vCenter = m_tParticleDesc.vCenter;
 	ParticleDesc.fRange = m_tParticleDesc.fRange;
 	ParticleDesc.vScale = m_tParticleDesc.vScale;
@@ -100,6 +103,10 @@ HRESULT CParticle_Object::Ready_Components(void* pArg)
 	ParticleDesc.vLifeTime = m_tParticleDesc.vLifeTime;
 	ParticleDesc.fAge = m_tParticleDesc.fAge;
 	ParticleDesc.vColor = m_tParticleDesc.vColor;
+	ParticleDesc.bRandom = m_tParticleDesc.bRandom;
+	ParticleDesc.vDir = m_tParticleDesc.vDir;
+	ParticleDesc.vRandomRotation = m_tParticleDesc.vRandomRotation;
+	ParticleDesc.vInterval = m_tParticleDesc.vInterval;
 	//!ParticleDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	//!ParticleDesc.fRange = 3.f;
 	//!ParticleDesc.vScale = _float2(0.2f, 0.5f);

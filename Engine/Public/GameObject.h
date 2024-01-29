@@ -37,6 +37,7 @@ public:
 	_bool					Is_Player() { return m_isPlayer; }
 	_bool					Is_Dead()	{ return m_isDead; }
 	void					Set_Move(_bool bMove) { m_bMove = bMove; }
+	void					Set_Dead() { m_isDead = true; }
 	void					Die(_float fLifeTime) { m_fLifeTime = fLifeTime; m_isDead = true; }
 	void					Set_CellIndex(_int iCellIndex ) { m_iCellIndex = iCellIndex; }
 

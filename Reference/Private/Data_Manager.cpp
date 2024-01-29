@@ -46,6 +46,18 @@ HRESULT CData_Manager::Add_ModelTag(const wstring& strModelTag)
 	return S_OK;
 }
 
+HRESULT CData_Manager::Add_ParticleTextureTag(const wstring& strTextureTag)
+{
+	auto iter = find(m_vecParticleTextureTags.begin(), m_vecParticleTextureTags.end(), strTextureTag);
+
+	if (iter != m_vecParticleTextureTags.end())
+		return E_FAIL;
+
+	m_vecParticleTextureTags.push_back(strTextureTag);
+
+	return S_OK;
+}
+
 HRESULT CData_Manager::Add_EffectTexutreTag(const wstring& strTextureTag)
 {
 	auto iter = find(m_vecEffectTextureTags.begin(), m_vecEffectTextureTags.end(), strTextureTag);
@@ -104,10 +116,12 @@ CData_Manager* CData_Manager::Create()
 void CData_Manager::Free()
 {
 	//Safe_Delete(m_vecTags);
+	
 
 	for (auto& pModelData : m_ModelDatas)
 	{
-		Safe_Delete(pModelData.second);
+		if(nullptr != pModelData.second)
+			Safe_Delete(pModelData.second);
 	}
 
 	m_ModelDatas.clear();

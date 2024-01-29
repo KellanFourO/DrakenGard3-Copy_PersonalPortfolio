@@ -8,6 +8,7 @@ class ENGINE_DLL CVIBuffer_Instancing abstract : public CVIBuffer
 public:
 	typedef struct  
 	{
+		_uint		iNumInstance;
 		_float3		vCenter;
 		_float		fRange;
 		_float2		vSpeed;
@@ -16,6 +17,13 @@ public:
 		_float4		vColor;
 		_float2		vLifeTime;
 		_float		fAge;
+		_float4     vDir = { 1.f, 0.f, 0.f, 0.f };
+		_float3		vInterval = { 1.f, 1.f, 1.f };
+
+		_float2		vRandomRotation = {};
+		
+
+		_bool		bRandom = true;
 	}INSTANCING_DESC;
 
 protected:
@@ -45,6 +53,7 @@ protected:
 	_float*						m_pLifeTimes = { nullptr }; //! 위와 마찬가지로 라이프타임
 	INSTANCING_DESC				m_InstancingDesc;			//! 구조체 멤버변수
 	_float						m_fAge = { 0.0f };		//! 타임 누적을 위한 어큐멀레이션
+	_float3						m_vInterval = {};
 
 public:
 	virtual CComponent* Clone(void* pArg) = 0;

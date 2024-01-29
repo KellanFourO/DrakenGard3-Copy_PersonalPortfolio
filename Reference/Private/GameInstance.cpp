@@ -387,13 +387,22 @@ vector<wstring>& CGameInstance::Get_ModelTags()
 	return m_pData_Manager->Get_ModelTags();
 }
 
-HRESULT CGameInstance::Add_EffectTexutreTag(const wstring& strTextureTag)
+HRESULT CGameInstance::Add_ParticleTextureTag(const wstring& strTextureTag)
 {
 	if (nullptr == m_pData_Manager)
 		return E_FAIL;
 
+	return m_pData_Manager->Add_ParticleTextureTag(strTextureTag);
+}
+
+HRESULT CGameInstance::Add_EffectTextureTag(const wstring& strTextureTag)
+{
+	if(nullptr == m_pData_Manager)
+		return E_FAIL;
+
 	return m_pData_Manager->Add_EffectTexutreTag(strTextureTag);
 }
+
 
 HRESULT CGameInstance::Add_EffectMeshTag(const wstring& strMeshModelTag)
 {
@@ -403,7 +412,15 @@ HRESULT CGameInstance::Add_EffectMeshTag(const wstring& strMeshModelTag)
 	return m_pData_Manager->Add_EffectMeshTag(strMeshModelTag);
 }
 
-vector<wstring>& CGameInstance::Get_EffectTextureTags()
+vector<wstring>& CGameInstance::Get_ParticleTags()
+{
+	if (nullptr == m_pData_Manager)
+		return vector<wstring>();
+
+	return m_pData_Manager->Get_ParticleTextureTags();
+}
+
+vector<wstring>& CGameInstance::Get_EffectTags()
 {
 	if (nullptr == m_pData_Manager)
 		return vector<wstring>();

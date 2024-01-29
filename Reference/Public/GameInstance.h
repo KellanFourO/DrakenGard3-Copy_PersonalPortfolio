@@ -76,9 +76,11 @@ public: /* For.Data_Manager */
 	HRESULT					   Add_ModelTag(const wstring & strModelTag);
 	vector<wstring>&		   Get_ModelTags();
 
-	HRESULT						Add_EffectTexutreTag(const wstring & strTextureTag);
+	HRESULT						Add_ParticleTextureTag(const wstring & strTextureTag);
+	HRESULT						Add_EffectTextureTag(const wstring & strTextureTag);
 	HRESULT						Add_EffectMeshTag(const wstring & strMeshModelTag);
-	vector<wstring>&			Get_EffectTextureTags();
+	vector<wstring>&			Get_ParticleTags();
+	vector<wstring>&			Get_EffectTags();
 	vector<wstring>&			Get_EffectMeshTags();
 
 	HRESULT						Add_ModelData(const wstring & strModelDataTag, MODELDATA* ModelData);

@@ -18,6 +18,7 @@ public:
 	{
 		wstring strTextureTag;
 		_int	iShaderPathIndex;
+		_uint	iNumInstance;
 		_float3 vCenter;
 		_float	fRange;
 		_float2 vSpeed;
@@ -25,6 +26,10 @@ public:
 		_float3 vRotation;
 		_float4 vColor;
 		_float2 vLifeTime;
+		_float4 vDir = { 1.f, 0.f, 0.f, 0.f };
+		_bool	bRandom = true;
+		_float2	vRandomRotation = {};
+		_float3	vInterval = { 1.f, 1.f, 1.f };
 		_float fAge;
 	}PARTICLE_DESC;
 

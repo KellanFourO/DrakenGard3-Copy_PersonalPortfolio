@@ -15,17 +15,26 @@ HRESULT CVIBuffer_Particle_Rect::Initialize_Prototype(_uint iNumInstance)
 {
 
 
+
+
+	return S_OK;
+}
+
+HRESULT CVIBuffer_Particle_Rect::Initialize(void* pArg)
+{
+	PARTICLE_RECT_DESC Desc = *(PARTICLE_RECT_DESC*)pArg;
+
 	m_iNumVertexBuffers = 2;
 	m_iNumVertices = 4;
 	m_iStride = sizeof(VTXPOSTEX);
 	m_iInstanceStride = sizeof(VTXINSTANCE);
 	m_iIndexCountPerInstance = 6;
-	m_iNumInstance = iNumInstance;
+	m_iNumInstance = Desc.iNumInstance;
 
 	m_pSpeeds = new _float[m_iNumInstance];
 	m_pLifeTimes = new _float[m_iNumInstance];
 
-	m_iNumIndices = 6 * iNumInstance;
+	m_iNumIndices = 6 * m_iNumInstance;
 	m_iIndexStride = 2;
 	m_eIndexFormat = m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
 	m_eTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -100,12 +109,6 @@ HRESULT CVIBuffer_Particle_Rect::Initialize_Prototype(_uint iNumInstance)
 
 #pragma endregion
 
-
-	return S_OK;
-}
-
-HRESULT CVIBuffer_Particle_Rect::Initialize(void* pArg)
-{
 	/* 인스턴스용 버퍼를 생성한다. */
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;

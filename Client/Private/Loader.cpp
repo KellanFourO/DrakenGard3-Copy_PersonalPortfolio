@@ -127,21 +127,21 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
 		return E_FAIL;
 
-	m_pGameInstance->Add_EffectTexutreTag(TEXT("Prototype_Component_Texture_Snow"));
+	m_pGameInstance->Add_ParticleTextureTag(TEXT("Prototype_Component_Texture_Snow"));
 
 	/* For.Prototype_Component_Texture_Explosion */
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Explosion"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Explosion/Explosion%d.png"), 90))))
 		return E_FAIL;
 
-	m_pGameInstance->Add_EffectTexutreTag(TEXT("Prototype_Component_Texture_Explosion"));
+	m_pGameInstance->Add_EffectTextureTag(TEXT("Prototype_Component_Texture_Explosion"));
 
 	/* For.Prototype_Component_Texture_Explosion */
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_BornFire"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/BornFire/BornFire.dds")))))
 		return E_FAIL;
 
-	m_pGameInstance->Add_EffectTexutreTag(TEXT("Prototype_Component_Texture_BornFire"));
+	m_pGameInstance->Add_EffectTextureTag(TEXT("Prototype_Component_Texture_BornFire"));
 
 	lstrcpy(m_szLoadingText, TEXT("모델를(을) 로드하는 중입니다."));
 
@@ -609,7 +609,7 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	lstrcpy(m_szLoadingText, TEXT("이펙트 원형(을) 로드하는 중입니다."));
 	
 	////!Prototype_Component_Model_Monster_EN01_Weapon_Arrow
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	PivotMatrix = XMMatrixIdentity();//XMMatrixScaling(0.1f, 0.1f, 0.1f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Effect_Hanabira"),
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Hanabira"), pFilePathData), PivotMatrix)));
 

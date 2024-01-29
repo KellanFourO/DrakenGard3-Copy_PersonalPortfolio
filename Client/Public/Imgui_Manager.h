@@ -247,39 +247,76 @@ private: //TODO ¿Ã∆Â∆Æ ≈¯
 	void					Create_Effect_Mode_Tick();
 		void					Mesh_Effect_Mode_Tick();
 		void					Texture_Effect_Mode_Tick();
+		void					Particle_Mode_Tick();
 
 	void					Delete_Effect_Mode_Tick();
-	
+		void					Mesh_Effect_Delete_Tick();
+		void					Texture_Effect_Delete_Tick();
+		void					Particle_Delete_Tick();
+
 	void					Select_Effect_ModeTick();
+		void					Mesh_Effect_Select_Tick();
+		void					Texture_Effect_Select_Tick();
+		void					Particle_Select_Tick();
+
+
+	void					SaveMeshEffect(string strPath, string strFileName);
+	void					SaveTextureEffect(string strPath, string strFileName);
+	void					SaveParticleEffect(string strPath, string strFileName);
+
+	void					LoadMeshEffect(string strPath, string strFileName);
+	void					LoadTextureEffect(string strPath, string strFileName);
+	void					LoadParticleEffect(string strPath, string strFileName);
+
+	void					ClearMeshEffect();
+	void					ClearTextureEffect();
+	void					ClearParticleEffect();
 
 private:
 	_int						m_iEffectToolMode = { 0 };
 	_int						m_iEffectCreateMode = { 0 };
-	_int						m_iSelectEffectTagIndex = 0;	
-	_int						m_iSelectEffectIndex = 0;
 
-	class CGameObject*			m_pEffectSelectObject = { nullptr };
 	vector<string>				m_vecMeshEffectTags;
-	vector<string>				m_vecTextureEffectTags;
-	_bool						m_bEffectShowListBox = true;
-
-	vector<class CGameObject*>  m_vecCreateEffects;
-	vector<string>				m_vecCreateEffectTags;
-	
 	vector<class CGameObject*>  m_vecCreateMeshEffects;
 	vector<string>				m_vecCreateMeshEffectTags;
+	_int						m_iSelectMeshEffectTagIndex = 0;	
+	_int						m_iSelectMeshEffectIndex = 0;
+	class CGameObject*			m_pMeshEffectSelectObject = { nullptr };
+
+	vector<string>				m_vecTextureEffectTags;
+	vector<class CGameObject*>  m_vecCreateTextureEffects;
+	vector<string>				m_vecCreateTextureEffectTags;
+	_int						m_iSelectTextureEffectTagIndex = 0;
+	_int						m_iSelectTextureEffectIndex = 0;
+	class CGameObject*			m_pTextureEffectSelectObject = { nullptr };
+	
+	vector<string>				m_vecParticleTags;
+	vector<class CGameObject*>  m_vecCreateParticles;
+	vector<string>				m_vecCreateParticleTags;
+	_int						m_iSelectParticleTagIndex = 0;
+	_int						m_iSelectParticleIndex = 0;
+	class CGameObject*			m_pParticleSelectObject = { nullptr };
+
+	
+	_bool						m_bEffectShowListBox = true;
 
 private:
+	_int						m_iEffectShaderPassIndex = 0;
 	_int						m_iParticleShaderPathIndex = 0;
 	_float						m_fParticleRange = 3.f;
 	
 
+	_bool						m_bParticleRandom = true;
+	_int						m_iParticleCreateNum = { 1 };
 	_float						m_vParticleCenter[3] = {};
 	_float						m_vParticleSpeed[2] = {0.1f, 1.f};
 	_float						m_vParticleScale[2] = {0.2f, 0.5f};
 	_float						m_vParticleRotation[3] = {};
+	_float						m_vParticleRandomRotation[2] = {};
+	_float						m_vParticleDir[3] = {};
 	_float						m_vParticleColor[4] = {1.f, 0.f, 0.f, 1.f};
 	_float						m_vParticleLifeTime[2] = { 0.5f, 3.0f};
+	_float						m_vParticleInterval[3] = {};
 	
 
 

@@ -5,12 +5,23 @@ BEGIN(Client)
 
 class CMeshEffect final : public CNonAnimObject
 {
+
+	
+
 public:
 	typedef struct tagMesh_EffectDesc : public CGameObject::GAMEOBJECT_DESC
 	{
-		_float4 vPos = { 0.f, 0.f, 0.f, 0.f };
 		wstring	strModelTag;
 		_uint	iShaderPassIndex;
+		_float3 vCenter;
+		_float  fRange;
+		_float2 vSpeed;
+		_float2 vScale;
+		_float3 vRotation;
+		_float4	vColor;
+		_float2 vLifeTime;
+		_float	fAge;
+	
 	}MESH_EFFECTDESC;
 
 private:
@@ -34,6 +45,7 @@ private:
 private:
 	wstring				m_strModelTag = TEXT("");
 	_uint				m_iShaderPassIndex = 0;
+	_float				m_fAge = 0.f;
 	
 
 public:

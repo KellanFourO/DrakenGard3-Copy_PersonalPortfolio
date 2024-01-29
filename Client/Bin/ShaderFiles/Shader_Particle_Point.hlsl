@@ -4,6 +4,7 @@ matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_Texture;
 vector g_vCamPosition;
 
+
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -118,13 +119,31 @@ PS_OUT PS_MAIN(PS_IN In)
 
     if (Out.vColor.a < 0.8f)
         discard;
-
-    Out.vColor.rgb = float3(1.f, 0.f, 0.f);
+    
+    //Out.vColor.rgb = float3(1.f, 0.f, 0.f);
 
     Out.vColor.a = In.vColor.a;
 
     return Out;
 }
+
+PS_OUT PS_VertexColor(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+	/* 첫번째 인자의 방식으로 두번째 인자의 위치에 있는 픽셀의 색을 얻어온다. */
+    Out.vColor = g_Texture.Sample(PointSampler, In.vTexcoord);
+
+    if (Out.vColor.a < 0.8f)
+        discard;
+    
+    Out.vColor.rgb = In.vColor.rgb;
+
+    Out.vColor.a = In.vColor.a;
+
+    return Out;
+}
+
 
 
 technique11 DefaultTechnique
@@ -141,5 +160,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN();
+    }
+
+    pass ParticleColorSelect
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend_Add, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+		/* 렌더스테이츠 */
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_VertexColor();
     }
 }
