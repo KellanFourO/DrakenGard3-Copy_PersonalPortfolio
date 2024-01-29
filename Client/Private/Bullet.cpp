@@ -70,8 +70,12 @@ void CBullet::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstr
 
 void CBullet::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
 {
-	m_fLifeTime = 0.f;
-	Die(m_fLifeTime);
+	if (true == m_bHitDead)
+	{
+		m_fLifeTime = 0.f;
+		Die(m_fLifeTime);
+	}
+	
 }
 
 void CBullet::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)

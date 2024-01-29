@@ -83,18 +83,6 @@ void CAIState_Base::KeepEye(CGameObject* pTarget)
 
 	vPosition += XMVector3Normalize(vRight) * blackboard->getFloat("Speed") * blackboard->GetTimeDelta();
 
-	CNavigation* pNavigation = blackboard->GetNavigation();
-
-	if (nullptr != pNavigation)
-	{
-
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-	}
 	pTransform->Look_At(vTargetPos);
 	pTransform->Set_State(CTransform::STATE_POSITION, vPosition);
 }

@@ -9,6 +9,7 @@
 #include "Collision_Manager.h"
 #include "Target_Manager.h"
 #include "Light_Manager.h"
+#include "Event_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -79,6 +80,10 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInstance, 
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
 
+	m_pEvent_Manager = CEvent_Manager::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pEvent_Manager)
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -107,8 +112,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	m_pCollision_Manager->Update_CollisionMgr(m_pLevel_Manager->Get_CurrentLevelIndex(), fTimeDelta);
 
 	m_pLevel_Manager->Tick(fTimeDelta);
-
 	
+	m_pEvent_Manager->Tick(fTimeDelta);
 
 }
 
@@ -124,6 +129,7 @@ HRESULT CGameInstance::Render_Engine()
 
 #ifdef _DEBUG
 	m_pLevel_Manager->Render();
+	m_pEvent_Manager->Render_Events();
 #endif
 
 	m_pInput_Device->LateTick();
@@ -379,6 +385,52 @@ vector<wstring>& CGameInstance::Get_ModelTags()
 		return vector<wstring>();
 
 	return m_pData_Manager->Get_ModelTags();
+}
+
+HRESULT CGameInstance::Add_EffectTexutreTag(const wstring& strTextureTag)
+{
+	if (nullptr == m_pData_Manager)
+		return E_FAIL;
+
+	return m_pData_Manager->Add_EffectTexutreTag(strTextureTag);
+}
+
+HRESULT CGameInstance::Add_EffectMeshTag(const wstring& strMeshModelTag)
+{
+	if (nullptr == m_pData_Manager)
+		return E_FAIL;
+
+	return m_pData_Manager->Add_EffectMeshTag(strMeshModelTag);
+}
+
+vector<wstring>& CGameInstance::Get_EffectTextureTags()
+{
+	if (nullptr == m_pData_Manager)
+		return vector<wstring>();
+
+	return m_pData_Manager->Get_EffectTextureTags();
+}
+
+vector<wstring>& CGameInstance::Get_EffectMeshTags()
+{
+	if (nullptr == m_pData_Manager)
+		return vector<wstring>();
+
+	return m_pData_Manager->Get_EffectMeshTags();
+}
+
+HRESULT CGameInstance::Add_ModelData(const wstring& strModelDataTag, MODELDATA* ModelData)
+{
+	if (nullptr == m_pData_Manager)
+		return E_FAIL;
+
+	return m_pData_Manager->Add_ModelData(strModelDataTag, ModelData);
+}
+
+MODELDATA* CGameInstance::Get_ModelData_InKey(const wstring& strModelDataTag)
+{
+
+	return m_pData_Manager->Get_ModelData_InKey(strModelDataTag);
 }
 
 HRESULT CGameInstance::Add_RenderGroup(CRenderer::RENDERGROUP eGroupID, CGameObject* pGameObject)
@@ -646,9 +698,26 @@ HRESULT CGameInstance::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer
 	return m_pLight_Manager->Render(pShader, pVIBuffer);
 }
 
+HRESULT CGameInstance::Add_Event(const wstring& strAddEventTag, class CMyEvent* pEvent,  void* pDesc)
+{
+	if (nullptr == m_pEvent_Manager)
+		return E_FAIL;
+
+	return m_pEvent_Manager->Add_Event(strAddEventTag, pEvent, pDesc);
+}
+
+HRESULT CGameInstance::Erase_Event(const wstring& strEraseEventTag)
+{
+	if (nullptr == m_pEvent_Manager)
+		return E_FAIL;
+
+	return m_pEvent_Manager->Erase_Event(strEraseEventTag);
+}
+
 
 void CGameInstance::Release_Manager()
 {
+	Safe_Release(m_pEvent_Manager);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pCollision_Manager);
@@ -660,6 +729,7 @@ void CGameInstance::Release_Manager()
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pData_Manager);
 	Safe_Release(m_pRenderer);
+	
 
 	Safe_Release(m_pInput_Device);
 	Safe_Release(m_pGraphic_Device);

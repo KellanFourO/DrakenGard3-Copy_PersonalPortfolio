@@ -318,7 +318,7 @@ _int CNavigation::Get_SelectRangeCellIndex(class CGameObject* pTargetObject)
 
 
 
-_float CNavigation::Compute_Height(_float3 vPosition)
+_float CNavigation::Compute_Height(_float3 vPosition, _Out_ _bool* pGround)
 {
     _vector vPlane = {};
     
@@ -343,8 +343,15 @@ _float CNavigation::Compute_Height(_float3 vPosition)
     _float fY = vPosition.y;
     _float fZ = vPosition.z;
 
+    _float height = (-fA * fX) - (fC * fZ) - fD;
 
-    return (-fA * fX) - (fC * fZ) - fD;
+    if (pGround != nullptr)
+    {
+        // 플레이어의 Y값을 기준으로 땅에 있다고 판단
+        *pGround = (fY <= height);
+    }
+
+    return height;
     
 }
 

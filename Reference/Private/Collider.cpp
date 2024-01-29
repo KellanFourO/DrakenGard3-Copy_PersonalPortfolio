@@ -120,7 +120,14 @@ HRESULT CCollider::Render()
 
 	m_pEffect->Apply(m_pContext);
 
-	m_pBounding->Render(m_pBatch, m_isCollision == true ? XMVectorSet(1.f, 0.f, 0.f, 1.f) : XMVectorSet(0.f, 1.f, 0.f, 1.f));
+	if (true == m_bOnCollider || true == m_isAttackBody)
+		m_pBounding->Render(m_pBatch, XMVectorSet(1.f, 0.f, 0.f, 1.f));
+		
+	else
+		m_pBounding->Render(m_pBatch, XMVectorSet(0.f, 1.f, 0.f, 1.f));
+
+
+	
 
 	m_pBatch->End();
 

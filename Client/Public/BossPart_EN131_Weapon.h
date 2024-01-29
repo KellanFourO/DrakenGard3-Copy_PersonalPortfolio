@@ -27,7 +27,7 @@ public:
 	CCollider* Get_Collider() { return m_pColliderCom; }
 
 public:
-	CGameObject* CreateBreath();
+	CGameObject* CreateBreath(_fvector vTargetPos);
 	
 
 public:

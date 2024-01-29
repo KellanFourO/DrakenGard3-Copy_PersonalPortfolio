@@ -24,7 +24,8 @@ HRESULT CEN131_Breath::Initialize_Prototype(LEVEL eLevel)
 
 HRESULT CEN131_Breath::Initialize(void* pArg)
 {
-	
+	CEN131_Breath::EN131_BREATHDESC Desc = {};
+	Desc = *(EN131_BREATHDESC*)pArg;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -35,10 +36,37 @@ HRESULT CEN131_Breath::Initialize(void* pArg)
 	_float4 vPos = { m_OwnerWorldMatrix.m[3][0], m_OwnerWorldMatrix.m[3][1], m_OwnerWorldMatrix.m[3][2], 1.f };
 	_vector vRealPos = XMLoadFloat4(&vPos);
 
+	XMStoreFloat4(&m_vPrevPos, vRealPos);
+	m_vPrevPos.w = 1.f;
+	_float3 vOwnerLook; 
+	vOwnerLook = { Desc.vLook.x, Desc.vLook.y , Desc.vLook.z };
 	
-	__super::Initialize_Pos(vRealPos);
+	//vOwnerLook.y *= 0.5f;
+
+	switch (Desc.eBreathType)
+	{
+		case CEN131_Breath::BREATH_LEFT:
+			vOwnerLook = m_pTransformCom->Get_RotateDir(vOwnerLook, -15.f);
+			break;
+		
+		case  CEN131_Breath::BREATH_RIGHT:
+			vOwnerLook = m_pTransformCom->Get_RotateDir(vOwnerLook, 15.f);
+			break;
+	}
+
 	
+
+	m_pTransformCom->Look_At_Dir(vOwnerLook);
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&m_vPrevPos));
+	//m_pTransformCom->Look_At(XMLoadFloat4(&Desc.vTargetPos));
 	
+	Init_Status(0.f, 50.f);
+	m_tStatus.eAttackType = tagStatusDesc::NORMAL_ATTACK;
+	m_pColliderCom->OnAccCollider(1.f);
+	//__super::Initialize_Pos(vRealPos);
+	
+	m_fLifeTime = 5.f;
 
     return S_OK;
 }
@@ -49,9 +77,15 @@ void CEN131_Breath::Priority_Tick(_float fTimeDelta)
 
 void CEN131_Breath::Tick(_float fTimeDelta)
 {
-	
+	m_fTimeAcc += fTimeDelta;
+
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
 	
+	if (m_fTimeAcc >= m_fLifeTime)
+	{
+		m_fLifeTime = 0.2f;
+		Die(m_fLifeTime);
+	}
 }
 
 void CEN131_Breath::Late_Tick(_float fTimeDelta)
@@ -66,17 +100,8 @@ HRESULT CEN131_Breath::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-	for (size_t i = 0; i < iNumMeshes; i++)
-	{
-		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-
+	
 		m_pShaderCom->Begin(0);
-
-
-		m_pModelCom->Render(i);
-	}
 
 #ifdef _DEBUG
 
@@ -126,24 +151,26 @@ HRESULT CEN131_Breath::Ready_Components()
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		return E_FAIL;
 
-	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Model_Monster_EN01_Weapon_Arrow"),
-		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
-		return E_FAIL;
-
 	/* For.Com_Collider */
-	CBoundingBox_Sphere::BOUNDING_SPHERE_DESC		BoundingDesc = {};
-	BoundingDesc.fRadius = 0.5f;
-	BoundingDesc.vCenter = _float3(0.f, 0.f, -0.6f);
+	CBoundingBox_OBB::BOUNDING_OBB_DESC BoundingDesc = {};
+
+	BoundingDesc.vExtents = _float3(1.8f, 1.f, 10.f);
+	BoundingDesc.vCenter = _float3(0.f, 0.f, 13.f);
+	BoundingDesc.vRotation = _float3(XMConvertToRadians(0.f), 0.f, 0.f);
 	BoundingDesc.ePartType = CBoundParent::PARTTYPE_BOUND::PART_WEAPON;
 
-	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Collider_Sphere"),
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Collider_OBB"),
 		TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
 		return E_FAIL;
+
+
+
 
 	m_pColliderCom->OnCollider();
 
 	m_vecColliders.push_back(m_pColliderCom);
+	
+	m_bHitDead = false;
 	
     return S_OK;
 }

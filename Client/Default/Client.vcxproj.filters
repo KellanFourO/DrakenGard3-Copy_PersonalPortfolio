@@ -232,6 +232,18 @@
     <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\DownHit">
       <UniqueIdentifier>{7f741fc4-2629-4d9c-8456-368a2bc3dba2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. Events">
+      <UniqueIdentifier>{c42fdd2f-cb26-41c2-9851-95eff8017e2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\08. Depress">
+      <UniqueIdentifier>{2200bc61-8d1a-4017-87cf-953dc7bbf871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\01. BornFire">
+      <UniqueIdentifier>{3d33932e-efda-4f40-9b31-d1c4daa77b25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\MeshEffect">
+      <UniqueIdentifier>{08068fcf-356f-46fd-aef3-d8de766dd44f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -519,6 +531,27 @@
     <ClInclude Include="..\Public\PlayerState_DownHit.h">
       <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\DownHit</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BossPart_EN131_SwingTail.h">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Event_Boss1Apeear.h">
+      <Filter>03. Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Depress.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\08. Depress</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Environment_BornFire.h">
+      <Filter>02. GameObjects\98. NonAnimObject\01. BornFire</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_BornFire.h">
+      <Filter>02. GameObjects\05. Effects\Explosion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Particle_Object.h">
+      <Filter>02. GameObjects\05. Effects\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MeshEffect.h">
+      <Filter>02. GameObjects\05. Effects\MeshEffect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -763,6 +796,27 @@
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_DownHit.cpp">
       <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\DownHit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BossPart_EN131_SwingTail.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Event_Boss1Apeear.cpp">
+      <Filter>03. Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Depress.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\08. Depress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_BornFire.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\01. BornFire</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_BornFire.cpp">
+      <Filter>02. GameObjects\05. Effects\Explosion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Particle_Object.cpp">
+      <Filter>02. GameObjects\05. Effects\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MeshEffect.cpp">
+      <Filter>02. GameObjects\05. Effects\MeshEffect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

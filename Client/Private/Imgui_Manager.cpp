@@ -21,6 +21,8 @@
 #include "Cell.h"
 
 
+
+
 #include <regex>
 #include <codecvt>
 #include <filesystem>
@@ -28,6 +30,7 @@
 #include <fstream>
 //#include "NonAnimObject.h"
 #include "Environment_Object.h"
+#include "Particle_Object.h"
 #include "../../Reference/Public/Delaunator/delaunator.hpp"
 
 ImGuiIO g_io;
@@ -65,7 +68,7 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 	ImGuiFileDialog_Intialize();	//! Imgui 파일다이얼로그 초기화
 
 	Ready_ProtoTagList();			//! 오브젝트 프로토태그 리스트 준
-
+	Ready_EffectTagList();
 	//m_pNavigation = dynamic_cast<CNavigation*>(m_pGameInstance->Clone_Component(LEVEL_TOOL, TEXT("Prototype_Component_Navigation"), nullptr));
 
 	
@@ -90,6 +93,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		ImGui_ObjectToolTick();
 
 		ImGui_NaviToolTick();
+
+		Imgui_EffectToolTick();
 
 
 		ShowDialog(m_eToolID);
@@ -2770,6 +2775,321 @@ void CImgui_Manager::LoadCells()
 		m_vecCellIndexs.push_back(to_string(m_vecCells[i]->Get_Index()));
 	}
 
+}
+
+HRESULT CImgui_Manager::Ready_EffectTagList()
+{
+	vector<wstring> EffectTextureTags = m_pGameInstance->Get_EffectTextureTags();
+
+	for (auto& strTextureTag : EffectTextureTags)
+	{
+		m_vecTextureEffectTags.push_back(ConvertWstrToStr(strTextureTag));
+	}
+
+
+	vector<wstring> EffectMeshTags = m_pGameInstance->Get_EffectMeshTags();
+
+	for (auto& strMeshTag : EffectMeshTags)
+	{
+		m_vecMeshEffectTags.push_back(ConvertWstrToStr(strMeshTag));
+	}
+
+	return S_OK;
+}
+
+void CImgui_Manager::Imgui_EffectToolTick()
+{
+	if (ImGui::BeginTabItem(u8"이펙트"))
+	{
+		m_eToolID = CImgui_Manager::TOOL_EFFECT;
+
+		if (ImGui::Button(u8"저장하기")) { m_eDialogMode = CImgui_Manager::DIALOG_SAVE; OpenDialog(m_eToolID); } ImGui::SameLine(); if (ImGui::Button(u8"불러오기")) { m_eDialogMode = CImgui_Manager::DIALOG_LOAD; OpenDialog(m_eToolID); }
+
+		ImGui::RadioButton(u8"만들기", &m_iEffectToolMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"선택", &m_iEffectToolMode, 1);  ImGui::SameLine(); ImGui::RadioButton(u8"삭제", &m_iEffectToolMode, 2);
+
+
+		if (m_iEffectToolMode == 0)
+		{
+			Create_Effect_Mode_Tick();
+		}
+
+		else if (m_iEffectToolMode == 1)
+		{
+			Delete_Effect_Mode_Tick();
+		}
+
+		else if (m_iEffectToolMode == 2)
+		{
+			Select_Effect_ModeTick();
+		}
+
+		ImGui::EndTabItem();
+	}
+}
+
+void CImgui_Manager::Create_Effect_Mode_Tick()
+{
+	ImGui::RadioButton(u8"메쉬", &m_iEffectCreateMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"렉트", &m_iEffectCreateMode, 1);
+	
+	ImGui::NewLine();
+
+	ImGui::Checkbox(u8"리스트 숨기기", &m_bEffectShowListBox);
+
+	ImGui::Separator();
+	if (m_iEffectCreateMode == 0)
+		Mesh_Effect_Mode_Tick();
+	else if(m_iEffectCreateMode == 1)
+		Texture_Effect_Mode_Tick();
+
+	
+	
+
+
+	
+}
+
+void CImgui_Manager::Mesh_Effect_Mode_Tick()
+{
+	if (true == m_bEffectShowListBox)
+	{
+		_int iMeshTagSize = m_vecMeshEffectTags.size();
+
+		if (ImGui::BeginListBox(u8"메쉬 태그 리스트"))
+		{
+			for (_uint i = 0; i < iMeshTagSize; ++i)
+			{
+				const _bool isSelected = (m_iSelectEffectTagIndex == i);
+
+				if (ImGui::Selectable(m_vecMeshEffectTags[i].c_str(), isSelected))
+				{
+					m_iSelectEffectTagIndex = i;
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndListBox();
+		}
+	}
+
+	//! 이펙트메쉬에게 필요한 것은 무엇일까. 우선 인스턴싱이 필요할 걳것 같다.
+
+
+	ImGui::InputInt(u8"ShaderPass", &m_iParticleShaderPathIndex);
+	ImGui::InputFloat(u8"Range", &m_fParticleRange);
+	ImGui::InputFloat3(u8"Center", m_vParticleCenter);
+	ImGui::InputFloat2(u8"Speed", m_vParticleSpeed);
+	ImGui::InputFloat2(u8"Scale", m_vParticleScale);
+	ImGui::InputFloat3(u8"Rotation", m_vParticleRotation);
+	ImGui::InputFloat4(u8"Color", m_vParticleColor);
+	ImGui::InputFloat2(u8"LifeTime", m_vParticleLifeTime);
+
+
+
+
+	if (ImGui::Button(u8"생성"))
+	{
+		CParticle_Object::PARTICLE_DESC RectPaticleDesc;
+
+		RectPaticleDesc.iShaderPathIndex = m_iParticleShaderPathIndex;
+		RectPaticleDesc.fRange = m_fParticleRange;
+		RectPaticleDesc.vCenter = { m_vParticleCenter[0], m_vParticleCenter[1], m_vParticleCenter[2] };
+		RectPaticleDesc.vSpeed = { m_vParticleSpeed[0], m_vParticleSpeed[1] };
+		RectPaticleDesc.vScale = { m_vParticleScale[0], m_vParticleScale[1] };
+		RectPaticleDesc.vRotation = { m_vParticleRotation[0], m_vParticleRotation[1], m_vParticleRotation[2] };
+		RectPaticleDesc.vColor = { m_vParticleColor[0], m_vParticleColor[1], m_vParticleColor[2], m_vParticleColor[3] };
+		RectPaticleDesc.vLifeTime = { m_vParticleLifeTime[0], m_vParticleLifeTime[1] };
+
+		RectPaticleDesc.strTextureTag = ConvertStrToWstr(m_vecTextureEffectTags[m_iSelectEffectTagIndex]);
+
+		wstring wstrObejctTag = TEXT("Prototype_GameObject_Particle_Object");
+		wstring wstrLayerTag = TEXT("Layer_Effect");
+
+		CGameObject* pGameObject = { nullptr };
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObejctTag, &RectPaticleDesc, &pGameObject)))
+			MSG_BOX("이펙트 생성 실패");
+
+		m_vecCreateEffects.push_back(pGameObject);
+		m_pEffectSelectObject = pGameObject;
+
+		// 			CParticle_Object::Desc;
+		// 			Desc.iLevelIndex = LEVEL_TOOL;
+		// 			Desc.strModelTag = ConvertStrToWstr(m_vecModelTags[m_iSelectTagIndex]);
+		// 
+		// 			wstr = TEXT("Prototype_GameObject_Environment");
+		// 
+		// 			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &Desc, reinterpret_cast<CGameObject**>(&pGameObject))))
+		// 				return;
+		// 
+		// 			SliceTag = m_vecModelTags[m_iSelectTagIndex];
+		// 			IndexTag = "@" + to_string(m_vecNonAnimObjects.size() + 1);
+		// 			SliceTag = SliceTag + IndexTag;
+		// 
+		// 			m_vecCreateNonAnimObjectTags.push_back(SliceTag);
+		// 			m_vecCreateNonAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
+		// 			m_vecNonAnimObjects.push_back(pGameObject);
+	}
+}
+
+void CImgui_Manager::Texture_Effect_Mode_Tick()
+{
+	if (true == m_bEffectShowListBox)
+	{
+		_int iTextureTagSize = m_vecTextureEffectTags.size();
+
+		if (ImGui::BeginListBox(u8"텍스처 태그 리스트"))
+		{
+			for (_uint i = 0; i < iTextureTagSize; ++i)
+			{
+				const _bool isSelected = (m_iSelectEffectTagIndex == i);
+
+				if (ImGui::Selectable(m_vecTextureEffectTags[i].c_str(), isSelected))
+				{
+					m_iSelectEffectTagIndex = i;
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndListBox();
+		}
+	}
+
+	ImGui::InputInt(u8"ShaderPass", &m_iParticleShaderPathIndex);
+	ImGui::InputFloat(u8"Range", &m_fParticleRange);
+	ImGui::InputFloat3(u8"Center", m_vParticleCenter);
+	ImGui::InputFloat2(u8"Speed", m_vParticleSpeed);
+	ImGui::InputFloat2(u8"Scale", m_vParticleScale);
+	ImGui::InputFloat3(u8"Rotation", m_vParticleRotation);
+	ImGui::InputFloat4(u8"Color", m_vParticleColor);
+	ImGui::InputFloat2(u8"LifeTime", m_vParticleLifeTime);
+
+	
+	
+
+		if (ImGui::Button(u8"생성"))
+		{
+			CParticle_Object::PARTICLE_DESC RectPaticleDesc;
+
+			RectPaticleDesc.iShaderPathIndex = m_iParticleShaderPathIndex;
+			RectPaticleDesc.fRange = m_fParticleRange;
+			RectPaticleDesc.vCenter = { m_vParticleCenter[0], m_vParticleCenter[1], m_vParticleCenter[2] };
+			RectPaticleDesc.vSpeed = { m_vParticleSpeed[0], m_vParticleSpeed[1]};
+			RectPaticleDesc.vScale = { m_vParticleScale[0], m_vParticleScale[1] };
+			RectPaticleDesc.vRotation = { m_vParticleRotation[0], m_vParticleRotation[1], m_vParticleRotation[2] };
+			RectPaticleDesc.vColor = { m_vParticleColor[0], m_vParticleColor[1], m_vParticleColor[2], m_vParticleColor[3] };
+			RectPaticleDesc.vLifeTime = { m_vParticleLifeTime[0], m_vParticleLifeTime[1] };
+
+			RectPaticleDesc.strTextureTag = ConvertStrToWstr(m_vecTextureEffectTags[m_iSelectEffectTagIndex]);
+
+			wstring wstrObejctTag = TEXT("Prototype_GameObject_Particle_Object");
+			wstring wstrLayerTag = TEXT("Layer_Effect");
+
+			CGameObject* pGameObject = {nullptr};
+
+			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObejctTag, &RectPaticleDesc, &pGameObject)))
+					MSG_BOX("이펙트 생성 실패");
+
+			m_vecCreateEffects.push_back(pGameObject);
+			m_pEffectSelectObject = pGameObject;
+
+			// 			CParticle_Object::Desc;
+			// 			Desc.iLevelIndex = LEVEL_TOOL;
+			// 			Desc.strModelTag = ConvertStrToWstr(m_vecModelTags[m_iSelectTagIndex]);
+			// 
+			// 			wstr = TEXT("Prototype_GameObject_Environment");
+			// 
+			// 			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &Desc, reinterpret_cast<CGameObject**>(&pGameObject))))
+			// 				return;
+			// 
+			// 			SliceTag = m_vecModelTags[m_iSelectTagIndex];
+			// 			IndexTag = "@" + to_string(m_vecNonAnimObjects.size() + 1);
+			// 			SliceTag = SliceTag + IndexTag;
+			// 
+			// 			m_vecCreateNonAnimObjectTags.push_back(SliceTag);
+			// 			m_vecCreateNonAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
+			// 			m_vecNonAnimObjects.push_back(pGameObject);
+		}
+}
+
+void CImgui_Manager::Delete_Effect_Mode_Tick()
+{
+
+	ImGui::InputInt(u8"삭제할 이펙트오브젝트 인덱스 : ", &m_iSelectEffectIndex);
+
+	_int iObjectListSize = m_vecCreateEffects.size();;
+
+		if (ImGui::BeginListBox(u8""))
+		{
+			for (_int i = 0; i < iObjectListSize; ++i)
+			{
+				const _bool isSelected = (m_iSelectEffectIndex == i);
+
+				if (ImGui::Selectable(m_vecCreateEffectTags[i].c_str(), isSelected))
+				{
+					m_pEffectSelectObject = m_vecCreateEffects[i];
+					m_iSelectEffectIndex = i;
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndListBox();
+		}
+	
+		if (ImGui::Button(u8"삭제") && m_iSelectEffectIndex >= 0)
+		{
+
+				if (m_iSelectEffectIndex < static_cast<int>(m_vecCreateEffectTags.size()) && m_iSelectEffectIndex < static_cast<int>(m_vecCreateEffects.size()))
+				{
+					// 해당 인덱스의 요소를 동시에 삭제
+					m_vecCreateEffectTags.erase(m_vecCreateEffectTags.begin() + m_iSelectEffectIndex);
+					m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, TEXT("Layer_Effect"), m_vecCreateEffects[m_iSelectEffectIndex]);
+					m_vecCreateEffects.erase(m_vecCreateEffects.begin() + m_iSelectEffectIndex);
+				}
+				else
+				{
+					// 인덱스가 범위를 벗어날 경우 처리
+					ImGui::Text(u8"인덱스가 범위를 벗어납니다.");
+				}
+
+				m_pEffectSelectObject = nullptr;
+				m_iSelectEffectIndex = 0;
+				m_iSelectEffectTagIndex = 0;
+		}
+		else
+		{
+			// 음수일 경우 처리
+			ImGui::Text(u8"올바른 인덱스 값을 입력하세요.");
+		}
+}
+
+void CImgui_Manager::Select_Effect_ModeTick()
+{
+	ImGui::InputInt(u8"선택할 이펙트오브젝트 인덱스 : ", &m_iSelectEffectIndex);
+
+	_int iObjectListSize = m_vecCreateEffects.size();;
+
+	if (ImGui::BeginListBox(u8""))
+	{
+		for (_int i = 0; i < iObjectListSize; ++i)
+		{
+			const _bool isSelected = (m_iSelectEffectIndex == i);
+
+			if (ImGui::Selectable(m_vecCreateEffectTags[i].c_str(), isSelected))
+			{
+				m_pEffectSelectObject = m_vecCreateEffects[i];
+				m_iSelectEffectIndex = i;
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+		}
+
+		ImGui::EndListBox();
+	}
 }
 
 wstring CImgui_Manager::SliceObjectTag(const wstring& strObjectTag)

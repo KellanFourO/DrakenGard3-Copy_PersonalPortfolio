@@ -17,15 +17,13 @@ public:
 
 	virtual void	Tick(const _float& fTimeDelta) override;
 
-private:
-	_bool			m_bLookAtCamLook = false;
-
-private:
-	virtual void	KeyInput(const _float& fTimeDelta) override;
 
 public:
 	static CPlayerState_Sturn* Create(CPlayer* pPlayer);
 	virtual void Free() override;
+
+private:
+	_bool		m_bSturn[2] = { false, false };
 };
 
 END

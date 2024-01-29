@@ -14,6 +14,7 @@
 #include "AnimObjects.h"
 #include "NonAnimObjects.h"
 
+
 #include <process.h> //! 스레드를 사용하기위한 헤더 추가
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -126,14 +127,25 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
 		return E_FAIL;
 
+	m_pGameInstance->Add_EffectTexutreTag(TEXT("Prototype_Component_Texture_Snow"));
+
 	/* For.Prototype_Component_Texture_Explosion */
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Explosion"),
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Explosion"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Explosion/Explosion%d.png"), 90))))
 		return E_FAIL;
 
+	m_pGameInstance->Add_EffectTexutreTag(TEXT("Prototype_Component_Texture_Explosion"));
+
+	/* For.Prototype_Component_Texture_Explosion */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_BornFire"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/BornFire/BornFire.dds")))))
+		return E_FAIL;
+
+	m_pGameInstance->Add_EffectTexutreTag(TEXT("Prototype_Component_Texture_BornFire"));
+
 	lstrcpy(m_szLoadingText, TEXT("모델를(을) 로드하는 중입니다."));
 
-	CModel::ModelData* pFilePathData = new CModel::ModelData;
+	Engine::MODELDATA* pFilePathData = new Engine::MODELDATA;
 	
 	_matrix PivotMatrix; //#모델_초기행렬 
 	PivotMatrix = XMMatrixIdentity();
@@ -388,7 +400,7 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("WoodSet"), pFilePathData), PivotMatrix), true));
 	
 
-	Safe_Delete(pFilePathData);
+	/*Safe_Delete(pFilePathData);*/
 	
 	//!For.Prototype_Component_VIBuffer_Cube #큐브_Add_ProtoType
 		if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Cube"),
@@ -555,6 +567,15 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CBossPart_EN131_Weapon::Create(m_pDevice, m_pContext, eLevel), true)))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_PartObject_Boss_EN131_SwingTail"),
+		CBossPart_EN131_SwingTail::Create(m_pDevice, m_pContext, eLevel), true)))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_EN131_Breath"),
+		CEN131_Breath::Create(m_pDevice, m_pContext, eLevel), true)))
+		return E_FAIL;
+
+	
 	lstrcpy(m_szLoadingText, TEXT("지형 원형(을) 로드하는 중입니다."));
 
 	/* For.Protytype_GameObject_SkyBox */
@@ -582,9 +603,19 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CDynamic_Terrain::Create(m_pDevice, m_pContext, eLevel))))
 		return E_FAIL;
 
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment"), CEnvironment_Object::Create(m_pDevice, m_pContext, eLevel)));
+	
 
 	lstrcpy(m_szLoadingText, TEXT("이펙트 원형(을) 로드하는 중입니다."));
-	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment"), CEnvironment_Object::Create(m_pDevice,m_pContext, eLevel)));
+	
+	////!Prototype_Component_Model_Monster_EN01_Weapon_Arrow
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Effect_Hanabira"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Hanabira"), pFilePathData), PivotMatrix)));
+
+	m_pGameInstance->Add_EffectMeshTag(TEXT("Prototype_Component_Model_Effect_Hanabira"));
+
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_MeshEffect"), CMeshEffect::Create(m_pDevice, m_pContext, eLevel)));
 
 	/* For.Prototype_GameObject_Particle_Blue */
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Particle_Blue"),
@@ -596,9 +627,18 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CParticle_Red::Create(m_pDevice, m_pContext, eLevel))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_Particle_Red */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Particle_Object"),
+		CParticle_Object::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+
 	/* For.Prototype_GameObject_Effect_Explosion */
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_Explosion"),
 		CEffect_Explosion::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_BornFire"),
+		CEffect_BornFire::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 
@@ -677,7 +717,7 @@ HRESULT CLoader::Loading_For_Tool_Level()
 	return Loading_For_Level(LEVEL_TOOL);
 }
 
-CModel::ModelData* CLoader::CreateDataPath(wstring strModelName, CModel::ModelData* pModelData, _bool bHitAnim)
+Engine::MODELDATA* CLoader::CreateDataPath(wstring strModelName, Engine::MODELDATA* pModelData, _bool bHitAnim)
 {
 	wstring strDataPath = TEXT("../Bin/Resources/Models/") + strModelName + TEXT("/");
 	wstring strBoneEXT = TEXT(".bone");
@@ -697,6 +737,10 @@ CModel::ModelData* CLoader::CreateDataPath(wstring strModelName, CModel::ModelDa
 		pModelData->strHitAnimationDataPath = strDataPath + strModelName + strHitAnimationEXT;
 	}
 
+	
+
+	m_pGameInstance->Add_ModelData(strModelName, pModelData);
+		 
 	return pModelData;
 }
 

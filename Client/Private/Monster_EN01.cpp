@@ -194,21 +194,21 @@ void CMonster_EN01::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag
 {
 	__super::On_Collision(pCollisionObject, LeftTag, RightTag, vCollisionPos, bType, bHit);
 
-	if (RightTag == TEXT("Layer_Player"))
-	{
-		_float magnitude = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCollisionPos)));
+	//fif (RightTag == TEXT("Layer_Player"))
+	//f{
+	//f	_float magnitude = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCollisionPos)));
+	//f
+	//f
+	//f	_vector vLook = pCollisionObject->Get_Transform()->Get_State(CTransform::STATE_LOOK);
+	//f	_vector vForceDir = vLook * magnitude;
+	//f
+	//f	_float3 vCalcPos;
+	//f	XMStoreFloat3(&vCalcPos, vForceDir);
+	//f
+	//f	m_pRigidBodyCom->Add_Force(vCalcPos, CRigidBody::FORCE_MODE::FORCE);
+	//f}
 
-
-		_vector vLook = pCollisionObject->Get_Transform()->Get_State(CTransform::STATE_LOOK);
-		_vector vForceDir = vLook * magnitude;
-
-		_float3 vCalcPos;
-		XMStoreFloat3(&vCalcPos, vForceDir);
-
-		m_pRigidBodyCom->Add_Force(vCalcPos, CRigidBody::FORCE_MODE::FORCE);
-	}
-
-	if (RightTag == TEXT("Layer_Monster"))
+	if (RightTag == TEXT("Layer_Monster") && false == bHit)
 	{
 		_float magnitude = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCollisionPos)));
 

@@ -15,6 +15,8 @@ private:
 public:
 	_uint	Get_MaterialIndex() const { return m_iMaterialIndex; }
 
+
+
 public:
 	virtual HRESULT Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, _int iNumFace, vector<VTXANIMMESH>& Vertices, vector<FACEINDICES32>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<_float4x4>& vecOffsetMatrix, vector<class CBone*> Bones);
 	virtual HRESULT Initialize_Prototype(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, string strName, _int iNumFace, vector<VTXMESH>& Vertices, vector<FACEINDICES32>& Indices, _uint iMaterialIndex, vector<_int>& BoneIndices, vector<_float4x4>& vecOffsetMatrix, _matrix PivotMatrix);

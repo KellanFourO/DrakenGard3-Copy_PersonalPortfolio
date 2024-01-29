@@ -200,6 +200,7 @@
     <ClInclude Include="..\public\AITask_Base.h" />
     <ClInclude Include="..\public\AnimObject.h" />
     <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\BossPart_EN131_SwingTail.h" />
     <ClInclude Include="..\Public\BossPart_EN131_Weapon.h" />
     <ClInclude Include="..\Public\Boss_EN131.h" />
     <ClInclude Include="..\Public\Bullet.h" />
@@ -209,14 +210,18 @@
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\CustomDialogFont.h" />
     <ClInclude Include="..\public\Dynamic_Terrain.h" />
+    <ClInclude Include="..\Public\Effect_BornFire.h" />
     <ClInclude Include="..\Public\Effect_Explosion.h" />
     <ClInclude Include="..\public\EN01_Arrow.h" />
     <ClInclude Include="..\Public\EN131_Breath.h" />
     <ClInclude Include="..\Public\Environment_Barricade.h" />
+    <ClInclude Include="..\Public\Environment_BornFire.h" />
     <ClInclude Include="..\Public\Environment_BrokenBarricade.h" />
     <ClInclude Include="..\public\Environment_Object.h" />
+    <ClInclude Include="..\Public\Event_Boss1Apeear.h" />
     <ClInclude Include="..\Public\Field.h" />
     <ClInclude Include="..\Public\Imgui_Manager.h" />
+    <ClInclude Include="..\Public\MeshEffect.h" />
     <ClInclude Include="..\Public\MonsterPart_EN00_Weapon.h" />
     <ClInclude Include="..\Public\MonsterPart_EN01_Weapon.h" />
     <ClInclude Include="..\Public\MonsterPart_EN70_Weapon.h" />
@@ -224,6 +229,7 @@
     <ClInclude Include="..\Public\Monster_EN01.h" />
     <ClInclude Include="..\Public\Monster_EN70.h" />
     <ClInclude Include="..\Public\Particle_Blue.h" />
+    <ClInclude Include="..\Public\Particle_Object.h" />
     <ClInclude Include="..\Public\Particle_Red.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\PlayerGroundStates.h" />
@@ -245,6 +251,7 @@
     <ClInclude Include="..\Public\PlayerState_DashLeft.h" />
     <ClInclude Include="..\Public\PlayerState_DashRight.h" />
     <ClInclude Include="..\Public\PlayerState_Dead.h" />
+    <ClInclude Include="..\Public\PlayerState_Depress.h" />
     <ClInclude Include="..\Public\PlayerState_DownHit.h" />
     <ClInclude Include="..\Public\PlayerState_Idle.h" />
     <ClInclude Include="..\Public\PlayerState_Jump.h" />
@@ -291,6 +298,7 @@
     <ClCompile Include="..\Private\AITask_Base.cpp" />
     <ClCompile Include="..\Private\AnimObject.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\BossPart_EN131_SwingTail.cpp" />
     <ClCompile Include="..\Private\BossPart_EN131_Weapon.cpp" />
     <ClCompile Include="..\Private\Boss_EN131.cpp" />
     <ClCompile Include="..\Private\Bullet.cpp" />
@@ -299,14 +307,18 @@
     <ClCompile Include="..\Private\Camera_Target.cpp" />
     <ClCompile Include="..\Private\CustomDialogFont.cpp" />
     <ClCompile Include="..\Private\Dynamic_Terrain.cpp" />
+    <ClCompile Include="..\Private\Effect_BornFire.cpp" />
     <ClCompile Include="..\Private\Effect_Explosion.cpp" />
     <ClCompile Include="..\Private\EN01_Arrow.cpp" />
     <ClCompile Include="..\Private\EN131_Breath.cpp" />
     <ClCompile Include="..\Private\Environment_Barricade.cpp" />
+    <ClCompile Include="..\Private\Environment_BornFire.cpp" />
     <ClCompile Include="..\Private\Environment_BrokenBarricade.cpp" />
     <ClCompile Include="..\private\Environment_Object.cpp" />
+    <ClCompile Include="..\Private\Event_Boss1Apeear.cpp" />
     <ClCompile Include="..\Private\Field.cpp" />
     <ClCompile Include="..\Private\Imgui_Manager.cpp" />
+    <ClCompile Include="..\Private\MeshEffect.cpp" />
     <ClCompile Include="..\Private\MonsterPart_EN00_Weapon.cpp" />
     <ClCompile Include="..\Private\MonsterPart_EN01_Weapon.cpp" />
     <ClCompile Include="..\Private\MonsterPart_EN70_Weapon.cpp" />
@@ -314,6 +326,7 @@
     <ClCompile Include="..\Private\Monster_EN01.cpp" />
     <ClCompile Include="..\Private\Monster_EN70.cpp" />
     <ClCompile Include="..\Private\Particle_Blue.cpp" />
+    <ClCompile Include="..\Private\Particle_Object.cpp" />
     <ClCompile Include="..\Private\Particle_Red.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\PlayerPart_Body.cpp" />
@@ -334,6 +347,7 @@
     <ClCompile Include="..\Private\PlayerState_DashLeft.cpp" />
     <ClCompile Include="..\Private\PlayerState_DashRight.cpp" />
     <ClCompile Include="..\Private\PlayerState_Dead.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Depress.cpp" />
     <ClCompile Include="..\Private\PlayerState_DownHit.cpp" />
     <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
     <ClCompile Include="..\Private\PlayerState_Jump.cpp" />

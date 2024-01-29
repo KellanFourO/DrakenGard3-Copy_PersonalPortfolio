@@ -3,6 +3,7 @@
 matrix			g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D		g_DiffuseTexture;
 texture2D		g_NormalTexture;
+texture2D		g_SpecularTexture;
 matrix			g_BoneMatrices[256]; 
 
 
@@ -80,6 +81,7 @@ struct PS_OUT
     float4 vDiffuse : SV_TARGET0;
     float4 vNormal : SV_TARGET1;
     float4 vDepth : SV_TARGET2;
+    
 };
 
 /* ÇÈ¼¿¼ÎÀÌ´õ : ÇÈ¼¿ÀÇ »ö!!!! À» °áÁ¤ÇÑ´Ù. */
@@ -89,9 +91,10 @@ PS_OUT PS_MAIN(PS_IN In)
 
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
     vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, In.vTexcoord);
+    vector vSpecularColor = g_SpecularTexture.Sample(LinearSampler, In.vTexcoord);
 	
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
-
+	
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz, In.vNormal.xyz);
 
     vNormal = mul(vNormal, WorldMatrix);
@@ -100,6 +103,9 @@ PS_OUT PS_MAIN(PS_IN In)
         discard;
 
     Out.vDiffuse = vMtrlDiffuse;
+    //Out.vDiffuse.rgb = lerp(Out.vDiffuse.rgb, Out.vDiffuse.rgb + vSpecularColor, vSpecularColor.a);
+	 //+ vSpecularColor;
+	
 
 	/* -1 ~ 1 -> 0 ~ 1 */
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);

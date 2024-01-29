@@ -19,6 +19,8 @@ public:
 	void			Set_PointY(POINT ePoint, _float fY);
 	const _float3*  Get_Points() { return m_vPoints; }
 
+	_float			Get_Height(const _float3& vPosition);
+
 	const _float3*	Get_Normal(LINE eLine) const { return &m_vPoints[eLine]; }
 	const _float3*	Get_Normals() { return m_vNormals; }
 

@@ -9,8 +9,13 @@ END
 
 BEGIN(Client)
 
+
 class CBoss_EN131 final : public CMonster
 {
+private:
+	enum HEAD_COLLIDER { LEFT, CENTER, RIGHT, HEAD_COLLIDER_END };
+	enum TAIL_COLLIDER { STING, SWING, TAIL_COLLIDER_END };
+
 private:
 	CBoss_EN131(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CBoss_EN131(const CBoss_EN131& rhs);
@@ -18,6 +23,14 @@ private:
 
 public:
 	CPartObject* Find_PartObject(const wstring& strPartTag);
+	_bool		Get_Appear() { return m_bAppear; }
+	void		Start_Appear() { m_bStart = true;}
+	
+
+private:
+	CCollider* Get_HeadCollider(HEAD_COLLIDER eHeadType);
+	CCollider* Get_TailCollider(TAIL_COLLIDER eTailType);
+	
 
 public:
 	virtual HRESULT Initialize_Prototype(LEVEL eLevel) override;
@@ -41,16 +54,30 @@ private:
 	HRESULT			Ready_Components();
 	HRESULT			Ready_PartObjects();
 	virtual HRESULT	Ready_BehaviorTree_V2() override;
-
 	HRESULT			Add_PartObject(const wstring& strPrototypeTag, const wstring& strPartTag, void* pArg);
 	
 	HRESULT			Bind_ShaderResources();
 
-public:
-	void			NormalShot();
-	void			ParabolicShot();
-	void			ChargeNormalShot();
-	void			ChargeParabolicShot();
+
+
+private:
+	_bool			m_bAppear = false;
+	_bool			m_bStart = false;
+	_bool			m_bJumpStart = false;
+	_bool			m_bTest = false;
+	_bool			m_bFindCell = false;
+	_float			m_fTimeAcc = 0.f;
+	_float			m_fPointJumpTimeAcc = 0.f;
+
+	
+	_float3			m_vVelocity = {};
+	_float			m_fPointJumpGravity = {0.f};
+	_float			m_fMaxHeight = 25.f;
+	_float			m_fMaxTime = 1.f;
+	_float3			m_vPrevPointPos = {};
+	_float3			m_vAppealJumpPosition = { 10.024f, 19.229f, 240.570f };
+	_bool			m_bOneTime = true;
+	
 
 public:
 	/* 원형객체를 생성한다. */

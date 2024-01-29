@@ -178,28 +178,28 @@ void CEN01_Arrow::On_CollisionEnter(CGameObject* pCollisionObject, wstring& Left
 	if (RightTag == TEXT("Layer_Player") && bHit == false)
 	{
 		CRigidBody* pTargetBody = dynamic_cast<CRigidBody*>(pCollisionObject->Find_Component(TEXT("Com_RigidBody")));
-
-
+	
+	
 		
-
+	
 		if (m_tStatus.eAttackType == tagStatusDesc::CHARGE_ATTACK)
 		{
 			_vector vLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
-
+	
 			vLook.m128_f32[0] *= 100.f;
 			vLook.m128_f32[1] *= 0.f;
 			vLook.m128_f32[2] *= 100.f;
-
+	
 			_float3 vForce;
 			XMStoreFloat3(&vForce, vLook);
-
+	
 			pTargetBody->Add_Force(vForce, CRigidBody::FORCE_MODE::IMPULSE);
 		}
-
+	
 		
-
-
-
+	
+	
+	
 	}
 
 	__super::On_CollisionEnter(pCollisionObject, LeftTag, RightTag, bType, bHit);

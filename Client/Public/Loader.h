@@ -42,7 +42,7 @@ public:
 	HRESULT Loading_For_Tool_Level();
 
 private:
-	CModel::ModelData* CreateDataPath(wstring strModelName, CModel::ModelData* pModelData, _bool bHitAnim = false);
+	Engine::MODELDATA* CreateDataPath(wstring strModelName, Engine::MODELDATA* pModelData, _bool bHitAnim = false);
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };

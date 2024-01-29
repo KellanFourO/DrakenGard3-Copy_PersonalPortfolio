@@ -7,7 +7,15 @@ BEGIN(Client)
 
 class CEN131_Breath final : public CBullet
 {
+public:
+	enum EN131_BREATHTYPE { BREATH_LEFT, BREATH_CENTER, BREATH_RIGHT, BREATH_END};
 
+public:
+	typedef struct tagEN131_BreathDesc : public CBullet::BULLET_DESC
+	{
+		EN131_BREATHTYPE eBreathType = BREATH_END;
+
+	}EN131_BREATHDESC;
 
 private:
 	CEN131_Breath(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

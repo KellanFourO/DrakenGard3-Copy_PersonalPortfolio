@@ -39,7 +39,7 @@ HRESULT CPlayerState_WeakHit::EndState()
 	m_pOwnerModelCom->Root_MotionEnd();
 	m_fAccTime = 0.f;
 	m_fLastInputTime = 0.f;
-
+	m_pOwnerRigidBody->Clear_NetPower();
 	return S_OK;
 }
 

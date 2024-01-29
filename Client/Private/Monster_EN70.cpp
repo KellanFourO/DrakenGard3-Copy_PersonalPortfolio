@@ -191,7 +191,7 @@ void CMonster_EN70::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag
 	__super::On_Collision(pCollisionObject, LeftTag, RightTag, vCollisionPos, bType, bHit);
 
 
-	if (RightTag == TEXT("Layer_Monster"))
+	if (RightTag == TEXT("Layer_Monster") && false == bHit)
 	{
 		_float magnitude = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCollisionPos)));
 
@@ -238,8 +238,6 @@ void CMonster_EN70::On_CollisionEnter(CGameObject* pCollisionObject, wstring& Le
 		XMStoreFloat3(&vForce, vLook);
 
 		pTargetBody->Add_Force(vForce, CRigidBody::FORCE_MODE::IMPULSE);
-
-		
 
 	}
 		

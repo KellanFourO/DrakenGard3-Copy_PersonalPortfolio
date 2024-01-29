@@ -76,6 +76,14 @@ public: /* For.Data_Manager */
 	HRESULT					   Add_ModelTag(const wstring & strModelTag);
 	vector<wstring>&		   Get_ModelTags();
 
+	HRESULT						Add_EffectTexutreTag(const wstring & strTextureTag);
+	HRESULT						Add_EffectMeshTag(const wstring & strMeshModelTag);
+	vector<wstring>&			Get_EffectTextureTags();
+	vector<wstring>&			Get_EffectMeshTags();
+
+	HRESULT						Add_ModelData(const wstring & strModelDataTag, MODELDATA* ModelData);
+	MODELDATA*					Get_ModelData_InKey(const wstring & strModelDataTag);
+
 public: /* For.Renderer */
 	HRESULT Add_RenderGroup(CRenderer::RENDERGROUP eGroupID, class CGameObject* pGameObject);
 	
@@ -129,6 +137,9 @@ public: /* For.Light_Manager */
 	HRESULT Add_Light(const LIGHT_DESC& LightDesc);
 	HRESULT Render_Lights(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 	
+public: /* For.Event_Manager */
+	HRESULT Add_Event(const wstring& strAddEventTag, class CMyEvent* pMyEvent, void* pDesc);
+	HRESULT Erase_Event(const wstring& strEraseEventTag);
 
 	
 
@@ -146,6 +157,7 @@ private:
 	class CCollision_Manager*		m_pCollision_Manager = { nullptr };
 	class CTarget_Manager* m_pTarget_Manager = { nullptr };
 	class CLight_Manager* m_pLight_Manager = { nullptr };
+	class CEvent_Manager* m_pEvent_Manager = { nullptr };
 
 public:
 	void Release_Manager();

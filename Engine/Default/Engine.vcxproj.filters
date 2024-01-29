@@ -196,6 +196,15 @@
     <Filter Include="01. Utility\02. GameObjects\03. Alpha">
       <UniqueIdentifier>{6be02d60-beee-4ce4-9133-43dc5d42d541}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\09. Event">
+      <UniqueIdentifier>{ba9a85f8-235c-4b2c-a2b7-b45d774546ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\09. Event\Manager">
+      <UniqueIdentifier>{e3e15225-4f5c-45d5-bbd3-276cb5a58f80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. Components\00. VIBuffer\ModelInstance">
+      <UniqueIdentifier>{421d3044-dd23-4b9c-a225-872cea49ac84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -396,6 +405,15 @@
     <ClInclude Include="..\Public\RigidBody.h">
       <Filter>01. Utility\03. Components\07. RigidBody</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Event_Manager.h">
+      <Filter>01. Utility\09. Event\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\MyEvent.h">
+      <Filter>01. Utility\09. Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Model_Instance.h">
+      <Filter>01. Utility\03. Components\00. VIBuffer\ModelInstance</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -568,6 +586,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\RigidBody.cpp">
       <Filter>01. Utility\03. Components\07. RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Event_Manager.cpp">
+      <Filter>01. Utility\09. Event\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MyEvent.cpp">
+      <Filter>01. Utility\09. Event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Model_Instance.cpp">
+      <Filter>01. Utility\03. Components\00. VIBuffer\ModelInstance</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

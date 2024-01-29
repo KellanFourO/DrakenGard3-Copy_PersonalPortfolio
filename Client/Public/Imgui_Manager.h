@@ -240,6 +240,49 @@ private:
 	_float3						m_vPickingPoint = {};
 	//vector<_float>				m_vecNaviYPoints;
 
+private: //TODO ¿Ã∆Â∆Æ ≈¯
+	HRESULT					Ready_EffectTagList();
+	void					Imgui_EffectToolTick();
+	
+	void					Create_Effect_Mode_Tick();
+		void					Mesh_Effect_Mode_Tick();
+		void					Texture_Effect_Mode_Tick();
+
+	void					Delete_Effect_Mode_Tick();
+	
+	void					Select_Effect_ModeTick();
+
+private:
+	_int						m_iEffectToolMode = { 0 };
+	_int						m_iEffectCreateMode = { 0 };
+	_int						m_iSelectEffectTagIndex = 0;	
+	_int						m_iSelectEffectIndex = 0;
+
+	class CGameObject*			m_pEffectSelectObject = { nullptr };
+	vector<string>				m_vecMeshEffectTags;
+	vector<string>				m_vecTextureEffectTags;
+	_bool						m_bEffectShowListBox = true;
+
+	vector<class CGameObject*>  m_vecCreateEffects;
+	vector<string>				m_vecCreateEffectTags;
+	
+	vector<class CGameObject*>  m_vecCreateMeshEffects;
+	vector<string>				m_vecCreateMeshEffectTags;
+
+private:
+	_int						m_iParticleShaderPathIndex = 0;
+	_float						m_fParticleRange = 3.f;
+	
+
+	_float						m_vParticleCenter[3] = {};
+	_float						m_vParticleSpeed[2] = {0.1f, 1.f};
+	_float						m_vParticleScale[2] = {0.2f, 0.5f};
+	_float						m_vParticleRotation[3] = {};
+	_float						m_vParticleColor[4] = {1.f, 0.f, 0.f, 1.f};
+	_float						m_vParticleLifeTime[2] = { 0.5f, 3.0f};
+	
+
+
 private:
 	string sourceUpperPath = "../Assets/";
 	string destUpperPath = "../../Client/Bin/Resources/Models/";

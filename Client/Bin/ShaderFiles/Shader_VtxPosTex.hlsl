@@ -12,7 +12,19 @@
 //! 셰이더에서의 전역변수는 상수테이블(Constant Table)이라고도 불리운다. 
 //! 말 그대로, 상수화 되어서 값을 사용은 가능하나 변경은 불가능하다. 그래서 클라이언트에서 던져주는 것.
 matrix			g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D		g_Texture[2];
+texture2D       g_Texture[2];
+
+texture2D       g_DiffuseTexture;
+texture2D       g_DepthTexture;
+
+float			g_fAtlasPosX;
+float			g_fAtlasPosY;
+float			g_fAtlasSizeX;
+float			g_fAtlasSizeY;
+
+
+
+
 
 //TODO 셰이더가 하는 일
 //! 정점의 변환 ( 월드변환, 뷰변환, 투영변환 ) 을 수행한다. ( 뷰행렬의 투영행렬을 곱했다고 투영 스페이스에 있는 것이아니다. 반드시 w나누기 까지 거친 다음에야 투영 스페이스 변환이 됐다고 할 수 있다. )
@@ -88,9 +100,105 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;
 }
 
+
+
+PS_OUT PS_MAIN_ATLAS(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+	
+   // Atlas UV PickUP
+    //if (In.vTexCoord.x < g_fAtlasPosX || In.vTexCoord.y < g_fAtlasPosY)
+    //    discard;
+    //if (g_fAtlasSizeX < In.vTexCoord.x || g_fAtlasSizeY < In.vTexCoord.y)
+    //    discard;
+
+	// Set Color
+    Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexCoord);
+    //Out.vColor += g_vecColorOverlay / 255.f;
+
+	// Alpha Test
+    if (Out.vColor.a < 0.1f)
+    {
+        discard;
+    }
+
+    //if (g_bGrayScale)
+    //{
+    //    Out.vColor.rgb = (Out.vColor.r + Out.vColor.g + Out.vColor.b) / 3.f;
+    //}
+    return Out;
+}
+
+PS_OUT PS_MAIN_ATLAS_GRID(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+	// Atlas UV PickUP
+    if (In.vTexCoord.x < g_fAtlasPosX || In.vTexCoord.y < g_fAtlasPosY)
+        discard;
+    if (g_fAtlasSizeX < In.vTexCoord.x || g_fAtlasSizeY < In.vTexCoord.y)
+        discard;
+
+	// Set Color
+    Out.vColor = g_Texture[0].Sample(LinearSampler, In.vTexCoord);
+    //Out.vColor += g_vecColorOverlay / 255.f;
+    Out.vColor.a = 0.1f;
+
+    return Out;
+}
+
+struct VS_OUT_EFFECT
+{
+    float4 vPosition : SV_POSITION;
+    float2 vTexcoord : TEXCOORD0;
+    float4 vProjPos : TEXCOORD1;
+};
+
+VS_OUT_EFFECT VS_MAIN_EFFECT(VS_IN In)
+{
+    VS_OUT_EFFECT Out = (VS_OUT_EFFECT) 0;
+
+	/* In.vPosition * 월드 * 뷰 * 투영 */
+    matrix matWV, matWVP;
+
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+
+    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+    Out.vTexcoord = In.vTexCoord;
+    Out.vProjPos = Out.vPosition;
+
+    return Out;
+}
+
+struct PS_IN_EFFECT
+{
+    float4 vPosition : SV_POSITION;
+    float2 vTexcoord : TEXCOORD0;
+    float4 vProjPos : TEXCOORD1;
+};
+
+/* 픽셀셰이더 : 픽셀의 색!!!! 을 결정한다. */
+PS_OUT PS_MAIN_EFFECT(PS_IN_EFFECT In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
+
+    float2 vDepthTexcoord;
+    vDepthTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
+    vDepthTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
+
+    float4 vDepthDesc = g_DepthTexture.Sample(PointSampler, vDepthTexcoord);
+	
+    Out.vColor.a = Out.vColor.a * (vDepthDesc.y * 1000.f - In.vProjPos.w) * 2.f;
+
+    return Out;
+}
+
 technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우린 다렉11이니 11로 붙여줌
 {
-	pass UI
+	pass UI // 0번 패스
 	{
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -104,7 +212,7 @@ technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우
 	}
 
 	/* 위와 다른 형태에 내가 원하는 특정 셰이더들을 그리는 모델에 적용한다. */
-	pass Particle
+	pass Particle //1번 패스
 	{
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -113,4 +221,41 @@ technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우
 		VertexShader = compile vs_5_0 VS_MAIN();
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
+
+/* 위와 다른 형태에 내가 원하는 특정 셰이더들을 그리는 모델에 적용한다. */
+    pass Effect // 2번 패스
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend_Add, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN_EFFECT();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_EFFECT();
+    }
+
+    pass Atlas_Default //3번 패스
+    {
+        SetRasterizerState(RS_Default);
+        SetBlendState(BS_AlphaBlend_Add, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_None, 0);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_ATLAS();
+    }
+
+    pass Atlas_Grid // 4번 패스
+    {
+        SetRasterizerState(RS_Default);
+        SetBlendState(BS_AlphaBlend_Add, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_None, 0);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_ATLAS_GRID();
+    }
+
 };

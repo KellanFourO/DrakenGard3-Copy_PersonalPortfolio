@@ -13,7 +13,6 @@ BEGIN(Client)
 class CBullet abstract : public CNonAnimObject
 {
 public:
-
 	typedef struct tagBulletDesc : public CGameObject::GAMEOBJECT_DESC
 	{
 		_float	  fDmg; //! 공격력
@@ -21,6 +20,7 @@ public:
 		_float	  fDeadTime; //! 죽어야할 시간
 		_float4   vLook; //! 가야 할 방향을 던져주자
 		_float4x4 OwnerWorldMatrix;
+		_float4	  vTargetPos;
 		
 	}BULLET_DESC;
 
@@ -76,6 +76,8 @@ protected:
 	_bool		m_bOneTick = true;
 	_float		m_fGravitionalConstant = 9.8f;
 	_float3		m_vVelocity = {};
+
+	_bool		m_bHitDead = true; // ! 총알이 타겟과 충돌시 사라질것인가?
 	
 	//! 포물선
 	

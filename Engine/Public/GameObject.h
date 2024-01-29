@@ -31,6 +31,8 @@ public:
 	class CTransform*		Get_Transform() { return m_pTransformCom; }
 	vector<class CCollider*>& Get_Colliders() { return m_vecColliders; }
 	_float					Get_LifeTime() { return m_fLifeTime; }
+	_float3&				Get_Offset() { return m_vCameraOffset; }
+	_float3&				Get_JumpOffset() { return m_vJumpOffset; }
 
 	_bool					Is_Player() { return m_isPlayer; }
 	_bool					Is_Dead()	{ return m_isDead; }
@@ -48,7 +50,7 @@ public:
 
 public:
 	_bool	Picking(_float3 vPickPos, class CModel* pModelCom, _float3* pOut);
-
+	void	SetStartAppeal(_bool bAppeal) { m_bStartAppeal = bAppeal;}
 
 public:
 	virtual void	  Write_Json(json& Out_Json) override;
@@ -83,9 +85,13 @@ protected:
 	_bool						m_isPlayer = { false };
 	_bool						m_isDead = { false };
 	_bool						m_bMove = true;
+	_bool						m_bStartAppeal = false;
 	_int						m_iCellIndex = -1;
 	
 	_float						m_fLifeTime = 5.f;
+	_float3						m_vCameraOffset = {};
+	_float3						m_vJumpOffset = {};
+	_bool						m_bChangeOffset = false;
 	
 
 protected:

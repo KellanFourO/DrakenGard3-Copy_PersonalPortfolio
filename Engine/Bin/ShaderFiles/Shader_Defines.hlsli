@@ -44,6 +44,7 @@ DepthStencilState DSS_None
 {
     DepthEnable = false; // 깊이테스트 수행 안 할 것.
     DepthWriteMask = Zero; // 깊이기록 수행 안 할 것.
+    DepthFunc = Less_Equal;
 };
 
 BlendState BS_Default
@@ -54,10 +55,9 @@ BlendState BS_Default
 BlendState BS_AlphaBlend_Add
 {
     BlendEnable[0] = true;
-
+    BlendOp = Add;
     SrcBlend = SRC_ALPHA;
     DestBlend = Inv_Src_Alpha;
-    BlendOp = Add;
 };
 
 BlendState BS_Blend_Add

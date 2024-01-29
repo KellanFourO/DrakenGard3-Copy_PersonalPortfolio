@@ -193,19 +193,19 @@ void CMonster_EN00::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag
 
 	
 
-	if (RightTag == TEXT("Layer_Player"))
-	{
-		_float magnitude = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCollisionPos)));
-
-
-		_vector vLook = pCollisionObject->Get_Transform()->Get_State(CTransform::STATE_LOOK);
-		_vector vForceDir = vLook * magnitude;
-
-		_float3 vCalcPos;
-		XMStoreFloat3(&vCalcPos, vForceDir);
-
-		m_pRigidBodyCom->Add_Force(vCalcPos, CRigidBody::FORCE_MODE::FORCE);
-	}
+	//if (RightTag == TEXT("Layer_Player"))
+	//{
+	//	_float magnitude = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCollisionPos)));
+	//
+	//
+	//	_vector vLook = pCollisionObject->Get_Transform()->Get_State(CTransform::STATE_LOOK);
+	//	_vector vForceDir = vLook * magnitude;
+	//
+	//	_float3 vCalcPos;
+	//	XMStoreFloat3(&vCalcPos, vForceDir);
+	//
+	//	m_pRigidBodyCom->Add_Force(vCalcPos, CRigidBody::FORCE_MODE::FORCE);
+	//}
 
 	
 
@@ -235,20 +235,22 @@ void CMonster_EN00::On_CollisionEnter(CGameObject* pCollisionObject, wstring& Le
 	if (RightTag == TEXT("Layer_Player") && bHit == false)
 	{
 		CRigidBody* pTargetBody = dynamic_cast<CRigidBody*>(pCollisionObject->Find_Component(TEXT("Com_RigidBody")));
-
-
+		
+		
 		_vector vLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
-
+		
 		switch (m_tStatus.eAttackType)
 		{
 			case tagStatusDesc::UPPER_ATTACK:
 			{
 				vLook.m128_f32[0] *= 100.f;
-				vLook.m128_f32[1] *= 300.f;
+				vLook.m128_f32[1] = 100.f;
 				vLook.m128_f32[2] *= 100.f;
+		
+				//pCollisionObject->Get_Transform()->
 				break;
 			}
-
+		
 			case tagStatusDesc::CHARGE_ATTACK:
 			{
 				vLook.m128_f32[0] *= 100.f;
@@ -256,7 +258,7 @@ void CMonster_EN00::On_CollisionEnter(CGameObject* pCollisionObject, wstring& Le
 				vLook.m128_f32[2] *= 100.f;
 				break;
 			}
-
+		
 			case tagStatusDesc::NORMAL_ATTACK:
 			{
 				vLook.m128_f32[0] *= 50.f;
@@ -264,14 +266,14 @@ void CMonster_EN00::On_CollisionEnter(CGameObject* pCollisionObject, wstring& Le
 				vLook.m128_f32[2] *= 50.f;
 				break;
 			}
-
+		
 		}
-
-
-
+		
+		
+		
 		_float3 vForce;
 		XMStoreFloat3(&vForce, vLook);
-
+		
 		pTargetBody->Add_Force(vForce, CRigidBody::FORCE_MODE::IMPULSE);
 
 
@@ -671,6 +673,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 		Transition(16);
 		m_pModelCom->Set_Loop(false);
 
+		
 		m_tStatus.eAttackType = tagStatusDesc::CHARGE_ATTACK;
 
 		if (128.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Swing"))

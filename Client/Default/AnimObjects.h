@@ -23,4 +23,7 @@
 //!보스 케르베로스
 #include "Boss_EN131.h"
 #include "BossPart_EN131_Weapon.h"
+#include "BossPart_EN131_SwingTail.h"
+#include "EN131_Breath.h"
+
 

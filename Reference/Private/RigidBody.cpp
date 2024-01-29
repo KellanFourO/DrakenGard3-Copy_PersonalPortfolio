@@ -6,6 +6,7 @@
 #include "Navigation.h"
 #include "Cell.h"
 
+
 CRigidBody::CRigidBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice, pContext)
 {
@@ -121,9 +122,10 @@ void CRigidBody::Update_Kinetic(const _float& fTimeDelta)
 	_float3 vRealPos;
 	XMStoreFloat3(&vRealPos, vPos);
 	
-	_float fY = m_pOwnerNavigation->Compute_Height(vRealPos);
+	_bool bIsGround = false;
+	_float fY = m_pOwnerNavigation->Compute_Height(vRealPos, &bIsGround);
 
-	if (m_bUseGravity && vPos.m128_f32[1] > fY)
+	if (m_bUseGravity && false == bIsGround)
 		m_vLinearVelocity.y += m_fGravitionalConstant * fTimeDelta;
 
 	XMStoreFloat3(&m_vLinearVelocity, XMLoadFloat3(&m_vLinearVelocity) + (XMLoadFloat3(&m_vLinearAcceleration) * fTimeDelta));

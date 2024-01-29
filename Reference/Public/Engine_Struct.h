@@ -17,6 +17,8 @@ namespace Engine
 		class CTexture*	pMtrlTextures[AI_TEXTURE_TYPE_MAX]; //! 어심프라이브러리에서 제공하는 재질 텍스처타입 열거체
 	}MATERIAL_DESC;
 
+
+
 	typedef struct tagStatusDesc
 	{
 		enum ATTACKTYPE { NORMAL_ATTACK, RUSH_ATTACK, CHARGE_ATTACK, UPPER_ATTACK, DOWN_ATTACK, ATTACKTYPE_END  };
@@ -28,6 +30,61 @@ namespace Engine
 
 	}STATUS_DESC;
 
+	typedef struct tagModelData
+	{
+		wstring strBoneDataPath;
+		wstring strMeshDataPath;
+		wstring strMaterialDataPath;
+		wstring strAnimationDataPath;
+		wstring strHitAnimationDataPath;
+	}MODELDATA;
+
+	typedef struct tagVertex_Model_Instance
+	{
+		XMFLOAT4			vRight;
+		XMFLOAT4			vUp;
+		XMFLOAT4			vLook;
+		XMFLOAT4			vTranslation;
+	}VTXMODELINSTANCE;
+
+	struct INSTANCE_MESH_DESC
+	{
+		_float3 vRotation;
+		_float3	vScale;
+		_float3 vPos;
+		_float fMaxRange;
+		_float3 vCenter;
+
+		void Reset()
+		{
+			ZeroMemory(this, sizeof(INSTANCE_MESH_DESC));
+		}
+
+		_matrix Get_Matrix() const
+		{
+			_matrix TransformationMatrix;
+			_matrix RotationMatrix, ScaleMatrix;
+
+			_vector vPitchYawRoll;
+			_vector vPosition;
+
+			vPitchYawRoll = XMLoadFloat3(&vRotation);
+			vPosition = XMVectorSetW(XMLoadFloat3(&vPos), 1.f);
+
+			RotationMatrix = XMMatrixRotationRollPitchYawFromVector(vPitchYawRoll);
+			ScaleMatrix = XMMatrixScaling(vScale.x, vScale.y, vScale.z);
+			TransformationMatrix = ScaleMatrix * RotationMatrix;
+			TransformationMatrix.r[3] = vPosition;
+
+			return TransformationMatrix;
+		}
+
+		void	Bake_CenterWithMatrix()
+		{
+			_vector vCenterFromVector = XMLoadFloat3(&vCenter);
+			XMStoreFloat3(&vCenter, XMVector3TransformCoord(vCenterFromVector, Get_Matrix()));
+		}
+	};
 // 	typedef struct tagPassDesc
 // 	{
 // 		ID3D11VertexShader* VertexShader = { nullptr };

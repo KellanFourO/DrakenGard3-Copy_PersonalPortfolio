@@ -5,9 +5,11 @@
 #include "PartObject.h"
 #include "Bone.h"
 #include "Animation.h"
-#include "MonsterPart_EN01_Weapon.h"
-
-
+#include "BossPart_EN131_Weapon.h"
+#include "Player.h"
+#include "Camera_Target.h"
+#include "Layer.h"
+#include "Transform.h"
 
 CBoss_EN131::CBoss_EN131(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CMonster(pDevice,pContext)
@@ -29,6 +31,45 @@ CPartObject* CBoss_EN131::Find_PartObject(const wstring& strPartTag)
 
 	return iter->second;
 }
+
+CCollider* CBoss_EN131::Get_HeadCollider(HEAD_COLLIDER eHeadType)
+{
+	CPartObject* pPartObject = nullptr;
+
+	switch (eHeadType)
+	{
+	case Client::CBoss_EN131::LEFT:
+		pPartObject = Find_PartObject(TEXT("Part_Weapon1"));
+		break;
+	case Client::CBoss_EN131::CENTER:
+		pPartObject = Find_PartObject(TEXT("Part_Weapon2"));
+		break;
+	case Client::CBoss_EN131::RIGHT:
+		pPartObject = Find_PartObject(TEXT("Part_Weapon3"));
+		break;
+	}
+
+	return dynamic_cast<CCollider*>(pPartObject->Find_Component(TEXT("Com_Collider")));
+}
+
+CCollider* CBoss_EN131::Get_TailCollider(TAIL_COLLIDER eTailType)
+{
+	CPartObject* pPartObject = nullptr;
+
+	switch (eTailType)
+	{
+	case Client::CBoss_EN131::STING:
+		pPartObject = Find_PartObject(TEXT("Part_StingTail"));
+		break;
+	case Client::CBoss_EN131::SWING:
+		pPartObject = Find_PartObject(TEXT("Part_SwingTail"));
+		break;
+	}
+	
+	return dynamic_cast<CCollider*>(pPartObject->Find_Component(TEXT("Com_Collider")));
+}
+
+
 
 HRESULT CBoss_EN131::Initialize_Prototype(LEVEL eLevel)
 {
@@ -60,6 +101,9 @@ HRESULT CBoss_EN131::Initialize(void* pArg)
 
 	m_pModelCom->Root_MotionStart();
 
+	m_vCameraOffset = { 0.f, 10.f, -10.f };
+	m_vJumpOffset = { 0.f, 20.f, -30.f };
+
 	return S_OK;
 }
 
@@ -75,6 +119,7 @@ void CBoss_EN131::Priority_Tick(_float fTimeDelta)
 
 void CBoss_EN131::Tick(_float fTimeDelta)
 {
+	_bool bTest = false;
 	if (m_eCurrentLevelID != LEVEL_TOOL)
 	{
 		Blackboard::Ptr pBlackBoard = m_pBehaviorTree->getBlackboard();
@@ -92,6 +137,8 @@ void CBoss_EN131::Tick(_float fTimeDelta)
 
 		Node::Status TreeStatus = m_pBehaviorTree->update(fTimeDelta);
 
+		if(3.f >= pBlackBoard->getFloat("TargetLength"))
+			bTest = true;
 	}
 
 	for (auto& Pair : m_PartObjects)
@@ -106,8 +153,16 @@ void CBoss_EN131::Tick(_float fTimeDelta)
 
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
 
-	if(m_eCurrentLevelID != LEVEL_TOOL)
-		m_pRigidBodyCom->Tick(fTimeDelta);
+	//if (false == m_bFindCell && true == m_bAppear)
+	//{
+	//	_int iCellIndex = m_pNavigationCom->Get_SelectRangeCellIndex(this);
+	//
+	//	m_pNavigationCom->Set_CurrentIndex(iCellIndex);
+	//	m_bFindCell = true;
+	//}
+	//
+	//if(m_eCurrentLevelID != LEVEL_TOOL && true == m_bAppear )
+	//	m_pRigidBodyCom->Tick(fTimeDelta);
 
 	_vector vRealPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 
@@ -116,13 +171,23 @@ void CBoss_EN131::Tick(_float fTimeDelta)
 	vRealPos.m128_f32[2] += vPos.z;
 	vRealPos.m128_f32[3] = 1.f;
 
+	
+	if (false == m_bTest)
+	{
+		m_pTransformCom->Add_LookPos(vPos);
+	}
 
 	if (m_eCurrentLevelID != LEVEL_TOOL)
 	{
-		if (true == m_pNavigationCom->isMove(vRealPos) && true == m_bMove)
-			vPos.x *= 0.75f;
-			vPos.z *= 0.75f;
-			m_pTransformCom->Add_LookPos(vPos);
+		//if (true == m_bAppear && false == bTest && true == m_pNavigationCom->isMove(vRealPos) && true == m_bMove)
+		//	vPos.x *= 0.75f;
+		//	vPos.z *= 0.75f;
+		//	m_pTransformCom->Add_LookPos(vPos);
+
+		//if (false == bTest && true == m_pNavigationCom->isMove(vRealPos) && true == m_bMove)
+		//	vPos.x *= 0.75f;
+		//vPos.z *= 0.75f;
+		//m_pTransformCom->Add_LookPos(vPos);
 	}
 
 	
@@ -159,6 +224,7 @@ HRESULT CBoss_EN131::Render()
 
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
 
 		m_pShaderCom->Begin(0); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
 
@@ -234,6 +300,20 @@ void CBoss_EN131::On_CollisionEnter(CGameObject* pCollisionObject, wstring& Left
 	{
 		Set_Move(false);
 	}
+	if (m_tStatus.eAttackType == tagStatusDesc::RUSH_ATTACK && RightTag == TEXT("Layer_Player"))
+	{
+		CRigidBody* pTargetBody = dynamic_cast<CRigidBody*>(pCollisionObject->Find_Component(TEXT("Com_RigidBody")));
+
+
+		_vector vLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK) * 500.f;
+
+		_float3 vForce;
+		XMStoreFloat3(&vForce, vLook);
+
+		pTargetBody->Add_Force(vForce, CRigidBody::FORCE_MODE::IMPULSE);
+
+	}
+
 	__super::On_CollisionEnter(pCollisionObject, LeftTag, RightTag, bType, bHit);
 }
 
@@ -312,6 +392,7 @@ HRESULT CBoss_EN131::Ready_PartObjects()
 
 	WeaponDesc.m_pSocketBone = pSwordBone;
 	WeaponDesc.m_pParentTransform = m_pTransformCom;
+	WeaponDesc.m_strPartName = "C_HEAD";
 
 
 	if(FAILED(Add_PartObject(TEXT("Prototype_PartObject_Boss_EN131_Weapon"), TEXT("Part_Weapon1"), &WeaponDesc)))
@@ -323,6 +404,7 @@ HRESULT CBoss_EN131::Ready_PartObjects()
 		return E_FAIL;
 
 	WeaponDesc.m_pSocketBone = pSwordBone;
+	WeaponDesc.m_strPartName = "L_HEAD";
 
 	if (FAILED(Add_PartObject(TEXT("Prototype_PartObject_Boss_EN131_Weapon"), TEXT("Part_Weapon2"), &WeaponDesc)))
 		return E_FAIL;
@@ -333,8 +415,65 @@ HRESULT CBoss_EN131::Ready_PartObjects()
 		return E_FAIL;
 
 	WeaponDesc.m_pSocketBone = pSwordBone;
+	WeaponDesc.m_strPartName = "R_HEAD";
 
 	if (FAILED(Add_PartObject(TEXT("Prototype_PartObject_Boss_EN131_Weapon"), TEXT("Part_Weapon3"), &WeaponDesc)))
+		return E_FAIL;
+
+	//pSwordBone = m_pModelCom->Get_BonePtr("L_JAW");
+	//
+	//if (nullptr == pSwordBone)
+	//	return E_FAIL;
+	//
+	//WeaponDesc.m_pSocketBone = pSwordBone;
+	//WeaponDesc.m_strPartName = "L_FIRE";
+	//
+	//if (FAILED(Add_PartObject(TEXT("Prototype_PartObject_Boss_EN131_Weapon"), TEXT("Part_L_Fire"), &WeaponDesc)))
+	//	return E_FAIL;
+	//
+	//pSwordBone = m_pModelCom->Get_BonePtr("C_JAW");
+	//
+	//if (nullptr == pSwordBone)
+	//	return E_FAIL;
+	//
+	//WeaponDesc.m_pSocketBone = pSwordBone;
+	//WeaponDesc.m_strPartName = "C_FIRE";
+	//
+	//if (FAILED(Add_PartObject(TEXT("Prototype_PartObject_Boss_EN131_Weapon"), TEXT("Part_C_Fire"), &WeaponDesc)))
+	//	return E_FAIL;
+	//
+	//pSwordBone = m_pModelCom->Get_BonePtr("R_JAW");
+	//
+	//if (nullptr == pSwordBone)
+	//	return E_FAIL;
+	//
+	//WeaponDesc.m_pSocketBone = pSwordBone;
+	//WeaponDesc.m_strPartName = "R_FIRE";
+	//
+	//if (FAILED(Add_PartObject(TEXT("Prototype_PartObject_Boss_EN131_Weapon"), TEXT("Part_R_Fire"), &WeaponDesc)))
+	//	return E_FAIL;
+
+
+	pSwordBone = m_pModelCom->Get_BonePtr("TAIL7");
+
+	if (nullptr == pSwordBone)
+		return E_FAIL;
+
+	WeaponDesc.m_pSocketBone = pSwordBone;
+	WeaponDesc.m_strPartName = "TAIL7";
+
+	if (FAILED(Add_PartObject(TEXT("Prototype_PartObject_Boss_EN131_Weapon"), TEXT("Part_StingTail"), &WeaponDesc)))
+		return E_FAIL;
+
+	pSwordBone = m_pModelCom->Get_BonePtr("TAIL3");
+
+	if (nullptr == pSwordBone)
+		return E_FAIL;
+
+	WeaponDesc.m_pSocketBone = pSwordBone;
+	WeaponDesc.m_strPartName = "TAIL3";
+
+	if (FAILED(Add_PartObject(TEXT("Prototype_PartObject_Boss_EN131_SwingTail"), TEXT("Part_SwingTail"), &WeaponDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -351,6 +490,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	 EN131_BlackBoard->setString("Name", "EN00");
 	 EN131_BlackBoard->setFloat("Max_HP", 2000.f);
 	 EN131_BlackBoard->setFloat("Current_HP", 2000.f);
+	 //EN131_BlackBoard->setFloat("Current_HP", 600.f);
 	 EN131_BlackBoard->setFloat("Attack_Range", 10.f);
 	 EN131_BlackBoard->setFloat("Keep_Range", 3.5f);
 	 EN131_BlackBoard->setFloat("Detect_Range", 20.f);
@@ -375,13 +515,26 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 	 EN131_BlackBoard->setFloat3("MyPosition", vMyPos);
 	 EN131_BlackBoard->setFloat3("TargetPosition", vTargetPos);
+	 EN131_BlackBoard->setFloat3("BreathPosition", vTargetPos);
 	 EN131_BlackBoard->setFloat("CurrentTrackPosition", 0.f);
+	 EN131_BlackBoard->setFloat("TimeAcc", 0.f);
 
+	 EN131_BlackBoard->setFloat("HowlingRange", 8.f);
 	 //EN131_BlackBoard->setFloat3("TargetPostion", _float3(0.f, 0.f, 0.f));
-	 EN131_BlackBoard->setBool("Is_Shot", false);
+	
+	 
+	 EN131_BlackBoard->setBool("Is_Sting", false);
+	 EN131_BlackBoard->setBool("Is_Swing", false);
+	 EN131_BlackBoard->setBool("Is_Howling", false);
+	 EN131_BlackBoard->setBool("Is_Bite", false);
 	 EN131_BlackBoard->setBool("Is_Hit", false); //! 피격중인가
 	 EN131_BlackBoard->setBool("Is_Ground", true);
+	 EN131_BlackBoard->setBool("Is_Appeal", false);
+	 
+	 EN131_BlackBoard->setBool("Is_Die", false);
 	 EN131_BlackBoard->setBool("Is_Dead", false);
+	
+	 
 	 //EN131_BlackBoard->setBool("Is_TargetPosition", false); //! 목표로 하는 지점이 있는가
 	 EN131_BlackBoard->setBool("Is_Patrol", false); //! 순찰해야하는가?
 	 EN131_BlackBoard->setBool("Is_OneTick", true);
@@ -399,6 +552,118 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	 
 	 
 //#EN131Tree
+	FUNCTION_NODE Control_Appeal
+		= FUNCTION_NODE_MAKE
+	{
+		if (true == m_bStart) 
+		{
+			m_pModelCom->Root_MotionEnd();
+			m_pTransformCom->Set_SpeedPerSec(6.f);
+			m_pTransformCom->Set_RotationPerSec(XMConvertToRadians(90.f));
+		
+			if (false == m_bJumpStart)
+			{
+				m_pModelCom->Set_Loop(true);
+				Transition(1);
+				m_pTransformCom->Go_Straight(fTimeDelta);
+				m_fTimeAcc += fTimeDelta;
+
+				if (m_fTimeAcc > 7.f)
+				{
+					Transition(0);
+					m_bJumpStart = true;
+					m_fTimeAcc = 0.f;
+
+					CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+					_vector vLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
+					vLook.m128_f32[3] = 0.f;
+					pTargetCamera->Get_Transform()->Look_At_Dir(vLook);
+				}
+				return BT_STATUS::Running;
+			}
+		
+			if (m_bJumpStart == true && true == m_bStartAppeal)
+			{
+				if (false == pBlackboard->getBool("Is_Appeal"))
+				{
+					CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+					pTargetCamera->Set_OffSet(m_vJumpOffset);
+// 					_vector vLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
+// 					vLook.m128_f32[3] = 0.f;
+// 					pTargetCamera->Get_Transform()->Look_At_Dir(vLook);
+					m_vPrevPointPos = pBlackboard->getFloat3("MyPosition");
+ 					m_pTransformCom->Set_Point_Gravity_Velocity(m_vAppealJumpPosition, m_vPrevPointPos, m_fMaxHeight, m_fMaxTime, &m_vVelocity, &m_fPointJumpGravity);
+ 					pBlackboard->setBool("Is_Appeal", true);
+				}
+
+				Transition(60);
+
+				m_pModelCom->Set_Loop(false);
+				_bool bInRange = false;
+
+				_vector vTargetPos = XMLoadFloat3(&m_vAppealJumpPosition);
+ 				vTargetPos.m128_f32[3] = 1.f;
+
+				_vector vMyPosition = XMLoadFloat3(&(pBlackboard->getFloat3("MyPosition")));
+ 				vMyPosition.m128_f32[3] = 1.f;
+
+				if (true == InRange(XMVectorGetX(XMVector3Length(vMyPosition - vTargetPos)), 0.f, 1.f, "[]"))
+ 				{
+					if (true == m_bOneTime)
+					{
+						m_fTimeAcc = 0.f;
+						m_bOneTime = true;
+					}
+
+					
+					if (true == Is_CurrentAnimEnd())
+					{
+						m_bStart = false;
+						m_bAppear = true;
+						return BT_STATUS::Success;
+					}
+					return BT_STATUS::Running;
+				}
+				else
+				{
+					m_fTimeAcc += fTimeDelta;
+					m_pTransformCom->Point_Parabola(m_vAppealJumpPosition, m_vPrevPointPos, m_vVelocity, m_fTimeAcc, m_fPointJumpGravity);
+					return BT_STATUS::Running;
+				}
+			}
+ 		}
+ 		else
+ 			return BT_STATUS::Failure;
+
+		return BT_STATUS::Failure;
+	};
+
+	FUNCTION_NODE Task_ReturnPlayerCam
+		= FUNCTION_NODE_MAKE
+	{
+		
+		CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+
+		CCamera_Target::CUTSCENE_DESC Desc;
+
+		Desc.fChaseSpeed = 130.f;
+		Desc.fStopRange = 10.f;
+		Desc.pChaseTarget = m_pGameInstance->Get_Player(m_eCurrentLevelID);
+		XMStoreFloat3(&Desc.vStartPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		Desc.vStartPos.y += 5.f;
+		XMStoreFloat3(&Desc.vChasePos, Desc.pChaseTarget->Get_Transform()->Get_State(CTransform::STATE_POSITION));
+
+		pTargetCamera->Set_OffSet(Desc.pChaseTarget->Get_Offset());
+		pTargetCamera->Set_CutSceneDesc(&Desc);
+		
+
+		wstring strDepressTag = TEXT("PlayerState_Depress");
+		dynamic_cast<CPlayer*>(Desc.pChaseTarget)->Transition(CStateMachine::STATETYPE::STATE_GROUND, strDepressTag);
+
+
+		return BT_STATUS::Success;
+	};
+	
 	 FUNCTION_NODE Control_IsPhase1
 		 = FUNCTION_NODE_MAKE
 	 {
@@ -407,6 +672,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 			pBlackboard->setInt("iCurrentPhase", 2);
 			return BT_STATUS::Failure;
 		}
+
 
 		 if (1 == pBlackboard->getInt("iCurrentPhase"))
 		 {
@@ -453,9 +719,11 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 			m_pModelCom->Set_Loop(false);
 			Transition(36);
 
-			m_pModelCom->Set_Loop(true);
-			 return BT_STATUS::Success;
-
+			if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
+			{
+				m_pModelCom->Set_Loop(true);
+				return BT_STATUS::Success;
+			}
 		 }
 		 else
 			return BT_STATUS::Failure;
@@ -464,13 +732,11 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	 FUNCTION_NODE Task_IsDead1
 		 = FUNCTION_NODE_MAKE
 	 {
-	 m_pModelCom->Set_Loop(false);
+		Transition(34);
+		m_pModelCom->Set_Loop(false);
 
 		 if(m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
-			Transition(34);
-
-			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		 }
 		 else
@@ -481,7 +747,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		 = FUNCTION_NODE_MAKE
 	 {
 			Die(5.f);
-			return BT_STATUS::Success;
+			return BT_STATUS::Running;
 	 };
 
 	FUNCTION_NODE Task_IntroAnimation
@@ -505,6 +771,11 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	{
 		   Transition(3);
 		   m_pModelCom->Set_Loop(false);
+
+		   _vector vTargetPos = XMLoadFloat3(&Get_TargetPosition());
+		   vTargetPos.m128_f32[3] = 1.f;
+		   m_pTransformCom->TurnToTarget(vTargetPos, fTimeDelta);
+
 		   m_pModelCom->Root_MotionStart();
 		   Set_Move(true);
 
@@ -525,6 +796,10 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		 Transition(5);
 		 m_pModelCom->Set_Loop(false);
 		 m_pModelCom->Root_MotionStart();
+
+		 _vector vTargetPos = XMLoadFloat3(&Get_TargetPosition());
+		 vTargetPos.m128_f32[3] = 1.f;
+		 m_pTransformCom->TurnToTarget(vTargetPos, fTimeDelta);
 		 Set_Move(true);
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
@@ -544,6 +819,11 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 			Transition(4);
 		  m_pModelCom->Set_Loop(false);
 		  m_pModelCom->Root_MotionStart();
+
+		  _vector vTargetPos = XMLoadFloat3(&Get_TargetPosition());
+		  vTargetPos.m128_f32[3] = 1.f;
+		  m_pTransformCom->TurnToTarget(vTargetPos, fTimeDelta);
+
 		  Set_Move(true);
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
@@ -656,11 +936,19 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		 = FUNCTION_NODE_MAKE
 	 {
 		Transition(37);
-
+		m_tStatus.eAttackType = tagStatusDesc::DOWN_ATTACK;
+		if (45.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Sting"))
+		{
+			Get_TailCollider(CBoss_EN131::STING)->OnCollider();
+			pBlackboard->setBool("Is_Sting", true);
+		}
 		 m_pModelCom->Set_Loop(false);
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
+			 Get_TailCollider(CBoss_EN131::STING)->OffCollider();
+			 pBlackboard->setBool("Is_Sting", false);
+
 			 m_pModelCom->Set_Loop(true);
 			 m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
 			 return BT_STATUS::Success;
@@ -675,12 +963,19 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		Transition(38);
 		m_pModelCom->Set_Loop(false);
 
+		if (30.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Sting"))
+		{
+			Get_TailCollider(CBoss_EN131::STING)->OnCollider();
+			pBlackboard->setBool("Is_Sting", true);
+		}
+
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
-
-		 m_pModelCom->Set_Loop(true);
-		 m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
-		 return BT_STATUS::Success;
+			Get_TailCollider(CBoss_EN131::STING)->OffCollider();
+			pBlackboard->setBool("Is_Sting", false);
+			 m_pModelCom->Set_Loop(true);
+			 m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
+			 return BT_STATUS::Success;
 		}
 		 else
 			 return BT_STATUS::Running;
@@ -692,8 +987,16 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		Transition(39);
 		m_pModelCom->Set_Loop(false);
 
+		if (51.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Sting"))
+		{
+			Get_TailCollider(CBoss_EN131::STING)->OnCollider();
+			pBlackboard->setBool("Is_Sting", true);
+		}
+
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
+			Get_TailCollider(CBoss_EN131::STING)->OffCollider();
+			pBlackboard->setBool("Is_Sting", false);
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		}
@@ -704,6 +1007,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	 FUNCTION_NODE Task_TailStingAttack4
 		 = FUNCTION_NODE_MAKE
 	 {
+		m_tStatus.eAttackType = tagStatusDesc::NORMAL_ATTACK;
 		Transition(40);
 		m_pModelCom->Set_Loop(false);
 		
@@ -720,12 +1024,21 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	 FUNCTION_NODE Task_TailSwingAttack
 		 = FUNCTION_NODE_MAKE
 	 {
+		m_tStatus.eAttackType = tagStatusDesc::RUSH_ATTACK;
 		Transition(52);
 		m_pModelCom->Set_Loop(false);
 
+		if (116.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Swing"))
+		{
+			
+			Get_TailCollider(CBoss_EN131::SWING)->OnCollider();
+			pBlackboard->setBool("Is_Swing", true);
+		}
+
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
-
+			Get_TailCollider(CBoss_EN131::SWING)->OffCollider();
+			pBlackboard->setBool("Is_Swing", false);
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		}
@@ -739,9 +1052,18 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		Transition(42);
 		m_pModelCom->Set_Loop(false);
 
+		if (112.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Howling"))
+		{
+			CPlayer* pPlayer = dynamic_cast<CPlayer*>(m_pGameInstance->Get_Player(m_eCurrentLevelID));
+			wstring strSturnTag = TEXT("PlayerState_Sturn");
+			pPlayer->Transition(CStateMachine::STATETYPE::STATE_GROUND, strSturnTag);
+			pBlackboard->setBool("Is_Howling", true);
+		}
 
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
+			
+			pBlackboard->setBool("Is_Howling", false);
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		}
@@ -755,8 +1077,18 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		Transition(55);
 		m_pModelCom->Set_Loop(false);
 
+		m_tStatus.eAttackType = tagStatusDesc::DOWN_ATTACK;
+
+		if (28.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Bite"))
+		{
+			Get_HeadCollider(RIGHT)->OnCollider();
+			pBlackboard->setBool("Is_Bite", true);
+		}
+
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
+			Get_HeadCollider(RIGHT)->OffCollider();
+			Get_HeadCollider(CENTER)->OnCollider();
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		}
@@ -770,8 +1102,15 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		Transition(56);
 		m_pModelCom->Set_Loop(false);
 
+		if (4.f < pBlackboard->getFloat("CurrentTrackPosition") && true == pBlackboard->getBool("Is_Bite"))
+		{
+			Get_HeadCollider(CENTER)->OffCollider();
+			pBlackboard->setBool("Is_Bite", false);
+		}
+
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
+			pBlackboard->setBool("Is_Bite", false);
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		}
@@ -785,8 +1124,16 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		Transition(57);
 		m_pModelCom->Set_Loop(false);
 
+		if (18.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Bite"))
+		{
+			Get_HeadCollider(LEFT)->OnCollider();
+			pBlackboard->setBool("Is_Bite", true);
+		}
+
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
+			Get_HeadCollider(LEFT)->OffCollider();
+			pBlackboard->setBool("Is_Bite", false);
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		}
@@ -794,29 +1141,30 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 			 return BT_STATUS::Running;
 	 };
 
-	 FUNCTION_NODE Task_All_DirectionBite4
-		 = FUNCTION_NODE_MAKE
-	 {
-		Transition(58);
-		m_pModelCom->Set_Loop(false);
-
-		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
-		{
-			m_pModelCom->Set_Loop(true);
-			 return BT_STATUS::Success;
-		}
-		else
-			 return BT_STATUS::Running;
-	 };
-
+	
 	 FUNCTION_NODE Task_FullBite1
 		 = FUNCTION_NODE_MAKE
 	 {
+
+		m_tStatus.eAttackType = tagStatusDesc::DOWN_ATTACK;
+
 		Transition(53);
 		m_pModelCom->Set_Loop(false);
 
+		if (115.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Bite"))
+		{
+			Get_HeadCollider(LEFT)->OnCollider();
+			Get_HeadCollider(CENTER)->OnCollider();
+			Get_HeadCollider(RIGHT)->OnCollider();
+			pBlackboard->setBool("Is_Bite", true);
+		}
+
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
+			Get_HeadCollider(LEFT)->OffCollider();
+			Get_HeadCollider(CENTER)->OffCollider();
+			Get_HeadCollider(RIGHT)->OffCollider();
+			pBlackboard->setBool("Is_Bite", false);
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		}
@@ -843,11 +1191,26 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	 FUNCTION_NODE Task_OrderFullBite1
 		 = FUNCTION_NODE_MAKE
 	 {
+		m_tStatus.eAttackType = tagStatusDesc::DOWN_ATTACK;
+
+		if (71.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Bite"))
+		{
+			 Get_HeadCollider(LEFT)->OnCollider();
+			 Get_HeadCollider(CENTER)->OnCollider();
+			 Get_HeadCollider(RIGHT)->OnCollider();
+			 pBlackboard->setBool("Is_Bite", true);
+		}
+
 		Transition(43);
 		m_pModelCom->Set_Loop(false);
 		
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
+			Get_HeadCollider(LEFT)->OffCollider();
+			Get_HeadCollider(CENTER)->OffCollider();
+			Get_HeadCollider(RIGHT)->OffCollider();
+			pBlackboard->setBool("Is_Bite", false);
+
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		}
@@ -873,11 +1236,47 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	 FUNCTION_NODE Task_Breath1
 		 = FUNCTION_NODE_MAKE
 	 {
+		m_tStatus.eAttackType = tagStatusDesc::NORMAL_ATTACK;
+
 		Transition(45);
 		m_pModelCom->Set_Loop(false);
 
+		if (true == pBlackboard->getBool("Is_OneTick"))
+		{
+			pBlackboard->setFloat3("BreathPostion", Get_TargetPosition());
+			pBlackboard->setBool("Is_OneTick", false);
+		}
+		
+
+		if (128.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Breath"))
+		{
+			pBlackboard->setBool("Is_Breath", true);
+
+
+			CBossPart_EN131_Weapon* pLeftHead = dynamic_cast<CBossPart_EN131_Weapon*>(Find_PartObject(TEXT("Part_Weapon1")));
+			CBossPart_EN131_Weapon* pCenterHead = dynamic_cast<CBossPart_EN131_Weapon*>(Find_PartObject(TEXT("Part_Weapon2")));
+			CBossPart_EN131_Weapon* pRightHead = dynamic_cast<CBossPart_EN131_Weapon*>(Find_PartObject(TEXT("Part_Weapon3")));
+
+			//CBossPart_EN131_Weapon* pLeftFire = dynamic_cast<CBossPart_EN131_Weapon*>(Find_PartObject(TEXT("Part_L_Fire")));
+			//CBossPart_EN131_Weapon* pCenterFire = dynamic_cast<CBossPart_EN131_Weapon*>(Find_PartObject(TEXT("Part_C_Fire")));
+			//CBossPart_EN131_Weapon* pRightFire = dynamic_cast<CBossPart_EN131_Weapon*>(Find_PartObject(TEXT("Part_R_Fire")));
+			
+			
+			_float3 vBreathPos = pBlackboard->getFloat3("BreathPostion");
+			
+			_float3 vMyPos = pBlackboard->getFloat3("MyPosition");
+
+			pLeftHead->CreateBreath(XMLoadFloat3(&vBreathPos));
+			pCenterHead->CreateBreath(XMLoadFloat3(&vBreathPos));
+			pRightHead->CreateBreath(XMLoadFloat3(&vBreathPos));
+			//pLeftFire->CreateBreath(XMLoadFloat3(&vBreathPos));
+			//pCenterFire->CreateBreath(XMLoadFloat3(&vBreathPos));
+			//pRightFire->CreateBreath(XMLoadFloat3(&vBreathPos));
+		}
+
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
+			pBlackboard->setBool("Is_OneTick", true);
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		}
@@ -905,6 +1304,11 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	 {
 		Transition(47);
 		m_pModelCom->Set_Loop(false);
+
+		if (63.f < pBlackboard->getFloat("CurrentTrackPosition") && true == pBlackboard->getBool("Is_Breath"))
+		{
+			pBlackboard->setBool("Is_Breath", false);
+		}
 
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
@@ -938,7 +1342,8 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		   vTargetPosition.m128_f32[3] = 1.f;
 		   vPosition.m128_f32[3] = 1.f;
-		  
+		  pBlackboard->setFloat("TargetLength", XMVectorGetX(XMVector3Length(vPosition - vTargetPosition)));
+		   m_pTransformCom->TurnToTarget(vTargetPosition, fTimeDelta);
 		 //_vector vDir = XMLoadFloat3(&pBlackboard->getFloat3("TargetPosition")) - XMLoadFloat3(&pBlackboard->getFloat3("MyPosition"));
 		 //_float fDistance = XMVectorGetX(XMVector3Length(vDir));
 
@@ -1011,6 +1416,10 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 //#EN131Tree
 	 m_pBehaviorTree = Builder(EN131_BlackBoard)
 		.composite<Selector>()
+			.composite<Sequence>()
+				.leaf<FunctionNode>(Control_Appeal)
+				.leaf<FunctionNode>(Task_ReturnPlayerCam)
+			.end()
 			.composite<Sequence>()	
 				.leaf<FunctionNode>(Control_IsDead)
 				.leaf<FunctionNode>(Task_IsDead1)
@@ -1027,6 +1436,15 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 						.composite<Sequence>()
 							.leaf<FunctionNode>(Control_IsPhase1)
 								.composite<Selector>()
+									.composite<Sequence>()
+										.leaf<FunctionNode>(Control_RandomTry)
+										.leaf<FunctionNode>(Task_TailStingAttack1)
+										.leaf<FunctionNode>(Task_TailStingAttack2)
+										.leaf<FunctionNode>(Task_TailStingAttack3)
+										.leaf<FunctionNode>(Task_TailStingAttack4)
+										.leaf<FunctionNode>(Control_RandomTry)
+										.leaf<FunctionNode>(Task_LeftEvasion)
+									.end()
 									.composite<Sequence>()
 										.leaf<FunctionNode>(Task_FullBite1)
 										.leaf<FunctionNode>(Task_FullBite2)
@@ -1050,6 +1468,16 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 									.end()
 									.composite<Sequence>()
 										.leaf<FunctionNode>(Control_RandomTry)
+										.leaf<FunctionNode>(Task_TailStingAttack1)
+										.leaf<FunctionNode>(Task_TailStingAttack2)
+										.leaf<FunctionNode>(Task_TailStingAttack3)
+										.leaf<FunctionNode>(Task_TailStingAttack4)
+										.leaf<FunctionNode>(Control_RandomTry)
+										.leaf<FunctionNode>(Task_LeftEvasion)
+									.end()
+
+									.composite<Sequence>()
+										.leaf<FunctionNode>(Control_RandomTry)
 										.leaf<FunctionNode>(Task_RightEvasion)
 									.end()
 									.leaf<FunctionNode>(Task_LeftEvasion)
@@ -1059,10 +1487,18 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 							.leaf<FunctionNode>(Control_IsPhase3)
 								.composite<Selector>()
 									.composite<Sequence>()
+										.leaf<FunctionNode>(Control_RandomTry)
+										.leaf<FunctionNode>(Task_TailSwingAttack)
+										.leaf<FunctionNode>(Task_BackEvasion)
+										.leaf<FunctionNode>(Control_RandomTry)
+										.leaf<FunctionNode>(Task_Breath1)
+										.leaf<FunctionNode>(Task_Breath2)
+										.leaf<FunctionNode>(Task_Breath3)
+									.end()
+									.composite<Sequence>()
 										.leaf<FunctionNode>(Task_All_DirectionBite1)
 										.leaf<FunctionNode>(Task_All_DirectionBite2)
 										.leaf<FunctionNode>(Task_All_DirectionBite3)
-										.leaf<FunctionNode>(Task_All_DirectionBite4)
 										.leaf<FunctionNode>(Control_RandomTry)
 											.leaf<FunctionNode>(Task_BackEvasion)
 										.leaf<FunctionNode>(Control_RandomTry)
@@ -1122,57 +1558,6 @@ HRESULT CBoss_EN131::Bind_ShaderResources()
 	
 	return S_OK;
 }
-
-void CBoss_EN131::NormalShot()
-{
-	CMonsterPart_EN01_Weapon* pBow = dynamic_cast<CMonsterPart_EN01_Weapon*>(Find_PartObject(TEXT("Part_Weapon")));
-
-	CGameObject* pArrow = pBow->CreateNormalArrow();
-
-	//CCollider* pCollider = dynamic_cast<CCollider*>(pArrow->Find_Component(TEXT("Com_Collider")));
-	//
-	//m_vecColliders.push_back(pCollider);
-}
-
-void CBoss_EN131::ParabolicShot()
-{
-	CMonsterPart_EN01_Weapon* pBow = dynamic_cast<CMonsterPart_EN01_Weapon*>(Find_PartObject(TEXT("Part_Weapon")));
-
-	CGameObject* pArrow = pBow->CreateParabolicArrow();
-
-	//CCollider* pCollider = dynamic_cast<CCollider*>(pArrow->Find_Component(TEXT("Com_Collider")));
-	//
-	//m_vecColliders.push_back(pCollider);
-	//
-	//m_vecArrows.push_back(pArrow);
-}
-
-void CBoss_EN131::ChargeNormalShot()
-{
-	CMonsterPart_EN01_Weapon* pBow = dynamic_cast<CMonsterPart_EN01_Weapon*>(Find_PartObject(TEXT("Part_Weapon")));
-
-	CGameObject* pArrow = pBow->CreateChargeNormalArrow();
-
-	//CCollider* pCollider = dynamic_cast<CCollider*>(pArrow->Find_Component(TEXT("Com_Collider")));
-	//
-	//m_vecColliders.push_back(pCollider);
-	//
-	//m_vecArrows.push_back(pArrow);
-}
-
-void CBoss_EN131::ChargeParabolicShot()
-{
-	CMonsterPart_EN01_Weapon* pBow = dynamic_cast<CMonsterPart_EN01_Weapon*>(Find_PartObject(TEXT("Part_Weapon")));
-
-	CGameObject* pArrow = pBow->CreateChargeParabolicArrow();
-
-//	CCollider* pCollider = dynamic_cast<CCollider*>(pArrow->Find_Component(TEXT("Com_Collider")));
-//
-//	m_vecColliders.push_back(pCollider);
-
-}
-
-
 
 
 CBoss_EN131* CBoss_EN131::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel)

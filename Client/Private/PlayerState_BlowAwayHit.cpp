@@ -29,6 +29,9 @@ HRESULT CPlayerState_BlowAwayHit::StartState()
 	m_pOwnerModelCom->Set_Animation(49);
 	m_pOwnerModelCom->Set_Loop(false);
 	m_pOwnerModelCom->Root_MotionStart();
+	m_pOwnerStateCom->Set_Hit(true);
+	
+
 	return S_OK;
 }
 
@@ -36,7 +39,8 @@ HRESULT CPlayerState_BlowAwayHit::EndState()
 {
 	m_pOwnerModelCom->Set_Loop(true);
 	m_bKeyInput = false;
-
+	m_pOwnerRigidBody->Clear_NetPower();
+	m_pOwnerStateCom->Set_Hit(false);
 	for (_int i = 0; i < 3; ++i)
 	{
 		m_bCurrentHitAnimEnd[i] = false;
@@ -63,7 +67,10 @@ void CPlayerState_BlowAwayHit::Tick(const _float& fTimeDelta)
 		m_bCurrentHitAnimEnd[0] = true;
 
 		if (true == m_bKeyInput)
+		{
 			Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_BreakFall"));
+			m_pOwnerRigidBody->Clear_NetPower();
+		}
 		else
 			m_pOwnerModelCom->Set_Animation(44);
 	}

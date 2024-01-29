@@ -24,6 +24,7 @@ private:
 	HRESULT	Ready_Layer_Monster(const wstring& strLayerTag);
 	HRESULT Ready_Layer_BackGround(const wstring& strLayerTag);
 	HRESULT Ready_Layer_Collider();
+	HRESULT Ready_Layer_Event();
 
 private:
 	wstring ConvertStrToWstr(const string& str);

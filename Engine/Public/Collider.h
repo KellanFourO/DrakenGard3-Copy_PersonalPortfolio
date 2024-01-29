@@ -16,7 +16,7 @@ class ENGINE_DLL CCollider final : public CComponent
 
 
 public:
-	enum TYPE { TYPE_Sphere, TYPE_AABB, TYPE_OBB, TYPE_END };
+	enum TYPE { TYPE_Sphere, TYPE_AABB, TYPE_OBB, TYPE_FRUSTUM, TYPE_END };
 	enum PARTTYPE { PART_BODY, PART_WEAPON, PARTTYPE_END };
 
 public:

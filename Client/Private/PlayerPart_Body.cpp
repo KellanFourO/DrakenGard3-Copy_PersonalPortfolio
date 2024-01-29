@@ -98,11 +98,14 @@ HRESULT CPlayerPart_Body::Render()
 
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
 
 		m_pShaderCom->Begin(0); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
 
 		m_pModelCom->Render(i);
 	}
+
+	
 
 	return S_OK;
 }

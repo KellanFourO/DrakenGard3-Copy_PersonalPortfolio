@@ -214,7 +214,7 @@ void CModel::Set_AnimationSpeed(_float fAnimationSpeed)
 //}
 
 
-HRESULT CModel::Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix)
+HRESULT CModel::Initialize_Prototype(TYPE eType, MODELDATA& tDataFilePath, _fmatrix PivotMatrix)
 {
 	
 	m_eModelType = eType;
@@ -357,7 +357,9 @@ HRESULT CModel::Bind_ShaderResource(CShader* pShader, const _char* pConstantName
 	if(iMaterialIndex >= m_iNumMaterials)
 		return E_FAIL;
 
-	return m_Materials[iMaterialIndex].pMtrlTextures[eTextureType]->Bind_ShaderResource(pShader,pConstantName); //! 우리는 어처피 1장이다. textureIndex는 따로 줄 필요없다.
+	if(nullptr != m_Materials[iMaterialIndex].pMtrlTextures[eTextureType])
+		return m_Materials[iMaterialIndex].pMtrlTextures[eTextureType]->Bind_ShaderResource(pShader,pConstantName); //! 우리는 어처피 1장이다. textureIndex는 따로 줄 필요없다.
+
 }
 
 
@@ -876,7 +878,7 @@ void CModel::Load_FromJson(const json& In_Json)
 
 }
 
-CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix)
+CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, MODELDATA& tDataFilePath, _fmatrix PivotMatrix)
 {
 	CModel* pInstance = new CModel(pDevice, pContext);
 

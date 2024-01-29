@@ -29,6 +29,7 @@ HRESULT CPlayerState_UpperHit::StartState()
 	m_pOwnerModelCom->Set_Animation(37);
 	m_pOwnerModelCom->Set_Loop(false);
 	m_pOwnerModelCom->Root_MotionStart();
+	m_pOwnerStateCom->Set_Hit(true);
 	return S_OK;
 }
 
@@ -36,13 +37,13 @@ HRESULT CPlayerState_UpperHit::EndState()
 {
 	m_pOwnerModelCom->Set_Loop(true);
 	m_bKeyInput = false;
-
+	m_pOwnerRigidBody->Clear_NetPower();
 	for (_int i = 0; i < 4; ++i)
 	{
 		m_bCurrentHitAnimEnd[i] = false;
 	}
 	
-
+	m_pOwnerStateCom->Set_Hit(false);
 	m_pOwnerModelCom->Root_MotionEnd();
 	m_fAccTime = 0.f;
 	m_fLastInputTime = 0.f;
@@ -65,7 +66,7 @@ void CPlayerState_UpperHit::Tick(const _float& fTimeDelta)
  		
 			m_pOwnerModelCom->Set_Animation(38);
 	}
-	else if (true == Is_Current_AnimEnd() && false == m_bCurrentHitAnimEnd[1])
+	else if (true == Is_Current_AnimEnd() && false == m_bCurrentHitAnimEnd[1] && true == m_pOwnerTransform->Is_Ground())
 	{
 			m_bCurrentHitAnimEnd[1] = true;
 

@@ -29,6 +29,14 @@ CBone* CPartObject::Get_BonePtr(const _char* pBoneName)
 	return m_pModelCom->Get_BonePtr(pBoneName);
 }
 
+void CPartObject::Init_Status(_float fMaxHp, _float fDmg)
+{
+	m_tStatus.fMaxHp = fMaxHp;
+	m_tStatus.fDmg = fDmg;
+	m_tStatus.eAttackType = tagStatusDesc::ATTACKTYPE_END;
+	m_tOriginStatus = m_tStatus;
+}
+
 HRESULT CPartObject::Ready_Components(_uint iLevelIndex, const wstring& strShaderTag, const wstring& strModelTag)
 {
 	/* For.Com_Shader */

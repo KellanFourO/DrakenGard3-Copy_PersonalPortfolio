@@ -111,10 +111,17 @@ void CMonster::Set_AnimSpeed(_float fSpeed)
 
 CCollider* CMonster::Get_WeaponCollider()
 {
-	
-
 	return dynamic_cast<CCollider*>(Find_PartObject(TEXT("Part_Weapon"))->Find_Component(TEXT("Com_Collider")));
+}
 
+void CMonster::Set_WeaponAttackType(STATUS_DESC::ATTACKTYPE eAttackType)
+{
+	Find_PartObject(TEXT("Part_Weapon"))->Get_Status()->eAttackType = eAttackType;
+}
+
+void CMonster::Set_PartAttackType(wstring& strPartTag, STATUS_DESC::ATTACKTYPE eAttackType)
+{
+	Find_PartObject(strPartTag)->Get_Status()->eAttackType = eAttackType;
 }
 
 void CMonster::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)

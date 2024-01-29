@@ -18,6 +18,7 @@
 
 #include "Monster.h"
 #include "Bullet.h"
+#include "Layer.h"
 
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice, pContext)
@@ -48,7 +49,11 @@ HRESULT CPlayer::Initialize(void* pArg)
 	PlayerDesc.fSpeedPerSec = 10.0f;
 	PlayerDesc.fRotationPerSec = XMConvertToRadians(180.0f);
 	m_eCurrentLevelID = (LEVEL)PlayerDesc.iLevelIndex;
-
+	
+	//XMStoreFloat3(&m_vOffset, XMVectorSet(0.f, 5.f, -5.f, 0.f));
+	m_vCameraOffset = { 0.f, 5.f, - 5.f};
+	//m_vCameraOffset = { 0.f, 10.f, -10.f };
+	//m_vJumpOffset = { 0.f, 15.f, -15.f };
 	
 
 	if (FAILED(__super::Initialize(&PlayerDesc)))
@@ -87,6 +92,7 @@ void CPlayer::Priority_Tick(_float fTimeDelta)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
+	
 	m_pStateCom->Tick(fTimeDelta);
 	
 	for (auto& Pair : m_PartObjects)
@@ -98,9 +104,17 @@ void CPlayer::Tick(_float fTimeDelta)
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
 	m_pRigidBodyCom->Tick(fTimeDelta);
 	
+// 	if (false == m_pRigidBodyCom->Is_AccelZero())
+// 	{
+// 		_int i = 0;
+// 	}
+
 	
 
 	Key_Input(fTimeDelta);
+
+	m_fAccTime += fTimeDelta;
+
 
 }
 
@@ -142,7 +156,60 @@ HRESULT CPlayer::Render()
 void CPlayer::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
 {
 	//! 내 바디와 상대 바디 끼리 충돌했을 경우
+	if (LeftTag == TEXT("Layer_Monster") || LeftTag == TEXT("Layer_Bullet") && bHit == true)
+	{
+		CCollider* pCollider = dynamic_cast<CCollider*>(pCollisionObject->Find_Component(TEXT("Com_Collider")));
+		if (true == pCollider->isAccCollider())
+		{
+			CMonster* pMonster = dynamic_cast<CMonster*>(pCollisionObject);
+			CBullet* pBullet = dynamic_cast<CBullet*>(pCollisionObject);
 
+			STATUS_DESC::ATTACKTYPE eHitType;
+			_float fDmg;
+
+			if (LeftTag == TEXT("Layer_Monster"))
+			{
+				eHitType = pMonster->Get_AttackType();
+				fDmg = pMonster->Get_Dmg();
+			}
+			else if (LeftTag == TEXT("Layer_Bullet"))
+			{
+				eHitType = pBullet->Get_AttackType();
+				fDmg = pBullet->Get_Dmg();
+			}
+
+			if (STATUS_DESC::ATTACKTYPE::NORMAL_ATTACK == eHitType)
+			{
+				if (fDmg <= 15.f)
+				{
+					m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreMoreWeakHit"));
+				}
+				else
+					m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreWeakHit"));
+			}
+			else if (STATUS_DESC::ATTACKTYPE::CHARGE_ATTACK == eHitType)
+			{
+				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_WeakHit"));
+			}
+			else if (STATUS_DESC::ATTACKTYPE::RUSH_ATTACK == eHitType)
+			{
+				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_BlowAwayHit"));
+			}
+			
+			else if (STATUS_DESC::ATTACKTYPE::UPPER_ATTACK == eHitType)
+			{
+				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_UpperHit"));
+			
+			}
+			
+			else if (STATUS_DESC::ATTACKTYPE::DOWN_ATTACK == eHitType)
+			{
+				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_DownHit"));
+			
+			}
+			m_tStatus.fCurrentHp -= fDmg;
+		}
+	}
 	//m_pRigidBodyCom->Add_Force(vCollisionPos, CRigidBody::FORCE_MODE::FORCE);
 
 	//wcout << LeftTag.c_str() << TEXT(" On_Collision is ") << RightTag.c_str() << endl;
@@ -156,16 +223,22 @@ void CPlayer::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag,
 		pBody->Set_Move(false);
 	}
 
-	if (LeftTag == TEXT("Layer_Monster") || LeftTag == TEXT("Layer_Bullet") && bHit == true)
+	if (LeftTag == TEXT("Layer_Boss") || LeftTag == TEXT("Layer_Monster") || LeftTag == TEXT("Layer_Bullet") && bHit == true)
 	{	
+		CPlayerPart_Body* pBody = dynamic_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
+
+		dynamic_cast<CModel*>(pBody->Find_Component(TEXT("Com_Model")))->Root_MotionEnd();
 		
+		if(LeftTag != TEXT("Layer_Bullet"))
+		m_pTransformCom->Look_At(pCollisionObject->Get_Transform()->Get_State(CTransform::STATE_POSITION));
+
 		CMonster* pMonster = dynamic_cast<CMonster*>(pCollisionObject);
 		CBullet* pBullet = dynamic_cast<CBullet*>(pCollisionObject);
 		
 		STATUS_DESC::ATTACKTYPE eHitType;
 		_float fDmg;
 
-		if (LeftTag == TEXT("Layer_Monster"))
+		if (LeftTag == TEXT("Layer_Boss") || LeftTag == TEXT("Layer_Monster"))
 		{
 			eHitType = pMonster->Get_AttackType();
 			fDmg = pMonster->Get_Dmg();
@@ -177,42 +250,43 @@ void CPlayer::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag,
 		}
 
 		
-		 
-
-		if (STATUS_DESC::ATTACKTYPE::NORMAL_ATTACK == eHitType)
-		{
-			if (fDmg <= 15.f)
-			{
-				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreMoreWeakHit"));
-			}
-			else
-				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreWeakHit"));
-		}
-		else if (STATUS_DESC::ATTACKTYPE::CHARGE_ATTACK == eHitType)
-		{
-			m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_WeakHit"));
-		}
-		else if (STATUS_DESC::ATTACKTYPE::RUSH_ATTACK == eHitType)
-		{
-			m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_BlowAwayHit"));
-		}
-
-		else if (STATUS_DESC::ATTACKTYPE::UPPER_ATTACK == eHitType)
-		{
-			m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_UpperHit"));
-			
-		}
-
-		else if (STATUS_DESC::ATTACKTYPE::DOWN_ATTACK == eHitType)
-		{
-			m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_DownHit"));
-
-		}
-				
-
-		m_tStatus.fCurrentHp -= fDmg;
 		
 
+		if (false == m_pStateCom->isHit())
+		{
+			if (STATUS_DESC::ATTACKTYPE::NORMAL_ATTACK == eHitType)
+			{
+				if (fDmg <= 15.f)
+				{
+					m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreMoreWeakHit"));
+				}
+				else
+					m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreWeakHit"));
+			}
+			else if (STATUS_DESC::ATTACKTYPE::CHARGE_ATTACK == eHitType)
+			{
+				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_WeakHit"));
+			}
+			else if (STATUS_DESC::ATTACKTYPE::RUSH_ATTACK == eHitType)
+			{
+				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_BlowAwayHit"));
+			}
+			
+			else if (STATUS_DESC::ATTACKTYPE::UPPER_ATTACK == eHitType)
+			{
+				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_UpperHit"));
+			
+			}
+			
+			else if (STATUS_DESC::ATTACKTYPE::DOWN_ATTACK == eHitType)
+			{
+				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_DownHit"));
+			
+			}
+
+		}
+
+		m_tStatus.fCurrentHp -= fDmg;
 		
 	}
 
@@ -226,13 +300,13 @@ void CPlayer::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, 
 	if (bType == false)
 	{
 		CPlayerPart_Body* pBody = dynamic_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
+		dynamic_cast<CModel*>(pBody->Find_Component(TEXT("Com_Model")))->Root_MotionStart();
 		pBody->Set_Move(true);
 	}
+
+	
 	
 	wcout << LeftTag.c_str() << TEXT(" On_CollisionExit is ") << RightTag.c_str() << endl;
-
-
-	
 	
 }
 
@@ -259,6 +333,11 @@ void CPlayer::Init_Status(_float fMaxHp, _float fDmg)
 	m_tStatus.fDmg = fDmg;
 
 	m_tOriginStatus = m_tStatus;
+}
+
+void CPlayer::Transition(CStateMachine::STATETYPE eStateType, wstring& strStateTag)
+{
+	m_pStateCom->Transition(eStateType, strStateTag);
 }
 
 HRESULT CPlayer::Ready_Components()
@@ -420,6 +499,9 @@ HRESULT CPlayer::Ready_States()
 		return E_FAIL;
 
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_DownHit"), CPlayerState_DownHit::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Depress"), CPlayerState_Depress::Create(this))))
 		return E_FAIL;
 	
 	m_pStateCom->Set_InitState(TEXT("PlayerState_Idle"));

@@ -26,6 +26,31 @@ void CCell::Set_PointY(POINT ePoint, _float fY)
 	m_pVIBuffer->Update(&m_vPoints[ePoint]);
 }
 
+_float CCell::Get_Height(const _float3& vPosition)
+{
+	_vector vPlane = {};
+
+	// CCell의 세 점을 이용하여 평면을 정의
+	vPlane = XMPlaneFromPoints(XMLoadFloat3(&m_vPoints[POINT_A]),
+		XMLoadFloat3(&m_vPoints[POINT_B]),
+		XMLoadFloat3(&m_vPoints[POINT_C]));
+
+	_float fA = XMVectorGetX(vPlane);
+	_float fB = XMVectorGetY(vPlane);
+	_float fC = XMVectorGetZ(vPlane);
+	_float fD = XMVectorGetW(vPlane);
+
+	// 현재 위치의 좌표
+	_float fX = vPosition.x;
+	_float fY = vPosition.y;
+	_float fZ = vPosition.z;
+
+	// 평면 방정식을 이용하여 높이 계산
+	_float height = (-fA * fX - fC * fZ - fD) / fB;
+
+	return height;
+}
+
 
 HRESULT CCell::Initialize(const _float3* pPoints, _uint iIndex)
 {

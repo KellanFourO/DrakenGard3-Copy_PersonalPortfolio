@@ -26,16 +26,17 @@ HRESULT CPlayerState_Sturn::Initialize(CPlayer* pPlayer)
 
 HRESULT CPlayerState_Sturn::StartState()
 {
-	m_pOwnerModelCom->Set_Animation(73);
-	m_pOwnerModelCom->Set_Loop(true);
+	m_pOwnerModelCom->Set_Animation(29);
+	m_pOwnerModelCom->Set_Loop(false);
 	m_pOwnerModelCom->Root_MotionEnd();
 	return S_OK;
 }
 
 HRESULT CPlayerState_Sturn::EndState()
 {
-	
-	
+	m_bSturn[0] = false;
+	m_bSturn[1] = false;
+	m_pOwnerModelCom->Set_Loop(true);
 	m_fAccTime = 0.f;
 	m_fLastInputTime = 0.f;
 
@@ -44,47 +45,23 @@ HRESULT CPlayerState_Sturn::EndState()
 
 void CPlayerState_Sturn::Tick(const _float& fTimeDelta)
 {
-	KeyInput(fTimeDelta);
-}
-
-void CPlayerState_Sturn::KeyInput(const _float& fTimeDelta)
-{
-	
-	//_float3 vCamLook;
-	//XMStoreFloat3(&vCamLook, m_pOwnerCam->Get_Transform()->Get_State(CTransform::STATE_LOOK));
-	//m_pOwnerTransform->Look_At_CamLook(vCamLook);
-
-	if (m_pGameInstance->Key_Down(DIK_W))
+	if (true == Is_Current_AnimEnd() && false == m_bSturn[0])
 	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Walk"));
-			
+		m_pOwnerModelCom->Set_Animation(30);
+		m_bSturn[0] = true;
+	}
+	else if (true == Is_Current_AnimEnd() && false == m_bSturn[1])
+	{
+		m_pOwnerModelCom->Set_Animation(31);
+		m_bSturn[1] = true;
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_A))
+	if (true == m_bSturn[1])
 	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Walk"));
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_S))
-	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Walk"));
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_D))
-	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Walk"));
-	}
-
-	//if (m_pGameInstance->Key_Down(DIK_SPACE))
-	//{
-	//	m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_AIR, TEXT("PlayerState_Jump"));
-	//}
-
-	if (m_pGameInstance->Mouse_Down(DIM_LB))
-	{
-		m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
+		Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_Idle"));
 	}
 }
+
 
 CPlayerState_Sturn* CPlayerState_Sturn::Create(CPlayer* pPlayer)
 {

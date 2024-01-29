@@ -46,6 +46,49 @@ HRESULT CData_Manager::Add_ModelTag(const wstring& strModelTag)
 	return S_OK;
 }
 
+HRESULT CData_Manager::Add_EffectTexutreTag(const wstring& strTextureTag)
+{
+	auto iter = find(m_vecEffectTextureTags.begin(), m_vecEffectTextureTags.end(), strTextureTag);
+
+	if (iter != m_vecEffectTextureTags.end())
+		return E_FAIL;
+
+	m_vecEffectTextureTags.push_back(strTextureTag);
+
+	return S_OK;
+}
+
+HRESULT CData_Manager::Add_EffectMeshTag(const wstring& strMeshModelTag)
+{
+	auto iter = find(m_vecEffectMeshTags.begin(), m_vecEffectMeshTags.end(), strMeshModelTag);
+
+	if (iter != m_vecEffectMeshTags.end())
+		return E_FAIL;
+
+	m_vecEffectMeshTags.push_back(strMeshModelTag);
+
+	return S_OK;
+}
+
+HRESULT CData_Manager::Add_ModelData(const wstring& strModelDataTag, MODELDATA* ModelData)
+{
+	auto iter = m_ModelDatas.find(strModelDataTag);
+
+	if (iter != m_ModelDatas.end())
+		return E_FAIL;
+
+	m_ModelDatas.emplace(strModelDataTag, ModelData);
+
+	return S_OK;
+}
+
+MODELDATA* CData_Manager::Get_ModelData_InKey(const wstring& strModelDataTag)
+{
+	auto iter = m_ModelDatas.find(strModelDataTag);
+
+	return iter->second;
+}
+
 CData_Manager* CData_Manager::Create()
 {
 	CData_Manager* pInstance = new CData_Manager;
@@ -61,4 +104,11 @@ CData_Manager* CData_Manager::Create()
 void CData_Manager::Free()
 {
 	//Safe_Delete(m_vecTags);
+
+	for (auto& pModelData : m_ModelDatas)
+	{
+		Safe_Delete(pModelData.second);
+	}
+
+	m_ModelDatas.clear();
 }

@@ -2,7 +2,7 @@
 #include "BossPart_EN131_Weapon.h"
 #include "GameInstance.h"
 #include "Bone.h"
-#include "EN01_Arrow.h"
+#include "EN131_Breath.h"
 
 CBossPart_EN131_Weapon::CBossPart_EN131_Weapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CPartObject(pDevice,pContext)
@@ -23,7 +23,7 @@ HRESULT CBossPart_EN131_Weapon::Initialize_Prototype(LEVEL eLevel)
 
 HRESULT CBossPart_EN131_Weapon::Initialize(void* pArg)
 {
-	m_strName = "CBossPart_EN131_Weapon";
+	m_strName = ((PART_DESC*)pArg)->m_strPartName;
 	
 	m_pParentTransformCom = ((PART_DESC*)pArg)->m_pParentTransform;
 
@@ -47,7 +47,7 @@ HRESULT CBossPart_EN131_Weapon::Initialize(void* pArg)
 	/* For.Com_Collider */
 	CBoundingBox_OBB::BOUNDING_OBB_DESC BoundingDesc = {};
 
-	BoundingDesc.vExtents = _float3(0.4f, 0.6f, 0.4f);
+	BoundingDesc.vExtents = _float3(0.6f, 0.8f, 0.6f);
 	BoundingDesc.vCenter = _float3(0.f, -0.6f, -1.f);
 	BoundingDesc.vRotation = _float3(XMConvertToRadians(190.f), 0.f, 0.f);
 	BoundingDesc.ePartType = CBoundParent::PARTTYPE_BOUND::PART_WEAPON;
@@ -58,6 +58,7 @@ HRESULT CBossPart_EN131_Weapon::Initialize(void* pArg)
 	m_pColliderCom->Set_PartType(CCollider::PART_WEAPON);
 
 	m_pTransformCom->Set_Scaling(1.f, 1.f, 1.f);
+	m_pColliderCom->OffCollider();
 	//m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-180.0f));
 	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.7f, 0.f, 0.f, 1.f));
 
@@ -110,23 +111,38 @@ HRESULT CBossPart_EN131_Weapon::Render()
 }
 
 
-CGameObject* CBossPart_EN131_Weapon::CreateBreath()
+CGameObject* CBossPart_EN131_Weapon::CreateBreath(_fvector vTargetPos)
 {
-	CEN01_Arrow::EN01_ARROWDESC Desc;
+	_vector vPos = vTargetPos;
+	vPos.m128_f32[3] = 1.f;
 
+	CEN131_Breath::EN131_BREATHDESC Desc;
+	
 	Desc.fDmg = 5.f;
 	Desc.fDeadTime = 5.f;
 	Desc.fRange = 30.f;
-	XMStoreFloat4(&Desc.vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+	XMStoreFloat4(&Desc.vLook, vPos - XMLoadFloat4x4(&m_WorldMatrix).r[3]);
+	//fDesc.vLook = { m_WorldMatrix._31, m_WorldMatrix._32, m_WorldMatrix._33, 0.f };
+	//XMStoreFloat4(&Desc.vLook, XMLoadFloat4x4(&m_WorldMatrix).r[2]);
+	//XMStoreFloat4(&Desc.vLook,m_pParentTransformCom->Get_State(CTransform::STATE_LOOK));
 	Desc.OwnerWorldMatrix = m_WorldMatrix;
 	Desc.fSpeedPerSec = 15.f;
 	Desc.fRotationPerSec = XMConvertToRadians(150.f);
-	Desc.eArrowType = CEN01_Arrow::ARROW_NORMAL;
+	
+
+	if (m_strName == "L_HEAD")
+		Desc.eBreathType = CEN131_Breath::BREATH_LEFT;
+	else if (m_strName == "C_HEAD")
+		Desc.eBreathType = CEN131_Breath::BREATH_CENTER;
+	else if (m_strName == "R_HEAD")
+		Desc.eBreathType = CEN131_Breath::BREATH_RIGHT;
+	
+	//XMStoreFloat4(&Desc.vTargetPos, vTargetPos);
 
 
 	CGameObject* pGameObject = nullptr;
 
-	if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelIndex, TEXT("Layer_Bullet"), TEXT("Prototype_GameObject_Monster_EN01_Arrow"), &Desc, &pGameObject)))
+	if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelIndex, TEXT("Layer_Bullet"), TEXT("Prototype_GameObject_EN131_Breath"), &Desc, &pGameObject)))
 		_int i = 0;
 
 	return pGameObject;

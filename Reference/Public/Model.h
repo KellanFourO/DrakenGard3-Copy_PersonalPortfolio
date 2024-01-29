@@ -13,14 +13,7 @@ public:
 	enum TYPE	{ TYPE_NONANIM, TYPE_ANIM, TYPE_END }; //! 애니메이션이 있는 모델과 없는 모델을 구분짓기 위한 열거체
 	enum class ANIM_STATE { NONE, LOOP, REVERSE, STATE_END };
 
-	struct ModelData
-	{
-		wstring strBoneDataPath;
-		wstring strMeshDataPath;
-		wstring strMaterialDataPath;
-		wstring strAnimationDataPath;
-		wstring strHitAnimationDataPath;
-	};
+	
 
 private:
 	CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -44,7 +37,7 @@ public:
 	_bool	is_BlendFinished() { return m_isBlend;}
 
 public:
-	virtual HRESULT Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);
+	virtual HRESULT Initialize_Prototype(TYPE eType, MODELDATA& tDataFilePath, _fmatrix PivotMatrix);
 	virtual HRESULT Initialize(void* pArg);
 	virtual HRESULT Render(_uint iMeshIndex); //! virtual은 의미가없다. 자기 자신이 가지고잇는 메시들을 렌더링 시키기위한 함수이다.
 
@@ -108,7 +101,7 @@ private:
 
 	CBone*				m_pRootTranslateBone = { nullptr };
 
-	ModelData					m_tDataFilePath;
+	MODELDATA					m_tDataFilePath;
 public:
 	typedef vector<CBone*>	BONES;
 
@@ -131,7 +124,7 @@ private:
 	virtual void Load_FromJson(const json& In_Json) override;
 
 public:
-	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix);
+	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, MODELDATA& tDataFilePath, _fmatrix PivotMatrix);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

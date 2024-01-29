@@ -31,6 +31,9 @@ public:
 	
 	
 	_bool			isDead() { return m_isDead; }
+	_bool			isHit() { return m_isHit; }
+
+	void			Set_Hit(_bool bHit) { m_isHit = bHit; }
 
 private:
 	CStateMachine(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -62,6 +65,7 @@ private:
 	_bool			m_isGround = { true };
 	_bool			m_isFinished = { true };
 	_bool			m_isDead = { false };
+	_bool			m_isHit = { false };
 
 	_bool			m_isStart = { true } ; //! 최초 한번
 	

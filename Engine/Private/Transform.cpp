@@ -45,6 +45,25 @@ HRESULT CTransform::Initialize_Prototype(_float fSpeedPerSec, _float fRotationPe
 	return S_OK;
 }
 
+_float3 CTransform::Get_RotateDir(_float3& vBaseDir, _float fAngle)
+{
+	// 기준이 되는 방향벡터를 XMFLOAT3에서 XMVECTOR로 변환
+	XMVECTOR baseDirection = XMLoadFloat3(&vBaseDir);
+
+	// Yaw 회전 행렬 생성
+	XMMATRIX rotationMatrix = XMMatrixRotationY(XMConvertToRadians(fAngle));
+
+	// 회전된 방향벡터 계산
+	XMVECTOR rotatedDirection = XMVector3Transform(baseDirection, rotationMatrix);
+
+	// XMVECTOR를 XMFLOAT3로 변환하여 반환
+	XMFLOAT3 result;
+	XMStoreFloat3(&result, rotatedDirection);
+
+	return result;
+}
+
+
 void CTransform::Set_Scaling(_float fScaleX, _float fScaleY, _float fScaleZ)
 {
 	//TODO 월드행렬 각 행의 길이는 각 x,y,z의 스케일과 같다.
@@ -131,15 +150,7 @@ void CTransform::Go_Player_Straight(_float fTimeDelta, _float3 vCamLook, class C
 	{
 		if (false == pNavigation->isMove(vPosition))
 			return;
-		else
-		{
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-		}
+	
 	}
 
 	//! 위에서 연산을 끝낸 벡터를 실제 월드행렬의 위치벡터에게 적용시킨다. 
@@ -158,15 +169,7 @@ void CTransform::Go_Player_Left(_float fTimeDelta, _float3 vCamLook, class CNavi
 	{
 		if (false == pNavigation->isMove(vPosition))
 			return;
-		else
-		{
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-		}
+		
 	}
 
 	Set_State(STATE_POSITION, vPosition);
@@ -185,15 +188,7 @@ void CTransform::Go_Player_Right(_float fTimeDelta, _float3 vCamLook, class CNav
 	{
 		if (false == pNavigation->isMove(vPosition))
 			return;
-		else
-		{
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-		}
+		
 	}
 
 	Set_State(STATE_POSITION, vPosition);
@@ -214,15 +209,7 @@ void CTransform::Go_Player_Backward(_float fTimeDelta, _float3 vCamLook, class C
 	{
 		if (false == pNavigation->isMove(vPosition))
 			return;
-		else
-		{
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-		}
+		
 	}
 
 	//! 위에서 연산을 끝낸 벡터를 실제 월드행렬의 위치벡터에게 적용시킨다. 
@@ -240,15 +227,7 @@ void CTransform::Go_Player_Up(_float fTimeDelta, _float3 vCamLook, class CNaviga
 	{
 		if (false == pNavigation->isMove(vPosition))
 			return;
-		else
-		{
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-		}
+		
 	}
 
 	Set_State(STATE_POSITION, vPosition);
@@ -266,15 +245,7 @@ void CTransform::Go_Player_Down(_float fTimeDelta, _float3 vCamLook, class CNavi
 	{
 		if (false == pNavigation->isMove(vPosition))
 			return;
-		else
-		{
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-		}
+		
 	}
 
 	Set_State(STATE_POSITION, vPosition);
@@ -299,15 +270,7 @@ void CTransform::Go_Straight(_float fTimeDelta, class CNavigation* pNavigation)
 	{
 		if(false == pNavigation->isMove(vPosition))
 			return;
-		else
-		{
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-		}
+		
 	}
 
 	//! 위에서 연산을 끝낸 벡터를 실제 월드행렬의 위치벡터에게 적용시킨다. 
@@ -325,15 +288,7 @@ void CTransform::Go_Left(_float fTimeDelta, class CNavigation* pNavigation)
 	{
 		if (false == pNavigation->isMove(vPosition))
 			return;
-		else
-		{
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-		}
+		
 	}
 
 	Set_State(STATE_POSITION, vPosition);
@@ -350,15 +305,7 @@ void CTransform::Go_Right(_float fTimeDelta, class CNavigation* pNavigation)
 	{
 		if (false == pNavigation->isMove(vPosition))
 			return;
-		else
-		{
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-		}
+		
 	}
 
 	Set_State(STATE_POSITION, vPosition);
@@ -374,17 +321,6 @@ void CTransform::KeepEye(_float fTimeDelta, _bool bRight, CNavigation* pNavigati
 	else
 		vPosition += XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
 
-	
-	if (nullptr != pNavigation)
-	{
-		
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-	}
 
 	Set_State(STATE_POSITION, vPosition);
 }
@@ -404,15 +340,7 @@ void CTransform::Go_Backward(_float fTimeDelta, class CNavigation* pNavigation)
 	{
 		if (false == pNavigation->isMove(vPosition))
 			return;
-		else
-		{
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-		}
+		
 	}
 
 	//! 위에서 연산을 끝낸 벡터를 실제 월드행렬의 위치벡터에게 적용시킨다. 
@@ -430,15 +358,7 @@ void CTransform::Go_Up(_float fTimeDelta, class CNavigation* pNavigation)
 	{
 		if (false == pNavigation->isMove(vPosition))
 			return;
-		else
-		{
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-		}
+	
 	}
 
 	Set_State(STATE_POSITION, vPosition);
@@ -456,15 +376,7 @@ void CTransform::Go_Down(_float fTimeDelta, class CNavigation* pNavigation)
 	{
 		if (false == pNavigation->isMove(vPosition))
 			return;
-		else
-		{
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-		}
+		
 	}
 
 	Set_State(STATE_POSITION, vPosition);
@@ -571,6 +483,58 @@ _bool CTransform::TurnToTarget(const _fvector& vTargetPosition, _float fTimeDelt
 }
 
 
+void CTransform::Set_Point_Gravity_Velocity(_float3 vTargetPosition, _float3 vPrevPosition, _float fMaxHeight, _float fMaxTime, _Out_ _float3* vOutVelocity, _Out_ _float* fOutGravity)
+{
+	_float fEndHeight = vTargetPosition.y - vPrevPosition.y;
+	_float fCalcHeight = fMaxHeight - vPrevPosition.y;
+
+	_float fEndTime = 0.f;
+	_float fCalcGravity = 2 * fCalcHeight / (fMaxTime * fMaxTime);
+
+	_float fA, fB, fC;
+
+	vOutVelocity->y = sqrtf(2 * fCalcGravity * fCalcHeight);
+
+	fA = fCalcGravity;
+	fB = -2 * vOutVelocity->y;
+	fC = 2 * fEndHeight;
+
+	_float fDelta;
+	fDelta = fB * fB - 4 * fA * fC;
+
+	if (fDelta >= 0) {
+		fEndTime = (-fB + sqrtf(fDelta)) / (2 * fA);
+	}
+	else {
+		// 음수인 경우에 대한 처리
+		fEndTime = fabs((-fB + sqrtf(-fDelta)) / (2 * fA));  // 음수를 고려하여 sqrtf(-delta)
+	}
+
+	//fEndTime = (-fB + sqrtf(fB * fB - 4 * fA * fC)) / (2 * fA);
+
+	vOutVelocity->x = -(vPrevPosition.x - vTargetPosition.x) / fEndTime;
+	vOutVelocity->z = -(vPrevPosition.z - vTargetPosition.z) / fEndTime;
+
+	*fOutGravity = fCalcGravity;
+
+}
+
+void CTransform::Point_Parabola(_float3 vTargetPos, _float3 vPrevPos, _float3 vVelocity, _float fTimeAcc, _float fGravity)
+{
+	_float4 vTargetPosW = {vTargetPos.x, vTargetPos.y, vTargetPos.z, 1.f};
+
+	_vector vPos = Get_State(CTransform::STATE_POSITION);
+
+	vPos.m128_f32[0] = vPrevPos.x + vVelocity.x * fTimeAcc;
+	vPos.m128_f32[1] = vPrevPos.y + (vVelocity.y * fTimeAcc) - (0.5f * fGravity * fTimeAcc * fTimeAcc);
+	vPos.m128_f32[2] = vPrevPos.z + vVelocity.z * fTimeAcc;
+
+	//Look_At(XMLoadFloat4(&vTargetPosW));\
+	wDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDrwRDDD
+	Set_State(CTransform::STATE_POSITION, vPos);
+}
+
+
 void CTransform::Go_Target(_fvector vTargetPos, _float fTimeDelta, _float fSpare)
 {
 	//TODO 타겟 위치에 도달할때 까지 추적
@@ -582,6 +546,23 @@ void CTransform::Go_Target(_fvector vTargetPos, _float fTimeDelta, _float fSpare
 
 	if(fDistance >= fSpare)
 		vPosition += XMVector3Normalize(vDir) * m_fSpeedPerSec * fTimeDelta;
+
+
+	Look_At(vTargetPos);
+	Set_State(STATE_POSITION, vPosition);
+}
+
+void CTransform::Go_Target_Speed(_fvector vTargetPos, _float fTimeDelta, _float fSpeed, _float fSpare)
+{
+	//TODO 타겟 위치에 도달할때 까지 추적
+
+	_vector vPosition = Get_State(STATE_POSITION);
+	_vector	vDir = vTargetPos - vPosition;
+
+	_float fDistance = XMVectorGetX(XMVector3Length(vDir));
+
+	if (fDistance >= fSpare)
+		vPosition += XMVector3Normalize(vDir) * fSpeed * fTimeDelta;
 
 
 	Look_At(vTargetPos);
@@ -604,15 +585,7 @@ void CTransform::Go_Target_Navi(_fvector vTargetPos, _float fTimeDelta, CNavigat
 	{
 		if (false == pNavigation->isMove(vPosition))
 			return;
-		else
-		{
-			_float3 vPos;
-			XMStoreFloat3(&vPos, vPosition);
-
-			_float fY = pNavigation->Compute_Height(vPos);
-
-			vPosition.m128_f32[1] = fY;
-		}
+		
 	}
 
 	Look_At(vTargetPos);
@@ -650,6 +623,37 @@ void CTransform::Look_At_CamLook(_float3 vCamLook)
 	Set_State(STATE_RIGHT, vMyRight);
 	Set_State(STATE_UP, vMyUp);
 	Set_State(STATE_LOOK, vNewLook);
+}
+
+void CTransform::Look_At_Dir(_vector _vLook)
+{
+	
+	_vector vScale = XMLoadFloat3(&Get_Scaled());
+
+	_vector vLook = XMVector3Normalize(_vLook);
+	_vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	_vector vRight = XMVector3Normalize(XMVector3Cross(vUp, vLook)) * XMVectorGetX(vScale);
+	vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight)) * XMVectorGetY(vScale);
+	vLook = XMVector3Normalize(vLook) * XMVectorGetZ(vScale);
+
+	Set_State(CTransform::STATE_RIGHT, vRight);
+	Set_State(CTransform::STATE_UP, vUp);
+	Set_State(CTransform::STATE_LOOK, vLook);
+}
+
+void CTransform::Look_At_Dir(_float3 _vLook)
+{
+	_vector vScale = XMLoadFloat3(&Get_Scaled());
+
+	_vector vLook = XMVector3Normalize(XMLoadFloat3(&_vLook));
+	_vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	_vector vRight = XMVector3Normalize(XMVector3Cross(vUp, vLook)) * XMVectorGetX(vScale);
+	vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight)) * XMVectorGetY(vScale);
+	vLook = XMVector3Normalize(vLook) * XMVectorGetZ(vScale);
+
+	Set_State(CTransform::STATE_RIGHT, vRight);
+	Set_State(CTransform::STATE_UP, vUp);
+	Set_State(CTransform::STATE_LOOK, vLook);
 }
 
 void CTransform::Look_At_OnLand(_fvector vTargetPos)
@@ -707,9 +711,13 @@ void CTransform::Translate(const _float3& vTranslation, class CNavigation* pNavi
 
 		m_vTranslatePos = vRealPos;
 		
-		_float fY = pNavigation->Compute_Height(vRealPos);
 		
-		vPos.m128_f32[1] = fY;
+		_float fY = pNavigation->Compute_Height(vRealPos, &m_isGround);
+		
+		if(m_isGround == true)
+			vPos.m128_f32[1] = fY;
+		else
+			_int i =0;
 
 		Set_State(CTransform::STATE_POSITION, vPos);
 	}

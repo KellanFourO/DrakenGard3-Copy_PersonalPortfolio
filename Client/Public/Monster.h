@@ -48,7 +48,9 @@ public:
 
 	_float				Get_Dmg() { return m_tStatus.fDmg; }
 	STATUS_DESC::ATTACKTYPE Get_AttackType() { return m_tStatus.eAttackType;}
-	CCollider* Get_WeaponCollider();
+	CCollider*			Get_WeaponCollider();
+	void				Set_WeaponAttackType(STATUS_DESC::ATTACKTYPE eAttackType);
+	void				Set_PartAttackType(wstring& strPartTag, STATUS_DESC::ATTACKTYPE eAttackType);
 
 public:
 	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit) override; // call on collising

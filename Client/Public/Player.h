@@ -50,6 +50,8 @@ public:
 		_float				Get_Dmg() { return m_tStatus.fDmg; }
 	STATUS_DESC::ATTACKTYPE Get_AttackType() { return m_tStatus.eAttackType; }
 	void					Init_Status(_float fMaxHp, _float fDmg);
+	void					Transition(CStateMachine::STATETYPE eStateType, wstring& strStateTag);
+	
 
 private:
 	HRESULT			Ready_Components();
@@ -58,6 +60,8 @@ private:
 	HRESULT			Ready_Camera();
 	HRESULT			Add_PartObject(const wstring& strPrototypeTag, const wstring& strPartTag, void* pArg);
 	void			Key_Input(const _float fTimeDelta);
+
+	
 
 	string			ConvertWstrToStrTest(const wstring& wstr);
 private:
@@ -70,10 +74,16 @@ private:
 	CCamera_Target*		m_pCamera		= { nullptr };
 private:
 	_bool				m_bAdmin = false;
+	_bool				m_bSturn = false;
+	
 	_float				m_fAccTime = 0.f;
 
 	STATUS_DESC							m_tStatus = {};
 	STATUS_DESC							m_tOriginStatus = {};
+	_bool				m_bTest = true;
+
+	
+	
 
 private:
 	//map<const wstring, class CPartObject*>			m_PartObjects;

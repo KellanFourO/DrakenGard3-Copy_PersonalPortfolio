@@ -18,8 +18,12 @@
 #include "Environment_BrokenBarricade.h"
 
 //!이펙트
+#include "MeshEffect.h"
+
 #include "Effect_Explosion.h"
+#include "Effect_BornFire.h"
 
 //! 파티클
 #include "Particle_Blue.h"
 #include "Particle_Red.h"
+#include "Particle_Object.h"

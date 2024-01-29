@@ -70,7 +70,7 @@ HRESULT CEffect_Explosion::Render()
 		return E_FAIL;
 
 	/* 이 셰ㅒ이더에 0번째 패스로 그릴꺼야. */
-	m_pShaderCom->Begin(1);
+	m_pShaderCom->Begin(2);
 
 	/* 내가 그릴려고하는 정점, 인덷ㄱ스버퍼를 장치에 바인딩해. */
 	m_pVIBufferCom->Bind_VIBuffers();
@@ -110,7 +110,7 @@ HRESULT CEffect_Explosion::Bind_ShaderResources()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ))))
 		return E_FAIL;
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_fFrame))))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", _uint(m_fFrame))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Bind_RenderTarget_ShaderResource(TEXT("Target_Depth"), m_pShaderCom, "g_DepthTexture")))

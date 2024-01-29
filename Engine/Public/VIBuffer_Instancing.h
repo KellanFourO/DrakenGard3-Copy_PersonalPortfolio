@@ -12,7 +12,10 @@ public:
 		_float		fRange;
 		_float2		vSpeed;
 		_float2		vScale;
+		_float3		vRotation;
+		_float4		vColor;
 		_float2		vLifeTime;
+		_float		fAge;
 	}INSTANCING_DESC;
 
 protected:

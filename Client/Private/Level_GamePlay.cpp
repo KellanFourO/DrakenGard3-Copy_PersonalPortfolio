@@ -9,6 +9,8 @@
 #include "Camera_Target.h"
 #include "Environment_Object.h"
 
+#include "Event_Boss1Apeear.h"
+
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
 {
@@ -34,9 +36,12 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_Event()))
+		return E_FAIL;
 	
 	if (FAILED(Ready_Layer_Collider()))
 		return E_FAIL; 
+
 
  	
 
@@ -163,11 +168,19 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const wstring& strLayerTag)
 	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Particle_Red"))))
 		return E_FAIL;
 
+	
+
 	for (size_t i = 0; i < 30; i++)
 	{
 		if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Effect_Explosion"))))
 			return E_FAIL;
+
+		//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Effect_BornFire"))))
+		//	return E_FAIL;
+
 	}
+
+	
 
 	return S_OK;
 }
@@ -183,7 +196,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const wstring& strLayerTag)
 	json LoadJson;
 
 	//CJson_Utility::Load_Json("../Bin/DataFiles/39_Anim.json", LoadJson);
-	CJson_Utility::Load_Json("../Bin/DataFiles/41_Anim.json", LoadJson);
+	//CJson_Utility::Load_Json("../Bin/DataFiles/41_Anim.json", LoadJson);
+	CJson_Utility::Load_Json("../Bin/DataFiles/43_Anim.json", LoadJson);
 
 	_int LoadSize = LoadJson.size();
 
@@ -260,7 +274,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const wstring& strLayerTag)
 
 	json LoadJson;
 
-	CJson_Utility::Load_Json("../Bin/DataFiles/Map.json", LoadJson);
+	CJson_Utility::Load_Json("../Bin/DataFiles/43_NonAnim.json", LoadJson);
 
 	_int LoadSize = LoadJson.size();
 
@@ -317,6 +331,32 @@ HRESULT CLevel_GamePlay::Ready_Layer_Collider()
 	if (FAILED(m_pGameInstance->Add_Check_CollisionGroup(TEXT("Layer_Player"), TEXT("Layer_Boss"))))
 		return E_FAIL;
 
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Layer_Event()
+{
+	CMyEvent::EVENT_DESC EventDesc;
+
+	EventDesc.eEventType = CMyEvent::BOSS1_APPEAR;
+	EventDesc.iCurrentLevelIndex = LEVEL_GAMEPLAY;
+	EventDesc.vEventPos = _float3(59.662f, 19.222f, 237.943f);
+	EventDesc.vColliderSize = _float3(7.f, 5.f, 2.f);
+	EventDesc.vColliderCenter = _float3(0.f, 5.f, 0.f);
+	
+	CEvent_Boss1Appear* pEvent_Boss1Appear = CEvent_Boss1Appear::Create(m_pDevice, m_pContext, &EventDesc);
+
+	if(nullptr == pEvent_Boss1Appear)
+		return E_FAIL;
+
+	if(FAILED(m_pGameInstance->Add_Event(TEXT("Event_Boss1Appeal"), pEvent_Boss1Appear, &EventDesc)))
+		return E_FAIL;
+
+	//CMyEvent* pMyEvent = 
+
+	//if(FAILED(m_pGameInstance->Add_Event(TEXT("Event_BossAppeal"), &EventDesc)))
+	//	return E_FAIL;
+	
 	return S_OK;
 }
 

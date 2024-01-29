@@ -76,6 +76,8 @@ public:
 		return XMLoadFloat4x4(&m_WorldMatrix);
 	}
 
+	_float3 Get_RotateDir(_float3& vBaseDir, _float fAngle);
+
 	void	Set_WorldFloat4x4(_float4x4 mat4x4)
 	{
 		XMStoreFloat4x4(&m_WorldMatrix, XMLoadFloat4x4(&mat4x4));
@@ -124,7 +126,7 @@ public:
 	void	Go_Down(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
 	
 	
-
+	_bool	Is_Ground() { return m_isGround; }
 	void	Turn(_fvector vAxis, _float fTimeDelta);
 	_bool	AreVectorsAligned(const _fvector& v1, const _fvector& v2, _float fTolerance = 0.001f);
 	void	Rotation(_fvector vAxis, _float fRadian);
@@ -132,12 +134,17 @@ public:
 	_bool	TurnToTarget(const _fvector& vTargetPosition, _float fTimeDelta);
 	
 	
+	void	Set_Point_Gravity_Velocity(_float3 vTargetPosition, _float3 vPrevPosition, _float fMaxHeight, _float fMaxTime, _Out_ _float3* vOutVelocity, _Out_ _float* fOutGravity);
+	void	Point_Parabola(_float3 vTargetPos, _float3 vPrevPos, _float3 vVelocity, _float fTimeAcc, _float fGravity);
 
 	void	Go_Target(_fvector vTargetPos, _float fTimeDelta, _float fSpare = 0.1f);
+	void	Go_Target_Speed(_fvector vTargetPos, _float fTimeDelta, _float fSpeed, _float fSpare = 0.1f);
 	void	Go_Target_Navi(_fvector vTargetPos, _float fTimeDelta, class CNavigation* pNavigation, _float fSpare = 0.1f);
 
 	void	Look_At(_fvector vTargetPos);
 	void	Look_At_CamLook(_float3 vCamLook);
+	void	Look_At_Dir(_vector _vLook);
+	void	Look_At_Dir(_float3 _vLook);
 	void	Look_At_OnLand(_fvector vTargetPos);
 	_bool	HasArrived(const DirectX::XMFLOAT3& _vCurrentPos, const DirectX::XMFLOAT3& _vTargetPos, _float fArrivalThreshold);
 
@@ -165,8 +172,12 @@ private:
 	_float				m_fRotationPerSec = { 0.0f };
 	
 	_float3				m_vTranslatePos = {};
+	
+	_bool				m_isGround = true;
 
 	_float4x4			m_WorldMatrix;
+
+	
 
 public:
 	static	CTransform* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _float fSpeedPerSec, _float fRotationPerSec);
