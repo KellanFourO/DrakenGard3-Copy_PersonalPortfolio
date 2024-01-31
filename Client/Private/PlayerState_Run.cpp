@@ -10,6 +10,7 @@
 #include "Navigation.h"
 #include "RigidBody.h"
 #include "Camera_Target.h"
+#include "Effect_Hanabira.h"
 
 CPlayerState_Run::CPlayerState_Run()
 {
@@ -40,7 +41,7 @@ HRESULT CPlayerState_Run::EndState()
 {
 	m_fLastInputTime = 0.f;
 	m_fAccTime = 0.f;
-    
+    m_fHanabiraAccTime = 0.f;
     m_pOwnerModelCom->Reset_AnimationSpeed();
 
 	return S_OK;
@@ -49,6 +50,7 @@ HRESULT CPlayerState_Run::EndState()
 void CPlayerState_Run::Tick(const _float& fTimeDelta)
 {
 	KeyInput(fTimeDelta);
+    CreateHanabira(fTimeDelta);
 }
 
 void CPlayerState_Run::Late_Tick(const _float& fTimeDelta)
@@ -179,6 +181,37 @@ void CPlayerState_Run::KeyInput(const _float& fTimeDelta)
     {
         m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Attack1"));
     }
+}
+
+void CPlayerState_Run::CreateHanabira(_float fTimeDelta)
+{
+    m_fHanabiraAccTime += fTimeDelta;
+
+    if (m_fHanabiraAccTime >= m_fHanabiraCreateTime)
+    {
+        for (_int i = 0; i < 20; ++i)
+        {
+            _vector vMyPos = m_pOwnerTransform->Get_State(CTransform::STATE_POSITION);
+
+            _float4 vRandomPos = m_pOwnerTransform->Get_RandomPositionAroundCenter(vMyPos, XMConvertToRadians(360.f));
+
+            CEffect_Hanabira::HANABIRA_DESC Desc;
+
+            Desc.fSpeedPerSec = 5.f;
+            Desc.fRotationPerSec = XMConvertToRadians(90.f);
+            Desc.pTarget = m_pGameInstance->Get_Player(LEVEL_GAMEPLAY);
+            Desc.vPos = vRandomPos;
+            Desc.fLifeTime = 3.f;
+            Desc.eType = CEffect_Hanabira::HANABIRA_SPREAD;
+            XMStoreFloat4(&Desc.vLook, m_pOwnerTransform->Get_State(CTransform::STATE_LOOK));
+
+            m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Hanabira"), &Desc);
+        }
+
+        m_fHanabiraAccTime = 0.f;
+    }
+
+    
 }
 
 CPlayerState_Run* CPlayerState_Run::Create(CPlayer* pPlayer)

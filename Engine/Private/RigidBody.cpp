@@ -123,6 +123,7 @@ void CRigidBody::Update_Kinetic(const _float& fTimeDelta)
 	XMStoreFloat3(&vRealPos, vPos);
 	
 	_bool bIsGround = false;
+	if(nullptr != m_pOwnerNavigation)
 	_float fY = m_pOwnerNavigation->Compute_Height(vRealPos, &bIsGround);
 
 	if (m_bUseGravity && false == bIsGround)

@@ -5,6 +5,9 @@ texture2D g_Texture;
 vector g_vCamPosition;
 
 
+float2 g_UVOffset;
+float2 g_UVScale;
+
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -144,6 +147,26 @@ PS_OUT PS_VertexColor(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_Sprite(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    
+    float2 clippedTexCoord = In.vTexcoord * g_UVScale + g_UVOffset;
+
+	/* 첫번째 인자의 방식으로 두번째 인자의 위치에 있는 픽셀의 색을 얻어온다. */
+    Out.vColor = g_Texture.Sample(PointSampler, clippedTexCoord);
+
+    if (Out.vColor.a < 0.8f)
+        discard;
+    
+    //Out.vColor.rgb = float3(1.f, 0.f, 0.f);
+
+    Out.vColor.a = In.vColor.a;
+
+    return Out;
+}
+
 
 
 technique11 DefaultTechnique
@@ -151,7 +174,7 @@ technique11 DefaultTechnique
 	/* 내가 원하는 특정 셰이더들을 그리는 모델에 적용한다. */
     pass Particle
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend_Add, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
 		/* 렌더스테이츠 */
@@ -164,7 +187,7 @@ technique11 DefaultTechnique
 
     pass ParticleColorSelect
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend_Add, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
 		/* 렌더스테이츠 */
@@ -173,5 +196,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_VertexColor();
+    }
+
+    pass ParticleSprite
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend_Add, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+		/* 렌더스테이츠 */
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Sprite();
     }
 }

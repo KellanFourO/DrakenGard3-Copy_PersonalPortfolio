@@ -10,6 +10,7 @@
 #include "Navigation.h"
 #include "RigidBody.h"
 #include "Animation.h"
+#include "Effect_Hanabira.h"
 
 CPlayerState_Attack8::CPlayerState_Attack8()
 {
@@ -31,6 +32,7 @@ HRESULT CPlayerState_Attack8::StartState()
 	m_pOwnerModelCom->Set_Animation(104);
 	m_pOwnerModelCom->Set_Loop(false);
 	m_pOwnerModelCom->Root_MotionStart();
+	
 	return S_OK;
 }
 
@@ -41,6 +43,7 @@ HRESULT CPlayerState_Attack8::EndState()
 	m_fLastInputTime = 0.f;
 	m_isEnd = false;
 	m_bInput = false;
+	m_bCreateHanabira = false;
 
 	return S_OK;
 }
@@ -52,11 +55,43 @@ void CPlayerState_Attack8::Priority_Tick(const _float& fTimeDelta)
 
 void CPlayerState_Attack8::Tick(const _float& fTimeDelta)
 {
+	if (18 < m_pOwnerModelCom->Get_CurrentAnimation()->Get_TrackPosition() && false == m_bCreateHanabira)
+	{
+		CreateHanabira();
+		m_bCreateHanabira = true;
+	}
 }
 
 void CPlayerState_Attack8::Late_Tick(const _float& fTimeDelta)
 {
 	NextComboOrIdle(m_pOwnerModelCom, m_pOwnerStateCom, TEXT("PlayerState_Idle"), 105);
+}
+
+void CPlayerState_Attack8::CreateHanabira()
+{
+	
+		
+
+		for (_int i = 0; i < 300; ++i)
+		{
+			
+			_vector vMyPos = m_pOwnerTransform->Get_State(CTransform::STATE_POSITION);
+			_float4 vRandomPos = m_pOwnerTransform->Get_RandomPositionAroundCenter(vMyPos, XMConvertToRadians(360.f));
+
+			CEffect_Hanabira::HANABIRA_DESC Desc;
+
+			Desc.fSpeedPerSec = 5.f;
+			Desc.fRotationPerSec = XMConvertToRadians(90.f);
+			Desc.pTarget = m_pGameInstance->Get_Player(LEVEL_GAMEPLAY);
+			Desc.vPos = vRandomPos;
+			Desc.fLifeTime = 1.f;
+			Desc.eType = CEffect_Hanabira::HANABIRA_ORBIT;
+			XMStoreFloat4(&Desc.vLook, m_pOwnerTransform->Get_State(CTransform::STATE_LOOK));
+
+			m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Hanabira"), &Desc);
+		}
+
+
 }
 
 CPlayerState_Attack8* CPlayerState_Attack8::Create(CPlayer* pPlayer)

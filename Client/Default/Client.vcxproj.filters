@@ -244,6 +244,21 @@
     <Filter Include="02. GameObjects\05. Effects\MeshEffect">
       <UniqueIdentifier>{08068fcf-356f-46fd-aef3-d8de766dd44f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Player">
+      <UniqueIdentifier>{9840f30b-6ee0-4d9b-9b14-af9c263f8920}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Player\Hanabira">
+      <UniqueIdentifier>{66e41856-a6f0-4439-97a2-181fdeac3dea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Boss">
+      <UniqueIdentifier>{28076e7d-455e-44a5-98e2-a9aa081f7bfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Particles\BossBreath">
+      <UniqueIdentifier>{5f7a6f07-e6c9-47ba-8bd2-70bde99351a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Blood">
+      <UniqueIdentifier>{89d17fb6-ebf5-4c06-a8e6-886e65efe915}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -552,6 +567,18 @@
     <ClInclude Include="..\Public\MeshEffect.h">
       <Filter>02. GameObjects\05. Effects\MeshEffect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Effect_Hanabira.h">
+      <Filter>02. GameObjects\05. Effects\Player\Hanabira</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_BossBreath.h">
+      <Filter>02. GameObjects\05. Effects\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Particle_BossBreath.h">
+      <Filter>02. GameObjects\05. Effects\Particles\BossBreath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Blood.h">
+      <Filter>02. GameObjects\05. Effects\Blood</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -818,6 +845,18 @@
     <ClCompile Include="..\Private\MeshEffect.cpp">
       <Filter>02. GameObjects\05. Effects\MeshEffect</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Effect_Hanabira.cpp">
+      <Filter>02. GameObjects\05. Effects\Player\Hanabira</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_BossBreath.cpp">
+      <Filter>02. GameObjects\05. Effects\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Particle_BossBreath.cpp">
+      <Filter>02. GameObjects\05. Effects\Particles\BossBreath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Blood.cpp">
+      <Filter>02. GameObjects\05. Effects\Blood</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -860,6 +899,9 @@
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Particle_Point.hlsl">
+      <Filter>97. ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_EffectMesh.hlsl">
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

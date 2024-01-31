@@ -5,9 +5,6 @@ BEGIN(Client)
 
 class CMeshEffect final : public CNonAnimObject
 {
-
-	
-
 public:
 	typedef struct tagMesh_EffectDesc : public CGameObject::GAMEOBJECT_DESC
 	{
@@ -21,7 +18,9 @@ public:
 		_float4	vColor;
 		_float2 vLifeTime;
 		_float	fAge;
-	
+		_float4 vDir = { 1.f, 0.f, 0.f, 0.f };
+		_float2	vRandomRotation = {};
+		_bool bRandom = true;
 	}MESH_EFFECTDESC;
 
 private:
@@ -47,6 +46,10 @@ private:
 	_uint				m_iShaderPassIndex = 0;
 	_float				m_fAge = 0.f;
 	
+	MESH_EFFECTDESC		m_tEffectDesc = {};
+	
+	random_device				m_RandomDevice;
+	mt19937_64					m_RandomNumber;
 
 public:
 	/* 원형객체를 생성한다. */

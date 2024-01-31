@@ -19,6 +19,12 @@ public:
 	virtual void	Tick(const _float& fTimeDelta) override;
 	virtual void	Late_Tick(const _float& fTimeDelta) override;
 
+private:
+	void			CreateHanabira();
+
+private:
+	_bool			m_bCreateHanabira = false;
+
 public:
 	static CPlayerState_Attack8* Create(CPlayer* pPlayer);
 	virtual void Free() override;

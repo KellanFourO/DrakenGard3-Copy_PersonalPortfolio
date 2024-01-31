@@ -4,14 +4,16 @@
 #include "GameInstance.h"
 
 
-CEffect_BornFire::CEffect_BornFire(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CEffect_BornFire::CEffect_BornFire(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eCurrentLevel)
 	: CAlphaObject(pDevice, pContext)
+	,m_eCurrentLevel(eCurrentLevel)
 {
 
 }
 
 CEffect_BornFire::CEffect_BornFire(const CEffect_BornFire & rhs)
 	: CAlphaObject(rhs)
+	,m_eCurrentLevel(rhs.m_eCurrentLevel)
 {
 }
 
@@ -36,7 +38,22 @@ HRESULT CEffect_BornFire::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(10 + rand() % 20, 19.f, rand() % 20, 1.f));	
+	BORNFIRE_DESC Desc = *(BORNFIRE_DESC*)pArg;
+
+	_vector vCreatePos = XMLoadFloat4(&Desc.vPos);
+	vCreatePos.m128_f32[3] = 1.f;
+
+	m_pTransformCom->Set_Scaling(Desc.vScale.x, Desc.vScale.y, Desc.vScale.z);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Desc.vPos);
+	m_pTarget = Desc.pTarget;
+	m_vCreatePos = Desc.vPos;
+	m_vCreateLook = Desc.vLook;
+	m_fLifeTime = Desc.fLifeTime;
+	m_bBreath = Desc.bBossBreath;
+	//_vector vPlayerPos = m_pGameInstance->Get_Player(LEVEL_GAMEPLAY)->Get_Transform()->Get_State(CTransform::STATE_POSITION);
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(10 + rand() % 20, 5.f, rand() % 20, 1.f));	
+	//vPlayerPos.m128_f32[1] += 1.f;
+	m_pTransformCom->Look_At_Dir(XMLoadFloat4(&m_vCreateLook));
 
 	return S_OK;
 }
@@ -50,25 +67,48 @@ void CEffect_BornFire::Priority_Tick(_float fTimeDelta)
 
 void CEffect_BornFire::Tick(_float fTimeDelta)
 {
+	
+	// 플레이어의 위치 가져오기
+	//_vector vPlayerPos = m_pGameInstance->Get_Player(LEVEL_GAMEPLAY)->Get_Transform()->Get_State(CTransform::STATE_POSITION);
+	//
+	//// 객체가 바라보는 방향으로 회전
+	//m_pTransformCom->Look_At(vPlayerPos);
+
+	if (true == m_bBreath)
+	{
+		m_fAge += fTimeDelta;
+		
+		
+
+		if(m_fAge >= m_fLifeTime)
+			Set_Dead();
+
+		m_pTransformCom->Go_Straight(fTimeDelta);
+	}
+
 	m_fTimeAcc += fTimeDelta;
 
 	if (m_fTimeAcc > m_fAddTime)
 	{
-		m_iVerFrame++;
-
-		if (m_iVerFrame == m_iMaxVer)
+		m_iCurrentHor++;
+		
+		if (m_iCurrentHor == m_iMaxHor)
 		{
-			m_iHorFrame++;
-			m_iVerFrame = 0;
+			m_iCurrentVer++;
+			m_iCurrentHor = m_iStartHor;
 
-			if (m_iHorFrame == m_iMaxHor)
+			if (m_iCurrentVer == m_iMaxVer)
 			{
-				m_iHorFrame = 0;
+				m_iCurrentVer = m_iStartVer;
 			}
 		}
 
 		m_fTimeAcc = 0.f;
 	}
+
+	
+
+	
 }
 
 void CEffect_BornFire::Late_Tick(_float fTimeDelta)
@@ -87,10 +127,11 @@ HRESULT CEffect_BornFire::Render()
 		return E_FAIL;
 
 	/* 이 셰ㅒ이더에 0번째 패스로 그릴꺼야. */
-	m_pShaderCom->Begin(3);
+	m_pShaderCom->Begin(5);
 
 	/* 내가 그릴려고하는 정점, 인덷ㄱ스버퍼를 장치에 바인딩해. */
 	m_pVIBufferCom->Bind_VIBuffers();
+
 
 	/* 바인딩된 정점, 인덱스를 그려. */
 	m_pVIBufferCom->Render();
@@ -111,7 +152,7 @@ HRESULT CEffect_BornFire::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Texture */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_BornFire"),
+	if (FAILED(__super::Add_Component(m_eCurrentLevel, TEXT("Prototype_Component_Texture_BornFire"),
 		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 		return E_FAIL;
 
@@ -130,33 +171,18 @@ HRESULT CEffect_BornFire::Bind_ShaderResources()
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
 		return E_FAIL;
 
-	_float SizeX = m_fWidthSize * m_iNumVer;
-	_float SizeY = m_fHeightSize * m_iNumHor;
-
-	if(FAILED(m_pShaderCom->Bind_RawValue("g_fAtlasSizeX", &SizeX, sizeof(_float))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamDirection", &m_pGameInstance->Get_CamDir(), sizeof(_float4))))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAtlasSizeY", &SizeY, sizeof(_float))))
-		return E_FAIL;
-
+	_float2 uvOffset = {(_float)(m_iCurrentHor * m_fAnimationSizeX) / m_fSpriteSizeX, (_float)(m_iCurrentVer * m_fAnimationSizeY) / m_fSpriteSizeY };
+	_float2 uvScale =  { (_float)m_fAnimationSizeX / m_fSpriteSizeX, (_float)m_fAnimationSizeY / m_fSpriteSizeY};
 	
-
-	_float u2 = (m_fWidthSize * m_iVerFrame) / 2048.f;
-	_float v2 = (m_fHeightSize * m_iHorFrame) / 2048.f;
-
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAtlasPosX", &u2, sizeof(_float))))
+	if(FAILED(m_pShaderCom->Bind_RawValue("g_UVOffset", &uvOffset, sizeof(_float2))))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAtlasPosY", &v2, sizeof(_float))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_UVScale", &uvScale, sizeof(_float2))))
 		return E_FAIL;
 
-
-
-	//float			g_fAtlasPosX;
-	//float			g_fAtlasPosY;
-	//float			g_fAtlasSizeX;
-	//float			g_fAtlasSizeY;
 
 	if (FAILED(m_pGameInstance->Bind_RenderTarget_ShaderResource(TEXT("Target_Depth"), m_pShaderCom, "g_DepthTexture")))
 		return E_FAIL;
@@ -164,9 +190,11 @@ HRESULT CEffect_BornFire::Bind_ShaderResources()
 	return S_OK;
 }
 
-CEffect_BornFire * CEffect_BornFire::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+
+
+CEffect_BornFire * CEffect_BornFire::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, LEVEL eCurrentLevel)
 {
-	CEffect_BornFire*		pInstance = new CEffect_BornFire(pDevice, pContext);
+	CEffect_BornFire*		pInstance = new CEffect_BornFire(pDevice, pContext, eCurrentLevel);
 
 	/* 원형객체를 초기화한다.  */
 	if (FAILED(pInstance->Initialize_Prototype()))

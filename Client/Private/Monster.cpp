@@ -129,7 +129,7 @@ void CMonster::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wst
 	
 }
 
-void CMonster::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
+void CMonster::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
 {
 	if (bType == false)
 	{

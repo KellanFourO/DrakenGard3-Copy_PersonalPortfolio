@@ -94,6 +94,7 @@ void CPipeLine::Tick()
 
 	//! 위에서 구한 카메라의 월드행렬의 위치에 해당하는 4행을 위치 멤버변수에 셋팅해준다.
 	memcpy(&m_vCamPosition,&m_Transform_Inverse[D3DTS_VIEW].m[3], sizeof(_float4));
+	memcpy(&m_vCamDir, &m_Transform_Inverse[D3DTS_VIEW].m[2], sizeof(_float4));
 }
 
 CPipeLine* CPipeLine::Create()

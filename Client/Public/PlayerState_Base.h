@@ -20,6 +20,8 @@ class CPlayerState_Base abstract : public CStateBase
 public:
 	enum PlayerDir { LEFT, RIGHT, FRONT, BACK, DIR_END };
 
+
+
 protected:
 	CPlayerState_Base();
 	virtual ~CPlayerState_Base() = default;
@@ -46,6 +48,7 @@ protected:
 
 	void			Transition(CStateMachine::STATETYPE eStateType, const wstring& strStateTag);
 	
+	
 
 protected:
 	CStateMachine*	m_pOwnerStateCom = { nullptr };
@@ -56,7 +59,9 @@ protected:
 
 	class CCamera_Target* m_pOwnerCam = { nullptr };
 	
-	
+// protected:
+// 	random_device				m_RandomDevice; // ·£´ýÀ» »Ì±âÀ§ÇÔ
+// 	mt19937_64					m_RandomNumber;
 	
 protected:
 	_float			m_fLastInputTime = { 0.0f };
@@ -77,7 +82,8 @@ protected:
 	_bool			m_bVerticalTurn = false;
 	_bool			m_bHorizontalTurn = false;
 
-
+// 	_float			m_fRandomMinPos = { 0.f};
+// 	//_float			m_fRandom
 
 	_float			m_fTurnAngle = 0.f;
 

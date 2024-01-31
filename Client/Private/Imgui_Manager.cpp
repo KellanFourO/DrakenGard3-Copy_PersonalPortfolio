@@ -30,6 +30,7 @@
 #include <fstream>
 //#include "NonAnimObject.h"
 #include "Environment_Object.h"
+#include "Environment_BornFire.h"
 #include "Particle_Object.h"
 #include "MeshEffect.h"
 #include "../../Reference/Public/Delaunator/delaunator.hpp"
@@ -1044,8 +1045,16 @@ void CImgui_Manager::CreateObjectFunction()
 					CEnvironment_Object::ENVIRONMENT_DESC Desc;
 					Desc.iLevelIndex = LEVEL_TOOL;
 					Desc.strModelTag = ConvertStrToWstr(m_vecModelTags[m_iSelectTagIndex]);
-
+					XMStoreFloat4x4(&Desc.WorldMatrix, XMMatrixIdentity());
+					
 					wstr = TEXT("Prototype_GameObject_Environment");
+
+					if (Desc.strModelTag == TEXT("Prototype_Component_Model_Environment_BornFire"))
+					{
+						wstr = TEXT("Prototype_GameObject_Environment_BornFire");
+					}
+
+					
 
 					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &Desc, reinterpret_cast<CGameObject**>(&pGameObject))))
 						return;
@@ -1538,18 +1547,11 @@ void CImgui_Manager::LoadNonAnimObject(string strPath, string strFileName)
 
 		CGameObject* pGameObject = nullptr;
 
+
+
 		CEnvironment_Object::ENVIRONMENT_DESC Desc;
 
-		Desc.iLevelIndex = LEVEL_TOOL;
-		Desc.strModelTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
-
-		wstring wstrLayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
-		
-
-		m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, TEXT("Prototype_GameObject_Environment"), &Desc, &pGameObject);
-
 		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
-
 		_float4x4 WorldMatrix;
 
 		for (_int i = 0; i < 4; ++i)
@@ -1560,14 +1562,46 @@ void CImgui_Manager::LoadNonAnimObject(string strPath, string strFileName)
 			}
 		}
 
+		Desc.iLevelIndex = LEVEL_TOOL;
+		Desc.strModelTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
+		XMStoreFloat4(&Desc.vPos, XMLoadFloat4x4(&WorldMatrix).r[3]);
+		Desc.WorldMatrix = WorldMatrix;
+		
+		
 
-		pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
+		wstring wstr = TEXT("Prototype_GameObject_Environment");
+		if (Desc.strModelTag == TEXT("Prototype_Component_Model_Environment_BornFire"))
+		{
+			wstr = TEXT("Prototype_GameObject_Environment_BornFire");
+		}
+
+		wstring wstrLayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
+		
+
+		m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstr, &Desc, &pGameObject);
+
+		//const json& TransformJson = LoadJson[i]["Component"]["Transform"];
+
+		//_float4x4 WorldMatrix;
+		//
+		//for (_int i = 0; i < 4; ++i)
+		//{
+		//	for (_int j = 0; j < 4; ++j)
+		//	{
+		//		WorldMatrix.m[i][j] = TransformJson[i][j];
+		//	}
+		//}
+		//
+		//
+		//pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
 
 		m_vecNonAnimObjects.push_back(pGameObject);
 	}
 
 	m_pNaviTargetObject = m_vecNonAnimObjects[0];
 	m_iTargetIndex = 0;
+
+
 	m_pNavigation = dynamic_cast<CEnvironment_Object*>(m_pNaviTargetObject)->Get_NaviCom();
 	LoadCells();
 }
@@ -2938,7 +2972,7 @@ void CImgui_Manager::Mesh_Effect_Mode_Tick()
 
 	//! 이펙트메쉬에게 필요한 것은 무엇일까. 우선 인스턴싱이 필요할 걳것 같다.
 
-	ImGui::InputInt(u8"CreateNumber", &m_iParticleCreateNum);
+	//ImGui::InputInt(u8"CreateNumber", &m_iParticleCreateNum);
 	ImGui::InputInt(u8"ShaderPass", &m_iParticleShaderPathIndex);
 	ImGui::InputFloat(u8"Range", &m_fParticleRange);
 	ImGui::InputFloat3(u8"Center", m_vParticleCenter);
@@ -2948,28 +2982,52 @@ void CImgui_Manager::Mesh_Effect_Mode_Tick()
 	ImGui::InputFloat4(u8"Color", m_vParticleColor);
 	ImGui::InputFloat2(u8"LifeTime", m_vParticleLifeTime);
 
+	ImGui::InputFloat(u8"HorSpacing", &m_fHorSpacing);
+	ImGui::InputFloat(u8"VerSpacing", &m_fVerSpacing);
+	ImGui::InputInt(u8"HorCreateNum", &m_iHorCreateNum);
+	ImGui::InputInt(u8"VerCreateNum", &m_iVerCreateNum);
 
 
+	
 
 	if (ImGui::Button(u8"생성"))
 	{
-		for (_int i = 0; i < m_iParticleCreateNum; ++i)
+
+		CMeshEffect::MESH_EFFECTDESC MeshEffectDesc;
+
+		MeshEffectDesc.iShaderPassIndex = m_iParticleShaderPathIndex;
+		MeshEffectDesc.fRange = m_fParticleRange;
+		MeshEffectDesc.vCenter = { m_vParticleCenter[0], m_vParticleCenter[1], m_vParticleCenter[2] };
+		MeshEffectDesc.vSpeed = { m_vParticleSpeed[0], m_vParticleSpeed[1] };
+		MeshEffectDesc.vScale = { m_vParticleScale[0], m_vParticleScale[1] };
+		MeshEffectDesc.vRotation = { m_vParticleRotation[0], m_vParticleRotation[1], m_vParticleRotation[2] };
+		MeshEffectDesc.vColor = { m_vParticleColor[0], m_vParticleColor[1], m_vParticleColor[2], m_vParticleColor[3] };
+		MeshEffectDesc.vLifeTime = { m_vParticleLifeTime[0], m_vParticleLifeTime[1] };
+
+		MeshEffectDesc.strModelTag = ConvertStrToWstr(m_vecMeshEffectTags[m_iSelectMeshEffectTagIndex]);
+
+		wstring wstrObejctTag = TEXT("Prototype_GameObject_MeshEffect");
+		wstring wstrLayerTag = TEXT("Layer_Effect");
+
+		_int iCenter = m_vParticleCenter[0];
+		
+		_int iVerDevide = m_iVerCreateNum / 2;
+		_int iHorDevide = m_iHorCreateNum / 2;
+		_float fHorSpacing = m_fHorSpacing;
+
+		vector<_float> vLeftPoint;
+		vector<_float> vRightPoint;
+
+		for (_int i = 0; i < iVerDevide; ++i)
 		{
-			CMeshEffect::MESH_EFFECTDESC MeshEffectDesc;
+			vLeftPoint.push_back(iCenter - fHorSpacing);
+			vRightPoint.push_back(iCenter + fHorSpacing);
+			fHorSpacing += fHorSpacing;
+		}
 
-			MeshEffectDesc.iShaderPassIndex = m_iParticleShaderPathIndex;
-			MeshEffectDesc.fRange = m_fParticleRange;
-			MeshEffectDesc.vCenter = { m_vParticleCenter[0], m_vParticleCenter[1], m_vParticleCenter[2] };
-			MeshEffectDesc.vSpeed = { m_vParticleSpeed[0], m_vParticleSpeed[1] };
-			MeshEffectDesc.vScale = { m_vParticleScale[0], m_vParticleScale[1] };
-			MeshEffectDesc.vRotation = { m_vParticleRotation[0], m_vParticleRotation[1], m_vParticleRotation[2] };
-			MeshEffectDesc.vColor = { m_vParticleColor[0], m_vParticleColor[1], m_vParticleColor[2], m_vParticleColor[3] };
-			MeshEffectDesc.vLifeTime = { m_vParticleLifeTime[0], m_vParticleLifeTime[1] };
-
-			MeshEffectDesc.strModelTag = ConvertStrToWstr(m_vecMeshEffectTags[m_iSelectMeshEffectTagIndex]);
-
-			wstring wstrObejctTag = TEXT("Prototype_GameObject_MeshEffect");
-			wstring wstrLayerTag = TEXT("Layer_Effect");
+		for (_int i = 0; i < iVerDevide; ++i)
+		{
+			MeshEffectDesc.vCenter.x = vLeftPoint[i];
 
 			CGameObject* pGameObject = { nullptr };
 
@@ -2983,7 +3041,44 @@ void CImgui_Manager::Mesh_Effect_Mode_Tick()
 
 			m_vecCreateMeshEffectTags.push_back(wstrSliceObjTag);
 			m_pMeshEffectSelectObject = pGameObject;
+
+			MeshEffectDesc.vCenter.x = vRightPoint[i];
+
+			pGameObject = { nullptr };
+
+			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObejctTag, &MeshEffectDesc, &pGameObject)))
+				MSG_BOX("이펙트 생성 실패");
+
+			m_vecCreateMeshEffects.push_back(pGameObject);
+
+
+			wstrSliceObjTag = ConvertWstrToStr(SliceObjectTag(wstrObejctTag)) + to_string(m_vecCreateMeshEffectTags.size() + 1);
+
+			m_vecCreateMeshEffectTags.push_back(wstrSliceObjTag);
+			m_pMeshEffectSelectObject = pGameObject;
 		}
+// 		for (_int i = 0; i < m_iParticleCreateNum; ++i)
+// 		{
+// 			
+// 
+// 			MeshEffectDesc.strModelTag = ConvertStrToWstr(m_vecMeshEffectTags[m_iSelectMeshEffectTagIndex]);
+// 
+// 			wstring wstrObejctTag = TEXT("Prototype_GameObject_MeshEffect");
+// 			wstring wstrLayerTag = TEXT("Layer_Effect");
+// 
+// 			CGameObject* pGameObject = { nullptr };
+// 
+// 			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObejctTag, &MeshEffectDesc, &pGameObject)))
+// 				MSG_BOX("이펙트 생성 실패");
+// 
+// 			m_vecCreateMeshEffects.push_back(pGameObject);
+// 
+// 
+// 			string wstrSliceObjTag = ConvertWstrToStr(SliceObjectTag(wstrObejctTag)) + to_string(m_vecCreateMeshEffectTags.size() + 1);
+// 
+// 			m_vecCreateMeshEffectTags.push_back(wstrSliceObjTag);
+// 			m_pMeshEffectSelectObject = pGameObject;
+// 		}
 	}
 }
 
@@ -3088,11 +3183,16 @@ void CImgui_Manager::Particle_Mode_Tick()
 
 	
 	ImGui::NewLine();
-	ImGui::Checkbox(u8"랜덤파티클", &m_bParticleRandom);
+	ImGui::Checkbox(u8"랜덤파티클", &m_bParticleRandom); ImGui::SameLine(); ImGui::Checkbox(u8"멀티스프라이트", &m_bParticleMultiSprite);
 	ImGui::NewLine();
 
 	ImGui::InputInt(u8"CreateNumber", &m_iParticleCreateNum);
 	ImGui::InputInt(u8"ShaderPass", &m_iParticleShaderPathIndex);
+	if (true == m_bParticleMultiSprite)
+	{
+		ImGui::InputFloat(u8"MultiSpriteCount", &m_fSpriteFrameCount);
+		ImGui::InputFloat(u8"SpriteSpeed", &m_fSpriteSpeed);
+	}
 	ImGui::InputFloat(u8"Range", &m_fParticleRange);
 	ImGui::InputFloat3(u8"Center", m_vParticleCenter);
 	ImGui::InputFloat2(u8"Speed", m_vParticleSpeed);
@@ -3107,6 +3207,8 @@ void CImgui_Manager::Particle_Mode_Tick()
 		ImGui::InputFloat3(u8"Rotation", m_vParticleRotation);
 	}
 
+	
+
 	ImGui::InputFloat3(u8"Interval", m_vParticleInterval);
 	ImGui::InputFloat3(u8"Dir", m_vParticleDir);
 	ImGui::InputFloat4(u8"Color", m_vParticleColor);
@@ -3120,6 +3222,9 @@ void CImgui_Manager::Particle_Mode_Tick()
 				CParticle_Object::PARTICLE_DESC PaticleDesc;
 
 				PaticleDesc.bRandom = m_bParticleRandom;
+				PaticleDesc.bMultiSpriteAnim = m_bParticleMultiSprite;
+				PaticleDesc.fMultiSpriteCount = m_fSpriteFrameCount;
+				PaticleDesc.fSpriteSpeed = m_fSpriteSpeed;
 				PaticleDesc.iNumInstance = m_iParticleCreateNum;
 				PaticleDesc.iShaderPathIndex = m_iParticleShaderPathIndex;
 				PaticleDesc.fRange = m_fParticleRange;

@@ -8,7 +8,7 @@
 #include "Player.h"
 #include "Camera_Target.h"
 #include "Environment_Object.h"
-
+#include "Effect_Blood.h"
 #include "Event_Boss1Apeear.h"
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -63,50 +63,50 @@ HRESULT CLevel_GamePlay::Render()
 HRESULT CLevel_GamePlay::Ready_LightDesc()
 {
 	LIGHT_DESC			LightDesc{};
-
+	
 	LightDesc.eType = LIGHT_DESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(0.8f, 0.8f, 0.8f, 1.f);
+	LightDesc.vDiffuse = _float4(0.6f, 0.6f, 0.6f, 1.f);
 	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
-
-	if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
-		return E_FAIL;
 	
-	//!ZeroMemory(&LightDesc, sizeof LightDesc);
-	//!
-	//!LightDesc.eType = LIGHT_DESC::TYPE_POINT;
-	//!LightDesc.vPosition = _float4(30.f, 3.f, 30.f, 1.f);
-	//!LightDesc.fRange = 20.f;
-	//!LightDesc.vDiffuse = _float4(1.f, 0.0f, 0.0f, 1.f);
-	//!LightDesc.vAmbient = _float4(0.4f, 0.1f, 0.1f, 1.f);
-	//!LightDesc.vSpecular = LightDesc.vDiffuse;
-	//!
-	//!if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
-	//!	return E_FAIL;
-	//!
-	//!LightDesc.eType = LIGHT_DESC::TYPE_POINT;
-	//!LightDesc.vPosition = _float4(50.f, 3.f, 30.f, 1.f);
-	//!LightDesc.fRange = 20.f;
-	//!LightDesc.vDiffuse = _float4(0.0f, 1.f, 0.0f, 1.f);
-	//!LightDesc.vAmbient = _float4(0.1f, 0.4f, 0.1f, 1.f);
-	//!LightDesc.vSpecular = LightDesc.vDiffuse;
-	//!
-	//!if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
-	//!	return E_FAIL;
-	//!
-	//!if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
-	//!	return E_FAIL;
-	//!
-	//!LightDesc.eType = LIGHT_DESC::TYPE_POINT;
-	//!LightDesc.vPosition = _float4(70.f, 10.f, 30.f, 1.f);
-	//!LightDesc.fRange = 20.f;
-	//!LightDesc.vDiffuse = _float4(1.f, 0.0f, 1.f, 1.f);
-	//!LightDesc.vAmbient = _float4(0.4f, 0.1f, 0.4f, 1.f);
-	//!LightDesc.vSpecular = LightDesc.vDiffuse;
-	//!
-	//!if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
-	//!	return E_FAIL;
+ 	if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+ 		return E_FAIL;
+// 	
+ 	//ZeroMemory(&LightDesc, sizeof LightDesc);
+// 	/ /
+ 	//LightDesc.eType = LIGHT_DESC::TYPE_POINT;
+ 	//LightDesc.vPosition = _float4(45.f, 10.f, 35.f, 1.f);
+ 	//LightDesc.fRange = 20.f;
+ 	//LightDesc.vDiffuse = _float4(1.f, 0.f, 0.f, 1.f);
+ 	//LightDesc.vAmbient = _float4(0.4f, 0.1f, 0.1f, 1.f);
+ 	//LightDesc.vSpecular = LightDesc.vDiffuse;
+ 	//
+ 	//if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+ 	//	return E_FAIL;
+// 	
+// 	LightDesc.eType = LIGHT_DESC::TYPE_POINT;
+// 	LightDesc.vPosition = _float4(50.f, 3.f, 30.f, 1.f);
+// 	LightDesc.fRange = 20.f;
+// 	LightDesc.vDiffuse = _float4(0.0f, 1.f, 0.0f, 1.f);
+// 	LightDesc.vAmbient = _float4(0.1f, 0.4f, 0.1f, 1.f);
+// 	LightDesc.vSpecular = LightDesc.vDiffuse;
+// 	
+// 	if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+// 		return E_FAIL;
+// 	
+// 	if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+// 		return E_FAIL;
+// 	
+// 	LightDesc.eType = LIGHT_DESC::TYPE_POINT;
+// 	LightDesc.vPosition = _float4(70.f, 10.f, 30.f, 1.f);
+// 	LightDesc.fRange = 20.f;
+// 	LightDesc.vDiffuse = _float4(1.f, 0.0f, 1.f, 1.f);
+// 	LightDesc.vAmbient = _float4(0.4f, 0.1f, 0.4f, 1.f);
+// 	LightDesc.vSpecular = LightDesc.vDiffuse;
+// 	
+// 	if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+// 		return E_FAIL;
 
 	return S_OK;
 }
@@ -168,15 +168,25 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const wstring& strLayerTag)
 	//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Particle_Red"))))
 	//	return E_FAIL;
 
-	
+	_vector vPos = m_pGameInstance->Get_Player(LEVEL_GAMEPLAY)->Get_Transform()->Get_State(CTransform::STATE_POSITION);
 
 	for (size_t i = 0; i < 30; i++)
 	{
-		if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Effect_Explosion"))))
-			return E_FAIL;
-
-		//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Effect_BornFire"))))
+		//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Effect_Explosion"))))
 		//	return E_FAIL;
+		//_bool bType = false;
+		//
+		//if(i % 2 == 0)
+		//	bType = true;
+		CEffect_Blood::EFFECT_DESC Desc;
+
+		Desc.fLifeTime = 5.f;
+		Desc.fPlaySpeed = 1.f;
+		XMStoreFloat4(&Desc.vCreatePos, XMVectorSet(45.f, 1.f, 35.f, 1.f));
+		//XMStoreFloat3(&Desc.vDir, -m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+		Desc.vScale = _float3{ 10.f, 10.f, 10.f };
+
+		m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Blood"), &Desc);
 
 	}
 
@@ -274,7 +284,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const wstring& strLayerTag)
 
 	json LoadJson;
 
-	CJson_Utility::Load_Json("../Bin/DataFiles/43_NonAnim.json", LoadJson);
+	CJson_Utility::Load_Json("../Bin/DataFiles/44_NonAnim.json", LoadJson);
 
 	_int LoadSize = LoadJson.size();
 
@@ -288,10 +298,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const wstring& strLayerTag)
 		Desc.strModelTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
 		wstring LayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
 
-
-		if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, LayerTag, TEXT("Prototype_GameObject_Environment"), &Desc, &pGameObject)))
-			return E_FAIL;
-
 		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
 
 		_float4x4 WorldMatrix;
@@ -304,7 +310,22 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const wstring& strLayerTag)
 			}
 		}
 
-		pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
+		XMStoreFloat4(&Desc.vPos, XMLoadFloat4x4(&WorldMatrix).r[3]);
+		Desc.WorldMatrix = WorldMatrix;
+
+
+		wstring wstr = TEXT("Prototype_GameObject_Environment");
+		if (Desc.strModelTag == TEXT("Prototype_Component_Model_Environment_BornFire"))
+		{
+			wstr = TEXT("Prototype_GameObject_Environment_BornFire");
+		}
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, LayerTag, wstr, &Desc, &pGameObject)))
+			return E_FAIL;
+
+		
+
+		//pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
 	}
 
 

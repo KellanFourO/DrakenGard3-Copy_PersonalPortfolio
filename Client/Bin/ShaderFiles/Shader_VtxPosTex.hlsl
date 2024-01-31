@@ -22,6 +22,14 @@ float			g_fAtlasPosY;
 float			g_fAtlasSizeX;
 float			g_fAtlasSizeY;
 
+float2          g_UVOffset;
+float2          g_UVScale;
+
+float           g_fUVAnimX;
+float           g_fUVAnimY;
+bool            g_bIsRtoL;
+
+vector g_vCamDirection;
 
 
 
@@ -107,10 +115,10 @@ PS_OUT PS_MAIN_ATLAS(PS_IN In)
     PS_OUT Out = (PS_OUT) 0;
 	
    // Atlas UV PickUP
-    //if (In.vTexCoord.x < g_fAtlasPosX || In.vTexCoord.y < g_fAtlasPosY)
-    //    discard;
-    //if (g_fAtlasSizeX < In.vTexCoord.x || g_fAtlasSizeY < In.vTexCoord.y)
-    //    discard;
+    if (In.vTexCoord.x < g_fAtlasPosX || In.vTexCoord.y < g_fAtlasPosY)
+        discard;
+    if (g_fAtlasSizeX < In.vTexCoord.x || g_fAtlasSizeY < In.vTexCoord.y)
+        discard;
 
 	// Set Color
     Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexCoord);
@@ -147,6 +155,40 @@ PS_OUT PS_MAIN_ATLAS_GRID(PS_IN In)
     return Out;
 }
 
+struct PS_IN_EFFECT
+{
+    float4 vPosition : SV_POSITION;
+    float2 vTexcoord : TEXCOORD0;
+    float4 vProjPos : TEXCOORD1;
+};
+
+PS_OUT PS_MAIN_ATLAS_ANIMATION(PS_IN_EFFECT In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+
+
+    float2 clippedTexCoord = In.vTexcoord * g_UVScale + g_UVOffset;
+
+    // Set Color
+    Out.vColor = g_DiffuseTexture.Sample(LinearSampler, clippedTexCoord);
+
+    float2 vDepthTexcoord;
+    vDepthTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
+    vDepthTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
+
+    float4 vDepthDesc = g_DepthTexture.Sample(PointSampler, vDepthTexcoord);
+	
+    Out.vColor.a = Out.vColor.a * (vDepthDesc.y * 1000.f - In.vProjPos.w) * 2.f;
+    // Alpha Test
+    if (Out.vColor.a < 0.1f)
+    {
+        discard;
+    }
+
+    return Out;
+}
+
 struct VS_OUT_EFFECT
 {
     float4 vPosition : SV_POSITION;
@@ -158,10 +200,20 @@ VS_OUT_EFFECT VS_MAIN_EFFECT(VS_IN In)
 {
     VS_OUT_EFFECT Out = (VS_OUT_EFFECT) 0;
 
+    matrix WorldMatrix = g_WorldMatrix;
+    
+    float3 vLook = normalize((g_vCamDirection * -1.f).xyz);
+    float3 vRight = normalize(cross(float3(0.f, 1.f, 0.f), vLook));
+    float3 vUp = normalize(cross(vLook, vRight));
+
+    WorldMatrix[0] = float4(vRight, 0.f) * length(WorldMatrix[0]);
+    WorldMatrix[1] = float4(vUp, 0.f) * length(WorldMatrix[1]);
+    WorldMatrix[2] = float4(vLook, 0.f) * length(WorldMatrix[2]);
+    
 	/* In.vPosition * 월드 * 뷰 * 투영 */
     matrix matWV, matWVP;
 
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWV = mul(WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
 
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
@@ -171,12 +223,7 @@ VS_OUT_EFFECT VS_MAIN_EFFECT(VS_IN In)
     return Out;
 }
 
-struct PS_IN_EFFECT
-{
-    float4 vPosition : SV_POSITION;
-    float2 vTexcoord : TEXCOORD0;
-    float4 vProjPos : TEXCOORD1;
-};
+
 
 /* 픽셀셰이더 : 픽셀의 색!!!! 을 결정한다. */
 PS_OUT PS_MAIN_EFFECT(PS_IN_EFFECT In)
@@ -225,7 +272,7 @@ technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우
 /* 위와 다른 형태에 내가 원하는 특정 셰이더들을 그리는 모델에 적용한다. */
     pass Effect // 2번 패스
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend_Add, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
 
@@ -238,7 +285,7 @@ technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우
 
     pass Atlas_Default //3번 패스
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_Cull_None);
         SetBlendState(BS_AlphaBlend_Add, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         SetDepthStencilState(DSS_None, 0);
 
@@ -256,6 +303,18 @@ technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_ATLAS_GRID();
+    }
+
+
+    pass Atlas_Animation //5번 패스
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetBlendState(BS_AlphaBlend_Add, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Default, 0);
+
+        VertexShader = compile vs_5_0 VS_MAIN_EFFECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_ATLAS_ANIMATION();
     }
 
 };

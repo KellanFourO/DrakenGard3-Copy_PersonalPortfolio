@@ -48,6 +48,7 @@ public:
 	virtual void	Tick(_float fTimeDelta);
 	virtual void	Late_Tick(_float fTimeDelta);
 	virtual HRESULT Render();
+	virtual HRESULT Render_Shadow() { return S_OK; }
 
 public:
 	_bool	Picking(_float3 vPickPos, class CModel* pModelCom, _float3* pOut);
@@ -63,7 +64,7 @@ public:
 	
 public:
 	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit); // call on collising
-	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit);
+	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit);
 	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit);
 
 protected:

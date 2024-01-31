@@ -4,6 +4,9 @@
 #include "Shader.h"
 #include "GameInstance.h"
 #include "Player.h"
+#include "Effect_BossBreath.h"
+#include "Effect_BornFire.h"
+#include "Particle_Object.h"
 
 CEN131_Breath::CEN131_Breath(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CBullet(pDevice, pContext)
@@ -41,6 +44,7 @@ HRESULT CEN131_Breath::Initialize(void* pArg)
 	_float3 vOwnerLook; 
 	vOwnerLook = { Desc.vLook.x, Desc.vLook.y , Desc.vLook.z };
 	
+	m_vParentLook = Desc.vParentLook;
 	//vOwnerLook.y *= 0.5f;
 
 	switch (Desc.eBreathType)
@@ -54,7 +58,7 @@ HRESULT CEN131_Breath::Initialize(void* pArg)
 			break;
 	}
 
-	
+	m_eBreathType = Desc.eBreathType;
 
 	m_pTransformCom->Look_At_Dir(vOwnerLook);
 
@@ -64,6 +68,7 @@ HRESULT CEN131_Breath::Initialize(void* pArg)
 	Init_Status(0.f, 50.f);
 	m_tStatus.eAttackType = tagStatusDesc::NORMAL_ATTACK;
 	m_pColliderCom->OnAccCollider(1.f);
+	
 	//__super::Initialize_Pos(vRealPos);
 	
 	m_fLifeTime = 5.f;
@@ -86,6 +91,32 @@ void CEN131_Breath::Tick(_float fTimeDelta)
 		m_fLifeTime = 0.2f;
 		Die(m_fLifeTime);
 	}
+
+	if (m_bCreateEffect == false)
+	{
+		Create_Effect();
+		m_bCreateEffect = true;
+		m_fEffectCreateTime = 1.f;
+	}
+	
+		m_fEffectTimeAcc += fTimeDelta;
+
+	if (m_bCreateEffect == true && m_fEffectTimeAcc >= m_fEffectCreateTime)
+	{
+	
+		Create_Effect();
+		m_fEffectTimeAcc = 0.f;
+	}
+
+	//if (m_bCreateEffect == false)
+	//{
+	//	Create_Effect();
+	//	m_bCreateEffect = true;
+	//}
+
+		//m_bCreateEffect = true;
+	//}
+
 }
 
 void CEN131_Breath::Late_Tick(_float fTimeDelta)
@@ -139,7 +170,7 @@ void CEN131_Breath::Initialize_Pos(_fvector vIntializePos)
 	CPlayer* pPlayer = dynamic_cast<CPlayer*>(m_pGameInstance->Get_Player(m_eCurrentLevelID));
 
 	_vector vPlayerPos = pPlayer->Get_Transform()->Get_State(CTransform::STATE_POSITION);
-
+	
 	vPlayerPos.m128_f32[1] += 5.f;
 	m_pTransformCom->Look_At(vPlayerPos);
 }
@@ -154,8 +185,8 @@ HRESULT CEN131_Breath::Ready_Components()
 	/* For.Com_Collider */
 	CBoundingBox_OBB::BOUNDING_OBB_DESC BoundingDesc = {};
 
-	BoundingDesc.vExtents = _float3(1.8f, 1.f, 10.f);
-	BoundingDesc.vCenter = _float3(0.f, 0.f, 13.f);
+	BoundingDesc.vExtents = _float3(2.4f, 1.f, 10.f);
+	BoundingDesc.vCenter = _float3(0.f, -2.5f, 13.f);
 	BoundingDesc.vRotation = _float3(XMConvertToRadians(0.f), 0.f, 0.f);
 	BoundingDesc.ePartType = CBoundParent::PARTTYPE_BOUND::PART_WEAPON;
 
@@ -185,6 +216,63 @@ HRESULT CEN131_Breath::Bind_ShaderResources()
 		return E_FAIL;
 
     return S_OK;
+}
+
+void CEN131_Breath::Create_Effect()
+{
+	_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	
+
+	_vector vMyLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
+
+	// 방향 벡터를 기준으로 하는 각도 계산 (라디안)
+	float radianAngle = atan2(vMyLook.m128_f32[1], vMyLook.m128_f32[0]);
+
+	vMyPos.m128_f32[0] = vMyPos.m128_f32[0] + vMyLook.m128_f32[0] * 5.f;
+	vMyPos.m128_f32[1] = vMyPos.m128_f32[1] - 10.f;
+
+ 	CParticle_Object::PARTICLE_DESC PaticleDesc;
+ 
+ 	PaticleDesc.bRandom = true;
+ 	PaticleDesc.iNumInstance = 800;
+ 	PaticleDesc.iShaderPathIndex = 2;
+ 	PaticleDesc.fRange = 15.f;
+	PaticleDesc.vCenter = { vMyPos.m128_f32[0], vMyPos.m128_f32[1], vMyPos.m128_f32[2] };
+ 	PaticleDesc.vSpeed = { 5.f, 5.f };
+ 	PaticleDesc.vScale = { 10.f, 10.f };
+ 	//PaticleDesc.vRotation = { m_vParticleRotation[0], m_vParticleRotation[1], m_vParticleRotation[2] };
+ 	//PaticleDesc.vRandomRotation = { radianAngle - XMConvertToRadians(45.f), radianAngle }; //! 
+	PaticleDesc.vRandomRotation = { 160.f, 180.f }; //! 
+ 	//PaticleDesc.vInterval = { m_vParticleInterval[0], m_vParticleInterval[1], m_vParticleInterval[2] };
+ 	PaticleDesc.vDir = { vMyLook.m128_f32[0], vMyLook.m128_f32[1], vMyLook.m128_f32[2], 0.f };
+// 	PaticleDesc.vColor = { m_vParticleColor[0], m_vParticleColor[1], m_vParticleColor[2], m_vParticleColor[3] };
+ 	PaticleDesc.vLifeTime = { 3.f, 3.f };
+// 
+ 	PaticleDesc.strTextureTag = TEXT("Prototype_Component_Texture_BornFire");
+
+		
+
+		
+		//_float4 vRandomPos = m_pTransformCom->Get_RandomPositionAroundCenter(vMyPos, XMConvertToRadians(180.f));
+
+		//CEffect_BornFire::BORNFIRE_DESC Desc;
+		//
+		//Desc.fSpeedPerSec = 8.f;
+		//Desc.fRotationPerSec = XMConvertToRadians(90.f);
+		//Desc.pTarget = m_pGameInstance->Get_Player(LEVEL_GAMEPLAY);
+		//Desc.vPos;
+		//Desc.bBossBreath = true;
+		//Desc.vScale = _float3( 8.f, 5.f, 5.f);
+		//XMStoreFloat4(&Desc.vPos, vMyPos);
+		//
+		//Desc.fLifeTime = 3.f;
+		//XMStoreFloat4(&Desc.vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+		
+		
+		//Desc.vLook = m_vParentLook;
+
+		m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Particle_Object"), &PaticleDesc);
+	
 }
 
 CEN131_Breath* CEN131_Breath::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel)

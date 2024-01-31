@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "Environment_BornFire.h"
-
+#include "Effect_BornFire.h"
 #include "GameInstance.h"
+
 
 CEnvironment_BornFire::CEnvironment_BornFire(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CNonAnimObject(pDevice, pContext)
@@ -39,14 +40,51 @@ HRESULT CEnvironment_BornFire::Initialize(void* pArg)
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
-
+	m_pTransformCom->Set_WorldFloat4x4(Desc.WorldMatrix);
 	//m_pTransformCom->Set_WorldFloat4x4(m_WorldMatrix);
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(15.f, 6.f, 30.f, 1.f));
+	
+
+	LIGHT_DESC			LightDesc{};
+	
+	LightDesc.eType = LIGHT_DESC::TYPE_POINT;
+	LightDesc.vPosition = Desc.vPos;
+	LightDesc.fRange = 8.f;
+	LightDesc.vDiffuse = _float4(1.f, 0.f, 0.f, 1.f);
+	LightDesc.vAmbient = _float4(0.4f, 0.1f, 0.1f, 1.f);
+	LightDesc.vSpecular = LightDesc.vDiffuse;
+	 
+	if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+	return E_FAIL;
+	
+	m_pTransformCom->Set_WorldFloat4x4(Desc.WorldMatrix);
+	
+	CEffect_BornFire::BORNFIRE_DESC BornFireDesc;
+	
+	_vector vCreatePos = XMLoadFloat4(&Desc.vPos);
+	vCreatePos.m128_f32[3] = 1.f;
+	BornFireDesc.bBossBreath = false;
+	BornFireDesc.vScale = { 4.f, 4.f, 5.f};
+	
+	vCreatePos.m128_f32[1] += 2.5f;
+	XMStoreFloat4(&BornFireDesc.vPos, vCreatePos);
+	
+	XMStoreFloat4(&BornFireDesc.vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+	
+	m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_BornFire"), &BornFireDesc);
+
+		
+	//!m_pTransformCom->Set_Scaling(Desc.vScale.x, Desc.vScale.y, Desc.vScale.z);
+	//!m_pTransformCom->Set_State(CTransform::STATE_POSITION, Desc.vPos);
+	//!m_pTarget = Desc.pTarget;
+	//!m_vCreatePos = Desc.vPos;
+	//!m_vCreateLook = Desc.vLook;
+	//!m_fLifeTime = Desc.fLifeTime;
+	//!m_bBreath = Desc.bBossBreath;
 
 	return S_OK;
 }

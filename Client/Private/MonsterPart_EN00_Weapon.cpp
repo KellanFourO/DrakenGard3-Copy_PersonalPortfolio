@@ -43,15 +43,23 @@ HRESULT CMonsterPart_EN00_Weapon::Initialize(void* pArg)
 		return E_FAIL;
 
 	/* For.Com_Collider */
-	CBoundingBox_OBB::BOUNDING_OBB_DESC BoundingDesc = {};
+	CBoundingBox_Sphere::BOUNDING_SPHERE_DESC BoundingSphereDesc = {};
+	BoundingSphereDesc.ePartType = CBoundParent::PART_WEAPON;
+	BoundingSphereDesc.vCenter = { 0.f, 0.f, -0.6f };
+	BoundingSphereDesc.fRadius = 0.5f;
 
-	BoundingDesc.vExtents = _float3(0.3f, 0.5f, 0.3f);
-	BoundingDesc.vCenter = _float3(0.f, 0.f, -0.6f);
-	BoundingDesc.vRotation = _float3(XMConvertToRadians(90.f), 0.f, 0.f);
-	BoundingDesc.ePartType = CBoundParent::PARTTYPE_BOUND::PART_WEAPON;
-
-	if (FAILED(__super::Add_Component(m_eCurrentLevelIndex, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
+	if (FAILED(__super::Add_Component(m_eCurrentLevelIndex, TEXT("Prototype_Component_Collider_Sphere"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingSphereDesc)))
 		return E_FAIL;
+
+	//CBoundingBox_OBB::BOUNDING_OBB_DESC BoundingDesc = {};
+	//
+	//BoundingDesc.vExtents = _float3(0.3f, 0.5f, 0.3f);
+	//BoundingDesc.vCenter = _float3(0.f, 0.f, -0.6f);
+	//BoundingDesc.vRotation = _float3(XMConvertToRadians(90.f), 0.f, 0.f);
+	//BoundingDesc.ePartType = CBoundParent::PARTTYPE_BOUND::PART_WEAPON;
+	//
+	//if (FAILED(__super::Add_Component(m_eCurrentLevelIndex, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &BoundingDesc)))
+	//	return E_FAIL;
 
 	m_pColliderCom->Set_PartType(CCollider::PART_WEAPON);
 

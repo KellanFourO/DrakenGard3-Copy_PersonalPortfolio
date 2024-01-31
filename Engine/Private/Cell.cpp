@@ -1,9 +1,9 @@
 #include "Cell.h"
 
-#ifdef _DEBUG
-	#include "Shader.h"
-	#include "VIBuffer_Cell.h"
-#endif
+
+#include "Shader.h"
+#include "VIBuffer_Cell.h"
+
 
 CCell::CCell(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -69,13 +69,13 @@ HRESULT CCell::Initialize(const _float3* pPoints, _uint iIndex)
 	vLine = XMLoadFloat3(&pPoints[POINT_A]) - XMLoadFloat3(&pPoints[POINT_C]);
 	XMStoreFloat3(&m_vNormals[LINE_CA], XMVectorSet(XMVectorGetZ(vLine) * -1.f, 0.f, XMVectorGetX(vLine), 0.f));
 
-#ifdef _DEBUG
+
 
 	m_pVIBuffer = CVIBuffer_Cell::Create(m_pDevice,m_pContext, pPoints);
 
 	if(nullptr == m_pVIBuffer)
 		return E_FAIL;
-#endif
+
 
 	return S_OK;
 }
@@ -275,9 +275,9 @@ CCell* CCell::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const
 
 void CCell::Free()
 {
-#ifdef _DEBUG
+
 	Safe_Release(m_pVIBuffer);
-#endif
+
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

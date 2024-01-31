@@ -130,6 +130,26 @@ _float3 CTransform::Get_MoveAxisPos(_float fDistance, STATE eState, _bool bAddTy
 	return movedPosition;
 }
 
+_float4 CTransform::Get_RandomPositionAroundCenter(_fvector& vCenter, _float fRadius)
+{
+	// C++11 이상을 지원하는 경우 <random> 헤더를 사용하여 랜덤 위치 생성
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
+	// 랜덤한 각도 및 거리 생성
+	float angle = dis(gen) * 2.0f * 3.14159265358979323846f; // 0에서 2π까지의 랜덤한 각도
+	float distance = dis(gen) * fRadius; // 0에서 반경까지의 랜덤한 거리
+
+	// 랜덤한 위치 계산
+	float x = vCenter.m128_f32[0] + distance * cos(angle);
+	float y = vCenter.m128_f32[1] + distance * sin(angle);
+	float z = vCenter.m128_f32[2]; // 중점 기준이므로 z는 그대로 유지f
+
+	// 계산된 위치 반환
+	return { x, y, z, 1.f };
+}
+
 void CTransform::Go_Player_Straight(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation)
 {
 	//TODO 방향벡터를 만들어서 가게하면된다.
@@ -447,6 +467,22 @@ void CTransform::RotationOfCameraDir(_fvector vCamLook, _float fRadian)
 
 
 
+}
+
+void CTransform::RotationAroundPoint(const _float3& vCenter, const _float3& vAxis, _float fAngle)
+{
+	
+	_matrix rotationMatrix = XMMatrixRotationAxis(XMLoadFloat3(&vAxis), fAngle);
+
+	// 특정 위치(center)를 기준으로 회전
+	_vector positionVector = Get_State(CTransform::STATE_POSITION);
+	_vector centerVector = XMLoadFloat3(&vCenter);
+
+	positionVector = XMVector3TransformCoord(positionVector - centerVector, rotationMatrix);
+	positionVector += centerVector;
+
+	
+	Set_State(CTransform::STATE_POSITION, positionVector);
 }
 
 _bool CTransform::TurnToTarget(const _fvector& vTargetPosition, _float fTimeDelta)

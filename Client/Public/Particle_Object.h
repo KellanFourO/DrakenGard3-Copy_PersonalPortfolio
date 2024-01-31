@@ -30,7 +30,13 @@ public:
 		_bool	bRandom = true;
 		_float2	vRandomRotation = {};
 		_float3	vInterval = { 1.f, 1.f, 1.f };
+		
 		_float fAge;
+		_bool	bSingleSpriteAnim = false;
+
+		_bool	bMultiSpriteAnim = false;
+		_float  fMultiSpriteCount = { 0.f };
+		_float	fSpriteSpeed = {};
 	}PARTICLE_DESC;
 
 private:
@@ -58,6 +64,36 @@ private:
 private:
 	PARTICLE_DESC					m_tParticleDesc = {};
 	_bool							m_bParticleStart = false;
+
+private:
+	//! 누적
+	_float				m_fTimeAcc = 0.f;
+	_float				m_fAddTime = 0.25f;
+
+
+	//! 셋팅
+
+
+	_int				m_fAnimationSizeX = 512.f;
+	_int				m_fAnimationSizeY = 512.f;
+
+	_int				m_fSpriteSizeX = 2048.f;
+	_int				m_fSpriteSizeY = 2048.f;
+
+	_int				m_iStartVer = 0;
+	_int				m_iStartHor = 0;
+
+	_int				m_iCurrentVer = 0;
+	_int				m_iCurrentHor = 0;
+
+	_int				m_iMaxVer = 4;
+	_int				m_iMaxHor = 4;
+
+	_float				m_fAge = 0.f;
+
+private:
+	_float				m_fFrame = { 0.0f };
+	
 
 private:
 	HRESULT Ready_Components(void* pArg);

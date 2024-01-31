@@ -178,6 +178,7 @@ private:
 	vector<class CGameObject*>  m_vecNonAnimObjects;
 	
 
+	_bool						m_bLightCreate = false;
 	_bool						m_bModelPicking = false;
 	_bool						m_bDeleteMode = false;
 
@@ -307,6 +308,11 @@ private:
 	
 
 	_bool						m_bParticleRandom = true;
+	
+	_bool						m_bParticleMultiSprite = false;
+	_float						m_fSpriteFrameCount = 0.f;
+	_float						m_fSpriteSpeed = 1.f;
+
 	_int						m_iParticleCreateNum = { 1 };
 	_float						m_vParticleCenter[3] = {};
 	_float						m_vParticleSpeed[2] = {0.1f, 1.f};
@@ -318,7 +324,13 @@ private:
 	_float						m_vParticleLifeTime[2] = { 0.5f, 3.0f};
 	_float						m_vParticleInterval[3] = {};
 	
-
+	
+	//!메쉬이펙트 전용
+	_float						m_fHorSpacing = 0.5f;
+	_float						m_fVerSpacing = 0.5f;
+	_int						m_iVerCreateNum = 6;
+	_int						m_iHorCreateNum = 4;
+	
 
 private:
 	string sourceUpperPath = "../Assets/";

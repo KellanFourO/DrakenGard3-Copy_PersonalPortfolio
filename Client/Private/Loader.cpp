@@ -124,21 +124,66 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 
 	/* For.Prototype_Component_Texture_Snow */
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Snow"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particles/Snow/Snow.png"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Snow */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Fire"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particles/Fire/Fire.png"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Snow */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Frame"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particles/Frame/Frame.png"), 1))))
 		return E_FAIL;
 
 	m_pGameInstance->Add_ParticleTextureTag(TEXT("Prototype_Component_Texture_Snow"));
+	m_pGameInstance->Add_ParticleTextureTag(TEXT("Prototype_Component_Texture_Fire"));
+	m_pGameInstance->Add_ParticleTextureTag(TEXT("Prototype_Component_Texture_Frame"));
 
 	/* For.Prototype_Component_Texture_Explosion */
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Explosion"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Explosion/Explosion%d.png"), 90))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_Explosion */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Blood"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Blood/Blood%d.dds"), 7))))
+		return E_FAIL;
+
 	m_pGameInstance->Add_EffectTextureTag(TEXT("Prototype_Component_Texture_Explosion"));
+
+	m_pGameInstance->Add_ParticleTextureTag(TEXT("Prototype_Component_Texture_Blood"));
 
 	/* For.Prototype_Component_Texture_Explosion */
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_BornFire"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/BornFire/BornFire.dds")))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/BornFire/BornFire.dds"), 1))))
+		return E_FAIL;
+
+	m_pGameInstance->Add_ParticleTextureTag(TEXT("Prototype_Component_Texture_BornFire"));
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_CyilnderMask"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Mask/CyilnderMask.dds"), 1))))
+		return E_FAIL;
+
+	///* For.Prototype_Component_Texture_CyilnderMask */
+	//if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_CyilnderMask"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Mask/CyilnderMask.dds"), 1))))
+	//	return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_BossFireNoise"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/BossFire/BossFireNoise.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_BossFireNoiseTest1"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/BossFire/175.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_BossFireNoiseTest2"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/BossFire/244.dds"), 1))))
 		return E_FAIL;
 
 	m_pGameInstance->Add_EffectTextureTag(TEXT("Prototype_Component_Texture_BornFire"));
@@ -431,6 +476,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Particle_Point"),
 		CVIBuffer_Particle_Point::Create(m_pDevice, m_pContext, 100))))
 		return E_FAIL;
+
+	//! For.Prototype_Component_VIBuffer_Particle_Point 
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Model_Instance"),
+		CVIBuffer_Model_Instance::Create(m_pDevice,m_pContext))))
+		return E_FAIL;
 		
 
 	lstrcpy(m_szLoadingText, TEXT("셰이더를(을) 로드하는 중입니다."));
@@ -457,14 +507,19 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_AnimModel"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_AnimModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements)));
 
-	/* For.Prototype_Component_Shader_Particle_Rect */
+	/*! For.Prototype_Component_Shader_Particle_Rect */
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_Particle_Rect"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Particle_Rect.hlsl"), VTX_PARTICLE_RECT::Elements, VTX_PARTICLE_RECT::iNumElements))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Shader_Particle_Point */
+	/*! For.Prototype_Component_Shader_Particle_Point */
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_Particle_Point"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Particle_Point.hlsl"), VTX_PARTICLE_POINT::Elements, VTX_PARTICLE_POINT::iNumElements))))
+		return E_FAIL;
+
+	/*! For.Prototype_Component_Shader_EffectMesh*/
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Shader_EffectMesh"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_EffectMesh.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("네비게이션(을) 로드하는 중입니다."));
@@ -604,16 +659,37 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		return E_FAIL;
 
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment"), CEnvironment_Object::Create(m_pDevice, m_pContext, eLevel)));
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Environment_BornFire"), CEnvironment_BornFire::Create(m_pDevice, m_pContext, eLevel)));
 	
 
 	lstrcpy(m_szLoadingText, TEXT("이펙트 원형(을) 로드하는 중입니다."));
 	
 	////!Prototype_Component_Model_Monster_EN01_Weapon_Arrow
-	PivotMatrix = XMMatrixIdentity();//XMMatrixScaling(0.1f, 0.1f, 0.1f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Effect_Hanabira"),
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Hanabira"), pFilePathData), PivotMatrix)));
 
 	m_pGameInstance->Add_EffectMeshTag(TEXT("Prototype_Component_Model_Effect_Hanabira"));
+
+	PivotMatrix = XMMatrixIdentity();//XMMatrixScaling(0.1f, 0.1f, 0.1f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Effect_CrossFrame"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("CrossFrame"), pFilePathData), PivotMatrix)));
+
+	m_pGameInstance->Add_EffectMeshTag(TEXT("Prototype_Component_Model_Effect_CrossFrame"));
+
+	PivotMatrix = XMMatrixIdentity();//XMMatrixScaling(0.1f, 0.1f, 0.1f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Effect_SnowCrossFlow"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("SnowCrossFlow"), pFilePathData), PivotMatrix)));
+
+	PivotMatrix = XMMatrixScaling(0.5f, 0.5f, 1.f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Effect_Cyilnder"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Cyilnder"), pFilePathData), PivotMatrix)));
+
+	PivotMatrix = XMMatrixScaling(1.5f, 0.5f, 1.f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Effect_BossFire"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("BossFire"), pFilePathData), PivotMatrix)));
+
+	m_pGameInstance->Add_EffectMeshTag(TEXT("Prototype_Component_Model_Effect_SnowCrossFlow"));
 
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_MeshEffect"), CMeshEffect::Create(m_pDevice, m_pContext, eLevel)));
 
@@ -638,7 +714,19 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_BornFire"),
-		CEffect_BornFire::Create(m_pDevice, m_pContext))))
+		CEffect_BornFire::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_Hanabira"),
+		CEffect_Hanabira::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_BossBreath"),
+		CEffect_BossBreath::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_Blood"),
+		CEffect_Blood::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 
@@ -688,11 +776,6 @@ HRESULT CLoader::Loading_For_Logo_Level()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Default%d.jpg"), 2))))
 		return E_FAIL;
 
-	lstrcpy(m_szLoadingText, TEXT("모델를(을) 로드하는 중입니다."));
-
-	lstrcpy(m_szLoadingText, TEXT("셰이더를(을) 로드하는 중입니다."));
-
-	lstrcpy(m_szLoadingText, TEXT("원형객체를(을) 로드하는 중입니다."));
 
 	//! For.Prototype_GameObject_BackGround
 	if(FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_BackGround"), CBackGround::Create(m_pDevice,m_pContext))))

@@ -19,6 +19,7 @@ HRESULT CMeshEffect::Initialize_Prototype(LEVEL eLevel)
 	m_eCurrentLevelID = eLevel;
 
 	
+
 	return S_OK;
 }
 
@@ -30,6 +31,12 @@ HRESULT CMeshEffect::Initialize(void* pArg)
 		return E_FAIL;
 
 	Desc = *(MESH_EFFECTDESC*)pArg;
+	
+	m_RandomNumber = mt19937_64(m_RandomDevice());
+
+	m_tEffectDesc = Desc;
+
+	_vector vDir = XMLoadFloat4(&m_tEffectDesc.vDir);
 
 	//typedef struct tagMesh_EffectDesc : public CGameObject::GAMEOBJECT_DESC
 	//{
@@ -85,7 +92,7 @@ void CMeshEffect::Tick(_float fTimeDelta)
 
 void CMeshEffect::Late_Tick(_float fTimeDelta)
 {
-	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
+	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_BLEND, this)))
 		return;
 }
 
@@ -99,9 +106,9 @@ HRESULT CMeshEffect::Render()
 	for (size_t i = 0; i < iNumMeshes; i++)
 	{
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
+		
 
-		m_pShaderCom->Begin(0);
+		m_pShaderCom->Begin(4);
 
 
 		m_pModelCom->Render(i);
@@ -113,6 +120,10 @@ HRESULT CMeshEffect::Render()
 HRESULT CMeshEffect::Ready_Components()
 {
 	/* For.Com_Shader */
+	//if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_EffectMesh"),
+	//	TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	//	return E_FAIL;
+
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_Model"),
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		return E_FAIL;
@@ -135,7 +146,8 @@ HRESULT CMeshEffect::Bind_ShaderResources()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ))))
 		return E_FAIL;
-	
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamDirection", &m_pGameInstance->Get_CamDir(), sizeof(_float4))))
+	//	return E_FAIL;
 
 	return S_OK;
 }

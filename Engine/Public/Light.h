@@ -19,7 +19,7 @@ private:
 
 public:
 	static CLight* Create(const LIGHT_DESC& LightDesc);
-	virtual void Free() override; 
+	virtual void Free() override;
 };
 
 END

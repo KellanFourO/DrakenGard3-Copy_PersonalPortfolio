@@ -41,6 +41,9 @@ void CMainApp::Tick(_float fTimeDelta)
 {
 	m_pGameInstance->Tick_Engine(fTimeDelta);
 
+
+	m_fTimeAcc += fTimeDelta;
+
 }
 
 HRESULT CMainApp::Render()
@@ -52,8 +55,17 @@ HRESULT CMainApp::Render()
 	//TODO 추후, 그려야할 모델들을 그린다.
 	
 	m_pGameInstance->Render_Engine();
-	
-	m_pGameInstance->Render_Font(TEXT("Font_Netmarble_Bold"), TEXT("취업하자!!"), _float2(0.f, 0.f));
+	++m_iNumRender;
+
+	if (1.f <= m_fTimeAcc)
+	{
+		wsprintf(m_szFPS, TEXT("FPS:%d"), m_iNumRender);
+		m_iNumRender = 0;
+		m_fTimeAcc = 0.f;
+	}
+
+	m_pGameInstance->Render_Font(TEXT("Font_Netmarble_Bold"), m_szFPS, _float2(0.f, 0.f), XMVectorSet(1.f, 0.f, 0.f, 1.f));
+	//m_pGameInstance->Render_Font(TEXT("Font_Netmarble_Bold"), TEXT("취업하자!!"), _float2(0.f, 0.f));
 
 	m_pGameInstance->Present();
 

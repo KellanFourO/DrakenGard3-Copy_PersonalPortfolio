@@ -14,6 +14,7 @@ public:
 	{
 		_float4 vPos = { 0.f, 0.f, 0.f, 0.f };
 		wstring	strModelTag;
+		_float4x4 WorldMatrix;
 	}ENVIRONMENT_DESC;
 
 private:

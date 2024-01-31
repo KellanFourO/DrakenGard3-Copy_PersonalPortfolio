@@ -10,9 +10,9 @@ HRESULT CLight_Manager::Initialize()
 	return S_OK;
 }
 
-HRESULT CLight_Manager::Add_Light(const LIGHT_DESC & LightDesc)
+HRESULT CLight_Manager::Add_Light(const LIGHT_DESC& LightDesc)
 {
-	CLight*		pLight = CLight::Create(LightDesc);
+	CLight* pLight = CLight::Create(LightDesc);
 	if (nullptr == pLight)
 		return E_FAIL;
 
@@ -21,17 +21,17 @@ HRESULT CLight_Manager::Add_Light(const LIGHT_DESC & LightDesc)
 	return S_OK;
 }
 
-HRESULT CLight_Manager::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
+HRESULT CLight_Manager::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 {
 	for (auto& pLight : m_Lights)
-		pLight->Render(pShader, pVIBuffer);	
+		pLight->Render(pShader, pVIBuffer);
 
 	return S_OK;
 }
 
-CLight_Manager * CLight_Manager::Create()
+CLight_Manager* CLight_Manager::Create()
 {
-	CLight_Manager*		pInstance = new CLight_Manager();
+	CLight_Manager* pInstance = new CLight_Manager();
 
 	/* 원형객체를 초기화한다.  */
 	if (FAILED(pInstance->Initialize()))

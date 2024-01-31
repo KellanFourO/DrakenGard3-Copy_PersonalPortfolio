@@ -212,6 +212,8 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 
 						else // 충돌했는데 충돌 정보에 false로 기록된 경우
 						{
+							_float3 vCollisionPos = { fX, fY, fZ };
+
 							if (!pLeftGameObject->Is_Dead() && !pRightGameObject->Is_Dead() && true == pRightCol->isOnCollider())
 							{
 								
@@ -220,17 +222,17 @@ void CCollision_Manager::Collision_GroupUpdate(const _tchar* LeftTag, const _tch
 								{
 									if (true == pLeftCol->isAttackBody())
 									{
-										pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag,  false, false);
-										pRightGameObject->On_CollisionEnter(pLeftGameObject, strLeftTag, strRightTag,  false, true);
+										pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag, vCollisionPos,  false, false);
+										pRightGameObject->On_CollisionEnter(pLeftGameObject, strLeftTag, strRightTag, vCollisionPos, false, true);
 									}
 
-									pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag, false, false);
+									pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, false, false);
 									
 								}
 								else if (pLeftCol->Get_PartType() == CCollider::PART_WEAPON && pRightCol->Get_PartType() == CCollider::PART_BODY)
 								{
-									pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag, true, false);
-									pRightGameObject->On_CollisionEnter(pLeftGameObject, strLeftTag, strRightTag, true, true);
+									pLeftGameObject->On_CollisionEnter(pRightGameObject, strLeftTag, strRightTag, vCollisionPos, true, false);
+									pRightGameObject->On_CollisionEnter(pLeftGameObject, strLeftTag, strRightTag, vCollisionPos, true, true);
 								}
 								
 

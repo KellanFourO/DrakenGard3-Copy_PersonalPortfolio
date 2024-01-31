@@ -108,6 +108,7 @@ public:
 
 	void    Add_LookPos(_float3& _vAddPos);
 	_float3 Get_MoveAxisPos(_float fDistance, STATE eState, _bool bAddType, _float3 vCamLook);
+	_float4	Get_RandomPositionAroundCenter(_fvector& vCenter, _float fRadius);
 
 public:
 	void	Go_Player_Straight(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
@@ -131,6 +132,7 @@ public:
 	_bool	AreVectorsAligned(const _fvector& v1, const _fvector& v2, _float fTolerance = 0.001f);
 	void	Rotation(_fvector vAxis, _float fRadian);
 	void	RotationOfCameraDir(_fvector vCamLook, _float fRadian);
+	void	RotationAroundPoint(const _float3& vCenter, const _float3& vAxis, _float fAngle);
 	_bool	TurnToTarget(const _fvector& vTargetPosition, _float fTimeDelta);
 	
 	

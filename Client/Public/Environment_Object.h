@@ -14,6 +14,7 @@ public:
 	{
 		_float4 vPos = { 0.f, 0.f, 0.f, 0.f };
 		wstring	strModelTag;
+		_float4x4 WorldMatrix;
 	}ENVIRONMENT_DESC;
 
 private:
@@ -31,6 +32,7 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+	virtual HRESULT Render_Shadow() override;
 
 private:
 	HRESULT Ready_Components();
@@ -41,6 +43,9 @@ private:
 
 private:
 	wstring				m_strModelTag = TEXT("");
+
+
+
 
 public:
 	/* 원형객체를 생성한다. */

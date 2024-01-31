@@ -19,6 +19,8 @@
 #include "Monster.h"
 #include "Bullet.h"
 #include "Layer.h"
+#include "Effect_Hanabira.h"
+#include "Effect_Blood.h"
 
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice, pContext)
@@ -28,6 +30,7 @@ CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 CPlayer::CPlayer(const CPlayer & rhs)
 	: CAnimObject(rhs)
 {
+
 }
 
 HRESULT CPlayer::Initialize_Prototype()
@@ -141,6 +144,8 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return ;
+
+
 }
 
 HRESULT CPlayer::Render()
@@ -149,9 +154,12 @@ HRESULT CPlayer::Render()
 		m_pNavigationCom->Render();
 		m_pColliderCom->Render();
 	#endif
+	
 
 	return S_OK;
 }
+
+
 
 void CPlayer::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
 {
@@ -215,7 +223,7 @@ void CPlayer::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstr
 	//wcout << LeftTag.c_str() << TEXT(" On_Collision is ") << RightTag.c_str() << endl;
 }
 
-void CPlayer::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
+void CPlayer::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
 {
 	if (bType == false)
 	{
@@ -284,6 +292,20 @@ void CPlayer::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag,
 			
 			}
 
+		}
+
+		if (LeftTag != TEXT("Layer_Bullet") && bHit == true)
+		{
+			CEffect_Blood::EFFECT_DESC Desc;
+
+			Desc.fLifeTime = 5.f;
+			Desc.fPlaySpeed = 1.f;
+			XMStoreFloat4(&Desc.vCreatePos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			XMStoreFloat3(&Desc.vDir, -m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+			Desc.vScale = _float3{ 1.f, 1.f, 1.f };
+			
+			m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Blood"), &Desc);
+			
 		}
 
 		m_tStatus.fCurrentHp -= fDmg;
@@ -559,6 +581,30 @@ void CPlayer::Key_Input(const _float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_TAB))
 		m_bAdmin = !m_bAdmin;
+
+	if (m_bAdmin)
+	{
+		_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		
+
+		for (_int i = 0; i < 10; ++i)
+		{
+			_float4 vRandomPos = m_pTransformCom->Get_RandomPositionAroundCenter(vMyPos, XMConvertToRadians(360.f));
+
+			CEffect_Hanabira::HANABIRA_DESC Desc;
+
+			Desc.fSpeedPerSec = 5.f;
+			Desc.fRotationPerSec = XMConvertToRadians(90.f);
+			Desc.pTarget = this;
+			Desc.vPos = vRandomPos;
+			Desc.fLifeTime = 3.f;
+			Desc.eType = CEffect_Hanabira::HANABIRA_ORBIT;
+			XMStoreFloat4(&Desc.vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+
+			m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Hanabira"), &Desc);
+		}
+
+	}
 
 }
 

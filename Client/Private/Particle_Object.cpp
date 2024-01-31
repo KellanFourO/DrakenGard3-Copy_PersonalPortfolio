@@ -55,8 +55,49 @@ void CParticle_Object::Priority_Tick(_float fTimeDelta)
 
 void CParticle_Object::Tick(_float fTimeDelta)
 {
+	
+
 	//if(true == m_bParticleStart)
 	 m_pVIBufferCom->Update(fTimeDelta);
+
+
+	 if (true == m_tParticleDesc.bMultiSpriteAnim)
+	 {
+		m_fFrame += fTimeDelta * m_tParticleDesc.fSpriteSpeed;
+
+		if (m_fFrame >= m_tParticleDesc.fMultiSpriteCount)
+			m_fFrame = 0.f;
+	 }
+
+	 
+
+	 m_fTimeAcc += fTimeDelta;
+
+	 if (m_fTimeAcc > m_fAddTime)
+	 {
+		 m_iCurrentHor++;
+
+		 if (m_iCurrentHor == m_iMaxHor)
+		 {
+			 m_iCurrentVer++;
+			 m_iCurrentHor = m_iStartHor;
+
+			 if (m_iCurrentVer == m_iMaxVer)
+			 {
+				 m_iCurrentVer = m_iStartVer;
+			 }
+		 }
+
+		 m_fTimeAcc = 0.f;
+	 }
+
+	 m_fAge += fTimeDelta;
+
+	 if (m_fAge >= m_tParticleDesc.vLifeTime.y)
+	 {
+		Set_Dead();
+		m_fAge = 0.f;
+	 }
 
 
 }
@@ -135,10 +176,30 @@ HRESULT CParticle_Object::Bind_ShaderResources()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ))))
 		return E_FAIL;
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
-		return E_FAIL;
+
+	if (true == m_tParticleDesc.bMultiSpriteAnim)
+	{
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", _uint(m_fFrame))))
+			return E_FAIL;
+	}
+	else
+	{
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+			return E_FAIL;
+	}
+
+	
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+		return E_FAIL;
+
+	_float2 uvOffset = { (_float)(m_iCurrentHor * m_fAnimationSizeX) / m_fSpriteSizeX, (_float)(m_iCurrentVer * m_fAnimationSizeY) / m_fSpriteSizeY };
+	_float2 uvScale = { (_float)m_fAnimationSizeX / m_fSpriteSizeX, (_float)m_fAnimationSizeY / m_fSpriteSizeY };
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_UVOffset", &uvOffset, sizeof(_float2))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_UVScale", &uvScale, sizeof(_float2))))
 		return E_FAIL;
 
 	return S_OK;

@@ -55,8 +55,15 @@ HRESULT CTarget_Manager::Add_MRT(const wstring& strMRTTag, const wstring& strTar
 	return S_OK;
 }
 
-HRESULT CTarget_Manager::Begin_MRT(const wstring& strMRTTag)
+HRESULT CTarget_Manager::Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDSV)
 {
+	ID3D11ShaderResourceView* pSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = {
+		nullptr
+	};
+
+	m_pContext->PSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, pSRV);
+
+
 	/* strMRTTag에 모여있는 렌더타겟들을 장치에 순차적으로 바인딩한다. */
 	list<CRenderTarget*>* pMRTList = Find_MRT(strMRTTag);
 	if (nullptr == pMRTList)
@@ -71,7 +78,11 @@ HRESULT CTarget_Manager::Begin_MRT(const wstring& strMRTTag)
 		pRTVs[iNumRTVs++] = pRenderTarget->Get_RTV();
 	}
 
-	m_pContext->OMSetRenderTargets(iNumRTVs, pRTVs, m_pGameInstance->Get_DSV());
+	if (nullptr != pDSV)
+		m_pContext->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+
+
+	m_pContext->OMSetRenderTargets(iNumRTVs, pRTVs, nullptr == pDSV ? m_pGameInstance->Get_DSV() : pDSV);
 
 	return S_OK;
 }

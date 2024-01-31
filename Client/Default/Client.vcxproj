@@ -210,8 +210,11 @@
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\CustomDialogFont.h" />
     <ClInclude Include="..\public\Dynamic_Terrain.h" />
+    <ClInclude Include="..\Public\Effect_Blood.h" />
     <ClInclude Include="..\Public\Effect_BornFire.h" />
+    <ClInclude Include="..\Public\Effect_BossBreath.h" />
     <ClInclude Include="..\Public\Effect_Explosion.h" />
+    <ClInclude Include="..\Public\Effect_Hanabira.h" />
     <ClInclude Include="..\public\EN01_Arrow.h" />
     <ClInclude Include="..\Public\EN131_Breath.h" />
     <ClInclude Include="..\Public\Environment_Barricade.h" />
@@ -229,6 +232,7 @@
     <ClInclude Include="..\Public\Monster_EN01.h" />
     <ClInclude Include="..\Public\Monster_EN70.h" />
     <ClInclude Include="..\Public\Particle_Blue.h" />
+    <ClInclude Include="..\Public\Particle_BossBreath.h" />
     <ClInclude Include="..\Public\Particle_Object.h" />
     <ClInclude Include="..\Public\Particle_Red.h" />
     <ClInclude Include="..\Public\Player.h" />
@@ -307,8 +311,11 @@
     <ClCompile Include="..\Private\Camera_Target.cpp" />
     <ClCompile Include="..\Private\CustomDialogFont.cpp" />
     <ClCompile Include="..\Private\Dynamic_Terrain.cpp" />
+    <ClCompile Include="..\Private\Effect_Blood.cpp" />
     <ClCompile Include="..\Private\Effect_BornFire.cpp" />
+    <ClCompile Include="..\Private\Effect_BossBreath.cpp" />
     <ClCompile Include="..\Private\Effect_Explosion.cpp" />
+    <ClCompile Include="..\Private\Effect_Hanabira.cpp" />
     <ClCompile Include="..\Private\EN01_Arrow.cpp" />
     <ClCompile Include="..\Private\EN131_Breath.cpp" />
     <ClCompile Include="..\Private\Environment_Barricade.cpp" />
@@ -326,6 +333,7 @@
     <ClCompile Include="..\Private\Monster_EN01.cpp" />
     <ClCompile Include="..\Private\Monster_EN70.cpp" />
     <ClCompile Include="..\Private\Particle_Blue.cpp" />
+    <ClCompile Include="..\Private\Particle_BossBreath.cpp" />
     <ClCompile Include="..\Private\Particle_Object.cpp" />
     <ClCompile Include="..\Private\Particle_Red.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
@@ -394,6 +402,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_EffectMesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Model.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>

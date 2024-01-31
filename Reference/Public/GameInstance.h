@@ -101,6 +101,7 @@ public: /* For.PipeLine */
 
 	RAY			Get_Ray(_uint & In_ViewPortWidth, const _uint & In_ViewPortHeight);
 	_float4		Get_CamPosition();
+	_float4		Get_CamDir();
 
 public: /* For.Input_Device */
 	_byte   Get_DIKeyState(_ubyte byKeyID);
@@ -126,7 +127,7 @@ public: /* For.Collision_Manager*/
 public: /* For.Target_Manager */
 	HRESULT Add_RenderTarget(const wstring & strTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4 & vClearColor);
 	HRESULT Add_MRT(const wstring & strMRTTag, const wstring & strTargetTag);
-	HRESULT Begin_MRT(const wstring & strMRTTag);
+	HRESULT Begin_MRT(const wstring & strMRTTag, ID3D11DepthStencilView* pDSV = nullptr);
 	HRESULT End_MRT();
 	HRESULT Bind_RenderTarget_ShaderResource(const wstring & strTargetTag, class CShader* pShader, const _char * pConstantName);
 

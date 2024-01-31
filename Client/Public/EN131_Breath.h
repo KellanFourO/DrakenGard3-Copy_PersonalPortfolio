@@ -14,6 +14,7 @@ public:
 	typedef struct tagEN131_BreathDesc : public CBullet::BULLET_DESC
 	{
 		EN131_BREATHTYPE eBreathType = BREATH_END;
+		_float4			 vParentLook = {};
 
 	}EN131_BREATHDESC;
 
@@ -42,10 +43,18 @@ public:
 private:
 	HRESULT Ready_Components();
 	HRESULT Bind_ShaderResources();
+	void	Create_Effect();
+
+
+private:
+	_bool  m_bCreateEffect = false;
+	EN131_BREATHTYPE	m_eBreathType = BREATH_END;
+	_float4				m_vParentLook = {};
+	_float m_fEffectCreateTime = 0.f;
+	_float m_fEffectTimeAcc = 0.f;
 	
 
 
-	
 
 public:
 	/* 원형객체를 생성한다. */

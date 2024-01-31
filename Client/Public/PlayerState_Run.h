@@ -23,7 +23,12 @@ private:
 	virtual void	KeyInput(const _float& fTimeDelta) override;
 
 private:
+	void			CreateHanabira(_float fTimeDelta);
+
+private:
 	_bool	m_bKeyPressing = false;
+	_float	m_fHanabiraCreateTime = 0.2f;
+	_float	m_fHanabiraAccTime = 0.f;
 
 public:
 	static CPlayerState_Run* Create(CPlayer* pPlayer);

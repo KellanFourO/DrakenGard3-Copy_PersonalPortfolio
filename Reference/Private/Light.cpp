@@ -8,17 +8,15 @@ CLight::CLight()
 
 }
 
-HRESULT CLight::Initialize(const LIGHT_DESC & LightDesc)
+HRESULT CLight::Initialize(const LIGHT_DESC& LightDesc)
 {
 	m_LightDesc = LightDesc;
 
 	return S_OK;
 }
 
-HRESULT CLight::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
+HRESULT CLight::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 {
-	//! Light 객체의 개수만큼 렌더 될 것이며.  다 동일한 셰이더를 사용하기에 여러개의 빛들이 바인딩될것이다.
-	
 	_uint		iPassIndex = { 0 };
 
 	if (LIGHT_DESC::TYPE_DIRECTIONAL == m_LightDesc.eType)
@@ -30,10 +28,10 @@ HRESULT CLight::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
 	else
 	{
 		pShader->Bind_RawValue("g_vLightPos", &m_LightDesc.vPosition, sizeof(_float4));
-		pShader->Bind_RawValue("g_vLightRange", &m_LightDesc.fRange, sizeof(_float));
+		pShader->Bind_RawValue("g_fLightRange", &m_LightDesc.fRange, sizeof(_float));
 
 		iPassIndex = 2;
-	}	
+	}
 
 	if (FAILED(pShader->Bind_RawValue("g_vLightDiffuse", &m_LightDesc.vDiffuse, sizeof(_float4))))
 		return E_FAIL;
@@ -46,12 +44,12 @@ HRESULT CLight::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
 
 	pVIBuffer->Bind_VIBuffers();
 
-	return pVIBuffer->Render();	
+	return pVIBuffer->Render();
 }
 
-CLight * CLight::Create(const LIGHT_DESC & LightDesc)
+CLight* CLight::Create(const LIGHT_DESC& LightDesc)
 {
-	CLight*		pInstance = new CLight();
+	CLight* pInstance = new CLight();
 
 	/* 원형객체를 초기화한다.  */
 	if (FAILED(pInstance->Initialize(LightDesc)))

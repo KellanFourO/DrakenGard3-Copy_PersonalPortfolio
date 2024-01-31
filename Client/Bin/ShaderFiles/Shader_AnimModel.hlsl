@@ -91,7 +91,6 @@ PS_OUT PS_MAIN(PS_IN In)
 
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
     vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, In.vTexcoord);
-    vector vSpecularColor = g_SpecularTexture.Sample(LinearSampler, In.vTexcoord);
 	
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
 	
@@ -102,11 +101,8 @@ PS_OUT PS_MAIN(PS_IN In)
     if (vMtrlDiffuse.a < 0.3f)
         discard;
 
-    Out.vDiffuse = vMtrlDiffuse;
-    //Out.vDiffuse.rgb = lerp(Out.vDiffuse.rgb, Out.vDiffuse.rgb + vSpecularColor, vSpecularColor.a);
-	 //+ vSpecularColor;
-	
 
+    Out.vDiffuse = vMtrlDiffuse;
 	/* -1 ~ 1 -> 0 ~ 1 */
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.0f, 0.0f, 0.0f);
@@ -114,6 +110,19 @@ PS_OUT PS_MAIN(PS_IN In)
     return Out;
 }
 
+struct PS_OUT_SHADOW
+{
+    vector vLightDepth : SV_TARGET0;
+};
+
+PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN In)
+{
+    PS_OUT_SHADOW Out = (PS_OUT_SHADOW) 0;
+
+    Out.vLightDepth = In.vProjPos.w / 600.0f;
+	
+    return Out;
+}
 
 technique11 DefaultTechnique
 {
@@ -140,5 +149,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN();
+    }
+
+    pass Shadow
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
     }
 }

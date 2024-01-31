@@ -23,6 +23,10 @@ private:
 	CVIBuffer_Model_Instance(const CVIBuffer_Model_Instance& rhs);
 	virtual ~CVIBuffer_Model_Instance() = default;
 
+
+public:
+	wstring Get_ModelTag() const { return m_strModelTag;}
+
 public:
 	//TODO override의 관한 이야기
 	//! 오버라이드를 붙이면 부모클래스의 함수를 호출하지않고, 자식인 내 함수로 호출하라고 선언한 것

@@ -22,7 +22,7 @@ CPlayerState_Base::CPlayerState_Base()
 
 HRESULT CPlayerState_Base::Initialize(CPlayer* pPlayer)
 {
-	
+//	m_RandomNumber = mt19937_64(m_RandomDevice());
 	m_pOwnerTransform = dynamic_cast<CTransform*>(pPlayer->Find_Component(TEXT("Com_Transform")));
 	m_pOwnerStateCom =	dynamic_cast<CStateMachine*>(pPlayer->Find_Component(TEXT("Com_StateMachine")));
 	m_pOwnerNavagation = dynamic_cast<CNavigation*>(pPlayer->Find_Component(TEXT("Com_Navigation")));

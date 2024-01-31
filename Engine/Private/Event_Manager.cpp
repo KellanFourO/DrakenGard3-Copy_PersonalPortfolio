@@ -71,6 +71,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 		Erase_Event(EraseTag);
 }
 
+#ifdef _DEBUG
 HRESULT CEvent_Manager::Render_Events()
 {
 	for (auto& Pair : m_Events)
@@ -80,6 +81,7 @@ HRESULT CEvent_Manager::Render_Events()
 
 	return S_OK;
 }
+#endif // _DEBUG
 
 CMyEvent* CEvent_Manager::Find_Event(const wstring& strEventTag)
 {

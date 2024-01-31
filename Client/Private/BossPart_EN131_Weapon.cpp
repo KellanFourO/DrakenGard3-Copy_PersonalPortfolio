@@ -4,6 +4,7 @@
 #include "Bone.h"
 #include "EN131_Breath.h"
 
+
 CBossPart_EN131_Weapon::CBossPart_EN131_Weapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CPartObject(pDevice,pContext)
 {
@@ -121,13 +122,16 @@ CGameObject* CBossPart_EN131_Weapon::CreateBreath(_fvector vTargetPos)
 	Desc.fDmg = 5.f;
 	Desc.fDeadTime = 5.f;
 	Desc.fRange = 30.f;
-	XMStoreFloat4(&Desc.vLook, vPos - XMLoadFloat4x4(&m_WorldMatrix).r[3]);
+	XMStoreFloat4(&Desc.vLook, m_pParentTransformCom->Get_State(CTransform::STATE_LOOK));
+	//XMStoreFloat4(&Desc.vLook, XMLoadFloat4x4(&m_WorldMatrix).r[3]);
+	//XMStoreFloat4(&Desc.vLook, vPos - XMLoadFloat4x4(&m_WorldMatrix).r[3]);
 	//fDesc.vLook = { m_WorldMatrix._31, m_WorldMatrix._32, m_WorldMatrix._33, 0.f };
 	//XMStoreFloat4(&Desc.vLook, XMLoadFloat4x4(&m_WorldMatrix).r[2]);
 	//XMStoreFloat4(&Desc.vLook,m_pParentTransformCom->Get_State(CTransform::STATE_LOOK));
 	Desc.OwnerWorldMatrix = m_WorldMatrix;
 	Desc.fSpeedPerSec = 15.f;
 	Desc.fRotationPerSec = XMConvertToRadians(150.f);
+	
 	
 
 	if (m_strName == "L_HEAD")
@@ -139,7 +143,9 @@ CGameObject* CBossPart_EN131_Weapon::CreateBreath(_fvector vTargetPos)
 	
 	//XMStoreFloat4(&Desc.vTargetPos, vTargetPos);
 
-
+	Desc.vParentLook;
+	XMStoreFloat4(&Desc.vParentLook, m_pParentTransformCom->Get_State(CTransform::STATE_LOOK));
+	
 	CGameObject* pGameObject = nullptr;
 
 	if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelIndex, TEXT("Layer_Bullet"), TEXT("Prototype_GameObject_EN131_Breath"), &Desc, &pGameObject)))

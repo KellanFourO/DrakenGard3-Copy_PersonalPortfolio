@@ -242,7 +242,7 @@ void CGameObject::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, 
 {
 }
 
-void CGameObject::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
+void CGameObject::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
 {
 }
 

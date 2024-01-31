@@ -5,6 +5,7 @@
 BEGIN(Engine)
 class CShader;
 class CModel;
+class CVIBuffer_Model_Instance;
 END
 
 BEGIN(Client)
@@ -20,8 +21,10 @@ protected:
 	LEVEL				m_eCurrentLevelID = { LEVEL_END };
 
 protected:
+	
 	CShader*	m_pShaderCom = { nullptr };
 	CModel*		m_pModelCom = { nullptr };
+	CVIBuffer_Model_Instance* m_pVIBuffer_Instance = { nullptr };
 
 public:
 	virtual void Free() override;

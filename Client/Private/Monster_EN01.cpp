@@ -139,6 +139,8 @@ void CMonster_EN01::Late_Tick(_float fTimeDelta)
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return;
+	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_SHADOW, this)))
+		return;
 }
 
 HRESULT CMonster_EN01::Render()
@@ -169,6 +171,42 @@ HRESULT CMonster_EN01::Render()
 	m_pColliderCom->Render();
 
 #endif
+
+	return S_OK;
+}
+
+HRESULT CMonster_EN01::Render_Shadow()
+{
+	
+	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+		return E_FAIL;
+	//#몬스터모델렌더
+	_float4x4		ViewMatrix, ProjMatrix;
+
+	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(XMVectorSet(-20.f, 100.f, -20.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
+	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 600.f));
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &ProjMatrix)))
+		return E_FAIL;
+
+	//TODO 클라에서 모델의 메시 개수를 받아와서 순회하면서 셰이더 바인딩해주자.
+
+	_uint	iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+	for (size_t i = 0; i < iNumMeshes; i++)
+	{
+		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
+
+		m_pShaderCom->Begin(2); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
+
+		m_pModelCom->Render(i);
+	}
+
 
 	return S_OK;
 }
@@ -228,12 +266,12 @@ void CMonster_EN01::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag
 	}
 }
 
-void CMonster_EN01::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
+void CMonster_EN01::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
 {
 	
 
 	
-	__super::On_CollisionEnter(pCollisionObject, LeftTag, RightTag, bType, bHit);
+	__super::On_CollisionEnter(pCollisionObject, LeftTag, RightTag, vCollisionPos, bType, bHit);
 }
 
 void CMonster_EN01::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
