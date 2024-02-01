@@ -38,7 +38,8 @@ HRESULT CEffect_Blood::Initialize(void* pArg)
 
 	m_tEffectDesc = *(EFFECT_DESC*)pArg;
 	
-	
+	m_iCurrentHor = m_tEffectDesc.iStartHor;
+	m_iCurrentVer = m_tEffectDesc.iStartVer;
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&m_tEffectDesc.vCreatePos));
 	m_pTransformCom->Look_At_Dir(m_tEffectDesc.vDir);
@@ -58,12 +59,35 @@ void CEffect_Blood::Priority_Tick(_float fTimeDelta)
 
 void CEffect_Blood::Tick(_float fTimeDelta)
 {
-	m_fFrame += 7.f * fTimeDelta * m_tEffectDesc.fPlaySpeed;
+	//m_fFrame += 7.f * fTimeDelta * m_tEffectDesc.fPlaySpeed;
+	//
+	//if (m_fFrame >= 7.0f)
+	//	m_fFrame = 0.f;
 
-	if (m_fFrame >= 7.0f)
-		m_fFrame = 0.f;
+	
 
-	//m_pRigidBodyCom->Tick(fTimeDelta);
+	m_fTimeAcc += fTimeDelta;
+
+	if (m_fTimeAcc > m_tEffectDesc.fPlaySpeed)
+	{
+		m_iCurrentHor++;
+
+		if (m_iCurrentHor == m_tEffectDesc.iMaxHor)
+		{
+			m_iCurrentVer++;
+			m_iCurrentHor = m_tEffectDesc.iStartHor;
+
+			if (m_iCurrentVer == m_tEffectDesc.iMaxVer)
+			{
+				m_iCurrentVer = m_tEffectDesc.iStartVer;
+				Die(0.1f);
+			}
+		}
+
+		m_fTimeAcc = 0.f;
+	}
+
+	m_pRigidBodyCom->Tick(fTimeDelta);
 }
 
 void CEffect_Blood::Late_Tick(_float fTimeDelta)
@@ -80,7 +104,7 @@ HRESULT CEffect_Blood::Render()
 		return E_FAIL;
 
 	/* 이 셰ㅒ이더에 0번째 패스로 그릴꺼야. */
-	m_pShaderCom->Begin(2);
+	m_pShaderCom->Begin(5);
 
 	/* 내가 그릴려고하는 정점, 인덷ㄱ스버퍼를 장치에 바인딩해. */
 	m_pVIBufferCom->Bind_VIBuffers();
@@ -132,7 +156,19 @@ HRESULT CEffect_Blood::Bind_ShaderResources()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ))))
 		return E_FAIL;
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_fFrame))))
+	//if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_fFrame))))
+	//	return E_FAIL;
+
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+		return E_FAIL;
+
+	_float2 uvOffset = { (_float)(m_iCurrentHor * m_tEffectDesc.iAnimationSizeX) / m_tEffectDesc.iSpriteSizeX, (_float)(m_iCurrentVer * m_tEffectDesc.iAnimationSizeY) / m_tEffectDesc.iSpriteSizeY };
+	_float2 uvScale = { (_float)m_tEffectDesc.iAnimationSizeX/ m_tEffectDesc.iSpriteSizeX, (_float)m_tEffectDesc.iAnimationSizeY/ m_tEffectDesc.iSpriteSizeY};
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_UVOffset", &uvOffset, sizeof(_float2))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_UVScale", &uvScale, sizeof(_float2))))
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamDirection", &m_pGameInstance->Get_CamDir(), sizeof(_float4))))

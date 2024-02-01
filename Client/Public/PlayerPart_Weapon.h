@@ -2,11 +2,14 @@
 #include "Client_Defines.h"
 #include "PartObject.h"
 
+
 BEGIN(Engine)
 class CCollider;
+class CTexture;
 END
 
 BEGIN(Client)
+class CEffect_Trail;
 
 class CPlayerPart_Weapon final : public CPartObject
 {
@@ -15,6 +18,13 @@ private:
 	CPlayerPart_Weapon(const CPlayerPart_Weapon& rhs);
 	virtual ~CPlayerPart_Weapon() = default;
 
+	
+public:
+	void	On_Trail();
+	void	Off_Trail();
+	
+	CEffect_Trail* Get_Trail() { return m_pTrail;}
+
 public:
 	virtual HRESULT Initialize_Prototype(LEVEL eLevel);
 	virtual HRESULT Initialize(void* pArg) override;
@@ -22,6 +32,7 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+	virtual HRESULT Render_Shadow() override;
 
 public:
 	virtual void Write_Json(json& Out_Json) override;
@@ -29,10 +40,12 @@ public:
 	virtual void Init_Desc();
 
 
+
 private:
 	CCollider*			m_pColliderCom = { nullptr };
 	CCollider*			m_pColliders[6] = {};
-
+	
+	CEffect_Trail*		m_pTrail = { nullptr };
 public:
 	/* 원형객체를 생성한다. */
 	static CPlayerPart_Weapon* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel);

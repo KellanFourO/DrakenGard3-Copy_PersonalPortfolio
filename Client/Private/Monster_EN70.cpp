@@ -580,6 +580,8 @@ HRESULT CMonster_EN70::Ready_BehaviorTree_V2()
 		Transition(50);
 		m_pModelCom->Set_Loop(false);
 
+		m_pModelCom->Root_MotionEnd();
+
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
 		 m_pModelCom->Set_Loop(true);
@@ -622,11 +624,13 @@ HRESULT CMonster_EN70::Ready_BehaviorTree_V2()
 	 {
 		Transition(52);
 		m_pModelCom->Set_Loop(false);
+		
 
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
 		 m_pModelCom->Set_Loop(true);
 		 m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
+		 m_pModelCom->Root_MotionStart();
 		 return BT_STATUS::Success;
 		}
 		else
@@ -771,6 +775,9 @@ HRESULT CMonster_EN70::Ready_BehaviorTree_V2()
 		 }
 		 else
 		 {
+			if(false == m_pNavigationCom->isMove(vMyPos))
+				return BT_STATUS::Failure;
+
 			return BT_STATUS::Running;
 		 }
 	 };
@@ -817,7 +824,12 @@ HRESULT CMonster_EN70::Ready_BehaviorTree_V2()
 			 return BT_STATUS::Success;
 		 }
 		 else
+		 {
+			 if (false == m_pNavigationCom->isMove(vMyPos))
+				 return BT_STATUS::Failure;
+
 			return BT_STATUS::Running;
+		 }
 	 };
 
 	 

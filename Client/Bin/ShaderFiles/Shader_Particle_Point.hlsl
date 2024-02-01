@@ -123,7 +123,7 @@ PS_OUT PS_MAIN(PS_IN In)
     if (Out.vColor.a < 0.8f)
         discard;
     
-    //Out.vColor.rgb = float3(1.f, 0.f, 0.f);
+    Out.vColor.rgb = float3(1.f, 0.f, 0.f);
 
     Out.vColor.a = In.vColor.a;
 

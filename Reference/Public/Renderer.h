@@ -33,8 +33,8 @@ private:
 #endif
 
 private:
-	class CShader* m_pShader = { nullptr };
-	class CVIBuffer_Rect* m_pVIBuffer = { nullptr };
+	class CShader*							m_pShader = { nullptr };
+	class CVIBuffer_Rect*					m_pVIBuffer = { nullptr };
 
 	_float4x4								m_WorldMatrix;
 	_float4x4								m_ViewMatrix, m_ProjMatrix;
@@ -51,6 +51,7 @@ private:
 
 	HRESULT Render_LightAcc();
 	HRESULT Render_Deferred();
+	HRESULT Render_Bloom();
 
 #ifdef _DEBUG
 private:
@@ -83,10 +84,10 @@ END
 /*
 	논블렌드 그룹은 불투명하게 그릴 객체들을 모아놓는 개념, 당연히 블렌드그룹은 반대되는 개념. 블렌드 그룹은 알파소팅을 수행한다.
 	불투명하게 그릴 객체들을 먼저 그려서 블렌드그룹에있는 애들과 픽셀의색상값을 잘 섞어주게 만들어주기 위해서다.
-*/
+*/ 
 
 //! 알파블렌딩을 하는 그룹이 알파소팅을 수행하는 이유
-/*
+/* p
 	알파블렌딩은 말 그대로 먼저 그려진 픽셀과 색상을 섞는다는 행위를 하는 것인데,
 	여기서 먼저 그려진 픽셀의 개념을 주기위해서 알파소팅을 수행하는 것이다.
 */

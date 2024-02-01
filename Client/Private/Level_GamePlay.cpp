@@ -162,6 +162,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const wstring& strLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_Effect(const wstring& strLayerTag)
 {
+	
+
+
 	//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Particle_Blue"))))
 	//	return E_FAIL;
 	//
@@ -170,25 +173,25 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const wstring& strLayerTag)
 
 	_vector vPos = m_pGameInstance->Get_Player(LEVEL_GAMEPLAY)->Get_Transform()->Get_State(CTransform::STATE_POSITION);
 
-	for (size_t i = 0; i < 30; i++)
-	{
+	//for (size_t i = 0; i < 30; i++)
+	//{
 		//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Effect_Explosion"))))
 		//	return E_FAIL;
 		//_bool bType = false;
 		//
 		//if(i % 2 == 0)
 		//	bType = true;
-		CEffect_Blood::EFFECT_DESC Desc;
-
-		Desc.fLifeTime = 5.f;
-		Desc.fPlaySpeed = 1.f;
-		XMStoreFloat4(&Desc.vCreatePos, XMVectorSet(45.f, 1.f, 35.f, 1.f));
-		//XMStoreFloat3(&Desc.vDir, -m_pTransformCom->Get_State(CTransform::STATE_LOOK));
-		Desc.vScale = _float3{ 10.f, 10.f, 10.f };
-
-		m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Blood"), &Desc);
-
-	}
+		//CEffect_Blood::EFFECT_DESC Desc;
+		//
+		//Desc.fLifeTime = 5.f;
+		//Desc.fPlaySpeed = 1.f;
+		//XMStoreFloat4(&Desc.vCreatePos, XMVectorSet(45.f, 1.f, 35.f, 1.f));
+		////XMStoreFloat3(&Desc.vDir, -m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+		//Desc.vScale = _float3{ 1.f, 1.f, 1.f };
+		//
+		//m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Blood"), &Desc);
+	
+	//}
 
 	
 

@@ -205,6 +205,9 @@
     <Filter Include="01. Utility\03. Components\00. VIBuffer\ModelInstance">
       <UniqueIdentifier>{421d3044-dd23-4b9c-a225-872cea49ac84}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\03. Components\00. VIBuffer\Trail">
+      <UniqueIdentifier>{f14edcb0-c942-41f2-bd85-1b7c3fe44883}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -414,6 +417,12 @@
     <ClInclude Include="..\Public\VIBuffer_Model_Instance.h">
       <Filter>01. Utility\03. Components\00. VIBuffer\ModelInstance</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Trail.h">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Trail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Trail_EyeLight.h">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Trail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -595,6 +604,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Model_Instance.cpp">
       <Filter>01. Utility\03. Components\00. VIBuffer\ModelInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Trail.cpp">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Trail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Trail_EyeLight.cpp">
+      <Filter>01. Utility\03. Components\00. VIBuffer\Trail</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

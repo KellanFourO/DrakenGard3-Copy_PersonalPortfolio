@@ -17,7 +17,7 @@ public:
 	typedef struct tagParticleObjectDesc : public CGameObject::GAMEOBJECT_DESC
 	{
 		wstring strTextureTag;
-		_int	iShaderPathIndex;
+		_int	iShaderPathIndex = {0};
 		_uint	iNumInstance;
 		_float3 vCenter;
 		_float	fRange;
@@ -28,6 +28,7 @@ public:
 		_float2 vLifeTime;
 		_float4 vDir = { 1.f, 0.f, 0.f, 0.f };
 		_bool	bRandom = true;
+		_bool	bTimeScale = false;
 		_float2	vRandomRotation = {};
 		_float3	vInterval = { 1.f, 1.f, 1.f };
 		

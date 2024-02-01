@@ -78,6 +78,7 @@ HRESULT CPlayer::Initialize(void* pArg)
 
 	Init_Status(500.f, 20.f);
 	
+	m_pStateCom->Set_Hit(true);
 
 	return S_OK;
 }
@@ -216,6 +217,17 @@ void CPlayer::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstr
 			
 			}
 			m_tStatus.fCurrentHp -= fDmg;
+
+			CEffect_Blood::EFFECT_DESC Desc;
+
+			Desc.fLifeTime = 5.f;
+			Desc.fPlaySpeed = 0.1f;
+			XMStoreFloat4(&Desc.vCreatePos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			Desc.vCreatePos.y = Desc.vCreatePos.y + 1.f;
+			XMStoreFloat3(&Desc.vDir, -m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+			Desc.vScale = _float3{ 1.10f, 1.10f, 1.0f };
+
+			m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Blood"), &Desc);
 		}
 	}
 	//m_pRigidBodyCom->Add_Force(vCollisionPos, CRigidBody::FORCE_MODE::FORCE);
@@ -260,7 +272,7 @@ void CPlayer::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag,
 		
 		
 
-		if (false == m_pStateCom->isHit())
+		if (true == m_pStateCom->isHit())
 		{
 			if (STATUS_DESC::ATTACKTYPE::NORMAL_ATTACK == eHitType)
 			{
@@ -294,15 +306,16 @@ void CPlayer::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag,
 
 		}
 
-		if (LeftTag != TEXT("Layer_Bullet") && bHit == true)
+		if (/*LeftTag != TEXT("Layer_Bullet") && */bHit == true)
 		{
 			CEffect_Blood::EFFECT_DESC Desc;
 
 			Desc.fLifeTime = 5.f;
-			Desc.fPlaySpeed = 1.f;
+			Desc.fPlaySpeed = 0.1f;
 			XMStoreFloat4(&Desc.vCreatePos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			Desc.vCreatePos.y = Desc.vCreatePos.y + 1.f;
 			XMStoreFloat3(&Desc.vDir, -m_pTransformCom->Get_State(CTransform::STATE_LOOK));
-			Desc.vScale = _float3{ 1.f, 1.f, 1.f };
+			Desc.vScale = _float3{ 1.10f, 1.10f, 1.0f };
 			
 			m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Blood"), &Desc);
 			
@@ -360,6 +373,27 @@ void CPlayer::Init_Status(_float fMaxHp, _float fDmg)
 void CPlayer::Transition(CStateMachine::STATETYPE eStateType, wstring& strStateTag)
 {
 	m_pStateCom->Transition(eStateType, strStateTag);
+}
+
+void CPlayer::On_SwordTrail()
+{
+	CPlayerPart_Weapon* pWeapon = dynamic_cast<CPlayerPart_Weapon*>(Find_PartObject(TEXT("Part_Weapon")));
+	
+	pWeapon->On_Trail();
+}
+
+void CPlayer::Off_SwordTrail()
+{
+	CPlayerPart_Weapon* pWeapon = dynamic_cast<CPlayerPart_Weapon*>(Find_PartObject(TEXT("Part_Weapon")));
+
+	pWeapon->Off_Trail();
+}
+
+CEffect_Trail* CPlayer::Get_Trail()
+{
+	CPlayerPart_Weapon* pWeapon = dynamic_cast<CPlayerPart_Weapon*>(Find_PartObject(TEXT("Part_Weapon")));
+
+	return pWeapon->Get_Trail();
 }
 
 HRESULT CPlayer::Ready_Components()

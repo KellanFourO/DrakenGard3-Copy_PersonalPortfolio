@@ -181,6 +181,15 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta)
 		_vector		vDir = XMVector3Normalize(XMLoadFloat4(&pVertices[i].vPosition) - XMLoadFloat3(&m_InstancingDesc.vCenter));
 		vDir = XMVectorSetW(vDir, 0.f);
 
+		if (true == m_InstancingDesc.bTimeScale)
+		{
+			_float	fScale = m_InstancingDesc.vScale.y += 0.00005f; //RandomScale(m_RandomNumber);
+
+			pVertices[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
+			pVertices[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
+			
+		}
+
 		XMStoreFloat4(&pVertices[i].vPosition, XMLoadFloat4(&pVertices[i].vPosition) + vDir * m_pSpeeds[i] * fTimeDelta);
 	}
 

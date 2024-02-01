@@ -31,6 +31,8 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 	
 	if (m_pGameInstance->Key_Down(DIK_SPACE))
 	{ 
+		
+
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_GAMEPLAY))))
 			return;
 

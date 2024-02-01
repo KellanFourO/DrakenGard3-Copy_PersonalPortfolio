@@ -2,6 +2,8 @@
 #include "..\Public\MainApp.h"
 
 #include "GameInstance.h"
+#include "BackGround_Loading.h"
+#include "BackGround_LoadingUI.h"
 #include "Level_Loading.h"
 
 CMainApp::CMainApp()
@@ -18,6 +20,7 @@ HRESULT CMainApp::Initialize()
 	GraphicDesc.eWinMode = GRAPHIC_DESC::WINMODE_WIN;
 	GraphicDesc.iBackBufferSizeX = g_iWinSizeX;
 	GraphicDesc.iBackBufferSizeY = g_iWinSizeY;
+
 
 	if(FAILED(m_pGameInstance->Initialize_Engine(LEVEL_END, g_hInst, GraphicDesc, &m_pDevice, &m_pContext)))
 		return E_FAIL;
@@ -134,6 +137,23 @@ HRESULT CMainApp::Ready_Prototype_Component_ForStaticLevel()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxPosTex"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxPosTex.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
 		return E_FAIL;
+
+	//! For.Prototype_Component_Texture_Logo
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Logo/Loading2.png"), 1))))
+		return E_FAIL;
+
+	//! For.Prototype_Component_Texture_Logo
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_LoadingUI"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Logo/NowLoading%d.png"), 6))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_BackGround_Loading"), CBackGround_Loading::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_BackGround_LoadingUI"), CBackGround_LoadingUI::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
 
 	return S_OK;
 }

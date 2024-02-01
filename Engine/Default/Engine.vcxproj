@@ -253,6 +253,8 @@ xcopy "$(SolutionDir)Engine\Bin\ShaderFiles\*.*" "$(SolutionDir)Client\Bin\Shade
     <ClInclude Include="..\public\VIBuffer_Particle_Rect.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
+    <ClInclude Include="..\Public\VIBuffer_Trail.h" />
+    <ClInclude Include="..\Public\VIBuffer_Trail_EyeLight.h" />
     <ClInclude Include="그라운드 AI설계.h" />
     <ClInclude Include="인스턴싱.h" />
   </ItemGroup>
@@ -317,6 +319,8 @@ xcopy "$(SolutionDir)Engine\Bin\ShaderFiles\*.*" "$(SolutionDir)Client\Bin\Shade
     <ClCompile Include="..\Private\VIBuffer_Particle_Rect.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Trail.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Trail_EyeLight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">

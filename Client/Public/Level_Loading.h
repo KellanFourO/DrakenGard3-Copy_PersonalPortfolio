@@ -1,9 +1,14 @@
 #pragma once
 #include "Client_Defines.h"
 #include "Level.h"
+#include "BackGround_Loading.h"
 
 //! 로딩 레벨에 보여주고 싶은 장면을 갱신하고 보여준다.
 //! m_eNextLevelID에 따른 레벨에 필요한 자원을 준비하기 위한 작업을 하는 스레드를 생성해준다.
+BEGIN(Engine)
+class CTexture;
+END
+
 
 BEGIN(Client)
 
@@ -19,8 +24,10 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	LEVEL			m_eNextLevelID = { LEVEL_END };
-	class CLoader* m_pLoader = { nullptr };
+	LEVEL					m_eNextLevelID = { LEVEL_END };
+	class CLoader*			m_pLoader = { nullptr };
+	CTexture*				m_pTextureCom = { nullptr};
+	CBackGround_Loading*	m_pLoading = { nullptr };
 
 public:
 	static CLevel_Loading* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eNextLevelID);

@@ -29,7 +29,7 @@ HRESULT CPlayerState_MoreWeakHit::StartState()
 	m_pOwnerModelCom->Set_Animation(27);
 	m_pOwnerModelCom->Set_Loop(false);
 	m_pOwnerModelCom->Root_MotionStart();
-	m_pOwnerStateCom->Set_Hit(true);
+	m_pOwnerStateCom->Set_Hit(false);
 	return S_OK;
 }
 
@@ -38,7 +38,8 @@ HRESULT CPlayerState_MoreWeakHit::EndState()
 	m_pOwnerModelCom->Set_Loop(true);
 	m_pOwnerRigidBody->Clear_NetPower();
 	m_pOwnerModelCom->Root_MotionEnd();
-	m_pOwnerStateCom->Set_Hit(false);
+	
+	m_pOwnerStateCom->Set_Hit(true);
 	m_fAccTime = 0.f;
 	m_fLastInputTime = 0.f;
 
@@ -47,8 +48,10 @@ HRESULT CPlayerState_MoreWeakHit::EndState()
 
 void CPlayerState_MoreWeakHit::Tick(const _float& fTimeDelta)
 {
+	
 	if (true == Is_Current_AnimEnd())
 	{
+		m_pOwnerStateCom->Set_Hit(false);
 		Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Idle"));
 
 	}

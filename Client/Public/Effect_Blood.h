@@ -22,6 +22,15 @@ public:
 		_float  fLifeTime = {};
 		_float3 vScale = { 1.f, 1.f, 1.f};
 		_float3 vDir = { 1.f, 0.f, 0.f };
+		_int	iAnimationSizeX = {512};
+		_int	iAnimationSizeY = {512};
+		_int	iSpriteSizeX = {2048};
+		_int	iSpriteSizeY = {2048};
+		
+		_int	iStartVer = {0};
+		_int	iStartHor = {0};
+		_int    iMaxVer = {4};
+		_int	iMaxHor = {4};
 	}EFFECT_DESC;
 
 private:
@@ -45,6 +54,11 @@ private:
 private:
 	_float				m_fFrame = { 0.0f };
 	EFFECT_DESC			m_tEffectDesc = {};
+
+	_int						m_iCurrentVer = 0;
+	_int						m_iCurrentHor = 0;
+	_float2						m_vAddUVPos = {};
+	_float						m_fTimeAcc = 0.f;
 
 private:
 	HRESULT Ready_Components();

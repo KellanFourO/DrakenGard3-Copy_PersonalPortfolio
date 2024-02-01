@@ -2,6 +2,7 @@
 #include "PlayerPart_Weapon.h"
 #include "GameInstance.h"
 #include "Bone.h"
+#include "Effect_Trail.h"
 
 CPlayerPart_Weapon::CPlayerPart_Weapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CPartObject(pDevice,pContext)
@@ -11,6 +12,16 @@ CPlayerPart_Weapon::CPlayerPart_Weapon(ID3D11Device* pDevice, ID3D11DeviceContex
 CPlayerPart_Weapon::CPlayerPart_Weapon(const CPlayerPart_Weapon& rhs)
 	: CPartObject(rhs)
 {
+}
+
+void CPlayerPart_Weapon::On_Trail()
+{
+	m_pTrail->On_Trail();
+}
+
+void CPlayerPart_Weapon::Off_Trail()
+{
+	m_pTrail->Off_Trail();
 }
 
 HRESULT CPlayerPart_Weapon::Initialize_Prototype(LEVEL eLevel)
@@ -27,6 +38,7 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	
 	m_pParentTransformCom = ((PART_DESC*)pArg)->m_pParentTransform;
 
+	m_pPartDesc = *(PART_DESC*)pArg;
 
 	if(FAILED(AddRefIfNotNull(m_pParentTransformCom)))
 		return E_FAIL;
@@ -42,6 +54,19 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 
 	if (FAILED(__super::Ready_Components(m_eCurrentLevelIndex, TEXT("Prototype_Component_Shader_Model"), TEXT("Prototype_Component_Model_Weapon1"))))
 		return E_FAIL;
+
+	CGameObject* pGameObject = { nullptr };
+
+	CEffect_Trail::EFFECT_TRAIL_DESC Desc = {};
+
+	Desc.iMaxCount = 12;
+	Desc.vStartPos = { 0.f, 0.f, 0.f};
+	Desc.vEndPos = { 0.f, 0.f, -1.f};
+
+	if(FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelIndex, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_EffectTrail"), &Desc, &pGameObject)))
+		return E_FAIL;
+
+	m_pTrail = dynamic_cast<CEffect_Trail*>(pGameObject);
 
 	/* For.Com_Collider */
 	CBoundingBox_OBB::BOUNDING_OBB_DESC		BoundingDesc = {};
@@ -88,12 +113,20 @@ void CPlayerPart_Weapon::Tick(_float fTimeDelta)
 	XMStoreFloat4x4(&m_WorldMatrix, m_pTransformCom->Get_WorldMatrix() * SocketMatrix * m_pParentTransformCom->Get_WorldMatrix());
 
 	m_pColliderCom->Update(XMLoadFloat4x4(&m_WorldMatrix));
+	m_pTrail->Tick(fTimeDelta, XMLoadFloat4x4(&m_WorldMatrix));
+
+
 }
 
 void CPlayerPart_Weapon::Late_Tick(_float fTimeDelta)
 {
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return;
+
+	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_SHADOW, this)))
+		return;
+
+	//m_pTrail->Late_Tick(fTimeDelta);
 }
 
 HRESULT CPlayerPart_Weapon::Render()
@@ -119,10 +152,45 @@ HRESULT CPlayerPart_Weapon::Render()
 		m_pModelCom->Render(i);
 	}
 
+	/*m_pTrail->Render();*/
 
 #ifdef _DEBUG
 	m_pColliderCom->Render();
 #endif // _DEBUG
+
+
+	return S_OK;
+}
+
+HRESULT CPlayerPart_Weapon::Render_Shadow()
+{
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+		return E_FAIL;
+
+	_float4x4		ViewMatrix, ProjMatrix;
+
+	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(XMVectorSet(-20.f, 20.f, -20.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
+	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 600.f));
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &ProjMatrix)))
+		return E_FAIL;
+
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+	for (size_t i = 0; i < iNumMeshes; i++)
+	{
+		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
+
+		m_pShaderCom->Begin(2);
+
+		m_pModelCom->Render(i);
+	}
 
 	return S_OK;
 }
@@ -201,6 +269,8 @@ void CPlayerPart_Weapon::Free()
 	__super::Free();
 
 	Safe_Release(m_pColliderCom);
+	Safe_Release(m_pTrail);
+	
 
 }
 

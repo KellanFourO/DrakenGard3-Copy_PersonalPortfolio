@@ -15,6 +15,7 @@
 #include "NonAnimObjects.h"
 
 
+
 #include <process.h> //! 스레드를 사용하기위한 헤더 추가
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -146,9 +147,14 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Explosion/Explosion%d.png"), 90))))
 		return E_FAIL;
 
+	///* For.Prototype_Component_Texture_Explosion */
+	//if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Blood"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Blood/Blood%d.dds"), 7))))
+	//	return E_FAIL;
+
 	/* For.Prototype_Component_Texture_Explosion */
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Blood"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Blood/Blood%d.dds"), 7))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Blood/Blood.dds"), 1))))
 		return E_FAIL;
 
 	m_pGameInstance->Add_EffectTextureTag(TEXT("Prototype_Component_Texture_Explosion"));
@@ -184,6 +190,31 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	/* For.Prototype_Component_Texture_CyilnderMask */
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_BossFireNoiseTest2"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/BossFire/244.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrailNoise"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/fractal_01.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrailMask1"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/mask_02.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrailMask2"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/mask_03.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrailMask3"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/mask_07.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrail"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/trail_pl00.dds"), 1))))
 		return E_FAIL;
 
 	m_pGameInstance->Add_EffectTextureTag(TEXT("Prototype_Component_Texture_BornFire"));
@@ -481,6 +512,11 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Model_Instance"),
 		CVIBuffer_Model_Instance::Create(m_pDevice,m_pContext))))
 		return E_FAIL;
+
+	//! For.Prototype_Component_VIBuffer_Trail
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_VIBuffer_Trail"),
+		CVIBuffer_Trail::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 		
 
 	lstrcpy(m_szLoadingText, TEXT("셰이더를(을) 로드하는 중입니다."));
@@ -729,6 +765,10 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CEffect_Blood::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_EffectTrail"),
+		CEffect_Trail::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+
 
 	lstrcpy(m_szLoadingText, TEXT("카메라 원형(을) 로드하는 중입니다."));
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Target"),
@@ -773,13 +813,19 @@ HRESULT CLoader::Loading_For_Logo_Level()
 
 	//! For.Prototype_Component_Texture_Logo
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_LOGO, TEXT("Prototype_Component_Texture_Logo"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Default%d.jpg"), 2))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Logo/Logo.jpg"), 1))))
 		return E_FAIL;
+
+	
 
 
 	//! For.Prototype_GameObject_BackGround
 	if(FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_BackGround"), CBackGround::Create(m_pDevice,m_pContext))))
 		return E_FAIL;
+	
+	//! For.Prototype_GameObject_BackGround
+
+	
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
@@ -790,6 +836,15 @@ HRESULT CLoader::Loading_For_Logo_Level()
 
 HRESULT CLoader::Loading_For_GamePlay_Level()
 {
+	CBackGround_Loading::BACKGROUND_DESC	BackGroundDesc = {};
+
+	BackGroundDesc.fX = g_iWinSizeX >> 1;
+	BackGroundDesc.fY = g_iWinSizeY >> 1;
+	BackGroundDesc.fSizeX = g_iWinSizeX;
+	BackGroundDesc.fSizeY = g_iWinSizeY;
+	BackGroundDesc.fRotationPerSec = XMConvertToRadians(90.f);
+	BackGroundDesc.fSpeedPerSec = 10.0f;
+
 	
 
 	return Loading_For_Level(LEVEL_GAMEPLAY);

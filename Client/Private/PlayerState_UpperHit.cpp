@@ -29,7 +29,7 @@ HRESULT CPlayerState_UpperHit::StartState()
 	m_pOwnerModelCom->Set_Animation(37);
 	m_pOwnerModelCom->Set_Loop(false);
 	m_pOwnerModelCom->Root_MotionStart();
-	m_pOwnerStateCom->Set_Hit(true);
+	m_pOwnerStateCom->Set_Hit(false);
 	return S_OK;
 }
 
@@ -43,7 +43,8 @@ HRESULT CPlayerState_UpperHit::EndState()
 		m_bCurrentHitAnimEnd[i] = false;
 	}
 	
-	m_pOwnerStateCom->Set_Hit(false);
+	
+	m_pOwnerStateCom->Set_Hit(true);
 	m_pOwnerModelCom->Root_MotionEnd();
 	m_fAccTime = 0.f;
 	m_fLastInputTime = 0.f;
@@ -54,6 +55,8 @@ HRESULT CPlayerState_UpperHit::EndState()
 void CPlayerState_UpperHit::Tick(const _float& fTimeDelta)
 {
 	
+	
+
 	if (false == Is_Current_AnimEnd() && m_pGameInstance->Key_Down(DIK_SPACE))
 	{
 		m_bKeyInput = true;
@@ -71,7 +74,10 @@ void CPlayerState_UpperHit::Tick(const _float& fTimeDelta)
 			m_bCurrentHitAnimEnd[1] = true;
 
 			if (true == m_bKeyInput)
+			{
+				m_pOwnerStateCom->Set_Hit(false);
 				Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_BreakFall"));
+			}
 			else
 			m_pOwnerModelCom->Set_Animation(39);
 	}
@@ -91,6 +97,7 @@ void CPlayerState_UpperHit::Tick(const _float& fTimeDelta)
 
 	else if (true == Is_Current_AnimEnd() && true == m_bCurrentHitAnimEnd[3])
 	{
+		m_pOwnerStateCom->Set_Hit(false);
 		Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Idle"));
 	}
 

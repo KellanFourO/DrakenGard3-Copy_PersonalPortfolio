@@ -15,6 +15,8 @@ matrix			g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D       g_Texture[2];
 
 texture2D       g_DiffuseTexture;
+texture2D       g_MaskTexture;
+texture2D       g_NoiseTexture;
 texture2D       g_DepthTexture;
 
 float			g_fAtlasPosX;
@@ -30,6 +32,8 @@ float           g_fUVAnimY;
 bool            g_bIsRtoL;
 
 vector g_vCamDirection;
+
+
 
 
 
@@ -239,7 +243,30 @@ PS_OUT PS_MAIN_EFFECT(PS_IN_EFFECT In)
     float4 vDepthDesc = g_DepthTexture.Sample(PointSampler, vDepthTexcoord);
 	
     Out.vColor.a = Out.vColor.a * (vDepthDesc.y * 1000.f - In.vProjPos.w) * 2.f;
+    
+    if (Out.vColor.a < 0.1f)
+    {
+        discard;
+    }
+    
+    return Out;
+}
 
+
+/* 픽셀셰이더 : 픽셀의 색!!!! 을 결정한다. */
+PS_OUT PS_EFFECT_TRAIL(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    //Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexCoord);
+    //Out.vColor.rgb = float3(1.0, 0.8, 0.8);
+    
+    Out.vColor = float4(1.0, 0.8, 0.8, 1.f);
+    float4 vMaskDesc = g_MaskTexture.Sample(LinearSampler, In.vTexCoord);
+    
+    
+   Out.vColor.a = vMaskDesc.r * 5;
+   
     return Out;
 }
 
@@ -317,4 +344,14 @@ technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우
         PixelShader = compile ps_5_0 PS_MAIN_ATLAS_ANIMATION();
     }
 
+    pass Effect_Trail //6번 패스
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetBlendState(BS_AlphaBlend_Add, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Default, 0);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_EFFECT_TRAIL();
+    }
 };

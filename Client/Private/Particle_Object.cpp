@@ -104,7 +104,7 @@ void CParticle_Object::Tick(_float fTimeDelta)
 
 void CParticle_Object::Late_Tick(_float fTimeDelta)
 {
-	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_BLEND, this)))
+	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this)))
 		return;
 }
 
@@ -148,6 +148,8 @@ HRESULT CParticle_Object::Ready_Components(void* pArg)
 	ParticleDesc.vDir = m_tParticleDesc.vDir;
 	ParticleDesc.vRandomRotation = m_tParticleDesc.vRandomRotation;
 	ParticleDesc.vInterval = m_tParticleDesc.vInterval;
+
+	ParticleDesc.bTimeScale = m_tParticleDesc.bTimeScale;
 	//!ParticleDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	//!ParticleDesc.fRange = 3.f;
 	//!ParticleDesc.vScale = _float2(0.2f, 0.5f);

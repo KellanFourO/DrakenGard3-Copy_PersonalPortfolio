@@ -5,6 +5,7 @@
 #include "StateMachine.h"
 #include "GameInstance.h"
 #include "Camera_Target.h"
+#include "Effect_Trail.h"
 
 CPlayerState_NormalAttackBase::CPlayerState_NormalAttackBase()
 {
@@ -23,7 +24,8 @@ HRESULT CPlayerState_NormalAttackBase::StartState()
 {
     m_pOwnerModelCom->Set_AnimationSpeed(2.f);
     m_pOwnerColliderCom->OnCollider();
-
+    m_pOwnerTrail->Reset_Points();
+    m_pOwnerTrail->On_Trail();
     return S_OK;
 }
 
@@ -31,6 +33,9 @@ HRESULT CPlayerState_NormalAttackBase::EndState()
 {
     m_pOwnerModelCom->Reset_AnimationSpeed();
     m_pOwnerColliderCom->OffCollider();
+
+    
+    m_pOwnerTrail->Off_Trail();
     return S_OK;
 }
 

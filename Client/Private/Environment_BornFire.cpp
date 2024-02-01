@@ -68,9 +68,9 @@ HRESULT CEnvironment_BornFire::Initialize(void* pArg)
 	_vector vCreatePos = XMLoadFloat4(&Desc.vPos);
 	vCreatePos.m128_f32[3] = 1.f;
 	BornFireDesc.bBossBreath = false;
-	BornFireDesc.vScale = { 4.f, 4.f, 5.f};
+	BornFireDesc.vScale = { 3.f, 3.f, 5.f};
 	
-	vCreatePos.m128_f32[1] += 2.5f;
+	vCreatePos.m128_f32[1] += 1.5f;
 	XMStoreFloat4(&BornFireDesc.vPos, vCreatePos);
 	
 	XMStoreFloat4(&BornFireDesc.vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));

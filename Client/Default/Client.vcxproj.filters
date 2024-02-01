@@ -259,6 +259,9 @@
     <Filter Include="02. GameObjects\05. Effects\Blood">
       <UniqueIdentifier>{89d17fb6-ebf5-4c06-a8e6-886e65efe915}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Trail">
+      <UniqueIdentifier>{faf84eb6-9db4-4f7b-93ad-0249dc071599}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -579,6 +582,15 @@
     <ClInclude Include="..\Public\Effect_Blood.h">
       <Filter>02. GameObjects\05. Effects\Blood</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Effect_Trail.h">
+      <Filter>02. GameObjects\05. Effects\Trail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BackGround_Loading.h">
+      <Filter>02. GameObjects\00. BackGround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BackGround_LoadingUI.h">
+      <Filter>02. GameObjects\00. BackGround</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -856,6 +868,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Effect_Blood.cpp">
       <Filter>02. GameObjects\05. Effects\Blood</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Trail.cpp">
+      <Filter>02. GameObjects\05. Effects\Trail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BackGround_Loading.cpp">
+      <Filter>02. GameObjects\00. BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BackGround_LoadingUI.cpp">
+      <Filter>02. GameObjects\00. BackGround</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

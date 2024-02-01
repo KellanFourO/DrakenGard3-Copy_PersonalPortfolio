@@ -29,7 +29,8 @@ HRESULT CPlayerState_DownHit::StartState()
 	m_pOwnerModelCom->Set_Animation(40);
 	m_pOwnerModelCom->Set_Loop(false);
 	m_pOwnerModelCom->Root_MotionStart();
-	m_pOwnerStateCom->Set_Hit(true);
+	m_pOwnerStateCom->Set_Hit(false);
+	
 	return S_OK;
 }
 
@@ -39,7 +40,7 @@ HRESULT CPlayerState_DownHit::EndState()
 	m_bKeyInput = false;
 	m_pOwnerRigidBody->Clear_NetPower();
 	m_bCurrentHitAnimEnd = false;
-	m_pOwnerStateCom->Set_Hit(false);
+	m_pOwnerStateCom->Set_Hit(true);
 	
 
 	m_pOwnerModelCom->Root_MotionEnd();
@@ -52,6 +53,7 @@ HRESULT CPlayerState_DownHit::EndState()
 void CPlayerState_DownHit::Tick(const _float& fTimeDelta)
 {
 	
+
 	if (false == Is_Current_AnimEnd() && m_pGameInstance->Key_Down(DIK_SPACE))
 	{
 		m_bKeyInput = true;
@@ -63,6 +65,7 @@ void CPlayerState_DownHit::Tick(const _float& fTimeDelta)
  		
 			if (true == m_bKeyInput)
 			{
+				m_pOwnerStateCom->Set_Hit(false);
 				Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_BreakFall"));
 				m_pOwnerRigidBody->Clear_NetPower();
 			}
@@ -71,6 +74,7 @@ void CPlayerState_DownHit::Tick(const _float& fTimeDelta)
 	}
 	else if (true == Is_Current_AnimEnd() && true == m_bCurrentHitAnimEnd)
 	{
+		
 		Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Idle"));
 	}
 

@@ -26,6 +26,7 @@ HRESULT CMonsterPart_EN00_Weapon::Initialize(void* pArg)
 	
 	m_pParentTransformCom = ((PART_DESC*)pArg)->m_pParentTransform;
 
+	m_pPartDesc = *(PART_DESC*)pArg;
 
 	if(FAILED(AddRefIfNotNull(m_pParentTransformCom)))
 		return E_FAIL;
@@ -101,6 +102,9 @@ void CMonsterPart_EN00_Weapon::Late_Tick(_float fTimeDelta)
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return;
+
+	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_SHADOW, this)))
+		return;
 }
 
 HRESULT CMonsterPart_EN00_Weapon::Render()
@@ -130,6 +134,39 @@ HRESULT CMonsterPart_EN00_Weapon::Render()
 #ifdef _DEBUG
 	m_pColliderCom->Render();
 #endif // _DEBUG
+
+	return S_OK;
+}
+
+HRESULT CMonsterPart_EN00_Weapon::Render_Shadow()
+{
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+		return E_FAIL;
+
+	_float4x4		ViewMatrix, ProjMatrix;
+
+	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(XMVectorSet(-20.f, 20.f, -20.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
+	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 600.f));
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &ProjMatrix)))
+		return E_FAIL;
+
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+	for (size_t i = 0; i < iNumMeshes; i++)
+	{
+		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
+
+		m_pShaderCom->Begin(2);
+
+		m_pModelCom->Render(i);
+	}
 
 	return S_OK;
 }

@@ -16,6 +16,7 @@ BEGIN(Client)
 
 class CCamera_Target;
 class CPlayerPart_Body;
+class CEffect_Trail;
 
 
 
@@ -43,6 +44,7 @@ public:
 	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit) override;
 
 public:
+	
 	CCamera_Target*			Get_Cam() { return m_pCamera; }
 	void					Set_Cam(class CCamera_Target* pCam);
 	CPartObject*			Find_PartObject(const wstring& strPartTag);
@@ -52,6 +54,10 @@ public:
 	void					Init_Status(_float fMaxHp, _float fDmg);
 	void					Transition(CStateMachine::STATETYPE eStateType, wstring& strStateTag);
 	
+public:
+	void					On_SwordTrail();
+	void					Off_SwordTrail();
+	CEffect_Trail*			Get_Trail();
 
 private:
 	HRESULT			Ready_Components();

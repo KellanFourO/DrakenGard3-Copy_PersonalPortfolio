@@ -12,7 +12,7 @@ END
 
 BEGIN(Client)
 class CPlayer;
-
+class CEffect_Trail;
 
 
 class CPlayerState_Base abstract : public CStateBase
@@ -56,6 +56,7 @@ protected:
 	CNavigation*	m_pOwnerNavagation = { nullptr };
 	CRigidBody*		m_pOwnerRigidBody = { nullptr };
 	CCollider*		m_pOwnerColliderCom = { nullptr };
+	CEffect_Trail*	m_pOwnerTrail = { nullptr };
 
 	class CCamera_Target* m_pOwnerCam = { nullptr };
 	

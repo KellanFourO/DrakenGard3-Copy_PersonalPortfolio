@@ -24,7 +24,7 @@ HRESULT CBackGround::Initialize_Prototype()
 
 HRESULT CBackGround::Initialize(void* pArg)
 {
-	BACKGROUND_DESC*	pDesc = (BACKGROUND_DESC*)pArg;
+ 	BACKGROUND_DESC*	pDesc = (BACKGROUND_DESC*)pArg;
 
 	m_fX = pDesc->fX;
 	m_fY = pDesc->fY;
@@ -62,15 +62,6 @@ void CBackGround::Tick(_float fTimeDelta)
 {
 	int i = 0;
 
-	if (GetKeyState(VK_LEFT) & 0x8000)
-		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
-	if (GetKeyState(VK_RIGHT) & 0x8000)
-		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
-
-	if (GetKeyState(VK_UP) & 0x8000)
-		m_pTransformCom->Go_Straight(fTimeDelta);
-	if (GetKeyState(VK_DOWN) & 0x8000)
-		m_pTransformCom->Go_Backward(fTimeDelta);
 }
 
 void CBackGround::Late_Tick(_float fTimeDelta)

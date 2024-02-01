@@ -115,7 +115,7 @@ void CEffect_BornFire::Late_Tick(_float fTimeDelta)
 {
 	Compute_CamDistance();
 
-	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_BLEND, this)))
+	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this)))
 		return ;
 }
 

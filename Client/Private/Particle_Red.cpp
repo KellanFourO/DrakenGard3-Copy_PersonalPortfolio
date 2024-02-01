@@ -3,6 +3,7 @@
 
 #include "GameInstance.h"
 
+_uint		iTexIndex = rand() % 3;
 
 CParticle_Red::CParticle_Red(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CNonAnimObject(pDevice, pContext)
@@ -36,7 +37,8 @@ HRESULT CParticle_Red::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 10.f, 0.f, 1.f));
+	
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(40.f, 1.f, 35.f, 1.f));
 
 	return S_OK;
 }
@@ -50,14 +52,14 @@ void CParticle_Red::Priority_Tick(_float fTimeDelta)
 
 void CParticle_Red::Tick(_float fTimeDelta)
 {
-	// m_pVIBufferCom->Update(fTimeDelta);
+	 //m_pVIBufferCom->Update(fTimeDelta);
 
 
 }
 
 void CParticle_Red::Late_Tick(_float fTimeDelta)
 {
-	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_BLEND, this)))
+	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this)))
 		return;
 }
 
@@ -94,6 +96,8 @@ HRESULT CParticle_Red::Ready_Components()
 	ParticleDesc.vScale = _float2(0.2f, 0.5f);
 	ParticleDesc.vSpeed = _float2(0.1f, 5.0f);
 	ParticleDesc.vLifeTime = _float2(0.5f, 3.0f);
+	ParticleDesc.iNumInstance = 100.f;
+	ParticleDesc.vDir = _float4(1.f, 0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_VIBuffer_Particle_Point"),
 		TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), &ParticleDesc)))

@@ -2,8 +2,11 @@
 
 //!±‚≈∏
 #include "BackGround.h"
+#include "BackGround_Loading.h"
+#include "BackGround_LoadingUI.h"
 #include "SkyBox.h"
 #include "SkyDome.h"
+
 
 //! ∏ 
 #include "Stage1Map_1.h"
@@ -24,6 +27,7 @@
 #include "Effect_Explosion.h"
 #include "Effect_BornFire.h"
 #include "Effect_Blood.h"
+#include "Effect_Trail.h"
 
 //!∏ﬁΩ¨¿Ã∆Â∆Æ
 #include "Effect_Hanabira.h"

@@ -96,7 +96,7 @@ void CEN131_Breath::Tick(_float fTimeDelta)
 	{
 		Create_Effect();
 		m_bCreateEffect = true;
-		m_fEffectCreateTime = 1.f;
+		m_fEffectCreateTime = 0.25f;
 	}
 	
 		m_fEffectTimeAcc += fTimeDelta;
@@ -226,9 +226,10 @@ void CEN131_Breath::Create_Effect()
 	_vector vMyLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
 
 	// 방향 벡터를 기준으로 하는 각도 계산 (라디안)
-	float radianAngle = atan2(vMyLook.m128_f32[1], vMyLook.m128_f32[0]);
 
-	vMyPos.m128_f32[0] = vMyPos.m128_f32[0] + vMyLook.m128_f32[0] * 5.f;
+	float radianAngle = atan2(vMyLook.m128_f32[1], vMyLook.m128_f32[0]);
+
+	vMyPos.m128_f32[0] = vMyPos.m128_f32[0] + vMyLook.m128_f32[0] * 4.f;
 	vMyPos.m128_f32[1] = vMyPos.m128_f32[1] - 10.f;
 
  	CParticle_Object::PARTICLE_DESC PaticleDesc;
@@ -239,7 +240,7 @@ void CEN131_Breath::Create_Effect()
  	PaticleDesc.fRange = 15.f;
 	PaticleDesc.vCenter = { vMyPos.m128_f32[0], vMyPos.m128_f32[1], vMyPos.m128_f32[2] };
  	PaticleDesc.vSpeed = { 5.f, 5.f };
- 	PaticleDesc.vScale = { 10.f, 10.f };
+ 	PaticleDesc.vScale = { 1.f, 10.f };
  	//PaticleDesc.vRotation = { m_vParticleRotation[0], m_vParticleRotation[1], m_vParticleRotation[2] };
  	//PaticleDesc.vRandomRotation = { radianAngle - XMConvertToRadians(45.f), radianAngle }; //! 
 	PaticleDesc.vRandomRotation = { 160.f, 180.f }; //! 
@@ -249,7 +250,7 @@ void CEN131_Breath::Create_Effect()
  	PaticleDesc.vLifeTime = { 3.f, 3.f };
 // 
  	PaticleDesc.strTextureTag = TEXT("Prototype_Component_Texture_BornFire");
-
+	PaticleDesc.bTimeScale = true;
 		
 
 		

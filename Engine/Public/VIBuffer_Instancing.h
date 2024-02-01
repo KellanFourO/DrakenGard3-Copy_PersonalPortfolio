@@ -22,7 +22,7 @@ public:
 
 		_float2		vRandomRotation = {};
 		
-
+		_bool		bTimeScale = false;
 		_bool		bRandom = true;
 	}INSTANCING_DESC;
 

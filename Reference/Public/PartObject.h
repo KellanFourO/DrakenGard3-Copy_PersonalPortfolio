@@ -33,6 +33,7 @@ public:
 	class CBone* Get_BonePtr(const _char* pBoneName);
 	void		 Set_SocketBone(class CBone* pSocketBone) { m_pSocketBone = pSocketBone; }
 	STATUS_DESC* Get_Status() { return &m_tStatus; }
+	PART_DESC*	 Get_PartDesc() { return &m_pPartDesc; }
 
 	_float		 Get_Dmg() { return m_tStatus.fDmg; }
 	
@@ -55,6 +56,7 @@ protected:
 	class CBone*		m_pSocketBone			= { nullptr };
 	STATUS_DESC							m_tStatus = {};
 	STATUS_DESC							m_tOriginStatus = {};
+	PART_DESC			m_pPartDesc = {};
 
 public:
 	virtual void Free() override;

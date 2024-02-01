@@ -113,6 +113,8 @@ namespace Engine
 		float	fLength;
 	}RAY;
 
+
+
 	typedef struct ENGINE_DLL tagVertex_Position
 	{
 		XMFLOAT3		vPosition;

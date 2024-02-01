@@ -14,7 +14,7 @@
 #include "StateMachine.h"
 #include "Collider.h"
 #include "Camera_Target.h"
-
+#include "Effect_Trail.h"	
 
 CPlayerState_Base::CPlayerState_Base()
 {
@@ -30,6 +30,8 @@ HRESULT CPlayerState_Base::Initialize(CPlayer* pPlayer)
 	m_pOwnerModelCom = dynamic_cast<CModel*>(pPlayer->Find_PartObject(TEXT("Part_Body"))->Find_Component(TEXT("Com_Model")));
 	m_pOwnerColliderCom = dynamic_cast<CCollider*>(pPlayer->Find_PartObject(TEXT("Part_Weapon"))->Find_Component(TEXT("Com_Collider")));
 	m_pOwnerCam = pPlayer->Get_Cam();
+	m_pOwnerTrail = pPlayer->Get_Trail();
+
 
 	if(__super::Initialize(m_pOwnerModelCom))
 		return E_FAIL;
@@ -44,6 +46,9 @@ HRESULT CPlayerState_Base::Initialize(CPlayer* pPlayer)
 	if (FAILED(AddRefIfNotNull(m_pOwnerRigidBody)))
 		return E_FAIL;
 	if (FAILED(AddRefIfNotNull(m_pOwnerCam)))
+		return E_FAIL;
+
+	if (FAILED(AddRefIfNotNull(m_pOwnerTrail)))
 		return E_FAIL;
 	
 

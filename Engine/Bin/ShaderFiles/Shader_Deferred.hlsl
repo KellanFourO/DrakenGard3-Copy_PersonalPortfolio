@@ -15,6 +15,18 @@ texture2D g_DiffuseTexture;
 vector g_vMtrlAmbient = vector(1.f, 1.f, 1.f, 1.f);
 vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f);
 
+float   g_fTexW = 1280.0f;
+float   g_fTexH = 720.0f;
+
+static const float fWeight[13] =
+{
+    0.0561, 0.1353, 0.278, 0.4868, 0.7261, 0.9231, 1,
+	0.9231, 0.7261, 0.4868, 0.278, 0.1353, 0.0561
+};
+
+static const float fTotal = 6.2108;
+// static const float fTotal = 2.6054;
+
 vector g_vCamPosition;
 
 
@@ -23,6 +35,8 @@ texture2D g_NormalTexture;
 texture2D g_DepthTexture;
 texture2D g_SpecularTexture;
 texture2D g_LightDepthTexture;
+texture2D g_EffectTexture;
+texture2D g_BlurTexture;
 
 struct VS_IN
 {
@@ -188,8 +202,10 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 
     vector vShade = g_ShadeTexture.Sample(LinearSampler, In.vTexcoord);
     vector vSpecular = g_SpecularTexture.Sample(LinearSampler, In.vTexcoord);
+    vector vBlur = g_BlurTexture.Sample(LinearSampler, In.vTexcoord);
+    vector vEffect = g_EffectTexture.Sample(LinearSampler, In.vTexcoord);
 
-    Out.vColor = vDiffuse * vShade + vSpecular;
+    Out.vColor = vDiffuse * vShade + vSpecular + vBlur;
 
     vector vDepthDesc = g_DepthTexture.Sample(PointSampler, In.vTexcoord);
     float fViewZ = vDepthDesc.y * 1000.f;
@@ -223,6 +239,58 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 
     if (vWorldPos.w - 0.1f > vLightDepth.x * 600.f)
         Out.vColor = Out.vColor * 0.7f;
+
+    return Out;
+}
+
+float4 Blur_X(float2 vTexCoord)
+{
+    float4 vOut = (float4) 0;
+
+    float2 vUV = (float2) 0;
+
+    for (int i = -6; i < 7; ++i)
+    {
+        vUV = vTexCoord + float2(1.f / g_fTexW * i, 0);
+        vOut += fWeight[6 + i] * g_EffectTexture.Sample(ClampSampler, vUV);
+    }
+
+    vOut /= fTotal;
+
+    return vOut;
+}
+
+float4 Blur_Y(float2 vTexCoord)
+{
+    float4 vOut = (float4) 0;
+
+    float2 vUV = (float2) 0;
+
+    for (int i = -6; i < 7; ++i)
+    {
+        vUV = vTexCoord + float2(0, 1.f / (g_fTexH / 2.f) * i);
+        vOut += fWeight[6 + i] * g_EffectTexture.Sample(ClampSampler, vUV);
+    }
+
+    vOut /= fTotal;
+
+    return vOut;
+}
+
+PS_OUT PS_MAIN_BLUR_X(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vColor = Blur_X(In.vTexcoord);
+
+    return Out;
+}
+
+PS_OUT PS_MAIN_BLUR_Y(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vColor = Blur_Y(In.vTexcoord);
 
     return Out;
 }
@@ -272,5 +340,27 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_FINAL();
+    }
+
+    pass Blur_X
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_BLUR_X();
+    }
+
+    pass Blur_Y
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_BLUR_Y();
     }
 }

@@ -200,6 +200,8 @@
     <ClInclude Include="..\public\AITask_Base.h" />
     <ClInclude Include="..\public\AnimObject.h" />
     <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\BackGround_Loading.h" />
+    <ClInclude Include="..\Public\BackGround_LoadingUI.h" />
     <ClInclude Include="..\Public\BossPart_EN131_SwingTail.h" />
     <ClInclude Include="..\Public\BossPart_EN131_Weapon.h" />
     <ClInclude Include="..\Public\Boss_EN131.h" />
@@ -215,6 +217,7 @@
     <ClInclude Include="..\Public\Effect_BossBreath.h" />
     <ClInclude Include="..\Public\Effect_Explosion.h" />
     <ClInclude Include="..\Public\Effect_Hanabira.h" />
+    <ClInclude Include="..\Public\Effect_Trail.h" />
     <ClInclude Include="..\public\EN01_Arrow.h" />
     <ClInclude Include="..\Public\EN131_Breath.h" />
     <ClInclude Include="..\Public\Environment_Barricade.h" />
@@ -302,6 +305,8 @@
     <ClCompile Include="..\Private\AITask_Base.cpp" />
     <ClCompile Include="..\Private\AnimObject.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\BackGround_Loading.cpp" />
+    <ClCompile Include="..\Private\BackGround_LoadingUI.cpp" />
     <ClCompile Include="..\Private\BossPart_EN131_SwingTail.cpp" />
     <ClCompile Include="..\Private\BossPart_EN131_Weapon.cpp" />
     <ClCompile Include="..\Private\Boss_EN131.cpp" />
@@ -316,6 +321,7 @@
     <ClCompile Include="..\Private\Effect_BossBreath.cpp" />
     <ClCompile Include="..\Private\Effect_Explosion.cpp" />
     <ClCompile Include="..\Private\Effect_Hanabira.cpp" />
+    <ClCompile Include="..\Private\Effect_Trail.cpp" />
     <ClCompile Include="..\Private\EN01_Arrow.cpp" />
     <ClCompile Include="..\Private\EN131_Breath.cpp" />
     <ClCompile Include="..\Private\Environment_Barricade.cpp" />

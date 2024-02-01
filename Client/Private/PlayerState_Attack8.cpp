@@ -11,6 +11,7 @@
 #include "RigidBody.h"
 #include "Animation.h"
 #include "Effect_Hanabira.h"
+#include "Effect_Trail.h"
 
 CPlayerState_Attack8::CPlayerState_Attack8()
 {
@@ -32,7 +33,8 @@ HRESULT CPlayerState_Attack8::StartState()
 	m_pOwnerModelCom->Set_Animation(104);
 	m_pOwnerModelCom->Set_Loop(false);
 	m_pOwnerModelCom->Root_MotionStart();
-	
+	m_pOwnerTrail->Reset_Points();
+	m_pOwnerTrail->On_Trail();
 	return S_OK;
 }
 
