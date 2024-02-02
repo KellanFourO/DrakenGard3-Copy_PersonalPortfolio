@@ -33,7 +33,9 @@ bool            g_bIsRtoL;
 
 vector g_vCamDirection;
 
-
+//HP_UI
+float           g_fCrntHPUV;
+float           g_fPrevHPUV;
 
 
 
@@ -270,6 +272,33 @@ PS_OUT PS_EFFECT_TRAIL(PS_IN In)
     return Out;
 }
 
+/* 픽셀셰이더 : 픽셀의 색!!!! 을 결정한다. */
+PS_OUT PS_UI_HP(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexCoord);
+   
+    float fHp = g_fPrevHPUV;
+    
+    if(In.vTexCoord.x > fHp)
+    {
+        discard;
+    }
+    
+    return Out;
+}
+
+/* 픽셀셰이더 : 픽셀의 색!!!! 을 결정한다. */
+PS_OUT PS_UI_HPFrame(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexCoord);
+    
+    return Out;
+}
+
 technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우린 다렉11이니 11로 붙여줌
 {
 	pass UI // 0번 패스
@@ -353,5 +382,28 @@ technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_EFFECT_TRAIL();
+    }
+
+
+    pass UI_HP //7번 패스
+    {
+        SetRasterizerState(RS_Default);
+        SetBlendState(BS_Default, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Default, 0);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_UI_HP();
+    }
+
+    pass UI_HPFrame //8번 패스
+    {
+        SetRasterizerState(RS_Default);
+        SetBlendState(BS_Default, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Default, 0);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_UI_HPFrame();
     }
 };

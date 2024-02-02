@@ -282,6 +282,8 @@
     <ClInclude Include="..\public\Monster.h" />
     <ClInclude Include="..\public\NonAnimObject.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\Public\UI_MonsterHP.h" />
+    <ClInclude Include="..\Public\UI_MonsterHPFrame.h" />
     <ClInclude Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialog.h" />
     <ClInclude Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialogConfig.h" />
     <ClInclude Include="AnimObjects.h" />
@@ -385,6 +387,8 @@
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\Private\NonAnimObject.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\Private\UI_MonsterHP.cpp" />
+    <ClCompile Include="..\Private\UI_MonsterHPFrame.cpp" />
     <ClCompile Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialog.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">

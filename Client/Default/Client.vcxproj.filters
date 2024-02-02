@@ -262,6 +262,15 @@
     <Filter Include="02. GameObjects\05. Effects\Trail">
       <UniqueIdentifier>{faf84eb6-9db4-4f7b-93ad-0249dc071599}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\97. UI">
+      <UniqueIdentifier>{252e704e-d39e-4e6b-b9f7-d5fcdde8902f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\97. UI\MonsterHP">
+      <UniqueIdentifier>{29bd3261-04d0-4840-8961-47d5cfeca9d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\97. UI\MonsterHP\Frame">
+      <UniqueIdentifier>{8308d783-99f7-4201-b746-5756510f7526}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -591,6 +600,12 @@
     <ClInclude Include="..\Public\BackGround_LoadingUI.h">
       <Filter>02. GameObjects\00. BackGround</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI_MonsterHP.h">
+      <Filter>02. GameObjects\97. UI\MonsterHP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_MonsterHPFrame.h">
+      <Filter>02. GameObjects\97. UI\MonsterHP\Frame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -877,6 +892,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\BackGround_LoadingUI.cpp">
       <Filter>02. GameObjects\00. BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_MonsterHP.cpp">
+      <Filter>02. GameObjects\97. UI\MonsterHP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_MonsterHPFrame.cpp">
+      <Filter>02. GameObjects\97. UI\MonsterHP\Frame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

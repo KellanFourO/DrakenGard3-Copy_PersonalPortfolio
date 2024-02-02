@@ -102,7 +102,7 @@ HRESULT CBossPart_EN131_Weapon::Render()
 	if (FAILED(__super::Bind_ShaderResources()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(0); 
+	m_pShaderCom->Begin(6); 
 
 #ifdef _DEBUG
 	m_pColliderCom->Render();

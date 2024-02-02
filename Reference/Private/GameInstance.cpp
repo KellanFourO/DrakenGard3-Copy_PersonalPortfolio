@@ -10,6 +10,7 @@
 #include "Target_Manager.h"
 #include "Light_Manager.h"
 #include "Event_Manager.h"
+#include "UI_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -84,6 +85,10 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInstance, 
 	if (nullptr == m_pEvent_Manager)
 		return E_FAIL;
 
+	m_pUI_Manager = CUI_Manager::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pUI_Manager)
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -109,11 +114,14 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pObject_Manager->Late_Tick(fTimeDelta);
 
+
 	m_pCollision_Manager->Update_CollisionMgr(m_pLevel_Manager->Get_CurrentLevelIndex(), fTimeDelta);
 
 	m_pLevel_Manager->Tick(fTimeDelta);
 	
 	m_pEvent_Manager->Tick(fTimeDelta);
+
+	m_pUI_Manager->Tick(fTimeDelta);
 
 }
 
@@ -739,9 +747,26 @@ HRESULT CGameInstance::Erase_Event(const wstring& strEraseEventTag)
 	return m_pEvent_Manager->Erase_Event(strEraseEventTag);
 }
 
+HRESULT CGameInstance::Add_UI(const wstring& strAddUITag, CMyUI* pMyUI, void* pDesc)
+{
+	if (nullptr == m_pUI_Manager)
+		return E_FAIL;
+
+	return m_pUI_Manager->Add_UI(strAddUITag, pMyUI, pDesc);
+}
+
+HRESULT CGameInstance::Erase_UI(const wstring& strEraseUITag)
+{
+	if (nullptr == m_pUI_Manager)
+		return E_FAIL;
+
+	return m_pUI_Manager->Erase_UI(strEraseUITag);
+}
+
 
 void CGameInstance::Release_Manager()
 {
+	Safe_Release(m_pUI_Manager);
 	Safe_Release(m_pEvent_Manager);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pTarget_Manager);

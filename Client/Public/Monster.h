@@ -2,6 +2,7 @@
 #include "AnimObject.h"
 #include "BrainTree/BrainTree.h"
 
+
 using namespace BrainTree;
 
 BEGIN(Engine)
@@ -15,8 +16,10 @@ END
 
 BEGIN(Client)
 
+
 class CMonster abstract : public CAnimObject
 {
+
 protected:
 	CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CMonster(const CMonster& rhs);
@@ -25,6 +28,7 @@ protected:
 public:
 	virtual HRESULT		Initialize_Prototype(LEVEL eLevel);
 	virtual HRESULT		Initialize(void* pArg);
+	virtual HRESULT		Initialize_UI();
 	virtual void		Priority_Tick(_float fTimeDelta);
 	virtual void		Tick(_float fTimeDelta);
 	virtual void		Late_Tick(_float fTimeDelta);
@@ -75,6 +79,8 @@ protected:
 
 	STATUS_DESC							m_tStatus = {};
 	STATUS_DESC							m_tOriginStatus = {};
+
+	_bool								m_isBoss = false;
 private:
 	//STATE_LINK_MONSTER_DESC      m_tLinkStateDesc;
 

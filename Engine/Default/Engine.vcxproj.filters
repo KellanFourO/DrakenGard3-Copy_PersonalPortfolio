@@ -208,6 +208,12 @@
     <Filter Include="01. Utility\03. Components\00. VIBuffer\Trail">
       <UniqueIdentifier>{f14edcb0-c942-41f2-bd85-1b7c3fe44883}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\02. GameObjects\04. UI">
+      <UniqueIdentifier>{b2f52c9e-fdda-43cc-ae90-69ca543e6602}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\02. GameObjects\04. UI\Manager">
+      <UniqueIdentifier>{5545e9d9-7ec0-41d7-95a6-7c65df14583b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -423,6 +429,12 @@
     <ClInclude Include="..\Public\VIBuffer_Trail_EyeLight.h">
       <Filter>01. Utility\03. Components\00. VIBuffer\Trail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MyUI.h">
+      <Filter>01. Utility\02. GameObjects\04. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Manager.h">
+      <Filter>01. Utility\02. GameObjects\04. UI\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -610,6 +622,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Trail_EyeLight.cpp">
       <Filter>01. Utility\03. Components\00. VIBuffer\Trail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MyUI.cpp">
+      <Filter>01. Utility\02. GameObjects\04. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Manager.cpp">
+      <Filter>01. Utility\02. GameObjects\04. UI\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

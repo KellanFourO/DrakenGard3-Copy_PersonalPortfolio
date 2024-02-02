@@ -144,6 +144,11 @@ public: /* For.Event_Manager */
 	HRESULT Add_Event(const wstring& strAddEventTag, class CMyEvent* pMyEvent, void* pDesc);
 	HRESULT Erase_Event(const wstring& strEraseEventTag);
 
+public: /* For.UI_Manager */
+	HRESULT Add_UI(const wstring& strAddUITag, class CMyUI* pMyUI, void* pDesc);
+	HRESULT Erase_UI(const wstring& strEraseUITag);
+
+
 	
 
 private:
@@ -158,9 +163,10 @@ private:
 	class CInput_Device*			m_pInput_Device = { nullptr };
 	class CFont_Manager*			m_pFont_Manager = { nullptr };
 	class CCollision_Manager*		m_pCollision_Manager = { nullptr };
-	class CTarget_Manager* m_pTarget_Manager = { nullptr };
-	class CLight_Manager* m_pLight_Manager = { nullptr };
-	class CEvent_Manager* m_pEvent_Manager = { nullptr };
+	class CTarget_Manager*			m_pTarget_Manager = { nullptr };
+	class CLight_Manager*			m_pLight_Manager = { nullptr };
+	class CEvent_Manager*			m_pEvent_Manager = { nullptr };
+	class CUI_Manager*				m_pUI_Manager = { nullptr };
 
 public:
 	void Release_Manager();

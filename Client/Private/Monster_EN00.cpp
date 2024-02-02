@@ -59,6 +59,9 @@ HRESULT CMonster_EN00::Initialize(void* pArg)
 
 	Init_Status(100.f, 20.f);
 
+	if(FAILED(__super::Initialize_UI()))
+		return E_FAIL;
+	
 	return S_OK;
 }
 

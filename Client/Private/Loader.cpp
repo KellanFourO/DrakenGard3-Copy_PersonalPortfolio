@@ -217,6 +217,26 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/trail_pl00.dds"), 1))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyHP"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/EnemyHP.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyHPFrame"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/EnemyHPFrame.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyBossHP"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/EnemyBossHP.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyBossHPFrame"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/EnemyBossHPFrame.dds"), 1))))
+		return E_FAIL;
+
 	m_pGameInstance->Add_EffectTextureTag(TEXT("Prototype_Component_Texture_BornFire"));
 
 	lstrcpy(m_szLoadingText, TEXT("모델를(을) 로드하는 중입니다."));
@@ -767,6 +787,16 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_EffectTrail"),
 		CEffect_Trail::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+
+	lstrcpy(m_szLoadingText, TEXT("UI 원형(을) 로드하는 중입니다."));
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_MonsterHP"),
+		CUI_MonsterHP::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_MonsterHPFrame"),
+		CUI_MonsterHPFrame::Create(m_pDevice, m_pContext, eLevel))))
 		return E_FAIL;
 
 

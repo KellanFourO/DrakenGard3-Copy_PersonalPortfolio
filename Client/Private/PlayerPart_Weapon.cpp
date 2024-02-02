@@ -187,7 +187,7 @@ HRESULT CPlayerPart_Weapon::Render_Shadow()
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
 
-		m_pShaderCom->Begin(2);
+		m_pShaderCom->Begin(6);
 
 		m_pModelCom->Render(i);
 	}

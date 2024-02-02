@@ -31,7 +31,7 @@ HRESULT CPlayerState_Run::StartState()
     m_pOwnerModelCom->Set_Loop(true);
 	m_pOwnerModelCom->Set_Animation(76);
     m_pOwnerModelCom->Set_AnimationSpeed(3.f);
-	m_pOwnerTransform->Set_SpeedPerSec(50.f);
+	m_pOwnerTransform->Set_SpeedPerSec(10.f);
 	m_pOwnerTransform->Set_RotationPerSec(XMConvertToRadians(90.0f));
 
 	return S_OK;

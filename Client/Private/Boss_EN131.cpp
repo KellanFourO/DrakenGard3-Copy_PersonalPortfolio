@@ -105,6 +105,12 @@ HRESULT CBoss_EN131::Initialize(void* pArg)
 	m_vCameraOffset = { 0.f, 10.f, -10.f };
 	m_vJumpOffset = { 0.f, 24.f, -25.f };
 
+	m_isBoss = true;
+
+	Init_Status(2000.f, 30.f);
+
+	if (FAILED(__super::Initialize_UI()))
+		return E_FAIL;
 	return S_OK;
 }
 

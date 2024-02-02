@@ -4,6 +4,8 @@
 #include "BackGround.h"
 #include "BackGround_Loading.h"
 #include "BackGround_LoadingUI.h"
+#include "UI_MonsterHP.h"
+#include "UI_MonsterHPFrame.h"
 #include "SkyBox.h"
 #include "SkyDome.h"
 

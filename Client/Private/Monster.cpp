@@ -5,6 +5,8 @@
 #include "Model.h"
 #include "Animation.h"
 #include "PartObject.h"
+#include "UI_MonsterHP.h"
+#include "UI_MonsterHPFrame.h"
 
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice,pContext)
@@ -27,6 +29,67 @@ HRESULT CMonster::Initialize(void* pArg)
 {
 	if(FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CMonster::Initialize_UI()
+{
+	CUI_MonsterHP::MONSTER_HP HP_Desc;
+
+	if (m_isBoss == true)
+	{
+		HP_Desc.bWorldUI = false;
+		HP_Desc.eMonsterType = CUI_MonsterHP::BOSS;
+		HP_Desc.fSizeX = 1024.f;
+		HP_Desc.fSizeY = 16.f;
+		HP_Desc.fX = g_iWinSizeX / 2;
+		HP_Desc.fY = 60.f;
+		
+
+	}
+	else
+	{
+		HP_Desc.bWorldUI = true;
+		HP_Desc.eMonsterType = CUI_MonsterHP::COMMON;
+	}
+
+	//!주석 걸린 값들은 디폴트 인자. 변경 필요할시 값 변경
+	//HP_Desc.fCrntHPUV = 1.f;
+	//HP_Desc.fPrevHPUV = 1.f;
+	//HP_Desc.fPosOffset = 0.5f;
+	//HP_Desc.fOffsetX
+	HP_Desc.pOwnerStatus = &m_tStatus;
+	HP_Desc.pOwnerTransform = m_pTransformCom;
+	
+	if (m_isBoss == true)
+	{
+		CUI_MonsterHP::MONSTER_HP BOSS_FrameDesc;
+		
+		BOSS_FrameDesc = HP_Desc;
+		BOSS_FrameDesc.fSizeY = 32.f;
+
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterHPFrame"), &BOSS_FrameDesc)))
+			return E_FAIL;
+	}
+	else
+	{
+		if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterHPFrame"), &HP_Desc)))
+			return E_FAIL;
+	}
+		
+
+
+	
+	
+	if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterHP"), &HP_Desc)))
+		return E_FAIL;
+	
+		
+
+
+	
 
 	return S_OK;
 }
@@ -69,6 +132,7 @@ void CMonster::Init_Desc()
 
 void CMonster::Init_Status(_float fMaxHp, _float fDmg)
 {
+	m_tStatus.fCurrentHp = fMaxHp;
 	m_tStatus.fMaxHp = fMaxHp;
 	m_tStatus.fDmg = fDmg;
 	m_tStatus.eAttackType = tagStatusDesc::ATTACKTYPE_END;
@@ -145,6 +209,7 @@ void CMonster::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag
 			_float fCurrentHp = pBlackBoard->getFloat("Current_HP");
 			_float fCalcHp = fCurrentHp - 50.f;
 
+
 			if (fCalcHp <= 0)
 			{
 				pBlackBoard->setBool("Is_Dead", true);
@@ -152,7 +217,7 @@ void CMonster::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag
 			else
 				pBlackBoard->setBool("Is_Hit", true);
 				
-
+			m_tStatus.fCurrentHp = fCalcHp;
 			pBlackBoard->setFloat("Current_HP", fCalcHp);
 		}
 	}

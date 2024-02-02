@@ -35,7 +35,7 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 
 	CGameObject* pGameObject = { nullptr};
 
-	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_LOADING, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_BackGround_LoadingUI"), &BackGroundDesc, &pGameObject)))
+	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_LOADING, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_BackGround_Loading"), &BackGroundDesc, &pGameObject)))
 		return E_FAIL;
 
 	m_pLoading = dynamic_cast<CBackGround_Loading*>(pGameObject);
