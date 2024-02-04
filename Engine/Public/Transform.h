@@ -77,6 +77,7 @@ public:
 	}
 
 	_float3 Get_RotateDir(_float3& vBaseDir, _float fAngle);
+	_float4 Get_RotateDir(_fvector& vBaseDir, _float fAngle);
 
 	void	Set_WorldFloat4x4(_float4x4 mat4x4)
 	{

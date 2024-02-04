@@ -5,7 +5,7 @@
 #include "PartObject.h"
 #include "Bone.h"
 #include "Animation.h"
-
+#include "MonsterPart_EN70_Weapon.h"
 
 
 CMonster_EN70::CMonster_EN70(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -60,7 +60,7 @@ HRESULT CMonster_EN70::Initialize(void* pArg)
 
 	Init_Status(500.f, 30.f);
 
-	if (FAILED(__super::Initialize_UI()))
+	if (FAILED(__super::Initialize_UI(MONSTERTYPE::EN70)))
 		return E_FAIL;
 	return S_OK;
 }
@@ -553,6 +553,7 @@ HRESULT CMonster_EN70::Ready_BehaviorTree_V2()
 	 {
 		
 		  Transition(49);
+		  On_Trail();
 
 		  m_pModelCom->Set_Loop(false);
 		  m_tStatus.eAttackType = tagStatusDesc::CHARGE_ATTACK;
@@ -633,6 +634,7 @@ HRESULT CMonster_EN70::Ready_BehaviorTree_V2()
 		 m_pModelCom->Set_Loop(true);
 		 m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
 		 m_pModelCom->Root_MotionStart();
+		 Off_Trail();
 		 return BT_STATUS::Success;
 		}
 		else
@@ -720,6 +722,8 @@ HRESULT CMonster_EN70::Ready_BehaviorTree_V2()
 
 		_bool bDashOrEscape;
 
+
+
 		_int iRandom = Random({0, 1, 2, 3});
 
 		_float3 vMyPos = Get_MyPosition();
@@ -759,6 +763,7 @@ HRESULT CMonster_EN70::Ready_BehaviorTree_V2()
 
 		 Set_Move(false);
 		 m_pColliderCom->OnAttackBody();
+		 On_Trail();
 
 		 _vector vMyPos = XMLoadFloat3(&Get_MyPosition());
 		 _vector vDashPos = XMLoadFloat3(&Get_DashPosition());
@@ -774,6 +779,7 @@ HRESULT CMonster_EN70::Ready_BehaviorTree_V2()
 			 Set_Move(true);
 			 m_tStatus.eAttackType = STATUS_DESC::NORMAL_ATTACK;
 			 return BT_STATUS::Success;
+			 Off_Trail();
 		 }
 		 else
 		 {
@@ -933,6 +939,18 @@ HRESULT CMonster_EN70::Bind_ShaderResources()
 		return E_FAIL;
 	
 	return S_OK;
+}
+
+void CMonster_EN70::On_Trail()
+{
+	
+	dynamic_cast<CMonsterPart_EN70_Weapon*>(Find_PartObject(TEXT("Part_Weapon")))->On_Trail();
+	
+}
+
+void CMonster_EN70::Off_Trail()
+{
+	dynamic_cast<CMonsterPart_EN70_Weapon*>(Find_PartObject(TEXT("Part_Weapon")))->Off_Trail();
 }
 
 

@@ -11,6 +11,7 @@
 #include "Light_Manager.h"
 #include "Event_Manager.h"
 #include "UI_Manager.h"
+#include "Frustum.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -89,6 +90,10 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInstance, 
 	if (nullptr == m_pUI_Manager)
 		return E_FAIL;
 
+	m_pFrustum = CFrustum::Create();
+	if (nullptr == m_pFrustum)
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -111,6 +116,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	//! 카메라의 뷰, 투영행렬을 가지고있을 파이프라인의 Tick함수는 카메라의 Tick함수 이후에 해주어야 한다.
 	m_pPipeLine->Tick();
 	//! 객체들의 Late_Tick에서 파이프라인에게 접근해서 작업할 수 있기에 Tick과 Late_Tick 사이에 넣은 것이다.
+	m_pFrustum->Tick();
 
 	m_pObject_Manager->Late_Tick(fTimeDelta);
 
@@ -763,9 +769,25 @@ HRESULT CGameInstance::Erase_UI(const wstring& strEraseUITag)
 	return m_pUI_Manager->Erase_UI(strEraseUITag);
 }
 
+void CGameInstance::Transform_Frustum_ToLocalSpace(_fmatrix WorldMatrix)
+{
+	return m_pFrustum->Transform_ToLocalSpace(WorldMatrix);
+}
+
+_bool CGameInstance::isIn_WorldPlanes(_fvector vPoint, _float fRadius)
+{
+	return m_pFrustum->isIn_WorldPlanes(vPoint, fRadius);
+}
+
+_bool CGameInstance::isIn_LocalPlanes(_fvector vPoint, _float fRadius)
+{
+	return m_pFrustum->isIn_LocalPlanes(vPoint, fRadius);
+}
+
 
 void CGameInstance::Release_Manager()
 {
+	Safe_Release(m_pFrustum);
 	Safe_Release(m_pUI_Manager);
 	Safe_Release(m_pEvent_Manager);
 	Safe_Release(m_pLight_Manager);

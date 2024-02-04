@@ -16,6 +16,59 @@ CCamera_Target::CCamera_Target(const CCamera_Target& rhs)
 {
 }
 
+void CCamera_Target::On_Shake(_float fShakePower, _float fShakeDuration)
+{
+	m_bShake = true;
+	m_fShakePower = fShakePower;
+	m_fShakeDuration = fShakeDuration;
+}
+
+void CCamera_Target::CameraShake(_float fTimeDelta)
+{
+	// 저장된 원래 카메라 오프셋 및 위치를 복사
+	_float3 vOriginalOffset = m_vOffset;
+	_vector vOriginalPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+
+	m_fShakeTimeAcc += fTimeDelta;
+
+	if (m_fShakeTimeAcc > m_fShakeDuration)
+	{
+		m_fShakeTimeAcc = 0.f;
+		m_bShake = false;
+		m_fShakePower = 0.f;
+		m_fShakeDuration = 0.f;
+		// 흔들림이 끝난 후 원래 위치로 되돌림
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vOriginalPosition);
+	}
+	else
+	{
+			m_RandomNumber = mt19937_64(m_RandomDevice());
+
+			uniform_real_distribution<float>	RandomShakeX(-m_fShakePower, m_fShakePower);
+			uniform_real_distribution<float>	RandomShakeY(-m_fShakePower, m_fShakePower);
+			uniform_real_distribution<float>	RandomShakeZ(-m_fShakePower, m_fShakePower);
+		// 흔들림 강도를 랜덤하게 적용
+		_float3 vShakeOffset = 
+		{
+			RandomShakeX(m_RandomNumber),
+			RandomShakeY(m_RandomNumber),
+			RandomShakeZ(m_RandomNumber)
+		};
+
+		// 현재 흔들린 위치 계산
+		_vector vShakePosition = vOriginalPosition + XMLoadFloat3(&vShakeOffset);
+
+		// 카메라 위치를 흔들린 위치로 설정
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vShakePosition);
+	}
+		
+
+	
+
+	
+}
+
 HRESULT CCamera_Target::Initialize_Prototype(LEVEL eLevel)
 {
 	m_eCurrentLevelID = eLevel;
@@ -27,6 +80,8 @@ HRESULT CCamera_Target::Initialize(void* pArg)
 	if(nullptr == pArg)
 		return E_FAIL;
 	
+	m_RandomNumber = mt19937_64(m_RandomDevice());
+
 	TARGET_CAMERA_DESC* pDesc = (TARGET_CAMERA_DESC*)pArg;
 
 	m_fMouseSensitivity = pDesc->fMouseSensitivity;
@@ -38,7 +93,7 @@ HRESULT CCamera_Target::Initialize(void* pArg)
 	if(FAILED(__super::Initialize(pDesc)))
 		return E_FAIL;
 
-	m_fSpringConstant = 500.f;
+	m_fSpringConstant = 300.f;
 	m_fDampConstant = 2.0f * sqrt(m_fSpringConstant);
 
 	m_vOffset = m_pTarget->Get_Offset();
@@ -50,6 +105,7 @@ HRESULT CCamera_Target::Initialize(void* pArg)
 	_vector vTargetPos = pTargetTransform->Get_State(CTransform::STATE_POSITION);
 	//!XMStoreFloat3(&m_vTargetPos, vTargetPos);
 
+	vTargetPos.m128_f32[1] += 1.f;
 	_vector vActualPos = vTargetPos + XMLoadFloat3(&m_vOffset);
 	
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vActualPos);
@@ -84,14 +140,14 @@ void CCamera_Target::Tick(_float fTimeDelta)
 		//if (eTargetLevel != LEVEL_TOOL)
 		//{
 
-
+		
 			_vector vActualPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);  //! 이게 현재 위치
 			XMStoreFloat3(&m_vActualPos, vActualPos);
 
 			CTransform* pTargetTransform = m_pTarget->Get_Transform();
 
 			_vector vTargetPos = pTargetTransform->Get_State(CTransform::STATE_POSITION); //! 타겟 위치
-
+			vTargetPos.m128_f32[1] += 1.f;
 
 			//! 타겟의 위치는 계속 변경되니 다시 이상적인 위치를 구해주자.
 			_vector vIdealPosition;
@@ -122,6 +178,8 @@ void CCamera_Target::Tick(_float fTimeDelta)
 			m_pTransformCom->Look_At(vTargetPos);
 			//! 타겟 포지션 룩엣도 보정을 해줘야한다.
 
+			if(true == m_bShake)
+				CameraShake(fTimeDelta);
 
 			//TODO 부모의 Tick함수를 호출해줘야 뷰투영행렬을 파이프라인 객체에게 던져준다.
 			
@@ -164,12 +222,19 @@ void CCamera_Target::Start_CutScene(_float fTimeDelta)
 		XMStoreFloat4(&m_vOriginPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 		m_bSaveOriginPos = true;
 
+		m_fSpringConstant = 100.f;
+		m_fDampConstant = 2.0f * sqrt(m_fSpringConstant);
 		
 		_vector vStartPos = XMLoadFloat3(&m_tCutScene.vStartPos);
+		vStartPos.m128_f32[1] += 1.f;
 		vStartPos.m128_f32[3] = 1.f;
 
+		vStartPos.m128_f32[2] = m_tCutScene.vChasePos.z;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vStartPos);
+		m_pTransformCom->Look_At(XMVectorSetW(XMLoadFloat3(&m_tCutScene.vChasePos),1.f));
 		Init_CutScene();
+
+		XMStoreFloat3(&m_vVelocity, XMVectorZero());
 	}
 
 	_vector vCurrentPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
@@ -185,22 +250,35 @@ void CCamera_Target::Start_CutScene(_float fTimeDelta)
 	// 거리에 따라 가속도 적용
 	fSpeed *= fDistance / m_tCutScene.fStopRange;
 
+	_vector vTargetPos = m_tCutScene.pChaseTarget->Get_Transform()->Get_State(CTransform::STATE_POSITION) + XMLoadFloat3(&m_tCutScene.pChaseTarget->Get_Offset());
+
 	if (false == InRange(fDistance, 0.f, m_tCutScene.fStopRange, "[]"))
 	{
 		m_pTransformCom->Go_Target_Speed(vEndPos, fTimeDelta, fSpeed, m_tCutScene.fStopRange);
+
+		
 		
 	}
 	else
 	{
+		//_vector vCameraPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		//vCameraPos.m128_f32[0] = vTargetPos.m128_f32[0];
+		//m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCameraPos);
+
 		m_pTarget = m_tCutScene.pChaseTarget;
 		m_bTargetChange = true;
-		_vector vTargetPos = m_pTarget->Get_Transform()->Get_State(CTransform::STATE_POSITION);
+		
+		m_fSpringConstant = 300.f;
+		m_fDampConstant = 2.0f * sqrt(m_fSpringConstant);
 		//!XMStoreFloat3(&m_vTargetPos, vTargetPos);
 
-		_vector vActualPos = vTargetPos + XMLoadFloat3(&m_vOffset);
+		//!m_vCameraOffset = { 0.f, 10.f, -10.f };
+		//!m_vJumpOffset = { 0.f, 24.f, -25.f };
+		//m_pTransformCom->RotationAroundPoint()
+		_vector vActualPos = vTargetPos + XMLoadFloat3(&m_tCutScene.pChaseTarget->Get_Offset());
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vActualPos);
-		
+		m_fMouseX = m_tCutScene.fStartAngle;
 
 		XMStoreFloat3(&m_vVelocity, XMVectorZero());
 
@@ -242,7 +320,7 @@ void CCamera_Target::Return_Player()
 			Desc.fStopRange = 10.f;
 			Desc.pChaseTarget = m_pOriginTarget;
 			XMStoreFloat3(&Desc.vStartPos, m_pTarget->Get_Transform()->Get_State(CTransform::STATE_POSITION));
-			Desc.vStartPos.y += 5.f;
+			Desc.vStartPos.y += 4.f;
 			XMStoreFloat3(&Desc.vChasePos, Desc.pChaseTarget->Get_Transform()->Get_State(CTransform::STATE_POSITION));
 
 			Set_OffSet(m_pOriginTarget->Get_Offset());

@@ -156,27 +156,27 @@ HRESULT CRenderer::Initialize()
 
 #ifdef _DEBUG
 
-	if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Diffuse"), 100.f, 100.f, 200.f, 200.f)))
-		return E_FAIL;
-	if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Normal"), 100.f, 300.f, 200.f, 200.f)))
-		return E_FAIL;
-	if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Depth"), 100.f, 500.f, 200.f, 200.f)))
-		return E_FAIL;
-	if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Shade"), 300.f, 100.f, 200.f, 200.f)))
-		return E_FAIL;
-	//if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Specular"), 300.f, 300.f, 200.f, 200.f)))
+	//if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Diffuse"), 100.f, 100.f, 200.f, 200.f)))
 	//	return E_FAIL;
-	if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_LightDepth"), 1130.f, 150.f, 300.f, 300.f)))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Effect"), 300.f, 500.f, 200.f, 200.f)))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Blur_X"), 500.f, 500.f, 200.f, 200.f)))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Blur_Y"), 700.f, 500.f, 200.f, 200.f)))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Normal"), 100.f, 300.f, 200.f, 200.f)))
+	//	return E_FAIL;
+	//if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Depth"), 100.f, 500.f, 200.f, 200.f)))
+	//	return E_FAIL;
+	//if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Shade"), 300.f, 100.f, 200.f, 200.f)))
+	//	return E_FAIL;
+	////if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Specular"), 300.f, 300.f, 200.f, 200.f)))
+	////	return E_FAIL;
+	//if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_LightDepth"), 1130.f, 150.f, 300.f, 300.f)))
+	//	return E_FAIL;
+	//
+	//if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Effect"), 300.f, 500.f, 200.f, 200.f)))
+	//	return E_FAIL;
+	//
+	//if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Blur_X"), 500.f, 500.f, 200.f, 200.f)))
+	//	return E_FAIL;
+	//
+	//if (FAILED(m_pGameInstance->Ready_RenderTarget_Debug(TEXT("Target_Blur_Y"), 700.f, 500.f, 200.f, 200.f)))
+	//	return E_FAIL;
 
 #endif
 
@@ -478,7 +478,7 @@ HRESULT CRenderer::Render_Bloom()
 
 	m_pVIBuffer->Bind_VIBuffers();
 
-	m_pShader->Begin(4);
+	m_pShader->Begin(6);
 
 	m_pVIBuffer->Render();
 
@@ -493,7 +493,7 @@ HRESULT CRenderer::Render_Bloom()
 
 	m_pVIBuffer->Bind_VIBuffers();
 
-	m_pShader->Begin(5);
+	m_pShader->Begin(6);
 
 	m_pVIBuffer->Render();
 

@@ -18,8 +18,6 @@ HRESULT CEffect_Hanabira::Initialize_Prototype(LEVEL eLevel)
 {
 	m_eCurrentLevelID = eLevel;
 
-	
-
 	return S_OK;
 }
 
@@ -46,13 +44,29 @@ HRESULT CEffect_Hanabira::Initialize(void* pArg)
 	m_vCreateLook = Desc.vLook;
 	m_fLifeTime = Desc.fLifeTime;
 
+	switch (m_eType)
+	{
+	case Client::CEffect_Hanabira::HANABIRA_ORBIT:
+		break;
+	case Client::CEffect_Hanabira::HANABIRA_SPREAD:
+		break;
+	case Client::CEffect_Hanabira::HANABIRA_MAPLE:
+		Desc.vPos.y += 2.f;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, Desc.vPos);
+
+
+		m_bRandomDir = Random({ true, false });
+
+		break;
+	
+	
+	}
+
 	return S_OK;
 }
 
 void CEffect_Hanabira::Priority_Tick(_float fTimeDelta)
 {
-	
-	
 }
 
 void CEffect_Hanabira::Tick(_float fTimeDelta)
@@ -73,14 +87,31 @@ void CEffect_Hanabira::Tick(_float fTimeDelta)
 		
 		m_pTransformCom->Look_At_Dir(-XMLoadFloat4(&m_vCreateLook));
 		m_pTransformCom->Go_Straight(fTimeDelta);
+	}
+	else if (m_eType == CEffect_Hanabira::HANABIRA_MAPLE)
+	{
+		_float fSwayDir = sinf(m_fAge * 3.0f);
+
+		_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
 		
+
+		if(true == m_bRandomDir)
+			vPos.m128_f32[0] += fSwayDir * 5.f * fTimeDelta;
+		else
+			vPos.m128_f32[0] -= fSwayDir * 5.f * fTimeDelta;
+
+		
+		
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
 	}
 	
+	m_pRigidBodyCom->Tick(fTimeDelta);
 }
 
 void CEffect_Hanabira::Late_Tick(_float fTimeDelta)
 {
-	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_BLEND, this)))
+	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this)))
 		return;
 }
 
@@ -121,7 +152,16 @@ HRESULT CEffect_Hanabira::Ready_Components()
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
-	
+	CRigidBody::RIGIDBODY_TYPE eType = CRigidBody::RIGIDBODY_TYPE::DYNAMIC;
+
+	////TODO 리지드바디
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_RigidBody"),
+		TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &eType)))
+		return E_FAIL;
+
+	m_pRigidBodyCom->Set_Owner(this);
+	m_pRigidBodyCom->Clear_NetPower();
+	m_pRigidBodyCom->Set_UseGravity(true);
 
 	return S_OK;
 }
@@ -171,4 +211,5 @@ void CEffect_Hanabira::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pRigidBodyCom);
 }

@@ -18,6 +18,7 @@ public:
         _float3		vStartPos;
         _float3		vEndPos;
         _uint		iMaxCount;
+        _float4     vTrailColor;
     };
 
 private:
@@ -75,6 +76,7 @@ protected:
 
     _float4x4                           m_OwnerWorldMatrix = {};
 
+    _float4                             m_vTrailColor = {};
 // public:
 //     virtual void OnEnable(void* pArg) override;
 //     virtual void OnDisable() override;

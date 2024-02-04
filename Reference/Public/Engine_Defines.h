@@ -6,7 +6,22 @@ namespace Engine
 {
 	enum MOUSEKEYSTATE { DIM_LB, DIM_RB, DIM_MB, DIM_END };
 	enum MOUSEMOVESTATE { DIMS_X, DIMS_Y, DIMS_Z, DIMS_END };
+
+
 }
+
+enum CHANNELID {
+    SOUND_BGM, SOUND_ENVIRONMENT,
+    SOUND_PLAYER,
+    SOUND_Monster,
+    SOUND_EFFECT, SOUND_EFFECT2,
+    SOUND_UI,
+    SOUND_SYSTEM_EFFECT, /* Bierce Announce */
+    SOUND_SYSTEM_EFFECT2,
+    MAXCHANNEL
+};
+
+enum CHANNEL_GROUP_ID { BGM_GROUP, SND1_GROUP, SND2_GROUP, MAX_CHANNEL_GROUP };
 
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -28,6 +43,14 @@ namespace Engine
 #include "Assimp\scene.h"
 #include "Assimp\postprocess.h"
 #include "Assimp\Importer.hpp"
+
+#include "Fmod/core/fmod.h"
+#include "Fmod/core/fmod.hpp"
+#include "Fmod/core/fmod_errors.h"
+#include "Fmod/studio/fmod_studio.h"
+#include "Fmod/studio/fmod_studio.hpp"
+#include "Fmod/core/fmod_common.h"
+
 
 
 

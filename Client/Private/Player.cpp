@@ -21,6 +21,7 @@
 #include "Layer.h"
 #include "Effect_Hanabira.h"
 #include "Effect_Blood.h"
+#include "Effect_Trail.h"
 
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice, pContext)
@@ -49,12 +50,12 @@ HRESULT CPlayer::Initialize(void* pArg)
 	if (nullptr != pArg)
 		PlayerDesc = *(GAMEOBJECT_DESC*)pArg;
 
-	PlayerDesc.fSpeedPerSec = 10.0f;
+	PlayerDesc.fSpeedPerSec = 15.0f;
 	PlayerDesc.fRotationPerSec = XMConvertToRadians(180.0f);
 	m_eCurrentLevelID = (LEVEL)PlayerDesc.iLevelIndex;
 	
 	//XMStoreFloat3(&m_vOffset, XMVectorSet(0.f, 5.f, -5.f, 0.f));
-	m_vCameraOffset = { 0.f, 5.f, - 5.f};
+	m_vCameraOffset = { 0.f, 3.f, - 2.f};
 	//m_vCameraOffset = { 0.f, 10.f, -10.f };
 	//m_vJumpOffset = { 0.f, 15.f, -15.f };
 	
@@ -274,6 +275,10 @@ void CPlayer::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag,
 
 		if (true == m_pStateCom->isHit())
 		{
+			CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+
+			pTargetCamera->On_Shake(0.1f, 0.05f);
+
 			if (STATUS_DESC::ATTACKTYPE::NORMAL_ATTACK == eHitType)
 			{
 				if (fDmg <= 15.f)

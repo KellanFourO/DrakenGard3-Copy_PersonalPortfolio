@@ -115,9 +115,6 @@
     <Filter Include="01. Utility\03. Components\00. VIBuffer\Cell">
       <UniqueIdentifier>{7b74c240-f9b5-4a10-8434-73eba4b66313}</UniqueIdentifier>
     </Filter>
-    <Filter Include="98. ShaderFiles">
-      <UniqueIdentifier>{d2a090e2-1120-47e7-8883-3c4b02f680f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Utility\03. Components\00. VIBuffer\Cube">
       <UniqueIdentifier>{0fb9bcb5-b069-4251-8df4-17e38985fcdb}</UniqueIdentifier>
     </Filter>
@@ -213,6 +210,15 @@
     </Filter>
     <Filter Include="01. Utility\02. GameObjects\04. UI\Manager">
       <UniqueIdentifier>{5545e9d9-7ec0-41d7-95a6-7c65df14583b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. ShaderFiles">
+      <UniqueIdentifier>{d2a090e2-1120-47e7-8883-3c4b02f680f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\10. QuadTree">
+      <UniqueIdentifier>{3fdfe5e6-72e4-4bb9-b58c-9f6586b08ca9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\11. Frustum">
+      <UniqueIdentifier>{811febf6-0b3c-4375-99e4-b86a59516d48}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -435,6 +441,15 @@
     <ClInclude Include="..\Public\UI_Manager.h">
       <Filter>01. Utility\02. GameObjects\04. UI\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\QuadTree.h">
+      <Filter>01. Utility\10. QuadTree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Frustum.h">
+      <Filter>01. Utility\11. Frustum</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sound_Manager.h">
+      <Filter>00. System\02. Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -629,18 +644,27 @@
     <ClCompile Include="..\Private\UI_Manager.cpp">
       <Filter>01. Utility\02. GameObjects\04. UI\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\QuadTree.cpp">
+      <Filter>01. Utility\10. QuadTree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Frustum.cpp">
+      <Filter>01. Utility\11. Frustum</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sound_Manager.cpp">
+      <Filter>00. System\02. Sound</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Navigation.hlsl">
-      <Filter>98. ShaderFiles</Filter>
+      <Filter>01. Utility\98. ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">
-      <Filter>98. ShaderFiles</Filter>
+      <Filter>01. Utility\98. ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Shader_Defines.hlsli">
-      <Filter>98. ShaderFiles</Filter>
+      <Filter>01. Utility\98. ShaderFiles</Filter>
     </None>
   </ItemGroup>
 </Project>

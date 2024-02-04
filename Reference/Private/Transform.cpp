@@ -63,6 +63,21 @@ _float3 CTransform::Get_RotateDir(_float3& vBaseDir, _float fAngle)
 	return result;
 }
 
+_float4 CTransform::Get_RotateDir(_fvector& vBaseDir, _float fAngle)
+{
+	_float3 vBaseSaveDir;
+	XMStoreFloat3(&vBaseSaveDir, vBaseDir);
+
+	vBaseSaveDir = Get_RotateDir(vBaseSaveDir, fAngle);
+
+
+	_float4 vReturnDir = { vBaseSaveDir.x, vBaseSaveDir.y, vBaseSaveDir.z, 0.f};
+
+
+
+	return vReturnDir;
+}
+
 
 void CTransform::Set_Scaling(_float fScaleX, _float fScaleY, _float fScaleZ)
 {
@@ -725,8 +740,7 @@ _bool CTransform::HasArrived(const DirectX::XMFLOAT3& _vCurrentPos, const Direct
 void CTransform::Translate(const _float3& vTranslation, class CNavigation* pNavigation, _bool bNotAgent)
 {
 	/* Check NavMeshAgent */
-	if (nullptr != pNavigation)
-	{
+
 		_vector vPos = Get_State(CTransform::STATE_POSITION);
 		
 		
@@ -737,26 +751,33 @@ void CTransform::Translate(const _float3& vTranslation, class CNavigation* pNavi
 		
 		//Vec3 vTemp = vTranslation + Vec4(m_WorldMatrix.m[3]).xyz();
 
-		if (false == pNavigation->isMove(vPos))
-			return;
-
-		
-
-		_float3 vRealPos;
-		XMStoreFloat3(&vRealPos, vPos);
-
-		m_vTranslatePos = vRealPos;
 		
 		
+		
+		
+		if (nullptr != pNavigation)
+		{
+			if (false == pNavigation->isMove(vPos))
+				return;
+
+
+
+			_float3 vRealPos;
+			XMStoreFloat3(&vRealPos, vPos);
+
+			m_vTranslatePos = vRealPos;
+
 		_float fY = pNavigation->Compute_Height(vRealPos, &m_isGround);
-		
-		if(m_isGround == true)
+			
+			if(m_isGround == true)
+			
 			vPos.m128_f32[1] = fY;
-		else
-			_int i =0;
 
+		}
+		
 		Set_State(CTransform::STATE_POSITION, vPos);
-	}
+
+
 
 		//vPos = vPos + XMLoadFloat3(&vTranslation);
 		//

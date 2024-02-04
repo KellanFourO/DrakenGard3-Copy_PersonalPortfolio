@@ -32,6 +32,8 @@ HRESULT CEnvironment_Object::Initialize(void* pArg)
 {
 	CEnvironment_Object::ENVIRONMENT_DESC Desc = {};
 
+	
+
 	if (nullptr != pArg)
 		Desc = *(ENVIRONMENT_DESC*)pArg;
 
@@ -46,6 +48,11 @@ HRESULT CEnvironment_Object::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+
+	if (true == Desc.isGroundMesh)
+	{
+		m_pModelCom->Set_GroundModel();
+	}
 
 	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(15.f, 6.f, 30.f, 1.f));
 

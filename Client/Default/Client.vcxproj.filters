@@ -271,6 +271,24 @@
     <Filter Include="02. GameObjects\97. UI\MonsterHP\Frame">
       <UniqueIdentifier>{8308d783-99f7-4201-b746-5756510f7526}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Player\DashRing">
+      <UniqueIdentifier>{cf7f5dd3-e0ff-4395-9da6-20b774d37785}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\RunSmoke">
+      <UniqueIdentifier>{d6b69a18-5f93-4998-a5b3-4550fff4224b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\97. UI\BossTag">
+      <UniqueIdentifier>{b86d6e4e-0c13-4ad9-8c61-32e273f8756b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\97. UI\MonsterPortrait">
+      <UniqueIdentifier>{eb95b3fb-10a7-48f4-8478-df916e55d5cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\BossPear">
+      <UniqueIdentifier>{0cccafeb-bef2-473e-ba2a-540fff51988b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Dust">
+      <UniqueIdentifier>{66c0d0be-586f-47ec-ad02-4093030e5eeb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -606,6 +624,27 @@
     <ClInclude Include="..\Public\UI_MonsterHPFrame.h">
       <Filter>02. GameObjects\97. UI\MonsterHP\Frame</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Effect_DashRing.h">
+      <Filter>02. GameObjects\05. Effects\Player\DashRing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_RunSmoke.h">
+      <Filter>02. GameObjects\05. Effects\RunSmoke</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_MonsterTag.h">
+      <Filter>02. GameObjects\97. UI\BossTag</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_MonsterPortrait.h">
+      <Filter>02. GameObjects\97. UI\MonsterPortrait</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_MonsterTagFrame.h">
+      <Filter>02. GameObjects\97. UI\BossTag</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_BossPear.h">
+      <Filter>02. GameObjects\05. Effects\BossPear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Dust.h">
+      <Filter>02. GameObjects\05. Effects\Dust</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -898,6 +937,27 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_MonsterHPFrame.cpp">
       <Filter>02. GameObjects\97. UI\MonsterHP\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_DashRing.cpp">
+      <Filter>02. GameObjects\05. Effects\Player\DashRing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_RunSmoke.cpp">
+      <Filter>02. GameObjects\05. Effects\RunSmoke</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_MonsterTag.cpp">
+      <Filter>02. GameObjects\97. UI\BossTag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_MonsterPortrait.cpp">
+      <Filter>02. GameObjects\97. UI\MonsterPortrait</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_MonsterTagFrame.cpp">
+      <Filter>02. GameObjects\97. UI\BossTag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_BossPear.cpp">
+      <Filter>02. GameObjects\05. Effects\BossPear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Dust.cpp">
+      <Filter>02. GameObjects\05. Effects\Dust</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

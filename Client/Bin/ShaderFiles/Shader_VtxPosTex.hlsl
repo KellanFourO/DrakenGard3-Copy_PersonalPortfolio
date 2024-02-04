@@ -31,14 +31,16 @@ float           g_fUVAnimX;
 float           g_fUVAnimY;
 bool            g_bIsRtoL;
 
-vector g_vCamDirection;
+vector          g_vCamDirection;
 
 //HP_UI
 float           g_fCrntHPUV;
 float           g_fPrevHPUV;
 
+float           g_fTimeDelta;
 
-
+bool            g_bCustomColor = false;
+float4          g_vColor;
 
 //TODO 셰이더가 하는 일
 //! 정점의 변환 ( 월드변환, 뷰변환, 투영변환 ) 을 수행한다. ( 뷰행렬의 투영행렬을 곱했다고 투영 스페이스에 있는 것이아니다. 반드시 w나누기 까지 거친 다음에야 투영 스페이스 변환이 됐다고 할 수 있다. )
@@ -195,6 +197,72 @@ PS_OUT PS_MAIN_ATLAS_ANIMATION(PS_IN_EFFECT In)
     return Out;
 }
 
+PS_OUT PS_MAIN_ATLAS_ANIMATION_TIMEALPHA(PS_IN_EFFECT In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+
+
+    float2 clippedTexCoord = In.vTexcoord * g_UVScale + g_UVOffset;
+
+    // Set Color
+    Out.vColor = g_DiffuseTexture.Sample(LinearSampler, clippedTexCoord);
+
+    float2 vDepthTexcoord;
+    vDepthTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
+    vDepthTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
+
+    float4 vDepthDesc = g_DepthTexture.Sample(PointSampler, vDepthTexcoord);
+	
+    Out.vColor.a = Out.vColor.a * (vDepthDesc.y * 1000.f - In.vProjPos.w) * 2.f;
+    
+    
+    Out.vColor.a *= 0.4f;
+    // Alpha Test
+    if (Out.vColor.a < 0.1f)
+    {
+        discard;
+    }
+
+    
+    
+    return Out;
+}
+
+PS_OUT PS_MAIN_ATLAS_ANIMATION_USEMASK_USENOISE(PS_IN_EFFECT In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+
+
+    float2 clippedTexCoord = In.vTexcoord * g_UVScale + g_UVOffset;
+
+    // Set Color
+    Out.vColor = g_DiffuseTexture.Sample(LinearSampler, clippedTexCoord);
+
+    float2 vDepthTexcoord;
+    vDepthTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
+    vDepthTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
+
+    float4 vDepthDesc = g_DepthTexture.Sample(PointSampler, vDepthTexcoord);
+	
+    Out.vColor.a = Out.vColor.a * (vDepthDesc.y * 1000.f - In.vProjPos.w) * 2.f;
+    
+    
+    Out.vColor.a *= 0.4f;
+    // Alpha Test
+    if (Out.vColor.a < 0.1f)
+    {
+        discard;
+    }
+
+    
+    
+    return Out;
+}
+
+
+
 struct VS_OUT_EFFECT
 {
     float4 vPosition : SV_POSITION;
@@ -238,6 +306,9 @@ PS_OUT PS_MAIN_EFFECT(PS_IN_EFFECT In)
 
     Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
 
+    if(true == g_bCustomColor)
+        Out.vColor.rgb = g_vColor.rgb;
+    
     float2 vDepthTexcoord;
     vDepthTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
     vDepthTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
@@ -246,7 +317,7 @@ PS_OUT PS_MAIN_EFFECT(PS_IN_EFFECT In)
 	
     Out.vColor.a = Out.vColor.a * (vDepthDesc.y * 1000.f - In.vProjPos.w) * 2.f;
     
-    if (Out.vColor.a < 0.1f)
+    if (Out.vColor.a < 0.3f)
     {
         discard;
     }
@@ -263,11 +334,19 @@ PS_OUT PS_EFFECT_TRAIL(PS_IN In)
     //Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexCoord);
     //Out.vColor.rgb = float3(1.0, 0.8, 0.8);
     
-    Out.vColor = float4(1.0, 0.8, 0.8, 1.f);
-    float4 vMaskDesc = g_MaskTexture.Sample(LinearSampler, In.vTexCoord);
+    //Out.vColor = float4(1.0, 0.8, 0.8, 1.f);
+    Out.vColor = g_vColor;
+    float4 vMaskDesc = g_MaskTexture.Sample(LinearSampler, (In.vTexCoord * -1));
+    float4 vNoiseDesc = g_NoiseTexture.Sample(LinearSampler, In.vTexCoord * -1);
+  
     
+    //Out.vColor.a *= vMaskDesc.x;
+    Out.vColor.a = max(vMaskDesc.x, 0.f);
     
-   Out.vColor.a = vMaskDesc.r * 5;
+    //if(Out.vColor.a < 0.3)
+    //    discard;
+    
+    //Out.vColor.rgb *= vNoiseDesc.rgb * 1.5f;
    
     return Out;
 }
@@ -286,6 +365,9 @@ PS_OUT PS_UI_HP(PS_IN In)
         discard;
     }
     
+    if (Out.vColor.a < 0.1f)
+        discard;
+    
     return Out;
 }
 
@@ -296,8 +378,55 @@ PS_OUT PS_UI_HPFrame(PS_IN In)
     
     Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexCoord);
     
+    if (Out.vColor.a < 0.2f)
+        discard;
+    
+        return Out;
+}
+
+
+PS_OUT PS_MAIN_EFFECT_USEMASK(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexCoord);
+
+    if (true == g_bCustomColor)
+        Out.vColor.rgb = g_vColor.rgb;
+    
+    Out.vColor.a *= g_MaskTexture.Sample(LinearSampler, In.vTexCoord);
+    
+    
+    if (Out.vColor.a < 0.1f)
+    {
+        discard;
+    }
+    
     return Out;
 }
+
+PS_OUT PS_MAIN_EFFECT_USEMASK_USENOISE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexCoord);
+
+    if (true == g_bCustomColor)
+        Out.vColor.rgb = g_vColor.rgb;
+    
+    Out.vColor.a *= g_MaskTexture.Sample(LinearSampler, In.vTexCoord);
+    Out.vColor.rgb *= g_NoiseTexture.Sample(LinearSampler, In.vTexCoord);
+    
+    
+    if (Out.vColor.a < 0.1f)
+    {
+        discard;
+    }
+    
+    return Out;
+}
+
+
 
 technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우린 다렉11이니 11로 붙여줌
 {
@@ -405,5 +534,53 @@ technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_UI_HPFrame();
+    }
+
+    pass Atlas_Animation_TimeAlpha //9번 패스
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetBlendState(BS_AlphaBlend_Add, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Default, 0);
+
+        VertexShader = compile vs_5_0 VS_MAIN_EFFECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_ATLAS_ANIMATION_TIMEALPHA();
+    }
+
+    pass Atlas_Animation_UseMask_UseNoise //10번 패스
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetBlendState(BS_AlphaBlend_Add, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Default, 0);
+
+        VertexShader = compile vs_5_0 VS_MAIN_EFFECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_ATLAS_ANIMATION_USEMASK_USENOISE();
+    }
+
+    pass Effect_UseMask // 11번 패스
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend_Add, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN_EFFECT();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_EFFECT_USEMASK();
+    }
+
+    pass Effect_UseMask_UseNoise // 12번 패스
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend_Add, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN_EFFECT();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_EFFECT_USEMASK_USENOISE();
     }
 };

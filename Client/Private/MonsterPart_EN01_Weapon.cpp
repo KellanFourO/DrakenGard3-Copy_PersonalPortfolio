@@ -73,7 +73,7 @@ void CMonsterPart_EN01_Weapon::Late_Tick(_float fTimeDelta)
 	//TODO 아래 코드가 파츠 오브젝트의 꽃
 	//! 파츠 오브젝트의 월드매트릭스는 부모의 월드행렬기준으로 움직여줘야한다. 만약 파츠오브젝트의 월드매트릭스가 항등일 경우에도 부모기준에 붙어있을 것.
 	XMStoreFloat4x4(&m_WorldMatrix, m_pTransformCom->Get_WorldMatrix() * SocketMatrix * m_pParentTransformCom->Get_WorldMatrix());
-
+	
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return;

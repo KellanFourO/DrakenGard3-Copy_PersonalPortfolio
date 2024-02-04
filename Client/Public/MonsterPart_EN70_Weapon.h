@@ -7,6 +7,7 @@ class CCollider;
 END
 
 BEGIN(Client)
+class CEffect_Trail;
 
 class CMonsterPart_EN70_Weapon final : public CPartObject
 {
@@ -26,6 +27,8 @@ public:
 
 public:
 	CCollider*		Get_Collider() { return m_pColliderCom; }
+	void			On_Trail() { m_pTrail->On_Trail(); }
+	void			Off_Trail() { m_pTrail->Off_Trail(); }
 
 public:
 	virtual void Write_Json(json& Out_Json) override;
@@ -35,7 +38,7 @@ public:
 
 private:
 	CCollider*			m_pColliderCom = { nullptr };
-
+	CEffect_Trail* m_pTrail = { nullptr };
 public:
 	/* 원형객체를 생성한다. */
 	static CMonsterPart_EN70_Weapon* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel);

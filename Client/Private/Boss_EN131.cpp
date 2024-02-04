@@ -10,6 +10,8 @@
 #include "Camera_Target.h"
 #include "Layer.h"
 #include "Transform.h"
+#include "Effect_BossPear.h"
+#include "Effect_Dust.h"
 
 
 CBoss_EN131::CBoss_EN131(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -70,6 +72,14 @@ CCollider* CBoss_EN131::Get_TailCollider(TAIL_COLLIDER eTailType)
 	return dynamic_cast<CCollider*>(pPartObject->Find_Component(TEXT("Com_Collider")));
 }
 
+void CBoss_EN131::Create_TailStingEffect()
+{
+	//TEXT("Part_StingTail")
+
+	dynamic_cast<CBossPart_EN131_Weapon*>(Find_PartObject(TEXT("Part_StingTail")))->CreateStringEffect();
+	
+}
+
 
 
 HRESULT CBoss_EN131::Initialize_Prototype(LEVEL eLevel)
@@ -103,14 +113,14 @@ HRESULT CBoss_EN131::Initialize(void* pArg)
 	m_pModelCom->Root_MotionStart();
 
 	m_vCameraOffset = { 0.f, 10.f, -10.f };
-	m_vJumpOffset = { 0.f, 24.f, -25.f };
+	m_vJumpOffset = { 0.f, 24.f, -10.f };
 
 	m_isBoss = true;
 
 	Init_Status(2000.f, 30.f);
 
-	if (FAILED(__super::Initialize_UI()))
-		return E_FAIL;
+	//if (FAILED(__super::Initialize_UI()))
+	//	return E_FAIL;
 	return S_OK;
 }
 
@@ -140,12 +150,9 @@ void CBoss_EN131::Tick(_float fTimeDelta)
 		pBlackBoard->setFloat("CurrentTrackPosition", m_pModelCom->Get_CurrentAnimation()->Get_TrackPosition());
 		
 
-		
-
 		Node::Status TreeStatus = m_pBehaviorTree->update(fTimeDelta);
 
-		if(3.f >= pBlackBoard->getFloat("TargetLength"))
-			bTest = true;
+
 	}
 
 	for (auto& Pair : m_PartObjects)
@@ -160,16 +167,16 @@ void CBoss_EN131::Tick(_float fTimeDelta)
 
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
 
-	//if (false == m_bFindCell && true == m_bAppear)
-	//{
-	//	_int iCellIndex = m_pNavigationCom->Get_SelectRangeCellIndex(this);
-	//
-	//	m_pNavigationCom->Set_CurrentIndex(iCellIndex);
-	//	m_bFindCell = true;
-	//}
-	//
-	//if(m_eCurrentLevelID != LEVEL_TOOL && true == m_bAppear )
-	//	m_pRigidBodyCom->Tick(fTimeDelta);
+	if (false == m_bFindCell && true == m_bAppear)
+	{
+		_int iCellIndex = m_pNavigationCom->Get_SelectRangeCellIndex(this);
+	
+		m_pNavigationCom->Set_CurrentIndex(iCellIndex);
+		m_bFindCell = true;
+	}
+	
+	if(m_eCurrentLevelID != LEVEL_TOOL && true == m_bAppear )
+		m_pRigidBodyCom->Tick(fTimeDelta);
 
 	_vector vRealPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 
@@ -179,22 +186,19 @@ void CBoss_EN131::Tick(_float fTimeDelta)
 	vRealPos.m128_f32[3] = 1.f;
 
 	
-	if (false == m_bTest)
-	{
-		m_pTransformCom->Add_LookPos(vPos);
-	}
+	_float3 vTargetPos = m_pBehaviorTree->getBlackboard()->getFloat3("TargetPosition");
+	_vector vTargetPos1 = XMLoadFloat3(&vTargetPos);
+	vTargetPos1.m128_f32[3] = 1.f;
+
+	_float fLength = XMVectorGetX(XMVector3Length(vRealPos - vTargetPos1));
+
+	if (8.f >= fLength && true == m_bChase)
+		bTest = true;
 
 	if (m_eCurrentLevelID != LEVEL_TOOL)
 	{
-		//if (true == m_bAppear && false == bTest && true == m_pNavigationCom->isMove(vRealPos) && true == m_bMove)
-		//	vPos.x *= 0.75f;
-		//	vPos.z *= 0.75f;
-		//	m_pTransformCom->Add_LookPos(vPos);
-
-		//if (false == bTest && true == m_pNavigationCom->isMove(vRealPos) && true == m_bMove)
-		//	vPos.x *= 0.75f;
-		//vPos.z *= 0.75f;
-		//m_pTransformCom->Add_LookPos(vPos);
+		if (true == m_bFindCell && true == m_bAppear && false == bTest && true == m_pNavigationCom->isMove(vRealPos) && true == m_bMove)
+			m_pTransformCom->Add_LookPos(vPos);
 	}
 
 	
@@ -534,7 +538,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	 EN131_BlackBoard->setString("Name", "EN00");
 	 EN131_BlackBoard->setFloat("Max_HP", 2000.f);
 	 //EN131_BlackBoard->setFloat("Current_HP", 2000.f);
-	 EN131_BlackBoard->setFloat("Current_HP", 600.f);
+	 EN131_BlackBoard->setFloat("Current_HP", 2000.f);
 	 EN131_BlackBoard->setFloat("Attack_Range", 10.f);
 	 EN131_BlackBoard->setFloat("Keep_Range", 3.5f);
 	 EN131_BlackBoard->setFloat("Detect_Range", 20.f);
@@ -577,6 +581,8 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	 
 	 EN131_BlackBoard->setBool("Is_Die", false);
 	 EN131_BlackBoard->setBool("Is_Dead", false);
+	 EN131_BlackBoard->setBool("Is_Pear", false);
+	 EN131_BlackBoard->setBool("Create_Dusting", false);
 	
 	 
 	 //EN131_BlackBoard->setBool("Is_TargetPosition", false); //! 목표로 하는 지점이 있는가
@@ -632,6 +638,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 				{
 					CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
 					pTargetCamera->Set_OffSet(m_vJumpOffset);
+					pTargetCamera->Get_Transform()->Look_At(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 // 					_vector vLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
 // 					vLook.m128_f32[3] = 0.f;
 // 					pTargetCamera->Get_Transform()->Look_At_Dir(vLook);
@@ -656,14 +663,44 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 					if (true == m_bOneTime)
 					{
 						m_fTimeAcc = 0.f;
-						m_bOneTime = true;
+						m_bOneTime = false;
 					}
 
-					
+					if (136.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Pear"))
+					{
+						CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+						pTargetCamera->On_Shake(0.5f, 3.f);
+						pBlackboard->setBool("Is_Pear", true);
+					}
+					else if (true == pBlackboard->getBool("Is_Pear"))
+					{
+						m_fTimeAcc += fTimeDelta;
+
+						if (m_fTimeAcc >= m_fPearCreateTime)
+						{
+							CEffect_BossPear::BOSSPEAR_DESC Desc;
+							Desc.fAddTime = 0.1f;
+							Desc.fLifeTime = 0.5f;
+							Desc.fSpeedPerSec = 30.f;
+							Desc.fRotationPerSec = XMConvertToRadians(150.f);
+							Desc.fMaxAddScale = 5.f;
+							Desc.fTickAddScaleX = 5.f;
+							Desc.fTickAddScaleY = 5.f;
+							XMStoreFloat4(&Desc.vCreatePos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+							XMStoreFloat3(&Desc.vCreateLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+
+							m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_BossPear"), &Desc);
+
+							m_fTimeAcc = 0.f;
+						}
+
+					}
+
 					if (true == Is_CurrentAnimEnd())
 					{
 						m_bStart = false;
 						m_bAppear = true;
+						Initialize_UI(MONSTERTYPE::BOSS);
 						return BT_STATUS::Success;
 					}
 					return BT_STATUS::Running;
@@ -825,6 +862,9 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
+			 CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+
+			 pTargetCamera->On_Shake(0.1f, 0.25f);
 			 m_pModelCom->Root_MotionEnd();
 			 m_pModelCom->Set_Loop(true);
 			 Set_Move(false);
@@ -848,6 +888,9 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
+			 CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+
+			 pTargetCamera->On_Shake(0.1f, 0.25f);
 			 m_pModelCom->Root_MotionEnd();
 			 m_pModelCom->Set_Loop(true);
 			 Set_Move(false);
@@ -872,6 +915,9 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
+			 CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+
+			 pTargetCamera->On_Shake(0.1f, 0.25f);
 			 m_pModelCom->Root_MotionEnd();
 			 m_pModelCom->Set_Loop(true);
 			 Set_Move(false);
@@ -985,16 +1031,33 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		{
 			Get_TailCollider(CBoss_EN131::STING)->OnCollider();
 			pBlackboard->setBool("Is_Sting", true);
+
+			
 		}
+
+		if (48.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Create_Dusting"))
+		{
+			Create_TailStingEffect();
+			
+			pBlackboard->setBool("Create_Dusting", true);
+
+			CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+			pTargetCamera->On_Shake(0.15f, 0.15f);
+			
+		}
+		
+
 		 m_pModelCom->Set_Loop(false);
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
 			 Get_TailCollider(CBoss_EN131::STING)->OffCollider();
 			 pBlackboard->setBool("Is_Sting", false);
-
-			 m_pModelCom->Set_Loop(true);
-			 m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
+			 pBlackboard->setBool("Create_Dusting", false);
+			 m_pModelCom->Get_CurrentAnimation(38)->Reset_Animation();
+			 Transition(38);
+			 
+			 
 			 return BT_STATUS::Success;
 		 }
 		else
@@ -1004,19 +1067,33 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	 FUNCTION_NODE Task_TailStingAttack2
 		 = FUNCTION_NODE_MAKE
 	 {
-		Transition(38);
+		
+		pBlackboard->setFloat("CurrentTrackPosition", m_pModelCom->Get_CurrentAnimation(38)->Get_TrackPosition());
 		m_pModelCom->Set_Loop(false);
 
-		if (30.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Sting"))
+		if (26.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Sting"))
 		{
 			Get_TailCollider(CBoss_EN131::STING)->OnCollider();
 			pBlackboard->setBool("Is_Sting", true);
+		}
+
+		if (31.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Create_Dusting"))
+		{
+			
+			Create_TailStingEffect();
+			pBlackboard->setBool("Create_Dusting", true);
+
+
+			CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+			pTargetCamera->On_Shake(0.15f, 0.15f);
+
 		}
 
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
 			Get_TailCollider(CBoss_EN131::STING)->OffCollider();
 			pBlackboard->setBool("Is_Sting", false);
+			pBlackboard->setBool("Create_Dusting", false);
 			 m_pModelCom->Set_Loop(true);
 			 m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
 			 return BT_STATUS::Success;
@@ -1037,10 +1114,23 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 			pBlackboard->setBool("Is_Sting", true);
 		}
 
+		if (54.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Create_Dusting"))
+		{
+			Create_TailStingEffect();
+
+			pBlackboard->setBool("Create_Dusting", true);
+
+
+			CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+			pTargetCamera->On_Shake(0.15f, 0.15f);
+
+		}
+
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
 			Get_TailCollider(CBoss_EN131::STING)->OffCollider();
 			pBlackboard->setBool("Is_Sting", false);
+			pBlackboard->setBool("Create_Dusting", false);
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		}
@@ -1074,7 +1164,9 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (116.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Swing"))
 		{
-			
+			CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+
+			pTargetCamera->On_Shake(0.3f, 1.f);
 			Get_TailCollider(CBoss_EN131::SWING)->OnCollider();
 			pBlackboard->setBool("Is_Swing", true);
 		}
@@ -1098,6 +1190,9 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (112.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Howling"))
 		{
+			CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+
+			pTargetCamera->On_Shake(0.25f, 3.f);
 			CPlayer* pPlayer = dynamic_cast<CPlayer*>(m_pGameInstance->Get_Player(m_eCurrentLevelID));
 			wstring strSturnTag = TEXT("PlayerState_Sturn");
 			pPlayer->Transition(CStateMachine::STATETYPE::STATE_GROUND, strSturnTag);
@@ -1398,12 +1493,14 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 				m_pTransformCom->Look_At(vTargetPosition);
 				Transition(2);
 				Set_Move(true);
+				m_bChase = true;
 			
 
 			if (true == m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 			{
 				m_pModelCom->Root_MotionEnd();
 				m_pModelCom->Set_Loop(true);
+				m_bChase = false;
 				Set_Move(false);
 				return BT_STATUS::Success;
 			}

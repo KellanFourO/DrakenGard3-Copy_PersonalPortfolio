@@ -30,6 +30,7 @@ public:
 private:
 	CCollider* Get_HeadCollider(HEAD_COLLIDER eHeadType);
 	CCollider* Get_TailCollider(TAIL_COLLIDER eTailType);
+	void	   Create_TailStingEffect();
 	
 
 public:
@@ -67,6 +68,7 @@ private:
 	_bool			m_bJumpStart = false;
 	_bool			m_bTest = false;
 	_bool			m_bFindCell = false;
+	_bool			m_bChase = false;
 	_float			m_fTimeAcc = 0.f;
 	_float			m_fPointJumpTimeAcc = 0.f;
 
@@ -78,6 +80,9 @@ private:
 	_float3			m_vPrevPointPos = {};
 	_float3			m_vAppealJumpPosition = { 10.024f, 19.229f, 240.570f };
 	_bool			m_bOneTime = true;
+
+
+	_float			m_fPearCreateTime = 0.1f;
 	
 
 public:

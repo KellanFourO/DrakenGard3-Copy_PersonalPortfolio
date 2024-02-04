@@ -40,6 +40,8 @@ private:
 
 private:
 	void					Compute_OwnerCamDistance();
+	_bool					In_Frustum();
+	
 
 private:
 	LEVEL					m_eCurrentLevel = LEVEL_END;

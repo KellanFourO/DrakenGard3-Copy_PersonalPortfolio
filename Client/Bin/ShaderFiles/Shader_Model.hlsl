@@ -7,6 +7,9 @@ texture2D       g_NoiseTexture;
 texture2D       g_RGBTexture;
 float2          g_vAddUVPos;
 
+bool            g_bCustomColor = false;
+float4          g_vColor;
+
 struct VS_IN
 {
 	float3		vPosition : POSITION;
@@ -67,11 +70,15 @@ PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
 
+    
+
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
 
     if (vMtrlDiffuse.a < 0.3f)
         discard;
 	
+    
+    
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.0f, 0.0f, 0.0f);
@@ -128,6 +135,33 @@ PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN In)
 	
     return Out;
 }
+
+PS_OUT PS_MAIN_CUSTOM_COLOR(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    
+
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+	
+    if (true == g_bCustomColor)
+    {
+        vMtrlDiffuse.rgb = g_vColor.rgb;
+    }
+    
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.0f, 0.0f, 0.0f);
+
+    return Out;
+
+}
+
+
 
 technique11 DefaultTechnique
 {
@@ -214,5 +248,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
+    }
+
+    pass Model_CustomColor // 7
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_CUSTOM_COLOR();
     }
 }

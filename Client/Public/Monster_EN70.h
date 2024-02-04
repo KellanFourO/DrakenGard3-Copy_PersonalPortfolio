@@ -47,6 +47,9 @@ private:
 	
 	HRESULT			Bind_ShaderResources();
 
+	void			On_Trail();
+	void			Off_Trail();
+
 public:
 	/* 원형객체를 생성한다. */
 	static CMonster_EN70* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel);

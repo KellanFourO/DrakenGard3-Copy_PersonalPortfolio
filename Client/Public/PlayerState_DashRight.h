@@ -19,9 +19,15 @@ public:
 	virtual void	Tick(const _float& fTimeDelta) override;
 	virtual void	Late_Tick(const _float& fTimeDelta) override;
 
+private:
+	void	Create_DashRing();
+	void	Create_Hanabira(_float fTimeDelta);
 
 private:
 	_bool			m_bKeyPressing = false;
+
+	_float			m_fHanabiraAcc = 0.f;
+	_float			m_fCreateHabiraTime = 0.1f;
 
 
 public:

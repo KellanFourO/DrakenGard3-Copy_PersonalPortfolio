@@ -47,7 +47,7 @@ private:
 private:
 //! 누적
 	_float				m_fTimeAcc = 0.f;
-	_float				m_fAddTime = 0.25f;
+	_float				m_fAddTime = 0.05f;
 
 
 //! 셋팅

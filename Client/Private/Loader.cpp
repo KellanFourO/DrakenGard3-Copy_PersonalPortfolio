@@ -166,6 +166,16 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/BornFire/BornFire.dds"), 1))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_Explosion */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_BornFireMask"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/BornFire/BornFireMask.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Explosion */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_BornFireNoise"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/BornFire/BornFireNoise.dds"), 1))))
+		return E_FAIL;
+
 	m_pGameInstance->Add_ParticleTextureTag(TEXT("Prototype_Component_Texture_BornFire"));
 
 	/* For.Prototype_Component_Texture_CyilnderMask */
@@ -213,8 +223,48 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		return E_FAIL;
 
 	/* For.Prototype_Component_Texture_CyilnderMask */
-	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrail"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/trail_pl00.dds"), 1))))
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrail1"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/TRAIL_00.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrail2"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/TRAIL_01.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrail3"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/TRAIL_02.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrail4"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/TRAIL_03.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrail5"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/Trail_04.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrail6"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/Trail_05.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrail7"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/Trail_06.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrail8"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/Trail_07.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_RunSmoke"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/RunSmoke/Smoke_11.dds"), 1))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Texture_CyilnderMask */
@@ -235,6 +285,71 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	/* For.Prototype_Component_Texture_CyilnderMask */
 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyBossHPFrame"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/EnemyBossHPFrame.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyBossTag"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/BossName.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyEN00_Tag"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/EN00_Name.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyEN01_Tag"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/EN01_Name.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyEN70_Tag"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/EN70_Name.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyTagFrame"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/MonNameBack0.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyBossPortrait"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/BossPortrait.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyEN00_Portrait"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/EN00_Portrait.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyEN01_Portrait"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/EN01_Portrait.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyEN70_Portrait"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/EN70_Portrait.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_EnemyBoss_Portrait"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/BossPortrait.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Effect_Dash"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Dash/Dash%d.dds"), 26))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Effect_Dust"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Dust/Dust.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Effect_DashRing"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/DashRing/DashRing.dds"), 1))))
 		return E_FAIL;
 
 	m_pGameInstance->Add_EffectTextureTag(TEXT("Prototype_Component_Texture_BornFire"));
@@ -725,6 +840,7 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Effect_Hanabira"),
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Hanabira"), pFilePathData), PivotMatrix)));
 
+
 	m_pGameInstance->Add_EffectMeshTag(TEXT("Prototype_Component_Model_Effect_Hanabira"));
 
 	PivotMatrix = XMMatrixIdentity();//XMMatrixScaling(0.1f, 0.1f, 0.1f);// * XMMatrixRotationY(XMConvertToRadians(180.0f)); //! 모델의 초기 회전 셋팅
@@ -777,12 +893,29 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CEffect_Hanabira::Create(m_pDevice, m_pContext, eLevel))))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_DashRing"),
+		CEffect_DashRing::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
+
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_BossBreath"),
 		CEffect_BossBreath::Create(m_pDevice, m_pContext, eLevel))))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_BossPear"),
+		CEffect_BossPear::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_Blood"),
 		CEffect_Blood::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_RunSmoke"),
+		CEffect_RunSmoke::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_Dust"),
+		CEffect_Dust::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect_EffectTrail"),
@@ -797,6 +930,18 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_MonsterHPFrame"),
 		CUI_MonsterHPFrame::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_MonsterNameTag"),
+		CUI_MonsterTag::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_MonsterNameTagFrame"),
+		CUI_MonsterTagFrame::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_MonsterPortrait"),
+		CUI_MonsterPortrait::Create(m_pDevice, m_pContext, eLevel))))
 		return E_FAIL;
 
 

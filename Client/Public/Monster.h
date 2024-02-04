@@ -19,6 +19,8 @@ BEGIN(Client)
 
 class CMonster abstract : public CAnimObject
 {
+public:
+	enum MONSTERTYPE { EN00, EN01, EN70, BOSS, TYPE_END};
 
 protected:
 	CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -28,7 +30,7 @@ protected:
 public:
 	virtual HRESULT		Initialize_Prototype(LEVEL eLevel);
 	virtual HRESULT		Initialize(void* pArg);
-	virtual HRESULT		Initialize_UI();
+	virtual HRESULT		Initialize_UI(MONSTERTYPE eType);
 	virtual void		Priority_Tick(_float fTimeDelta);
 	virtual void		Tick(_float fTimeDelta);
 	virtual void		Late_Tick(_float fTimeDelta);
@@ -55,6 +57,7 @@ public:
 	CCollider*			Get_WeaponCollider();
 	void				Set_WeaponAttackType(STATUS_DESC::ATTACKTYPE eAttackType);
 	void				Set_PartAttackType(wstring& strPartTag, STATUS_DESC::ATTACKTYPE eAttackType);
+
 
 public:
 	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit) override; // call on collising

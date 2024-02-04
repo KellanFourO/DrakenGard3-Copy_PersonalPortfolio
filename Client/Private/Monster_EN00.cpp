@@ -5,6 +5,7 @@
 #include "PartObject.h"
 #include "Bone.h"
 #include "Animation.h"
+#include "MonsterPart_EN00_Weapon.h"
 
 
 
@@ -59,7 +60,7 @@ HRESULT CMonster_EN00::Initialize(void* pArg)
 
 	Init_Status(100.f, 20.f);
 
-	if(FAILED(__super::Initialize_UI()))
+	if(FAILED(__super::Initialize_UI(MONSTERTYPE::EN00)))
 		return E_FAIL;
 	
 	return S_OK;
@@ -596,8 +597,8 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 
 
 		Transition(7);
-
-
+		
+		On_Trail();
 
 		 m_tStatus.eAttackType = tagStatusDesc::NORMAL_ATTACK;
 		 m_pModelCom->Set_Loop(false);
@@ -616,6 +617,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 			 pBlackboard->setBool("Is_Swing", false);
 			 m_pModelCom->Set_Loop(true);
 			 m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
+			 
 			 return BT_STATUS::Success;
 		 }
 		else if(true == pBlackboard->getBool("Is_Hit") || 0 >= pBlackboard->getFloat("Current_HP"))
@@ -634,6 +636,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 		{
 		 m_pModelCom->Set_Loop(true);
 		 m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
+		 Off_Trail();
 		 return BT_STATUS::Success;
 		}
 		 else if (true == pBlackboard->getBool("Is_Hit") || 0 >= pBlackboard->getFloat("Current_HP"))
@@ -648,6 +651,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 		Transition(15);
 		m_pModelCom->Set_Loop(false);
 		Set_Move(true);
+		On_Trail();
 
 		m_tStatus.eAttackType = tagStatusDesc::UPPER_ATTACK;
 
@@ -665,6 +669,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 			pBlackboard->setBool("Is_Swing", false);
 			m_pModelCom->Set_Loop(true);
 			Set_Move(false);
+			Off_Trail();
 			 return BT_STATUS::Success;
 		}
 		 else if (true == pBlackboard->getBool("Is_Hit") || 0 >= pBlackboard->getFloat("Current_HP"))
@@ -678,7 +683,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 	 {
 		Transition(16);
 		m_pModelCom->Set_Loop(false);
-
+		On_Trail();
 		
 		m_tStatus.eAttackType = tagStatusDesc::CHARGE_ATTACK;
 
@@ -695,6 +700,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 			Get_WeaponCollider()->OffCollider();
 			pBlackboard->setBool("Is_Swing", false);
 			m_pModelCom->Set_Loop(true);
+			Off_Trail();
 			 return BT_STATUS::Success;
 		}
 		 else if (true == pBlackboard->getBool("Is_Hit") || 0 >= pBlackboard->getFloat("Current_HP"))
@@ -872,6 +878,16 @@ HRESULT CMonster_EN00::Render_Shadow()
 	}
 
 	return S_OK;
+}
+
+void CMonster_EN00::On_Trail()
+{
+	dynamic_cast<CMonsterPart_EN00_Weapon*>(Find_PartObject(TEXT("Part_Weapon")))->On_Trail();
+}
+
+void CMonster_EN00::Off_Trail()
+{
+	dynamic_cast<CMonsterPart_EN00_Weapon*>(Find_PartObject(TEXT("Part_Weapon")))->Off_Trail();
 }
 
 

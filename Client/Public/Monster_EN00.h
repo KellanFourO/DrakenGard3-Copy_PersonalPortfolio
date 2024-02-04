@@ -37,7 +37,6 @@ public:
 	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit) override;
 	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit) override;
 
-	
 private:
 	HRESULT			Ready_Components();
 	HRESULT			Ready_PartObjects();
@@ -47,6 +46,9 @@ private:
 	
 	HRESULT			Bind_ShaderResources();
 	virtual HRESULT Render_Shadow() override;
+
+	void			On_Trail();
+	void			Off_Trail();
 
 public:
 	/* 원형객체를 생성한다. */

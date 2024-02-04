@@ -28,6 +28,7 @@ public:
 
 public:
 	CGameObject* CreateBreath(_fvector vTargetPos);
+	void		 CreateStringEffect();
 	
 
 public:

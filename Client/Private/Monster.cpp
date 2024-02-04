@@ -7,6 +7,10 @@
 #include "PartObject.h"
 #include "UI_MonsterHP.h"
 #include "UI_MonsterHPFrame.h"
+#include "Effect_Trail.h"
+#include "UI_MonsterTag.h"
+#include "UI_MonsterTagFrame.h"
+#include "UI_MonsterPortrait.h"
 
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice,pContext)
@@ -33,7 +37,7 @@ HRESULT CMonster::Initialize(void* pArg)
 	return S_OK;
 }
 
-HRESULT CMonster::Initialize_UI()
+HRESULT CMonster::Initialize_UI(MONSTERTYPE eType)
 {
 	CUI_MonsterHP::MONSTER_HP HP_Desc;
 
@@ -45,7 +49,7 @@ HRESULT CMonster::Initialize_UI()
 		HP_Desc.fSizeY = 16.f;
 		HP_Desc.fX = g_iWinSizeX / 2;
 		HP_Desc.fY = 60.f;
-		
+		HP_Desc.bEnable = true;
 
 	}
 	else
@@ -73,10 +77,60 @@ HRESULT CMonster::Initialize_UI()
 		if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterHPFrame"), &BOSS_FrameDesc)))
 			return E_FAIL;
 	}
+
+
+	if (m_isBoss == true)
+	{
+		CUI_MonsterTag::MONSTER_TAG MonsterTagDesc;
+		MonsterTagDesc.bWorldUI = false;
+		MonsterTagDesc.eMonsterType = (CUI_MonsterTag::MONSTERTYPE)eType;
+		MonsterTagDesc.pOwnerStatus = &m_tStatus;
+		MonsterTagDesc.pOwnerTransform = m_pTransformCom;
+		MonsterTagDesc.fSizeX = 300.f;
+		MonsterTagDesc.fSizeY = 37.5f;
+		MonsterTagDesc.fX = 340.f;
+		MonsterTagDesc.fY = 25.f;
+		MonsterTagDesc.bEnable = true;
+
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterNameTag"), &MonsterTagDesc)))
+			return E_FAIL;
+
+		CUI_MonsterPortrait::MONSTER_PORTRAIT MonsterPortraitDesc;
+		MonsterPortraitDesc.bWorldUI = false;
+		MonsterPortraitDesc.eMonsterType = (CUI_MonsterPortrait::MONSTERTYPE)eType;
+		MonsterPortraitDesc.pOwnerStatus = &m_tStatus;
+		MonsterPortraitDesc.pOwnerTransform = m_pTransformCom;
+		MonsterPortraitDesc.fSizeX = 200.f;
+		MonsterPortraitDesc.fSizeY = 200.f;
+		MonsterPortraitDesc.fX = 100.f;
+		MonsterPortraitDesc.fY = 60.f;
+		MonsterPortraitDesc.bEnable = true;
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterPortrait"), &MonsterPortraitDesc)))
+			return E_FAIL;
+	}
 	else
 	{
-		if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterHPFrame"), &HP_Desc)))
+		CUI_MonsterTag::MONSTER_TAG MonsterTagDesc;
+		MonsterTagDesc.bWorldUI = true;
+		MonsterTagDesc.eMonsterType = (CUI_MonsterTag::MONSTERTYPE)eType;
+		MonsterTagDesc.pOwnerStatus = &m_tStatus;
+		MonsterTagDesc.pOwnerTransform = m_pTransformCom;
+
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterNameTag"), &MonsterTagDesc)))
 			return E_FAIL;
+
+		CUI_MonsterPortrait::MONSTER_PORTRAIT MonsterPortraitDesc;
+		MonsterPortraitDesc.bWorldUI = true;
+		MonsterPortraitDesc.eMonsterType = (CUI_MonsterPortrait::MONSTERTYPE)eType;
+		MonsterPortraitDesc.pOwnerStatus = &m_tStatus;
+		MonsterPortraitDesc.pOwnerTransform = m_pTransformCom;
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterPortrait"), &MonsterPortraitDesc)))
+			return E_FAIL;
+
 	}
 		
 
@@ -188,6 +242,8 @@ void CMonster::Set_PartAttackType(wstring& strPartTag, STATUS_DESC::ATTACKTYPE e
 	Find_PartObject(strPartTag)->Get_Status()->eAttackType = eAttackType;
 }
 
+
+
 void CMonster::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
 {
 	
@@ -251,7 +307,9 @@ void CMonster::Transition(_int iAnimIndex, _float fSpeed)
 {
 	if (iAnimIndex != m_pModelCom->Get_CurrentAnimationIndex())
 	{
+		
 		m_pModelCom->Set_Animation(iAnimIndex);
+		m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
 		m_pModelCom->Set_AnimationSpeed(fSpeed);
 	}
 }

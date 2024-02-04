@@ -11,6 +11,7 @@
 #include "RigidBody.h"
 #include "Camera_Target.h"
 #include "Effect_Hanabira.h"
+#include "Effect_RunSmoke.h"
 
 CPlayerState_Run::CPlayerState_Run()
 {
@@ -31,7 +32,7 @@ HRESULT CPlayerState_Run::StartState()
     m_pOwnerModelCom->Set_Loop(true);
 	m_pOwnerModelCom->Set_Animation(76);
     m_pOwnerModelCom->Set_AnimationSpeed(3.f);
-	m_pOwnerTransform->Set_SpeedPerSec(10.f);
+	m_pOwnerTransform->Set_SpeedPerSec(25.f);
 	m_pOwnerTransform->Set_RotationPerSec(XMConvertToRadians(90.0f));
 
 	return S_OK;
@@ -201,15 +202,32 @@ void CPlayerState_Run::CreateHanabira(_float fTimeDelta)
             Desc.fRotationPerSec = XMConvertToRadians(90.f);
             Desc.pTarget = m_pGameInstance->Get_Player(LEVEL_GAMEPLAY);
             Desc.vPos = vRandomPos;
-            Desc.fLifeTime = 3.f;
+            Desc.fLifeTime = 1.5f;
             Desc.eType = CEffect_Hanabira::HANABIRA_SPREAD;
             XMStoreFloat4(&Desc.vLook, m_pOwnerTransform->Get_State(CTransform::STATE_LOOK));
 
             m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Hanabira"), &Desc);
         }
 
+        
+        
+
+        CEffect_RunSmoke::EFFECT_DESC Desc;
+
+        Desc.fLifeTime = 2.f;
+        Desc.fPlaySpeed = 0.05f;
+        XMStoreFloat4(&Desc.vCreatePos, m_pOwnerTransform->Get_State(CTransform::STATE_POSITION));
+        Desc.vCreatePos.y += 0.2f;
+
+        XMStoreFloat3(&Desc.vDir, -m_pOwnerTransform->Get_State(CTransform::STATE_LOOK));
+        Desc.vScale = _float3{ 1.4f, 1.4f, 1.f };
+        
+        m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_RunSmoke"), &Desc);
+
+
         m_fHanabiraAccTime = 0.f;
     }
+
 
     
 }

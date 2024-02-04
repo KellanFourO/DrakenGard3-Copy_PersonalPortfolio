@@ -46,6 +46,54 @@ void CPlayerState_NormalAttackBase::Tick(const _float& fTimeDelta)
 
 void CPlayerState_NormalAttackBase::NextComboOrIdle(CModel* pOwnerModel, class CStateMachine* pOwnerStateMachine, const wstring& strNextComboStateTag, _int iEndAnimIndex)
 {
+
+    if (m_pGameInstance->Key_Pressing(DIK_W) && m_pGameInstance->Key_Down(DIK_SPACE))
+    {
+        m_ePrevDir = m_eCurrentDir;
+        m_eCurrentDir = CPlayerState_Base::FRONT;
+        if (m_ePrevDir != m_eCurrentDir)
+        {
+            Vertical_Camera_Rotate();
+        }
+
+        m_pOwnerStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_DashFront"));
+    }
+    else if (m_pGameInstance->Key_Pressing(DIK_S) && m_pGameInstance->Key_Down(DIK_SPACE))
+    {
+        m_ePrevDir = m_eCurrentDir;
+        m_eCurrentDir = CPlayerState_Base::BACK;
+        if (m_ePrevDir != m_eCurrentDir)
+        {
+            Vertical_Camera_Rotate();
+        }
+
+        m_pOwnerStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_DashBack"));
+    }
+
+    else if (m_pGameInstance->Key_Pressing(DIK_A) && m_pGameInstance->Key_Down(DIK_SPACE))
+    {
+        m_ePrevDir = m_eCurrentDir;
+        m_eCurrentDir = CPlayerState_Base::LEFT;
+        if (m_ePrevDir != m_eCurrentDir)
+        {
+            Horizon_Camera_Rotate();
+        }
+
+        m_pOwnerStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_DashLeft"));
+    }
+
+    else if (m_pGameInstance->Key_Pressing(DIK_D) && m_pGameInstance->Key_Down(DIK_SPACE))
+    {
+        m_ePrevDir = m_eCurrentDir;
+        m_eCurrentDir = CPlayerState_Base::RIGHT;
+        if (m_ePrevDir != m_eCurrentDir)
+        {
+            Horizon_Camera_Rotate();
+        }
+
+        m_pOwnerStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_DashRight"));
+    }
+
     _float3 vCamLook;
     XMStoreFloat3(&vCamLook, m_pOwnerCam->Get_Transform()->Get_State(CTransform::STATE_LOOK));
        

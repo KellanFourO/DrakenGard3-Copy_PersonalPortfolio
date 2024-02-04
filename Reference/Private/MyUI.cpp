@@ -28,6 +28,8 @@ HRESULT CMyUI::Initialize(void* pArg)
 	//m_fSizeX = pDesc->fSizeX;
 	//m_fSizeY = pDesc->fSizeY;
 
+	m_isEnable = m_tUIInfo.bEnable;
+
 	m_pTransformCom = CTransform::Create(m_pDevice, m_pContext, 0.f, 0.f);
 	if (nullptr == m_pTransformCom)
 		return E_FAIL;
@@ -75,7 +77,7 @@ void CMyUI::Late_Tick(_float fTimeDelta)
 
 HRESULT CMyUI::Render()
 {
-
+	
 
 	return S_OK;
 }
@@ -224,6 +226,7 @@ HRESULT CMyUI::SetUp_ScreenPosRect(_float fPosX, _float fPosY, _float fScaleX, _
 
 	return S_OK;
 }
+
 
 
 

@@ -37,8 +37,7 @@ public:
 	virtual void Init_Desc();
 
 
-private:
-	
+
 
 public:
 	/* 원형객체를 생성한다. */

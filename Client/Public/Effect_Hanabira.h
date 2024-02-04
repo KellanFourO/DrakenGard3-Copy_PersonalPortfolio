@@ -1,12 +1,16 @@
 #pragma once
 #include "NonAnimObject.h"
 
+BEGIN(Engine)
+class CRigidBody;
+END
+
 BEGIN(Client)
 
 class CEffect_Hanabira final : public CNonAnimObject
 {
 public:
-	enum HANABIRATYPE { HANABIRA_ORBIT, HANABIRA_SPREAD, HANABIRATYPE_END};
+	enum HANABIRATYPE { HANABIRA_ORBIT, HANABIRA_SPREAD, HANABIRA_MAPLE, HANABIRATYPE_END};
 
 	struct HANABIRA_DESC : public CGameObject::GAMEOBJECT_DESC
 	{
@@ -36,6 +40,9 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
+	CRigidBody*			m_pRigidBodyCom = { nullptr };
+
+private:
 	wstring				m_strModelTag = TEXT("");
 	_uint				m_iShaderPassIndex = 0;
 	_float				m_fAge = 0.f;
@@ -47,6 +54,7 @@ private:
 	_float4						m_vCreatePos = {};
 	_float4						m_vCreateLook = {};
 
+	_bool						m_bRandomDir = false;
 public:
 	/* 원형객체를 생성한다. */
 	static CEffect_Hanabira* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel);

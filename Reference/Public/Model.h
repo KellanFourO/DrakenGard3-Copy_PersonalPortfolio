@@ -35,6 +35,7 @@ public:
 	_uint	Get_CurrentAnimationKeyIndex() const;
 
 	_bool	is_BlendFinished() { return m_isBlend;}
+	void	Set_GroundModel() { m_isGroundModel = true;}
 
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eType, MODELDATA& tDataFilePath, _fmatrix PivotMatrix);
@@ -98,6 +99,7 @@ private:
 
 	_bool						m_bRootMotionStart = { false };
 	_bool						m_isRootAnim = false;
+	_bool						m_isGroundModel = false;
 
 	CBone*				m_pRootTranslateBone = { nullptr };
 

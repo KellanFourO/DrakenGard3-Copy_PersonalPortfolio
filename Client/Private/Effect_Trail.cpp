@@ -24,7 +24,7 @@ HRESULT CEffect_Trail::Initialize_Prototype()
 HRESULT CEffect_Trail::Initialize(void* pArg)//trail을 사용하는 객체로부터 traildesc를 받는다.
 {
 	m_tTrailDesc = *(EFFECT_TRAIL_DESC*)pArg;
-
+	m_vTrailColor = m_tTrailDesc.vTrailColor;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -55,7 +55,7 @@ void CEffect_Trail::Late_Tick(_float fTimeDelta)
 {
 	Compute_CamDistance();
 
-	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_BLEND, this)))
+	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this)))
 		return;
 }
 
@@ -96,18 +96,19 @@ HRESULT CEffect_Trail::Ready_Components()
 	BufferDesc.vEndPos = m_tTrailDesc.vEndPos;
 
 
+
 	/* For.Com_VIBuffer */
 	if (FAILED(__super::Add_Component(m_eCurrentLevel, TEXT("Prototype_Component_VIBuffer_Trail"),
 		TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBuffer), &BufferDesc)))
 		return E_FAIL;
 
 	/* For.Com_Texture */
-	if (FAILED(__super::Add_Component(m_eCurrentLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrail"),
+	if (FAILED(__super::Add_Component(m_eCurrentLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrail1"),
 		TEXT("Com_DiffuseTexture"), reinterpret_cast<CComponent**>(&m_pDiffuseTextureCom))))
 		return E_FAIL;
 
 	/* For.Com_Texture */
-	if (FAILED(__super::Add_Component(m_eCurrentLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrailMask2"),
+	if (FAILED(__super::Add_Component(m_eCurrentLevel, TEXT("Prototype_Component_Texture_PlayerSwordTrail6"),
 		TEXT("Com_MaskTexture"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
 		return E_FAIL;
 
@@ -134,10 +135,13 @@ HRESULT CEffect_Trail::Bind_ShaderResources()
 	if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
 		return E_FAIL;
 
-	if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+	if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 		return E_FAIL;
 
-	if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_NoiseTexture")))
+	if (FAILED(m_pNoiseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_NoiseTexture")))
+		return E_FAIL;
+
+	if(FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vTrailColor, sizeof(_float4))))
 		return E_FAIL;
 
 	return S_OK;

@@ -59,9 +59,10 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 
 	CEffect_Trail::EFFECT_TRAIL_DESC Desc = {};
 
-	Desc.iMaxCount = 12;
+	Desc.iMaxCount = 16;
 	Desc.vStartPos = { 0.f, 0.f, 0.f};
-	Desc.vEndPos = { 0.f, 0.f, -1.f};
+	Desc.vEndPos = { 0.f, 0.f, -1.2f};
+	Desc.vTrailColor = _float4(1.0, 0.8, 0.8, 1.f);
 
 	if(FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelIndex, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_EffectTrail"), &Desc, &pGameObject)))
 		return E_FAIL;

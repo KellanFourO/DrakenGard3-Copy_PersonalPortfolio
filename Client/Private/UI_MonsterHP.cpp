@@ -6,7 +6,6 @@ CUI_MonsterHP::CUI_MonsterHP(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 	:CMyUI(pDevice,pContext)
 	, m_eCurrentLevel(eCurrentLevel)
 {
-	
 }
 
 CUI_MonsterHP::CUI_MonsterHP(const CUI_MonsterHP& rhs)
@@ -28,6 +27,8 @@ HRESULT CUI_MonsterHP::Initialize(void* pArg)
 {
 	m_tInfo = *(MONSTER_HP*)pArg;
 	m_tInfo.bFrame = false;
+
+	m_isEnable = m_tInfo.bEnable;
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -90,6 +91,9 @@ void CUI_MonsterHP::Late_Tick(_float fTimeDelta)
 
 HRESULT CUI_MonsterHP::Render()
 {
+	if (false == m_isEnable)
+		return E_FAIL;
+
 	//TODO 셰이더에게 행렬을 던져주는 행위는 반드시 셰이더의 비긴함수를 호출하기 이전에 해야한다.
 	//! 그 이유는, 셰이더의 비긴함수 내에서 pPass->Apply(0, m_prContext); 코드를 수행한다.
 	//! Apply 호출 후에 행렬을 던져줘도 에러는 나지 않지만, 안정성이 떨어진다.
@@ -102,7 +106,7 @@ HRESULT CUI_MonsterHP::Render()
 	else if (m_tInfo.eMonsterType == CUI_MonsterHP::COMMON)
 	{
 
-		if (m_fOwnerCamDistance > 40.f)
+		if (m_fOwnerCamDistance > 40.f || false == In_Frustum())
 		{
 			m_pGameInstance->Get_CamDir();
 			return E_FAIL;
@@ -189,6 +193,12 @@ void CUI_MonsterHP::Compute_OwnerCamDistance()
 
 	m_fOwnerCamDistance = XMVectorGetX(XMVector3Length(vPosition - vCamPosition));
 }
+
+_bool CUI_MonsterHP::In_Frustum()
+{
+	return m_pGameInstance->isIn_WorldPlanes(m_tInfo.pOwnerTransform->Get_State(CTransform::STATE_POSITION), 2.f);
+}
+
 
 CUI_MonsterHP* CUI_MonsterHP::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eCurrentLevel)
 {

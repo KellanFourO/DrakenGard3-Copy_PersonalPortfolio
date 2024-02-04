@@ -148,7 +148,10 @@ public: /* For.UI_Manager */
 	HRESULT Add_UI(const wstring& strAddUITag, class CMyUI* pMyUI, void* pDesc);
 	HRESULT Erase_UI(const wstring& strEraseUITag);
 
-
+public: /* For.Frustum */
+	void	Transform_Frustum_ToLocalSpace(_fmatrix WorldMatrix);
+	_bool	isIn_WorldPlanes(_fvector vPoint, _float fRadius = 0.f);
+	_bool	isIn_LocalPlanes(_fvector vPoint, _float fRadius);
 	
 
 private:
@@ -167,6 +170,7 @@ private:
 	class CLight_Manager*			m_pLight_Manager = { nullptr };
 	class CEvent_Manager*			m_pEvent_Manager = { nullptr };
 	class CUI_Manager*				m_pUI_Manager = { nullptr };
+	class CFrustum*					m_pFrustum = { nullptr };
 
 public:
 	void Release_Manager();

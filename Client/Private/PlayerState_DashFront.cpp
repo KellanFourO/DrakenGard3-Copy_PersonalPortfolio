@@ -11,6 +11,8 @@
 #include "RigidBody.h"
 #include "Camera_Target.h"
 #include "Animation.h"
+#include "Effect_DashRing.h"
+#include "Effect_Hanabira.h"
 
 CPlayerState_DashFront::CPlayerState_DashFront()
 {
@@ -60,6 +62,10 @@ HRESULT CPlayerState_DashFront::StartState()
 
 
     m_pOwnerRigidBody->Add_Force(vCalcPos, CRigidBody::FORCE_MODE::IMPULSE);
+
+    Create_DashRing();
+
+
     return S_OK;
 }
 
@@ -76,12 +82,72 @@ HRESULT CPlayerState_DashFront::EndState()
 
 void CPlayerState_DashFront::Tick(const _float& fTimeDelta)
 {
+    Create_Hanabira(fTimeDelta);
 }
 
 void CPlayerState_DashFront::Late_Tick(const _float& fTimeDelta)
 {
     if (true == m_pOwnerModelCom->Get_CurrentAnimation()->Get_Finished())
-        m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, m_pOwnerStateCom->Get_PrevStateTag());
+    {
+        wstring strPrevTag = m_pOwnerStateCom->Get_PrevStateTag();
+
+        if (strPrevTag == TEXT("PlayerState_Walk") || strPrevTag == TEXT("PlayerState_Run"))
+            m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, strPrevTag);
+        else
+            m_pOwnerStateCom->Transition(CStateMachine::STATETYPE::STATE_GROUND, TEXT("PlayerState_Idle"));
+    }
+}
+
+void CPlayerState_DashFront::Create_DashRing()
+{
+   
+    CEffect_DashRing::DASHRING_DESC Desc;
+    Desc.fLifeTime = 0.3f;
+    CGameObject* pPlayer = m_pGameInstance->Get_Player(LEVEL_GAMEPLAY);
+    XMStoreFloat4(&Desc.vCreatePos, pPlayer->Get_Transform()->Get_State(CTransform::STATE_POSITION));
+    XMStoreFloat4(&Desc.vCreateLook, pPlayer->Get_Transform()->Get_State(CTransform::STATE_LOOK));
+
+    m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_DashRing"), &Desc);
+
+
+    
+
+}
+
+void CPlayerState_DashFront::Create_Hanabira(_float fTimeDelta)
+{
+    m_fHanabiraAcc += fTimeDelta;
+
+    if (m_fHanabiraAcc >= m_fCreateHabiraTime)
+    {
+
+        
+
+
+        for (_int i = 0; i < 6; ++i)
+        {
+            _vector vMyPos = m_pOwnerTransform->Get_State(CTransform::STATE_POSITION);
+
+            _float4 vRandomPos = m_pOwnerTransform->Get_RandomPositionAroundCenter(vMyPos, XMConvertToRadians(-180.f));
+
+            CEffect_Hanabira::HANABIRA_DESC HanabiraDesc;
+
+            HanabiraDesc.eType = CEffect_Hanabira::HANABIRA_MAPLE;
+            HanabiraDesc.fLifeTime = 2.f;
+            HanabiraDesc.fSpeedPerSec = 5.f;
+            HanabiraDesc.vPos = vRandomPos;
+            //XMStoreFloat4(&HanabiraDesc.vPos, m_pOwnerTransform->Get_State(CTransform::STATE_POSITION));
+            XMStoreFloat4(&HanabiraDesc.vLook, m_pOwnerTransform->Get_State(CTransform::STATE_LOOK));
+
+            m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Hanabira"), &HanabiraDesc);
+        }
+
+        
+        
+
+        m_fHanabiraAcc = 0.f;
+    }
+
 }
 
 

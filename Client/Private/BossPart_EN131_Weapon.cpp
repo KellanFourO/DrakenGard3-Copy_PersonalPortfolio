@@ -3,7 +3,7 @@
 #include "GameInstance.h"
 #include "Bone.h"
 #include "EN131_Breath.h"
-
+#include "Effect_Dust.h"
 
 CBossPart_EN131_Weapon::CBossPart_EN131_Weapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CPartObject(pDevice,pContext)
@@ -154,6 +154,20 @@ CGameObject* CBossPart_EN131_Weapon::CreateBreath(_fvector vTargetPos)
 	return pGameObject;
 
 	
+}
+
+void CBossPart_EN131_Weapon::CreateStringEffect()
+{
+	CEffect_Dust::EFFECT_DESC Desc;
+
+	Desc.fLifeTime = 1.f;
+	Desc.fPlaySpeed = 0.05f;
+
+	XMStoreFloat3(&Desc.vDir, XMLoadFloat4x4(&m_WorldMatrix).r[2]);
+	XMStoreFloat4(&Desc.vCreatePos, XMLoadFloat4x4(&m_WorldMatrix).r[3]);
+	Desc.vScale = _float3(3.f, 3.0f, 1.f);
+
+	m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Dust"), &Desc);
 }
 
 

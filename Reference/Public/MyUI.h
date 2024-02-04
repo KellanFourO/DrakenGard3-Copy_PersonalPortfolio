@@ -19,6 +19,7 @@ public:
 
 		_bool		bWorldUI = false;
 		_bool		bFrame = false;
+		_bool		bEnable = true;
 	}UI_DESC;
 
 
@@ -49,40 +50,43 @@ public:
 
 
 protected:
-	UI_DESC			m_tUIInfo = {};
-	TEXUVRATIO		m_tTexUVInfo = {};
-
-	
-	_float4x4		m_ViewMatrix, m_ProjMatrix;
-
-protected:
-	_float					m_fWorldToScreenX;
-	_float					m_fWorldToScreenY;
-
-	RECT					m_ScreenPosRect;
-
-protected:
-	CShader*		m_pShaderCom = { nullptr };
-	CTexture*		m_pTextureCom = { nullptr };
-	CVIBuffer_Rect* m_pVIBufferCom = { nullptr };
-
-
-protected:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT Bind_ShaderResources();
-	
-protected:
-	void	SetUp_UV(_uint iTextureIndex = 0);
-	void	SetUp_WorldToScreen(_fvector vWorldPos);
-	//void	SetUp_ScreenToWorld(_float fScreenX, _float fScreenY);
-	HRESULT	SetUp_Transform(_float fPosX, _float fPosY, _float fSizeX = 1.f, _float fSizeY = 1.f);
-	HRESULT SetUp_BillBoarding();
-	HRESULT	SetUp_ScreenPosRect(_float fPosX, _float fPosY, _float fSizeX = 1.f, _float fSizeY = 1.f);
-	
 
+protected:
+	void			SetUp_UV(_uint iTextureIndex = 0);
+	void			SetUp_WorldToScreen(_fvector vWorldPos);
+	//void			SetUp_ScreenToWorld(_float fScreenX, _float fScreenY);
+	HRESULT			SetUp_Transform(_float fPosX, _float fPosY, _float fSizeX = 1.f, _float fSizeY = 1.f);
+	HRESULT			SetUp_BillBoarding();
+	HRESULT			SetUp_ScreenPosRect(_float fPosX, _float fPosY, _float fSizeX = 1.f, _float fSizeY = 1.f);
+
+	void			Set_Enable(_bool bEnable) { m_isEnable = bEnable;}
 
 public:
-	const RECT& Get_ScreenPosRect() const { return m_ScreenPosRect; }
+	const RECT&		Get_ScreenPosRect() const { return m_ScreenPosRect; }
+
+
+
+protected:
+	CShader*			m_pShaderCom = { nullptr };
+	CTexture*			m_pTextureCom = { nullptr };
+	CVIBuffer_Rect*		m_pVIBufferCom = { nullptr };
+
+protected:
+	UI_DESC				m_tUIInfo = {};
+	TEXUVRATIO			m_tTexUVInfo = {};
+	
+	_float4x4			m_ViewMatrix, m_ProjMatrix;
+
+protected:
+	_float				m_fWorldToScreenX;
+	_float				m_fWorldToScreenY;
+
+	RECT				m_ScreenPosRect;
+	_bool				m_isEnable = true;
+
+
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

@@ -323,6 +323,11 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const wstring& strLayerTag)
 			wstr = TEXT("Prototype_GameObject_Environment_BornFire");
 		}
 
+		if (Desc.strModelTag == TEXT("Prototype_Component_Model_Environment_Ground"))
+		{
+			Desc.isGroundMesh = true;
+		}
+
 		if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, LayerTag, wstr, &Desc, &pGameObject)))
 			return E_FAIL;
 

@@ -24,6 +24,7 @@ public:
 		_float3			vChasePos = {}; //! 지정한 위치로 천천히 추적
 		_float			fStopRange = 0.f; //! 추적을 멈출 범위
 		_float			fChaseSpeed = 0.f; //! 추적 스피드
+		_float			fStartAngle = -1.5f;
 		
 		CGameObject*	pChaseTarget = nullptr;
 	}CUTSCENE_DESC;
@@ -38,6 +39,10 @@ public:
 	void	Set_CutSceneDesc(CUTSCENE_DESC* Desc) { m_tCutScene = *Desc; m_tCutScene.bCutSin = true; }
 	void    Set_OffSet(_float3 vOffset) { m_vOriginOffset = m_vOffset; m_vOffset = vOffset; }
 	void	Reset_OffSet() { m_vOffset = m_vOriginOffset; }
+	
+	void	On_Shake(_float fShakePower, _float fShakeDuration);
+	
+	void	CameraShake(_float fTimeDelta);
 
 public:
 	virtual HRESULT Initialize_Prototype(LEVEL eLevel);
@@ -62,6 +67,16 @@ private:
 	_float			m_fMouseSensitivity = { 0.0f };
 	LEVEL			m_eCurrentLevelID = { LEVEL_END };
 	_bool			m_bAdmin = false;
+
+//! 카메라 셰이크
+	_bool			m_bShake = false;
+	_float			m_fShakeTimeAcc = 0.f;
+	_float			m_fShakePower = 0.f;
+	_float			m_fShakeDuration = 0.f;
+	random_device	m_RandomDevice; // 랜덤을 뽑기위함
+	mt19937_64		m_RandomNumber;
+//! 카메라셰이크 끝
+	
 
 	CGameObject*	m_pTarget = { nullptr };
 	CGameObject*	m_pOriginTarget = {nullptr };

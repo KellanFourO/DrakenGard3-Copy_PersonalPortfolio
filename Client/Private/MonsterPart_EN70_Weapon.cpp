@@ -2,6 +2,7 @@
 #include "MonsterPart_EN70_Weapon.h"
 #include "GameInstance.h"
 #include "Bone.h"
+#include "Effect_Trail.h"
 
 CMonsterPart_EN70_Weapon::CMonsterPart_EN70_Weapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CPartObject(pDevice,pContext)
@@ -42,6 +43,20 @@ HRESULT CMonsterPart_EN70_Weapon::Initialize(void* pArg)
 
 	if (FAILED(__super::Ready_Components(m_eCurrentLevelIndex, TEXT("Prototype_Component_Shader_Model"), TEXT("Prototype_Component_Model_Monster_EN70_Weapon"))))
 		return E_FAIL;
+
+	CGameObject* pGameObject = { nullptr };
+
+	CEffect_Trail::EFFECT_TRAIL_DESC Desc = {};
+
+	Desc.iMaxCount = 16;
+	Desc.vStartPos = { 0.f, 0.f, 0.f };
+	Desc.vEndPos = { 0.f, 0.f, -1.2f };
+	Desc.vTrailColor = _float4(0.5, 1.0, 0.f, 1.f);
+
+	if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelIndex, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_EffectTrail"), &Desc, &pGameObject)))
+		return E_FAIL;
+
+	m_pTrail = dynamic_cast<CEffect_Trail*>(pGameObject);
 
 	CBoundingBox_Sphere::BOUNDING_SPHERE_DESC BoundingSphereDesc = {};
 	BoundingSphereDesc.ePartType = CBoundParent::PART_WEAPON;
@@ -99,6 +114,7 @@ void CMonsterPart_EN70_Weapon::Late_Tick(_float fTimeDelta)
 	//XMMATRIX rotatedWorldMatrix = XMMatrixRotationX(XMConvertToRadians(90.0f)) * XMLoadFloat4x4(&m_WorldMatrix);
 
 	m_pColliderCom->Update(XMLoadFloat4x4(&m_WorldMatrix));
+	m_pTrail->Tick(fTimeDelta, XMLoadFloat4x4(&m_WorldMatrix));
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return;

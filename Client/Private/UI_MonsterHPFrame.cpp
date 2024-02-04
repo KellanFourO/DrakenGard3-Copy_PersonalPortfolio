@@ -28,7 +28,7 @@ HRESULT CUI_MonsterHPFrame::Initialize(void* pArg)
 {
 	m_tInfo = *(MONSTER_HP*)pArg;
 	m_tInfo.bFrame = true;
-	
+	m_isEnable = m_tInfo.bEnable;
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -79,15 +79,18 @@ HRESULT CUI_MonsterHPFrame::Render()
 	//! 그 이유는, 셰이더의 비긴함수 내에서 pPass->Apply(0, m_prContext); 코드를 수행한다.
 	//! Apply 호출 후에 행렬을 던져줘도 에러는 나지 않지만, 안정성이 떨어진다.
 	//! Apply 호출 후에 행렬을 던져주면, 어떤 때에는 정상적으로 수행되고, 어떤 때에는 값이 제대로 안 넘어가는 경우가 있다.
-	//! 
+	
+	if(false == m_isEnable)
+		return E_FAIL;
+	
+	
 	if (m_tInfo.eMonsterType == CUI_MonsterHPFrame::BOSS)
 	{
 
 	}
 	else if (m_tInfo.eMonsterType == CUI_MonsterHPFrame::COMMON)
 	{
-
-		if (m_fOwnerCamDistance > 40.f)
+		if (m_fOwnerCamDistance > 40.f || false == In_Frustum())
 		{
 			m_pGameInstance->Get_CamDir();
 			return E_FAIL;
@@ -168,6 +171,11 @@ void CUI_MonsterHPFrame::Compute_OwnerCamDistance()
 	_vector		vCamPosition = XMLoadFloat4(&m_pGameInstance->Get_CamPosition());
 
 	m_fOwnerCamDistance = XMVectorGetX(XMVector3Length(vPosition - vCamPosition));
+}
+
+_bool CUI_MonsterHPFrame::In_Frustum()
+{
+	return m_pGameInstance->isIn_WorldPlanes(m_tInfo.pOwnerTransform->Get_State(CTransform::STATE_POSITION), 2.f);
 }
 
 CUI_MonsterHPFrame* CUI_MonsterHPFrame::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eCurrentLevel)
