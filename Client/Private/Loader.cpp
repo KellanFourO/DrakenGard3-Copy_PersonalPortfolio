@@ -352,6 +352,26 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/DashRing/DashRing.dds"), 1))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_UI_Blood"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Blood%d.dds"), 7))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_UI_BloodMask"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/BloodMask.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_UI_BloodNoise"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/BloodNoise.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_UI_BloodLack"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Blood_Lack0.dds"), 1))))
+		return E_FAIL;
+
 	m_pGameInstance->Add_EffectTextureTag(TEXT("Prototype_Component_Texture_BornFire"));
 
 	lstrcpy(m_szLoadingText, TEXT("모델를(을) 로드하는 중입니다."));
@@ -942,6 +962,10 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_MonsterPortrait"),
 		CUI_MonsterPortrait::Create(m_pDevice, m_pContext, eLevel))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Blood"),
+		CUI_Blood::Create(m_pDevice, m_pContext, eLevel))))
 		return E_FAIL;
 
 

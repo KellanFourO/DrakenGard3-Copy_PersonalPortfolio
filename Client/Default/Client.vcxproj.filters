@@ -289,6 +289,9 @@
     <Filter Include="02. GameObjects\05. Effects\Dust">
       <UniqueIdentifier>{66c0d0be-586f-47ec-ad02-4093030e5eeb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\97. UI\Blood">
+      <UniqueIdentifier>{4b062cbb-2e5e-4818-9564-1fcff235ecef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -645,6 +648,9 @@
     <ClInclude Include="..\Public\Effect_Dust.h">
       <Filter>02. GameObjects\05. Effects\Dust</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI_Blood.h">
+      <Filter>02. GameObjects\97. UI\Blood</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -958,6 +964,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Effect_Dust.cpp">
       <Filter>02. GameObjects\05. Effects\Dust</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Blood.cpp">
+      <Filter>02. GameObjects\97. UI\Blood</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -63,6 +63,7 @@ void CPlayerState_Depress::KeyInput(const _float& fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_SPACE))
 	{
+		m_pGameInstance->Play_BGM(L"BGM", L"BOSSBGM2.wav", 1.f);
 		Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_Idle"));
 	}
 	

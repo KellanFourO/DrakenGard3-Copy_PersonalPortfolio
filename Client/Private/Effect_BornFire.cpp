@@ -115,6 +115,22 @@ void CEffect_BornFire::Late_Tick(_float fTimeDelta)
 {
 	Compute_CamDistance();
 
+	if (m_fCamDistance < 6.f && false == m_bPlaySound)
+	{
+		m_pGameInstance->Play_Sound(L"ENVIRONMENT_EFFECT", L"Burn.wav", SOUND_ENVIRONMENT, 0.75f);
+		m_bPlaySound = true;
+	}
+	else if (m_fCamDistance > 6.f && true == m_bPlaySound)
+	{
+		m_pGameInstance->Stop_Sound(SOUND_ENVIRONMENT);
+		m_bPlaySound = false;
+	}
+
+	
+		
+
+	
+
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this)))
 		return ;
 }

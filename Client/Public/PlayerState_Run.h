@@ -30,6 +30,12 @@ private:
 	_float	m_fHanabiraCreateTime = 0.2f;
 	_float	m_fHanabiraAccTime = 0.f;
 
+	_bool	m_bFootStep1 = false;
+	_bool	m_bFootStep2 = false;
+
+	_float	m_fSoundAccTime = 0.f;
+	_float	m_fSoundPlayTime = 0.2f;
+
 public:
 	static CPlayerState_Run* Create(CPlayer* pPlayer);
 	virtual void Free() override;

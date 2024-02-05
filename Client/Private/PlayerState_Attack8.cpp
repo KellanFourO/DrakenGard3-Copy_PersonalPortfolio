@@ -60,7 +60,19 @@ void CPlayerState_Attack8::Tick(const _float& fTimeDelta)
 	if (18 < m_pOwnerModelCom->Get_CurrentAnimation()->Get_TrackPosition() && false == m_bCreateHanabira)
 	{
 		CreateHanabira();
+
+
+		m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"Slash_Final2.wav", SOUND_EFFECT2, 3.f);
+		
+		
 		m_bCreateHanabira = true;
+	}
+
+	if (34 < m_pOwnerModelCom->Get_CurrentAnimation()->Get_TrackPosition() && false == m_bPlaySound)
+	{
+		m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"Slash_Final2.wav", SOUND_EFFECT2, 3.f);
+
+		m_bPlaySound = true;
 	}
 }
 

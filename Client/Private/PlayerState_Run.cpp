@@ -34,6 +34,7 @@ HRESULT CPlayerState_Run::StartState()
     m_pOwnerModelCom->Set_AnimationSpeed(3.f);
 	m_pOwnerTransform->Set_SpeedPerSec(25.f);
 	m_pOwnerTransform->Set_RotationPerSec(XMConvertToRadians(90.0f));
+   
 
 	return S_OK;
 }
@@ -45,12 +46,30 @@ HRESULT CPlayerState_Run::EndState()
     m_fHanabiraAccTime = 0.f;
     m_pOwnerModelCom->Reset_AnimationSpeed();
 
+
 	return S_OK;
 }
 
 void CPlayerState_Run::Tick(const _float& fTimeDelta)
 {
 	KeyInput(fTimeDelta);
+
+    m_fSoundAccTime += fTimeDelta;
+
+    if (m_fSoundAccTime > m_fSoundPlayTime && m_bFootStep1 == false)
+    {
+        m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"Run1.wav", SOUND_EFFECT2, 3.f);
+        m_bFootStep1 = true;
+        m_fSoundAccTime = 0.f;
+    }
+    
+    if (m_fSoundAccTime > m_fSoundPlayTime && m_bFootStep1 == true)
+    {
+        m_bFootStep1 = false;
+        m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"Run2.wav", SOUND_EFFECT2, 3.f);
+        m_fSoundAccTime = 0.f;
+    }
+
     CreateHanabira(fTimeDelta);
 }
 
@@ -190,6 +209,8 @@ void CPlayerState_Run::CreateHanabira(_float fTimeDelta)
 
     if (m_fHanabiraAccTime >= m_fHanabiraCreateTime)
     {
+       
+
         for (_int i = 0; i < 20; ++i)
         {
             _vector vMyPos = m_pOwnerTransform->Get_State(CTransform::STATE_POSITION);

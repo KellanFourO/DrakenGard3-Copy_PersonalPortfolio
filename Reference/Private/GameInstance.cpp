@@ -12,6 +12,7 @@
 #include "Event_Manager.h"
 #include "UI_Manager.h"
 #include "Frustum.h"
+#include "Sound_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -92,6 +93,10 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInstance, 
 
 	m_pFrustum = CFrustum::Create();
 	if (nullptr == m_pFrustum)
+		return E_FAIL;
+
+	m_pSound_Manager = CSound_Manager::Create();
+	if (nullptr == m_pSound_Manager)
 		return E_FAIL;
 
 	return S_OK;
@@ -545,6 +550,11 @@ _float4 CGameInstance::Get_CamDir()
 	return m_pPipeLine->Get_CamDir();
 }
 
+_float CGameInstance::Get_CamLength(_fvector vPos)
+{
+	return m_pPipeLine->Get_CamLength(vPos);
+}
+
 
 _byte CGameInstance::Get_DIKeyState(_ubyte byKeyID)
 {
@@ -784,9 +794,34 @@ _bool CGameInstance::isIn_LocalPlanes(_fvector vPoint, _float fRadius)
 	return m_pFrustum->isIn_LocalPlanes(vPoint, fRadius);
 }
 
+void CGameInstance::Play_Sound(const wstring& strGroupKey, const wstring& strSoundKey, CHANNELID eID, _float fVolume)
+{
+	return m_pSound_Manager->Play_Sound(strGroupKey, strSoundKey, eID, fVolume);
+}
+
+void CGameInstance::Play_BGM(const wstring& strGroupKey, const wstring& strSoundKey, _float fVolume)
+{
+	return m_pSound_Manager->Play_BGM(strGroupKey, strSoundKey, fVolume);
+}
+
+void CGameInstance::Stop_Sound(CHANNELID eID)
+{
+	return m_pSound_Manager->Stop_Sound(eID);
+}
+
+void CGameInstance::Stop_All()
+{
+	return m_pSound_Manager->Stop_All();
+}
+
+void CGameInstance::Set_ChannelVolume(CHANNELID eID, float fVolume)
+{
+}
+
 
 void CGameInstance::Release_Manager()
 {
+	Safe_Release(m_pSound_Manager);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pUI_Manager);
 	Safe_Release(m_pEvent_Manager);

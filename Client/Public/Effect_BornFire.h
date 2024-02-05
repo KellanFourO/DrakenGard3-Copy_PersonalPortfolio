@@ -77,6 +77,8 @@ private:
 	_float						m_fAge = 0.f;
 
 	LEVEL						m_eCurrentLevel = LEVEL_END;
+
+	_bool						m_bPlaySound = false;
 	
 private:
 	HRESULT Ready_Components();

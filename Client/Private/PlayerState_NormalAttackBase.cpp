@@ -34,7 +34,7 @@ HRESULT CPlayerState_NormalAttackBase::EndState()
     m_pOwnerModelCom->Reset_AnimationSpeed();
     m_pOwnerColliderCom->OffCollider();
 
-    
+    m_bPlaySound = false;
     m_pOwnerTrail->Off_Trail();
     return S_OK;
 }
@@ -118,6 +118,7 @@ void CPlayerState_NormalAttackBase::NextComboOrIdle(CModel* pOwnerModel, class C
         {
             m_pOwnerColliderCom->OffCollider();
             m_pOwnerModelCom->Root_MotionEnd();
+            
             pOwnerModel->Set_Animation(iEndAnimIndex);
             m_isEnd = true;
         }

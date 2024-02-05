@@ -72,6 +72,13 @@ _float4 CPipeLine::Get_CamPosition()
 	return m_vCamPosition;
 }
 
+_float CPipeLine::Get_CamLength(_fvector vPos)
+{
+	_float fLength = XMVectorGetX(XMVector3Length(XMLoadFloat4(&m_vCamPosition) - vPos));
+
+	return fLength;
+}
+
 HRESULT CPipeLine::Initialize()
 {
 	//! 루프 돌아서 항등행렬로 초기화

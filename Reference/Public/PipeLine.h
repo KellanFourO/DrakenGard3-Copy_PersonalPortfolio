@@ -33,6 +33,7 @@ public:
 
 	_float4 Get_CamPosition();
 	_float4 Get_CamDir() { return m_vCamDir; }
+	_float	Get_CamLength(_fvector vPos);
 
 public:
 	HRESULT Initialize();

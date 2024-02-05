@@ -27,6 +27,7 @@ protected:
 
 protected:
 	_bool	m_isEnd = false;
+	_bool	m_bPlaySound = false;
 
 public:
 	virtual void Free() override;

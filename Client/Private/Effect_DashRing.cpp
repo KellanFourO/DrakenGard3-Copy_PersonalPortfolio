@@ -47,6 +47,8 @@ HRESULT CEffect_DashRing::Initialize(void* pArg)
 
 	m_pTransformCom->Set_Scaling(3.f, 3.f, 1.f);
 
+	m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"Dash.wav", SOUND_EFFECT2, 2.f);
+
 	return S_OK;
 }
 

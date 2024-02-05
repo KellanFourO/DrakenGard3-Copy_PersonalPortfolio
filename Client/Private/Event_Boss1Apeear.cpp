@@ -27,6 +27,8 @@ void CEvent_Boss1Appear::Tick(_float fTimeDelta)
 		m_pBoss = dynamic_cast<CBoss_EN131*>(m_pGameInstance->Find_Layer(m_tEventDesc.iCurrentLevelIndex, TEXT("Layer_Boss"))->Get_ObjectList().back());
 		m_pPlayer = dynamic_cast<CPlayer*>(m_pGameInstance->Get_Player(m_tEventDesc.iCurrentLevelIndex));
 		m_bFindObject = true;
+
+	
 	}
 
 
@@ -47,6 +49,11 @@ void CEvent_Boss1Appear::Play_Event(EVENTTYPE eEventType)
 {
 	if (true == m_bFindObject)
 	{
+		if (m_bStopSound == false)
+		{
+			m_pGameInstance->Stop_Sound(SOUND_BGM);
+			m_bStopSound = true;
+		}
 
 		CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_tEventDesc.iCurrentLevelIndex, TEXT("Layer_Camera"))->Get_ObjectList().back());
 

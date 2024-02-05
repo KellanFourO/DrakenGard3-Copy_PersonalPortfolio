@@ -47,6 +47,15 @@ HRESULT CEffect_Blood::Initialize(void* pArg)
 
 
 	m_fLifeTime = m_tEffectDesc.fLifeTime;
+
+	_int iRandomNumber = Random({1,2,3,6,7});
+
+	wstring strSoundName = L"Hit";
+	strSoundName += to_wstring(iRandomNumber);
+	strSoundName += L".wav";
+
+	m_pGameInstance->Play_Sound(L"HIT_EFFECT", strSoundName, SOUND_EFFECT3, 0.75f);
+
 	return S_OK;
 }
 
@@ -80,6 +89,7 @@ void CEffect_Blood::Tick(_float fTimeDelta)
 			if (m_iCurrentVer == m_tEffectDesc.iMaxVer)
 			{
 				m_iCurrentVer = m_tEffectDesc.iStartVer;
+				m_pGameInstance->Stop_Sound(SOUND_EFFECT3);
 				Die(0.1f);
 			}
 		}

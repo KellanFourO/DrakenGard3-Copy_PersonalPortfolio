@@ -9,6 +9,7 @@
 #include "UI_MonsterTag.h"
 #include "UI_MonsterTagFrame.h"
 #include "UI_MonsterPortrait.h"
+#include "UI_Blood.h"
 #include "SkyBox.h"
 #include "SkyDome.h"
 

@@ -414,8 +414,8 @@ PS_OUT PS_MAIN_EFFECT_USEMASK_USENOISE(PS_IN In)
     if (true == g_bCustomColor)
         Out.vColor.rgb = g_vColor.rgb;
     
-    Out.vColor.a *= g_MaskTexture.Sample(LinearSampler, In.vTexCoord);
-    Out.vColor.rgb *= g_NoiseTexture.Sample(LinearSampler, In.vTexCoord);
+    //Out.vColor.a *= g_MaskTexture.Sample(LinearSampler, In.vTexCoord);
+    //Out.vColor.rgb *= g_NoiseTexture.Sample(LinearSampler, In.vTexCoord);
     
     
     if (Out.vColor.a < 0.1f)

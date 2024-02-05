@@ -32,6 +32,8 @@ HRESULT CPlayerState_BlowAwayHit::StartState()
 	
 	m_pOwnerStateCom->Set_Hit(false);
 
+
+
 	return S_OK;
 }
 

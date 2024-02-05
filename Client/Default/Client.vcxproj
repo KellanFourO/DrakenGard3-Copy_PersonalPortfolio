@@ -286,6 +286,7 @@
     <ClInclude Include="..\public\Monster.h" />
     <ClInclude Include="..\public\NonAnimObject.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\Public\UI_Blood.h" />
     <ClInclude Include="..\Public\UI_MonsterTag.h" />
     <ClInclude Include="..\Public\UI_MonsterTagFrame.h" />
     <ClInclude Include="..\Public\UI_MonsterHP.h" />
@@ -398,6 +399,7 @@
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\Private\NonAnimObject.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\Private\UI_Blood.cpp" />
     <ClCompile Include="..\Private\UI_MonsterTag.cpp" />
     <ClCompile Include="..\Private\UI_MonsterTagFrame.cpp" />
     <ClCompile Include="..\Private\UI_MonsterHP.cpp" />

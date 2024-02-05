@@ -28,6 +28,7 @@ private:
 	class CPlayer* m_pPlayer = { nullptr };
 
 	_bool m_bFindObject = false;
+	_bool m_bStopSound = false;
 	
 
 

@@ -86,7 +86,7 @@ private:
 
 private:
 	//C : \Users\PC\Desktop\Jusin_Project\DrakenGard3_Project_Git\Client\Bin\Resources\Sounds\;
-	const char* commonPath = "C:/Users/PC/Desktop/Jusin_Project/DrakenGard3_Project_Git/Client/Bin/Resources/Sounds/";
+	const char* commonPath = "C:/Users/PC/Desktop/Jusin_Project/DrakenGard3_Project_Git/Client/Bin/Resources/Sound/";
 
 public:
 	static CSound_Manager* Create();

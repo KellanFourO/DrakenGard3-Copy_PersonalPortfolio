@@ -51,6 +51,13 @@ void CPlayerState_Attack3::Priority_Tick(const _float& fTimeDelta)
 
 void CPlayerState_Attack3::Tick(const _float& fTimeDelta)
 {
+	_float fCurrentTrackPosition = m_pOwnerModelCom->Get_CurrentAnimation()->Get_TrackPosition();
+
+	if (23 < fCurrentTrackPosition && false == m_bPlaySound)
+	{
+		m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"Slash_Final3.wav", SOUND_EFFECT2, 3.f);
+		m_bPlaySound = true;
+	}
 }
 
 void CPlayerState_Attack3::Late_Tick(const _float& fTimeDelta)

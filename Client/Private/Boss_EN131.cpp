@@ -599,7 +599,9 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	 EN131_BlackBoard->setGameInstance(m_pGameInstance);
 	 EN131_BlackBoard->setNavigation(m_pNavigationCom);
 	 EN131_BlackBoard->setRigidBody(m_pRigidBodyCom);
-	 
+	 EN131_BlackBoard->setBool("Play_WalkSound1", false);
+	 EN131_BlackBoard->setBool("Play_WalkSound2", false);
+	 EN131_BlackBoard->setBool("Play_WalkSound3", false);
 	 
 //#EN131Tree
 	FUNCTION_NODE Control_Appeal
@@ -617,6 +619,34 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 				Transition(1);
 				m_pTransformCom->Go_Straight(fTimeDelta);
 				m_fTimeAcc += fTimeDelta;
+
+				_float fCurrentTrackPosition = m_pModelCom->Get_CurrentAnimation()->Get_TrackPosition();
+
+				if(11.f < fCurrentTrackPosition && false == pBlackboard->getBool("Play_WalkSound1") && m_pModelCom->Get_CurrentAnimationIndex() == 1)
+				{
+					m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossPasos.wav", SOUND_EFFECT2, 2.5f);
+					pBlackboard->setBool("Play_WalkSound1", true);
+					pBlackboard->setBool("Play_WalkSound2", false);
+
+					CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+
+					pTargetCamera->On_Shake(0.25f, 0.1);
+				}
+
+				if (40.f < fCurrentTrackPosition && false == pBlackboard->getBool("Play_WalkSound2") && m_pModelCom->Get_CurrentAnimationIndex() == 1)
+				{
+					m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossPasos.wav", SOUND_EFFECT3, 2.5f);
+					pBlackboard->setBool("Play_WalkSound2", true);
+					pBlackboard->setBool("Play_WalkSound1", false);
+
+					CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
+
+					pTargetCamera->On_Shake(0.25f, 0.1);
+				}
+
+					
+
+
 
 				if (m_fTimeAcc > 7.f)
 				{
@@ -670,6 +700,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 					{
 						CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
 						pTargetCamera->On_Shake(0.5f, 3.f);
+						m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossPear2.wav", SOUND_EFFECT3, 2.5f);
 						pBlackboard->setBool("Is_Pear", true);
 					}
 					else if (true == pBlackboard->getBool("Is_Pear"))
@@ -691,6 +722,8 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 							m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_BossPear"), &Desc);
 
+							
+
 							m_fTimeAcc = 0.f;
 						}
 
@@ -701,6 +734,8 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 						m_bStart = false;
 						m_bAppear = true;
 						Initialize_UI(MONSTERTYPE::BOSS);
+						
+
 						return BT_STATUS::Success;
 					}
 					return BT_STATUS::Running;
@@ -862,9 +897,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
-			 CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
-
-			 pTargetCamera->On_Shake(0.1f, 0.25f);
+			 
 			 m_pModelCom->Root_MotionEnd();
 			 m_pModelCom->Set_Loop(true);
 			 Set_Move(false);
@@ -888,9 +921,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
-			 CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
-
-			 pTargetCamera->On_Shake(0.1f, 0.25f);
+	
 			 m_pModelCom->Root_MotionEnd();
 			 m_pModelCom->Set_Loop(true);
 			 Set_Move(false);
@@ -915,9 +946,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
-			 CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
 
-			 pTargetCamera->On_Shake(0.1f, 0.25f);
 			 m_pModelCom->Root_MotionEnd();
 			 m_pModelCom->Set_Loop(true);
 			 Set_Move(false);
@@ -1037,6 +1066,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (48.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Create_Dusting"))
 		{
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"Ground_Hit.wav", SOUND_EFFECT3, 0.75f);
 			Create_TailStingEffect();
 			
 			pBlackboard->setBool("Create_Dusting", true);
@@ -1079,7 +1109,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (31.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Create_Dusting"))
 		{
-			
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"Ground_Hit.wav", SOUND_EFFECT3, 0.75f);
 			Create_TailStingEffect();
 			pBlackboard->setBool("Create_Dusting", true);
 
@@ -1116,6 +1146,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (54.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Create_Dusting"))
 		{
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"Ground_Hit.wav", SOUND_EFFECT3, 0.75f);
 			Create_TailStingEffect();
 
 			pBlackboard->setBool("Create_Dusting", true);
@@ -1164,6 +1195,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (116.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Swing"))
 		{
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"TailSwing_02.wav", SOUND_EFFECT3, 2.75f);
 			CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
 
 			pTargetCamera->On_Shake(0.3f, 1.f);
@@ -1197,6 +1229,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 			wstring strSturnTag = TEXT("PlayerState_Sturn");
 			pPlayer->Transition(CStateMachine::STATETYPE::STATE_GROUND, strSturnTag);
 			pBlackboard->setBool("Is_Howling", true);
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossPear2.wav", SOUND_EFFECT3, 2.f);
 		}
 
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
@@ -1222,12 +1255,14 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		{
 			Get_HeadCollider(RIGHT)->OnCollider();
 			pBlackboard->setBool("Is_Bite", true);
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_EFFECT3, 2.f);
 		}
 
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
 			Get_HeadCollider(RIGHT)->OffCollider();
 			Get_HeadCollider(CENTER)->OnCollider();
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_EFFECT3, 2.f);
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		}
@@ -1249,6 +1284,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
+
 			pBlackboard->setBool("Is_Bite", false);
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
@@ -1265,6 +1301,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (18.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Bite"))
 		{
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_EFFECT3, 2.f);
 			Get_HeadCollider(LEFT)->OnCollider();
 			pBlackboard->setBool("Is_Bite", true);
 		}
@@ -1292,6 +1329,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (115.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Bite"))
 		{
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_EFFECT3, 2.f);
 			Get_HeadCollider(LEFT)->OnCollider();
 			Get_HeadCollider(CENTER)->OnCollider();
 			Get_HeadCollider(RIGHT)->OnCollider();
@@ -1335,6 +1373,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		if (71.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Bite"))
 		{
 			 Get_HeadCollider(LEFT)->OnCollider();
+			 m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_EFFECT3, 2.f);
 			 Get_HeadCollider(CENTER)->OnCollider();
 			 Get_HeadCollider(RIGHT)->OnCollider();
 			 pBlackboard->setBool("Is_Bite", true);
@@ -1391,6 +1430,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		{
 			pBlackboard->setBool("Is_Breath", true);
 
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"Breath1.wav", SOUND_EFFECT3, 2.f);
 
 			CBossPart_EN131_Weapon* pLeftHead = dynamic_cast<CBossPart_EN131_Weapon*>(Find_PartObject(TEXT("Part_Weapon1")));
 			CBossPart_EN131_Weapon* pCenterHead = dynamic_cast<CBossPart_EN131_Weapon*>(Find_PartObject(TEXT("Part_Weapon2")));

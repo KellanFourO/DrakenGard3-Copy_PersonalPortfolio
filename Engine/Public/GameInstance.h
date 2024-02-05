@@ -102,6 +102,7 @@ public: /* For.PipeLine */
 	RAY			Get_Ray(_uint & In_ViewPortWidth, const _uint & In_ViewPortHeight);
 	_float4		Get_CamPosition();
 	_float4		Get_CamDir();
+	_float		Get_CamLength(_fvector vPos);
 
 public: /* For.Input_Device */
 	_byte   Get_DIKeyState(_ubyte byKeyID);
@@ -153,6 +154,16 @@ public: /* For.Frustum */
 	_bool	isIn_WorldPlanes(_fvector vPoint, _float fRadius = 0.f);
 	_bool	isIn_LocalPlanes(_fvector vPoint, _float fRadius);
 	
+public: /* For. Sound_Manager */
+	void Play_Sound(const wstring& strGroupKey, const wstring& strSoundKey, CHANNELID eID, _float fVolume = 1.f);
+	// 브금 재생
+	void Play_BGM(const wstring& strGroupKey, const wstring& strSoundKey, _float fVolume = 1.f);
+	// 사운드 정지
+	void Stop_Sound(CHANNELID eID);
+	// 모든 사운드 정지
+	void Stop_All();
+	// 채널의 볼륨 설정
+	void Set_ChannelVolume(CHANNELID eID, float fVolume);
 
 private:
 	class CGraphic_Device*			m_pGraphic_Device = { nullptr };
@@ -171,6 +182,7 @@ private:
 	class CEvent_Manager*			m_pEvent_Manager = { nullptr };
 	class CUI_Manager*				m_pUI_Manager = { nullptr };
 	class CFrustum*					m_pFrustum = { nullptr };
+	class CSound_Manager*			m_pSound_Manager = { nullptr };
 
 public:
 	void Release_Manager();

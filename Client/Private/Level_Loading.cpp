@@ -45,8 +45,7 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 		return E_FAIL;
 
 
-	
-	
+	m_pGameInstance->Play_BGM(L"BGM", L"LoadingBGM3.wav", 1.f);
 
 	return S_OK;
 }

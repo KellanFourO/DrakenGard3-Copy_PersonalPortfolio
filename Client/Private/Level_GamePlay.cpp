@@ -10,6 +10,7 @@
 #include "Environment_Object.h"
 #include "Effect_Blood.h"
 #include "Event_Boss1Apeear.h"
+#include "MyUI.h"
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -42,9 +43,17 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_Collider()))
 		return E_FAIL; 
 
+	CMyUI::UI_DESC Desc;
 
- 	
+	Desc.bWorldUI = false;
+	Desc.bEnable = true;
+	
 
+	m_pGameInstance->Play_BGM(L"BGM", L"StageBGM2.wav", 1.f);
+
+	
+
+	m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_Blood"), &Desc);
 
 	return S_OK;
 }
