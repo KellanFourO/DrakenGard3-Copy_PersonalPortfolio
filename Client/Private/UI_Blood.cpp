@@ -30,11 +30,11 @@ HRESULT CUI_Blood::Initialize(void* pArg)
 
 	m_RandomNumber = mt19937_64(m_RandomDevice());
 
-	uniform_real_distribution<float>	RandomPosX(0, g_iWinSizeX);
-	uniform_real_distribution<float>	RandomPosY(0, g_iWinSizeY);
+	uniform_real_distribution<float>	RandomPosX(10, g_iWinSizeX - 10);
+	uniform_real_distribution<float>	RandomPosY(10, g_iWinSizeY - 10);
 
-	uniform_real_distribution<float>	RandomSizeX(0, 100.f);
-	uniform_real_distribution<float>	RandomSizeY(0, 100.f);
+	uniform_real_distribution<float>	RandomSizeX(30, 100.f);
+	uniform_real_distribution<float>	RandomSizeY(30, 100.f);
 		
 		
 		
@@ -52,8 +52,11 @@ HRESULT CUI_Blood::Initialize(void* pArg)
 		return E_FAIL;
 
 
-	m_iRandomNumber = Random({1, 2, 3, 4, 5, 6, 7});
+	m_iRandomNumber = Random({0, 1, 2, 3, 4, 5, 6});
 
+	m_fOriginY = m_tUIInfo.fY;
+
+	m_fLifeTime = 1.5f;
 	return S_OK;
 }
 
@@ -63,7 +66,28 @@ void CUI_Blood::Priority_Tick(_float fTimeDelta)
 
 void CUI_Blood::Tick(_float fTimeDelta)
 {
+
+	//_float fDiffY = m_fOriginY - m_tUIInfo.fY;
+
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_tUIInfo.fX - g_iWinSizeX * 0.5f, -m_tUIInfo.fY + g_iWinSizeY * 0.5f, 0.f, 1.f));
+	//else
+	//	Die(1.8f);
+	//
+	//	
+
+	m_fAge += fTimeDelta;
+
+	if (m_fAge > m_fLifeTime)
+	{
+		Die(1.8f);
+	}
 	
+	Dead_Action(fTimeDelta, 1.f);
+	
+
+
+	
+
 }
 
 void CUI_Blood::Late_Tick(_float fTimeDelta)
@@ -93,7 +117,7 @@ HRESULT CUI_Blood::Render()
 		return E_FAIL;
 
 	//! 이 셰이더에 0번째 패스로 그릴거야.
-	m_pShaderCom->Begin(12); //! Shader_PosTex 7번 패스 = VS_MAIN,  PS_UI_HP
+	m_pShaderCom->Begin(m_iPassIndex); //! Shader_PosTex 7번 패스 = VS_MAIN,  PS_UI_HP
 
 	//! 내가 그리려고 하는 정점, 인덱스 버퍼를 장치에 바인딩해
 	m_pVIBufferCom->Bind_VIBuffers();
@@ -135,7 +159,13 @@ HRESULT CUI_Blood::Ready_Components()
 		TEXT("Com_NoiseTexture"), reinterpret_cast<CComponent**>(&m_pNoiseTexture))))
 		return E_FAIL;
 
+	//! For.Com_Texture
+	if (FAILED(__super::Add_Component(m_eCurrentLevel, TEXT("Prototype_Component_Texture_UI_BloodDissolve"),
+		TEXT("Com_DissolveTexture"), reinterpret_cast<CComponent**>(&m_pDissoveTexture))))
+		return E_FAIL;
+
 	
+
 
 	return S_OK;
 }
@@ -161,6 +191,24 @@ HRESULT CUI_Blood::Bind_ShaderResources()
 		return E_FAIL;
 	
 	return S_OK;
+}
+
+void CUI_Blood::Dead_Action(_float fTimeDelta, _float fLifeTime)
+{
+	if (true == m_bDissove)
+	{
+		m_fDissoveWeight += fTimeDelta * 0.5f;
+
+		if (m_fDissoveWeight > fLifeTime)
+		{
+			Set_Dead();
+		}
+		m_iPassIndex = 13;
+
+		m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fDissoveWeight, sizeof(_float));
+		m_pDissoveTexture->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture");
+	}
+
 }
 
 

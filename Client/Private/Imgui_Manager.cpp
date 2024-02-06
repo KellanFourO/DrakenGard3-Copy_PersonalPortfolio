@@ -1825,6 +1825,7 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 			pMeshData->isAnim = (UINT)eModelType;
 			pMeshData->iNumFace = pAIMesh->mNumFaces;
 			pMeshData->vecAnims.reserve(pAIMesh->mNumVertices);
+			
 
 			for (size_t j = 0; j < pAIMesh->mNumVertices; j++)
 				pMeshData->vecAnims.push_back(VTXANIMMESH{});

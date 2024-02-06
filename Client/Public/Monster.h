@@ -11,6 +11,7 @@ class CCollider;
 class CModel;
 class CNavigation;
 class CRigidBody;
+//class CTexture;
 END
 
 
@@ -58,6 +59,8 @@ public:
 	void				Set_WeaponAttackType(STATUS_DESC::ATTACKTYPE eAttackType);
 	void				Set_PartAttackType(wstring& strPartTag, STATUS_DESC::ATTACKTYPE eAttackType);
 
+	void				Dead_Action(_float fTimeDelta, _float fLifeTime);
+
 
 public:
 	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit) override; // call on collising
@@ -76,6 +79,7 @@ protected:
 	CModel*								m_pModelCom		= { nullptr }; //#버퍼컴에서_모델컴으로_변경됨
 	CCollider*							m_pColliderCom	= { nullptr };
 	CRigidBody*							m_pRigidBodyCom = { nullptr };
+	CTexture*							m_pDissoveTexture = { nullptr };
 
 	CNavigation*						m_pNavigationCom = { nullptr };
 	shared_ptr<Node>					m_pBehaviorTree = { nullptr };
@@ -84,6 +88,9 @@ protected:
 	STATUS_DESC							m_tOriginStatus = {};
 
 	_bool								m_isBoss = false;
+	_bool								m_bPartDie = false;
+
+	
 private:
 	//STATE_LINK_MONSTER_DESC      m_tLinkStateDesc;
 

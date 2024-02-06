@@ -6,7 +6,7 @@
 #include "Bone.h"
 #include "Animation.h"
 #include "MonsterPart_EN00_Weapon.h"
-
+#include "Texture.h"
 
 
 CMonster_EN00::CMonster_EN00(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -125,6 +125,9 @@ void CMonster_EN00::Tick(_float fTimeDelta)
 		if (true == m_pNavigationCom->isMove(vRealPos) && true == m_bMove)
 			m_pTransformCom->Add_LookPos(vPos);
 	}
+
+	
+	
 	
 }
 
@@ -163,7 +166,7 @@ HRESULT CMonster_EN00::Render()
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
 
-		m_pShaderCom->Begin(0); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
+		m_pShaderCom->Begin(m_iPassIndex);
 
 		m_pModelCom->Render(i);
 	}
@@ -280,13 +283,16 @@ void CMonster_EN00::On_CollisionEnter(CGameObject* pCollisionObject, wstring& Le
 		
 		_float3 vForce;
 		XMStoreFloat3(&vForce, vLook);
-		
+
 		pTargetBody->Add_Force(vForce, CRigidBody::FORCE_MODE::IMPULSE);
 
-
-
+		
 	}
 
+	if (RightTag == TEXT("Layer_Player") && bHit == true)
+	{
+		m_pGameInstance->Play_Sound(L"EN00_EFFECT", L"MonsterHit.wav", SOUND_EN00, 0.5f);
+	}
 	__super::On_CollisionEnter(pCollisionObject, LeftTag, RightTag, vCollisionPos, bType, bHit);
 }
 
@@ -347,6 +353,12 @@ HRESULT CMonster_EN00::Ready_Components()
 	m_pRigidBodyCom->Clear_NetPower();
 	m_pRigidBodyCom->Set_UseGravity(true);
 	
+
+	//! For.Com_Texture
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Texture_BossFireNoise"),
+		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissoveTexture))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -446,7 +458,9 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 	FUNCTION_NODE Task_IsDead
 		 = FUNCTION_NODE_MAKE
 	 {
-			Die(5.f);
+			Die(1.8f);
+			Dead_Action(fTimeDelta, 1.0f);
+
 			return BT_STATUS::Success;
 	 };
 
@@ -607,6 +621,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 		 {
 			Get_WeaponCollider()->OnCollider();
 
+			m_pGameInstance->Play_Sound(L"EN00_EFFECT", L"Swing.wav", SOUND_EN00EFFECT1, 1.5f);
 			 pBlackboard->setBool("Is_Swing", true);
 		 }
 		 
@@ -657,6 +672,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 
 		if (142.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Swing"))
 		{
+			m_pGameInstance->Play_Sound(L"EN00_EFFECT", L"Swing1.wav", SOUND_EN00EFFECT1, 1.5f);
 			Get_WeaponCollider()->OnCollider();
 
 			pBlackboard->setBool("Is_Swing", true);
@@ -689,6 +705,7 @@ HRESULT CMonster_EN00::Ready_BehaviorTree_V2()
 
 		if (128.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Swing"))
 		{
+			m_pGameInstance->Play_Sound(L"EN00_EFFECT", L"Swing2.wav", SOUND_EN00EFFECT1, 1.5f);
 			Get_WeaponCollider()->OnCollider();
 
 			pBlackboard->setBool("Is_Swing", true);
@@ -848,22 +865,21 @@ HRESULT CMonster_EN00::Bind_ShaderResources()
 
 HRESULT CMonster_EN00::Render_Shadow()
 {
+
 	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
 		return E_FAIL;
-	//#몬스터모델렌더
+
 	_float4x4		ViewMatrix, ProjMatrix;
 
-	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(XMVectorSet(-20.f, 100.f, -20.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
-	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 600.f));
+	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(XMVectorSet(-20.f, 20.f, -20.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
+	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 3000.f));
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &ViewMatrix)))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &ProjMatrix)))
 		return E_FAIL;
 
-	//TODO 클라에서 모델의 메시 개수를 받아와서 순회하면서 셰이더 바인딩해주자.
-
-	_uint	iNumMeshes = m_pModelCom->Get_NumMeshes();
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
 	for (size_t i = 0; i < iNumMeshes; i++)
 	{
@@ -871,13 +887,15 @@ HRESULT CMonster_EN00::Render_Shadow()
 
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
 
-		m_pShaderCom->Begin(2); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
+		m_pShaderCom->Begin(2);
 
 		m_pModelCom->Render(i);
 	}
 
 	return S_OK;
+
 }
 
 void CMonster_EN00::On_Trail()

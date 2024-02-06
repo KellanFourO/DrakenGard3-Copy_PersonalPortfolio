@@ -5,6 +5,7 @@
 #include "Model.h"
 #include "Bone.h"
 #include "Navigation.h"
+#include "Texture.h"
 
 CPartObject::CPartObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext)
@@ -61,6 +62,23 @@ HRESULT CPartObject::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CPartObject::Dead_Action(_float fTimeDelta, _float fLifeTime)
+{
+	if (true == m_bDissove)
+	{
+		m_fDissoveWeight += fTimeDelta * 0.5f;
+
+		if (m_fDissoveWeight > fLifeTime)
+		{
+			Set_Dead();
+		}
+		m_iPassIndex = 8;
+
+		m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fDissoveWeight, sizeof(_float));
+		m_pDissoveTexture->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture");
+	}
 }
 
 void CPartObject::Free()

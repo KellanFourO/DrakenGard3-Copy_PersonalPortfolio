@@ -251,7 +251,7 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
     vector vBlur = g_BlurTexture.Sample(LinearSampler, In.vTexcoord);
     vector vEffect = g_EffectTexture.Sample(LinearSampler, In.vTexcoord);
 
-    Out.vColor = vDiffuse * vShade + vSpecular + vBlur;
+    Out.vColor = vDiffuse * vShade + vSpecular + vEffect + vBlur;
 
     vector vDepthDesc = g_DepthTexture.Sample(PointSampler, In.vTexcoord);
     float fViewZ = vDepthDesc.y * 1000.f;

@@ -69,6 +69,9 @@ private:
 	_bool			m_bTest = false;
 	_bool			m_bFindCell = false;
 	_bool			m_bChase = false;
+
+	_bool			m_bPlaySound = false;
+
 	_float			m_fTimeAcc = 0.f;
 	_float			m_fPointJumpTimeAcc = 0.f;
 

@@ -128,7 +128,11 @@ void CPlayerState_NormalAttackBase::NextComboOrIdle(CModel* pOwnerModel, class C
     //! 현재 재생중인 애니메이션이 바뀐상태다. 바뀐 애니메이션이 끝났다면 Idel상태로 돌아가자
     if (true == m_isEnd && true == m_pOwnerModelCom->Get_CurrentAnimation()->Get_Finished())
     {
-        pOwnerStateMachine->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_Idle"));
+        if (false == m_bBloodyMode)
+            pOwnerStateMachine->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_Idle"));
+        else
+            pOwnerStateMachine->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_BloodyMode_Idle"));
+
         m_pOwnerModelCom->Root_MotionEnd();
         
     }

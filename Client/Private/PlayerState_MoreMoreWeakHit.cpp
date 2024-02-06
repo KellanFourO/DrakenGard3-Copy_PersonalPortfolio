@@ -30,7 +30,7 @@ HRESULT CPlayerState_MoreMoreWeakHit::StartState()
 	m_pOwnerModelCom->Set_Loop(false);
 	m_pOwnerModelCom->Root_MotionStart();
 	m_pOwnerStateCom->Set_Hit(false);
-	
+	m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"PlayerHitVoice1.wav", SOUND_PLAYER_HIT, 1.5f);
 	return S_OK;
 }
 

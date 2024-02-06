@@ -18,6 +18,7 @@ texture2D       g_DiffuseTexture;
 texture2D       g_MaskTexture;
 texture2D       g_NoiseTexture;
 texture2D       g_DepthTexture;
+texture2D       g_DissolveTexture;
 
 float			g_fAtlasPosX;
 float			g_fAtlasPosY;
@@ -41,6 +42,9 @@ float           g_fTimeDelta;
 
 bool            g_bCustomColor = false;
 float4          g_vColor;
+
+float           g_fDissolveWeight;
+float4          g_vDissolveColor = { 0.7f, 0.0f, 0.1f, 1.0f };
 
 //TODO 셰이더가 하는 일
 //! 정점의 변환 ( 월드변환, 뷰변환, 투영변환 ) 을 수행한다. ( 뷰행렬의 투영행렬을 곱했다고 투영 스페이스에 있는 것이아니다. 반드시 w나누기 까지 거친 다음에야 투영 스페이스 변환이 됐다고 할 수 있다. )
@@ -297,6 +301,23 @@ VS_OUT_EFFECT VS_MAIN_EFFECT(VS_IN In)
     return Out;
 }
 
+VS_OUT_EFFECT VS_MAIN_EFFECT_NONBILLBOARD(VS_IN In)
+{
+    VS_OUT_EFFECT Out = (VS_OUT_EFFECT) 0;
+    
+	/* In.vPosition * 월드 * 뷰 * 투영 */
+    matrix matWV, matWVP;
+
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+
+    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+    Out.vTexcoord = In.vTexCoord;
+    Out.vProjPos = Out.vPosition;
+
+    return Out;
+}
+
 
 
 /* 픽셀셰이더 : 픽셀의 색!!!! 을 결정한다. */
@@ -426,6 +447,76 @@ PS_OUT PS_MAIN_EFFECT_USEMASK_USENOISE(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_DISSOLVE_MAIN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    
+    
+    vector vDissolve = g_DissolveTexture.Sample(ClampSampler, In.vTexCoord);
+    vector vDiffuse = g_DiffuseTexture.Sample(ClampSampler, In.vTexCoord);
+    
+    if (vDiffuse.a < 0.1f)
+        discard;
+    
+    if (vDissolve.r <= g_fDissolveWeight)
+        discard;
+
+    if ((vDissolve.r - g_fDissolveWeight) < 0.1f)
+        Out.vColor = g_vDissolveColor;
+    else
+    {
+        Out.vColor = g_DiffuseTexture.Sample(ClampSampler, In.vTexCoord);
+        
+            if (true == g_bCustomColor)
+            Out.vColor.rgb = g_vColor.rgb;
+    }
+   
+    if (Out.vColor.a < 0.1f)
+    {
+        discard;
+    }
+
+    return Out;
+    
+}
+
+PS_OUT PS_DISSOLVE_PLUS(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float4 vColor = g_DiffuseTexture.Sample(ClampSampler, In.vTexCoord);
+    float4 vDissolve = g_DissolveTexture.Sample(ClampSampler, In.vTexCoord);
+
+    float sinTime = sin(g_fDissolveWeight);
+    
+    if (vColor.a == 0.f)
+        clip(-1);
+
+    if (vDissolve.r >= sinTime)
+        vColor.a = 1;
+    else
+        vColor.a = 0;
+
+    if (vDissolve.r >= sinTime - 0.05 && vDissolve.r <= sinTime + 0.05)
+        vColor = float4(1, 0, 0, 1); // 빨
+    else;
+
+    if (vDissolve.r >= sinTime - 0.03 && vDissolve.r <= sinTime + 0.03)
+        vColor = float4(1, 1, 0, 1); // 노
+    else;
+
+    if (vDissolve.r >= sinTime - 0.025 && vDissolve.r <= sinTime + 0.025)
+        vColor = float4(1, 1, 1, 1); // 흰
+    else;
+
+    Out.vColor = vColor;
+    
+    if (0 == Out.vColor.a)
+        discard;
+   
+    return Out;
+};
 
 
 technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우린 다렉11이니 11로 붙여줌
@@ -577,10 +668,36 @@ technique11 DefaultTechnique //! 다렉9 이후로 테크니크뒤에 버전을 붙여줘야함. 우
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend_Add, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 VS_MAIN_EFFECT();
+        VertexShader = compile vs_5_0 VS_MAIN_EFFECT_NONBILLBOARD();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_EFFECT_USEMASK_USENOISE();
+    }
+
+    pass DissolveBasic // 13번 패스
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend_Add, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN_EFFECT_NONBILLBOARD();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_DISSOLVE_MAIN();
+    }
+
+    pass DissolvePlus // 14번 패스
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN_EFFECT_NONBILLBOARD();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_DISSOLVE_PLUS();
     }
 };

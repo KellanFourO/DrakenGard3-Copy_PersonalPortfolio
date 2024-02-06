@@ -31,6 +31,7 @@ HRESULT CPlayerState_DownHit::StartState()
 	m_pOwnerModelCom->Root_MotionStart();
 	m_pOwnerStateCom->Set_Hit(false);
 	
+	m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"PlayerHitVoice2.wav", SOUND_PLAYER_HIT, 1.5f);
 	return S_OK;
 }
 

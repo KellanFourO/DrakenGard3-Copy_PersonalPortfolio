@@ -30,7 +30,7 @@ HRESULT CPlayerState_Attack3::StartState()
 	m_pOwnerModelCom->Set_Animation(94);
 	m_pOwnerModelCom->Set_Loop(false);
 	m_pOwnerModelCom->Root_MotionStart();
-	
+	m_bBloodyMode = false;
 	return S_OK;
 }
 
@@ -55,7 +55,7 @@ void CPlayerState_Attack3::Tick(const _float& fTimeDelta)
 
 	if (23 < fCurrentTrackPosition && false == m_bPlaySound)
 	{
-		m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"Slash_Final3.wav", SOUND_EFFECT2, 3.f);
+		m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"SwordFinal3.wav", SOUND_EFFECT2, 2.f);
 		m_bPlaySound = true;
 	}
 }

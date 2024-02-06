@@ -46,6 +46,7 @@ HRESULT CPlayerState_Attack8::EndState()
 	m_isEnd = false;
 	m_bInput = false;
 	m_bCreateHanabira = false;
+	m_bBloodyMode = false;
 
 	return S_OK;
 }
@@ -62,7 +63,7 @@ void CPlayerState_Attack8::Tick(const _float& fTimeDelta)
 		CreateHanabira();
 
 
-		m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"Slash_Final2.wav", SOUND_EFFECT2, 3.f);
+		m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"SwordFinal1.wav", SOUND_EFFECT2, 2.f);
 		
 		
 		m_bCreateHanabira = true;
@@ -70,7 +71,7 @@ void CPlayerState_Attack8::Tick(const _float& fTimeDelta)
 
 	if (34 < m_pOwnerModelCom->Get_CurrentAnimation()->Get_TrackPosition() && false == m_bPlaySound)
 	{
-		m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"Slash_Final2.wav", SOUND_EFFECT2, 3.f);
+		m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"SwordFinal2.wav", SOUND_EFFECT2, 2.f);
 
 		m_bPlaySound = true;
 	}

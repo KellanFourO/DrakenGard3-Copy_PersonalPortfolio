@@ -34,11 +34,14 @@ public:
 	_float3&				Get_Offset() { return m_vCameraOffset; }
 	_float3&				Get_JumpOffset() { return m_vJumpOffset; }
 
+
 	_bool					Is_Player() { return m_isPlayer; }
 	_bool					Is_Dead()	{ return m_isDead; }
 	void					Set_Move(_bool bMove) { m_bMove = bMove; }
 	void					Set_Dead() { m_isDead = true; }
-	void					Die(_float fLifeTime) { m_fLifeTime = fLifeTime; m_isDead = true; }
+	void					Set_PassIndex(_int iPassIndex) { m_iPassIndex = iPassIndex;}
+	void					Die(_float fLifeTime) { m_fLifeTime = fLifeTime; m_bDissove = true; }
+	void					No_DissoveDie(_float fLifeTime) { m_fLifeTime = fLifeTime; m_isDead = true;}
 	void					Set_CellIndex(_int iCellIndex ) { m_iCellIndex = iCellIndex; }
 
 public:
@@ -85,6 +88,7 @@ protected:
 protected:
 	_bool						m_isCloned = { false };
 	_bool						m_isPlayer = { false };
+	_bool						m_bDissove = false;
 	_bool						m_isDead = { false };
 	_bool						m_bMove = true;
 	_bool						m_bStartAppeal = false;
@@ -94,6 +98,10 @@ protected:
 	_float3						m_vCameraOffset = {};
 	_float3						m_vJumpOffset = {};
 	_bool						m_bChangeOffset = false;
+
+protected:
+	_int								m_iPassIndex = 0;
+	_float								m_fDissoveWeight = 0.f;
 	
 
 protected:

@@ -372,6 +372,26 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Blood_Lack0.dds"), 1))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_CyilnderMask */
+	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_UI_BloodDissolve"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/BloodDissolve.dds"), 1))))
+		return E_FAIL;
+
+ 	/* For.Prototype_Component_Texture_CyilnderMask */
+ 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Player_DamageBODY"),
+ 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Models/Player/PL_00_Damage_DM.dds"), 1))))
+ 		return E_FAIL;
+// 
+ 	/* For.Prototype_Component_Texture_CyilnderMask */
+ 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Player_DamageMANTLE"),
+ 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Models/Player/PL_00_Mantle_Damage_DM.dds"), 1))))
+ 		return E_FAIL;
+ 
+ 	/* For.Prototype_Component_Texture_CyilnderMask */
+ 	if (FAILED(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Texture_Player_DamageHEAD"),
+ 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Models/Player/PL_00_head2_blood.dds"), 1))))
+ 		return E_FAIL;
+
 	m_pGameInstance->Add_EffectTextureTag(TEXT("Prototype_Component_Texture_BornFire"));
 
 	lstrcpy(m_szLoadingText, TEXT("모델를(을) 로드하는 중입니다."));
@@ -397,6 +417,10 @@ HRESULT CLoader::Loading_For_Level(LEVEL eLevel)
 	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f); //! 모델의 초기 회전 셋팅
 	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Weapon1"),
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Player_Weapon1"), pFilePathData), PivotMatrix)));
+
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f); //! 모델의 초기 회전 셋팅
+	FAILED_CHECK(m_pGameInstance->Add_Prototype(eLevel, TEXT("Prototype_Component_Model_Weapon2"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, *CreateDataPath(TEXT("Player_Weapon3"), pFilePathData), PivotMatrix)));
 	
 	
 	lstrcpy(m_szLoadingText, TEXT("몬스터 모델(을) 로드하는 중입니다."));

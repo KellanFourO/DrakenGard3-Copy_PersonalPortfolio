@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "Bone.h"
 #include "Effect_Trail.h"
+#include "Model.h"
 
 CPlayerPart_Weapon::CPlayerPart_Weapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CPartObject(pDevice,pContext)
@@ -16,12 +17,22 @@ CPlayerPart_Weapon::CPlayerPart_Weapon(const CPlayerPart_Weapon& rhs)
 
 void CPlayerPart_Weapon::On_Trail()
 {
-	m_pTrail->On_Trail();
+	if (true == m_bBloodyMode)
+	{
+		m_pBloodyTrail->On_Trail();
+	}
+	else
+		m_pTrail->On_Trail();
 }
 
 void CPlayerPart_Weapon::Off_Trail()
 {
-	m_pTrail->Off_Trail();
+	if (true == m_bBloodyMode)
+	{
+		m_pBloodyTrail->Off_Trail();
+	}
+	else
+		m_pTrail->Off_Trail();
 }
 
 HRESULT CPlayerPart_Weapon::Initialize_Prototype(LEVEL eLevel)
@@ -55,6 +66,12 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	if (FAILED(__super::Ready_Components(m_eCurrentLevelIndex, TEXT("Prototype_Component_Shader_Model"), TEXT("Prototype_Component_Model_Weapon1"))))
 		return E_FAIL;
 
+	/* For.Com_Model */
+	if (FAILED(__super::Add_Component(m_eCurrentLevelIndex, TEXT("Prototype_Component_Model_Weapon2"), TEXT("Com_BloodyModel"), reinterpret_cast<CComponent**>(&m_pBloodyModelCom))))
+		return E_FAIL;
+
+	
+
 	CGameObject* pGameObject = { nullptr };
 
 	CEffect_Trail::EFFECT_TRAIL_DESC Desc = {};
@@ -67,8 +84,25 @@ HRESULT CPlayerPart_Weapon::Initialize(void* pArg)
 	if(FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelIndex, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_EffectTrail"), &Desc, &pGameObject)))
 		return E_FAIL;
 
+
 	m_pTrail = dynamic_cast<CEffect_Trail*>(pGameObject);
 
+	CEffect_Trail::EFFECT_TRAIL_DESC BloodyTrailDesc = {};
+
+	BloodyTrailDesc.iMaxCount = 16;
+	BloodyTrailDesc.vStartPos = { 0.f, 0.f, 0.f };
+	BloodyTrailDesc.vEndPos = { 0.f, 0.f, -1.2f };
+	BloodyTrailDesc.vTrailColor = _float4(1.0, 0.5, 0.f, 1.f);
+
+	pGameObject = nullptr;
+
+	if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelIndex, TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_EffectTrail"), &BloodyTrailDesc, &pGameObject)))
+		return E_FAIL;
+
+
+	m_pBloodyTrail = dynamic_cast<CEffect_Trail*>(pGameObject);
+
+	
 	/* For.Com_Collider */
 	CBoundingBox_OBB::BOUNDING_OBB_DESC		BoundingDesc = {};
 
@@ -114,7 +148,11 @@ void CPlayerPart_Weapon::Tick(_float fTimeDelta)
 	XMStoreFloat4x4(&m_WorldMatrix, m_pTransformCom->Get_WorldMatrix() * SocketMatrix * m_pParentTransformCom->Get_WorldMatrix());
 
 	m_pColliderCom->Update(XMLoadFloat4x4(&m_WorldMatrix));
-	m_pTrail->Tick(fTimeDelta, XMLoadFloat4x4(&m_WorldMatrix));
+
+	if (m_bBloodyMode == true)
+		m_pBloodyTrail->Tick(fTimeDelta, XMLoadFloat4x4(&m_WorldMatrix));
+	else
+		m_pTrail->Tick(fTimeDelta, XMLoadFloat4x4(&m_WorldMatrix));
 
 
 }
@@ -139,19 +177,42 @@ HRESULT CPlayerPart_Weapon::Render()
 
 	//TODO 클라에서 모델의 메시 개수를 받아와서 순회하면서 셰이더 바인딩해주자.
 
-	_uint	iNumMeshes = m_pModelCom->Get_NumMeshes();
+	
 
-	for (size_t i = 0; i < iNumMeshes; i++)
+	if (true == m_bBloodyMode)
 	{
-		//TODO Bind_BoneMatrices 함수는 애니메이션이 있는 모델일 경우에만 수행해야하는 함수이니 빼주자
-		//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i); 
+		_uint	iNumMeshes = m_pBloodyModelCom->Get_NumMeshes();
 
-		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+		for (size_t i = 0; i < iNumMeshes; i++)
+		{
+			//TODO Bind_BoneMatrices 함수는 애니메이션이 있는 모델일 경우에만 수행해야하는 함수이니 빼주자
+			//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i); 
 
-		m_pShaderCom->Begin(0); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
+			m_pBloodyModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 
-		m_pModelCom->Render(i);
+			m_pShaderCom->Begin(0); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
+
+			m_pBloodyModelCom->Render(i);
+		}
 	}
+	else
+	{
+		_uint	iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+		for (size_t i = 0; i < iNumMeshes; i++)
+		{
+			//TODO Bind_BoneMatrices 함수는 애니메이션이 있는 모델일 경우에만 수행해야하는 함수이니 빼주자
+			//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i); 
+
+			m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+
+			m_pShaderCom->Begin(0); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
+
+			m_pModelCom->Render(i);
+		}
+	}
+
+	
 
 	/*m_pTrail->Render();*/
 
@@ -171,27 +232,51 @@ HRESULT CPlayerPart_Weapon::Render_Shadow()
 	_float4x4		ViewMatrix, ProjMatrix;
 
 	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(XMVectorSet(-20.f, 20.f, -20.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
-	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 600.f));
+	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 3000.f));
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &ViewMatrix)))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &ProjMatrix)))
 		return E_FAIL;
 
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+	
 
-	for (size_t i = 0; i < iNumMeshes; i++)
+	if (true == m_bBloodyMode)
 	{
-		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+		_uint		iNumMeshes = m_pBloodyModelCom->Get_NumMeshes();
 
-		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
-		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
+		for (size_t i = 0; i < iNumMeshes; i++)
+		{
+			m_pBloodyModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-		m_pShaderCom->Begin(6);
+			m_pBloodyModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+			m_pBloodyModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pBloodyModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
 
-		m_pModelCom->Render(i);
+			m_pShaderCom->Begin(6);
+
+			m_pBloodyModelCom->Render(i);
+		}
 	}
+	else
+	{
+		_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+		for (size_t i = 0; i < iNumMeshes; i++)
+		{
+			m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+
+			m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+			m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
+
+			m_pShaderCom->Begin(6);
+
+			m_pModelCom->Render(i);
+		}
+	}
+
+	
 
 	return S_OK;
 }
@@ -272,6 +357,8 @@ void CPlayerPart_Weapon::Free()
 	Safe_Release(m_pColliderCom);
 	Safe_Release(m_pTrail);
 	
+	Safe_Release(m_pBloodyModelCom);
+	Safe_Release(m_pBloodyTrail);
 
 }
 

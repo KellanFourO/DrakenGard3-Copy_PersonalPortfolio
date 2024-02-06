@@ -2,7 +2,7 @@
 #include "..\Public\PlayerPart_Body.h"
 #include "GameInstance.h"
 #include "Bone.h"
-
+#include "Texture.h"
 
 CPlayerPart_Body::CPlayerPart_Body(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CPartObject(pDevice,pContext)
@@ -43,6 +43,11 @@ HRESULT CPlayerPart_Body::Initialize(void* pArg)
 		return E_FAIL;
 
 	
+	/* For.Com_Texture */
+	if (FAILED(__super::Add_Component(m_eCurrentLevelIndex, TEXT("Prototype_Component_Texture_Player_DamageBODY"),
+		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pBodyBloodTexture))))
+		return E_FAIL;
+
 	m_pModelCom->Root_MotionStart();
 
 	return S_OK;
@@ -57,6 +62,17 @@ void CPlayerPart_Body::Tick(_float fTimeDelta)
 	_float3 vPos = { 0.f, 0.f, 0.f };
 
 	
+	if (true == m_bBloodyMode)
+	{
+		m_fBloodyAcc += fTimeDelta;
+		
+		if (m_fBloodyAcc > m_fBloodyTime)
+		{
+			m_bBloodyMode = false;
+			m_fBloodyAcc = 0.f;
+		}
+	}
+
 	m_pModelCom->Play_Animation(fTimeDelta, vPos);
 
 
@@ -78,8 +94,18 @@ void CPlayerPart_Body::Late_Tick(_float fTimeDelta)
 {
 	XMStoreFloat4x4(&m_WorldMatrix, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
-	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
-		return;
+	if (false == m_bBloodyMode)
+	{
+		if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
+			return;
+	}
+	else
+	{
+		if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this)))
+			return;
+	}
+		
+	
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_SHADOW, this)))
 		return;
@@ -87,7 +113,7 @@ void CPlayerPart_Body::Late_Tick(_float fTimeDelta)
 
 HRESULT CPlayerPart_Body::Render()
 {
-	//#몬스터모델렌더
+	//#몬스터모델렌더XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 1000.f));
 	if (FAILED(__super::Bind_ShaderResources()))
 		return E_FAIL;
 
@@ -95,20 +121,27 @@ HRESULT CPlayerPart_Body::Render()
 
 	_uint	iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+
+	m_pShaderCom->Bind_RawValue("g_bCustomColor", &m_bBloodyMode, sizeof(_bool));
+	_float4 vColor = _float4(1.0, 0.8, 0.8, 1.f);
+	m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4));
+
 	for (size_t i = 0; i < iNumMeshes; i++)
 	{
 		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
-
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
+		
+		//m_pBodyBloodTexture->Bind_ShaderResource(m_pShaderCom, "g_BloodTexture");
+		//m_pShaderCom->Bind_RawValue("g_iBloodCount", &m_iBloodCount, sizeof(_int));
+			
 
-		m_pShaderCom->Begin(0); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
+		m_pShaderCom->Begin(5); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
 
-		m_pModelCom->Render(i);
+ 		m_pModelCom->Render(i);
 	}
 
-	
 
 	return S_OK;
 }
@@ -121,7 +154,7 @@ HRESULT CPlayerPart_Body::Render_Shadow()
 	_float4x4		ViewMatrix, ProjMatrix;
 
 	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(XMVectorSet(-20.f, 20.f, -20.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
-	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 600.f));
+	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 3000.f));
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &ViewMatrix)))
 		return E_FAIL;

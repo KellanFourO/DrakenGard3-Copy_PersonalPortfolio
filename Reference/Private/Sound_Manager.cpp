@@ -36,6 +36,11 @@ HRESULT CSound_Manager::Ready_Sound()
 	Load_SoundFile_GroupAsync(L"BOSS_EFFECT", "../Bin/Resources/Sound/EFFECT/BOSS/");
 	Load_SoundFile_GroupAsync(L"PLAYER_EFFECT", "../Bin/Resources/Sound/EFFECT/PLAYER/");
 	Load_SoundFile_GroupAsync(L"HIT_EFFECT", "../Bin/Resources/Sound/EFFECT/HIT/");
+	Load_SoundFile_GroupAsync(L"EN70_EFFECT", "../Bin/Resources/Sound/EFFECT/MONSTER/EN70/");
+	Load_SoundFile_GroupAsync(L"EN00_EFFECT", "../Bin/Resources/Sound/EFFECT/MONSTER/EN00/");
+	Load_SoundFile_GroupAsync(L"EN01_EFFECT", "../Bin/Resources/Sound/EFFECT/MONSTER/EN01/");
+	Load_SoundFile_GroupAsync(L"Dissolve", "../Bin/Resources/Sound/EFFECT/DEAD/");
+	Load_SoundFile_GroupAsync(L"CAMERA", "../Bin/Resources/Sound/EFFECT/CAMERA/");
 	//Wait_GroupAsync();
 
 // 	Load_SoundFile_GroupAsync(L"AMBIENCE", "../Bin/Resources/Sound/Ambience/");

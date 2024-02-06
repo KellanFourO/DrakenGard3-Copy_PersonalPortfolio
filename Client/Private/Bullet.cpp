@@ -73,7 +73,7 @@ void CBullet::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag,
 	if (true == m_bHitDead)
 	{
 		m_fLifeTime = 0.f;
-		Die(m_fLifeTime);
+		No_DissoveDie(m_fLifeTime);
 	}
 	
 }
@@ -137,7 +137,7 @@ void CBullet::Dead_Range(_float fRange)
 	if (fDistance > fRange)
 	{
 		m_fLifeTime = 0.f;
-		Die(m_fLifeTime);
+		No_DissoveDie(m_fLifeTime);
 	}
 
 }

@@ -44,6 +44,11 @@ HRESULT CMonsterPart_EN01_Weapon::Initialize(void* pArg)
 		return E_FAIL;
 
 
+	//! For.Com_Texture
+	if (FAILED(__super::Add_Component(m_eCurrentLevelIndex, TEXT("Prototype_Component_Texture_BossFireNoise"),
+		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissoveTexture))))
+		return E_FAIL;
+
 	m_pTransformCom->Set_Scaling(1.f, 1.f, 1.f);
 	//m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-180.0f));
 	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.7f, 0.f, 0.f, 1.f));
@@ -58,7 +63,7 @@ void CMonsterPart_EN01_Weapon::Priority_Tick(_float fTimeDelta)
 
 void CMonsterPart_EN01_Weapon::Tick(_float fTimeDelta)
 {
-	
+	Dead_Action(fTimeDelta, 1.f);
 }
 
 void CMonsterPart_EN01_Weapon::Late_Tick(_float fTimeDelta)
@@ -100,7 +105,7 @@ HRESULT CMonsterPart_EN01_Weapon::Render()
 
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 
-		m_pShaderCom->Begin(0); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
+		m_pShaderCom->Begin(m_iPassIndex); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
 
 		m_pModelCom->Render(i);
 	}
@@ -116,7 +121,7 @@ HRESULT CMonsterPart_EN01_Weapon::Render_Shadow()
 	_float4x4		ViewMatrix, ProjMatrix;
 
 	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(XMVectorSet(-20.f, 20.f, -20.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
-	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 600.f));
+XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 3000.f));
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &ViewMatrix)))
 		return E_FAIL;

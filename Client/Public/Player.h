@@ -58,6 +58,9 @@ public:
 	void					On_SwordTrail();
 	void					Off_SwordTrail();
 	CEffect_Trail*			Get_Trail();
+	void					Add_BloodCount();
+	void					Set_BloodyMode(_bool bBloodyMode);
+	_bool					Get_BloodyMode();
 
 private:
 	HRESULT			Ready_Components();
@@ -81,6 +84,7 @@ private:
 private:
 	_bool				m_bAdmin = false;
 	_bool				m_bSturn = false;
+	_bool				m_bOneTransition = false;
 	
 	_float				m_fAccTime = 0.f;
 
@@ -89,6 +93,7 @@ private:
 	_bool				m_bTest = true;
 
 	
+
 	
 
 private:

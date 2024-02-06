@@ -4,7 +4,18 @@ matrix			g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D		g_DiffuseTexture;
 texture2D		g_NormalTexture;
 texture2D		g_SpecularTexture;
+texture2D       g_DissolveTexture;
+
+
 matrix			g_BoneMatrices[256]; 
+float           g_fDissolveWeight;
+float4          g_vDissolveColor = { 1.0f, 0.5f, 1.0f, 1.f };
+
+//ÇÃ·¹ÀÌ¾î Àü¿ë
+texture2D       g_BloodTexture;
+int             g_iBloodCount = 0;
+bool            g_bCustomColor = false;
+float4          g_vColor;
 
 
 struct VS_IN
@@ -124,9 +135,113 @@ PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN In)
     return Out;
 }
 
+
+PS_OUT PS_DISSOLVE_MAIN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    vector vDissolve = g_DissolveTexture.Sample(ClampSampler, In.vTexcoord);
+
+    if (vDissolve.r <= g_fDissolveWeight)
+        discard;
+
+    if ((vDissolve.r - g_fDissolveWeight) < 0.1f)
+        Out.vDiffuse = g_vDissolveColor;
+    else
+        Out.vDiffuse = g_DiffuseTexture.Sample(ClampSampler, In.vTexcoord);
+   
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.0f, 0.0f, 0.0f);
+
+    if (0 == Out.vDiffuse.a)
+        discard;
+
+    return Out;
+    
+}
+
+PS_OUT PS_DISSOLVE_PLUS(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+float4 vColor = g_DiffuseTexture.Sample(ClampSampler, In.vTexcoord);
+float4 vDissolve = g_DissolveTexture.Sample(ClampSampler, In.vTexcoord);
+
+float sinTime = sin(g_fDissolveWeight);
+    
+    if (vColor.a == 0.f)
+        clip(-1);
+
+    if (vDissolve.r >= sinTime)
+        vColor.a = 1;
+    else
+        vColor.a = 0;
+
+    if (vDissolve.r >= sinTime - 0.05 && vDissolve.r <= sinTime + 0.05)
+        vColor = float4(1, 0, 0, 1); // »¡
+    else;
+
+    if (vDissolve.r >= sinTime - 0.03 && vDissolve.r <= sinTime + 0.03)
+        vColor = float4(1, 1, 0, 1); // ³ë
+    else;
+
+    if (vDissolve.r >= sinTime - 0.025 && vDissolve.r <= sinTime + 0.025)
+        vColor = float4(1, 1, 1, 1); // Èò
+    else;
+
+    Out.vDiffuse = vColor;
+    
+    if (0 == Out.vDiffuse.a)
+        discard;
+   
+    return Out;
+};
+
+
+/* ÇÈ¼¿¼ÎÀÌ´õ : ÇÈ¼¿ÀÇ »ö!!!! À» °áÁ¤ÇÑ´Ù. */
+PS_OUT PS_MAIN_PLAYER(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, In.vTexcoord);
+    
+    
+    if(true == g_bCustomColor)
+        vMtrlDiffuse.rgb = g_vColor.rgb;
+    
+    //vector vBloodDesc = g_BloodTexture.Sample(LinearSampler, In.vTexcoord);
+    
+    
+    //if (g_iBloodCount != 0)
+    //{
+    //    float fBloodFactor = g_iBloodCount / 5.0f;
+        
+    //    vMtrlDiffuse.rgb = lerp(vMtrlDiffuse.rgb, vBloodDesc.rgb, float3(fBloodFactor, fBloodFactor, fBloodFactor));
+    //}
+    
+    
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+	
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz, In.vNormal.xyz);
+
+    vNormal = mul(vNormal, WorldMatrix);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+
+
+    Out.vDiffuse = vMtrlDiffuse;
+	/* -1 ~ 1 -> 0 ~ 1 */
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.0f, 0.0f, 0.0f);
+
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
-	pass Model
+	pass Model //0
 	{
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -139,7 +254,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 	
-    pass ModelHide
+    pass ModelHide // 1
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -151,7 +266,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 
-    pass Shadow
+    pass Shadow // 2
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -162,5 +277,44 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
+    }
+
+    pass DissolveBasic // 3
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_DISSOLVE_MAIN();
+    }
+
+    pass DissolvePlus // 4
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_DISSOLVE_PLUS();
+    }
+
+    pass Model_Player //5
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_PLAYER();
     }
 }

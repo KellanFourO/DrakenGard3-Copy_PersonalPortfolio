@@ -30,14 +30,27 @@ private:
 
 
 private:
+	void					Dead_Action(_float fTimeDelta, _float fLifeTime);
+
+private:
 	LEVEL					m_eCurrentLevel = LEVEL_END;
 	CTexture*				m_pMaskTexture = { nullptr };
 	CTexture*				m_pNoiseTexture = { nullptr };
+	CTexture*				m_pDissoveTexture = { nullptr };
+	
 	_int					m_iRandomNumber = {};
 
 	random_device				m_RandomDevice;
 	mt19937_64					m_RandomNumber;
 
+	_float						m_fOriginY = {};
+	_float						m_fMaxDown = { 150.f };
+	_float						m_fDownSpeed = { 5.f };
+
+
+	_float						m_fAge = 0.f;
+	_int						m_iPassIndex = 12;
+	_float						m_fDissoveWeight = 0.f;
 
 public:
 	static CUI_Blood*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eCurrentLevel); //! 원형객체 생성

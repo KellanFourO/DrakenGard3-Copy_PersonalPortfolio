@@ -11,6 +11,8 @@
 #include "UI_MonsterTag.h"
 #include "UI_MonsterTagFrame.h"
 #include "UI_MonsterPortrait.h"
+#include "Texture.h"
+#include "MyUI.h"
 
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice,pContext)
@@ -242,6 +244,38 @@ void CMonster::Set_PartAttackType(wstring& strPartTag, STATUS_DESC::ATTACKTYPE e
 	Find_PartObject(strPartTag)->Get_Status()->eAttackType = eAttackType;
 }
 
+void CMonster::Dead_Action(_float fTimeDelta, _float fLifeTime)
+{
+	if (true == m_bDissove)
+	{
+		if (false == m_bPartDie)
+		{
+			CPartObject* pWeapon = Find_PartObject(TEXT("Part_Weapon"));
+			pWeapon->Die(1.8f);
+			m_bPartDie = true;
+
+
+			m_pGameInstance->Play_Sound(L"Dissolve", L"Dissolve.wav", SOUND_SYSTEM_EFFECT, 1.f);
+		}
+		
+
+		m_fDissoveWeight += fTimeDelta * 0.5f;
+
+		if (m_fDissoveWeight > fLifeTime)
+		{
+			Set_Dead();
+		}
+		m_iPassIndex = 4;
+
+		m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fDissoveWeight, sizeof(_float));
+		m_pDissoveTexture->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture");
+	}
+
+	
+
+	
+}
+
 
 
 void CMonster::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
@@ -275,6 +309,14 @@ void CMonster::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag
 				
 			m_tStatus.fCurrentHp = fCalcHp;
 			pBlackBoard->setFloat("Current_HP", fCalcHp);
+
+			CMyUI::UI_DESC Desc;
+
+			Desc.bWorldUI = false;
+			Desc.bEnable = true;
+
+			dynamic_cast<CPlayer*>(pCollisionObject)->Add_BloodCount();
+			m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_Blood"), &Desc);
 		}
 	}
 

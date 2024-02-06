@@ -235,6 +235,8 @@ void CCamera_Target::Start_CutScene(_float fTimeDelta)
 		Init_CutScene();
 
 		XMStoreFloat3(&m_vVelocity, XMVectorZero());
+
+		m_pGameInstance->Play_Sound(L"CAMERA", L"CameraMove.wav", SOUND_SYSTEM_EFFECT, 1.5f);
 	}
 
 	_vector vCurrentPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);

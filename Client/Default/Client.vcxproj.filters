@@ -292,6 +292,45 @@
     <Filter Include="02. GameObjects\97. UI\Blood">
       <UniqueIdentifier>{4b062cbb-2e5e-4818-9564-1fcff235ecef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode">
+      <UniqueIdentifier>{aee78160-a414-440f-b380-3e174cd3f025}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Idle">
+      <UniqueIdentifier>{96d109b4-d440-4dab-8203-b5fb4ec268ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Run">
+      <UniqueIdentifier>{8b3121f5-97e8-499f-8735-a66340ac91d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Walk">
+      <UniqueIdentifier>{a6c50dbb-bd66-4b10-8be7-a90db39bff30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack">
+      <UniqueIdentifier>{b5255aae-3a33-49bc-9c84-95e50df5b42d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack1">
+      <UniqueIdentifier>{d90514cf-1676-4177-ae7c-aeb35a3a43de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack2">
+      <UniqueIdentifier>{babe95e2-46c1-4d96-83ac-97abdb455476}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack3">
+      <UniqueIdentifier>{63712a2b-488a-4c68-b062-b5d0a7b6bae6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack4">
+      <UniqueIdentifier>{68bb3fb4-42d7-4037-83c2-b7a9a43521f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack5">
+      <UniqueIdentifier>{885a3ff7-52a8-41bc-bfa1-267d8847686f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack6">
+      <UniqueIdentifier>{06c7c294-a416-44f0-84b1-c0210aed7d8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack7">
+      <UniqueIdentifier>{2a4573a9-a94d-4088-a286-77b8e654eb09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack8">
+      <UniqueIdentifier>{b24f2e5f-7084-407b-a722-ed8618e327e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -651,6 +690,42 @@
     <ClInclude Include="..\Public\UI_Blood.h">
       <Filter>02. GameObjects\97. UI\Blood</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack1.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack2.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack3.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack5.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack5</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack6.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack6</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack8.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Idle.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack4.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack7.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack7</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Walk.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Run.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Run</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -967,6 +1042,42 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_Blood.cpp">
       <Filter>02. GameObjects\97. UI\Blood</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Idle.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack1.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack2.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack3.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack5.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack5</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack4.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack6.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack6</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack8.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack8</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack7.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack7</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Run.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Run</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Walk.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Walk</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

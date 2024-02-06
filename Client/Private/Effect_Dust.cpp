@@ -81,7 +81,8 @@ void CEffect_Dust::Tick(_float fTimeDelta)
 			if (m_iCurrentVer == m_tEffectDesc.iMaxVer)
 			{
 				m_iCurrentVer = m_tEffectDesc.iStartVer;
-				Die(0.1f);
+				No_DissoveDie(0.1f);
+				
 			}
 		}
 

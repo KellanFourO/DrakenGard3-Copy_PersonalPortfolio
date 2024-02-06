@@ -22,8 +22,10 @@ private:
 public:
 	void	On_Trail();
 	void	Off_Trail();
+	void	Set_BloodyMode(_bool bBloodyMode) { m_bBloodyMode = bBloodyMode;}
 	
 	CEffect_Trail* Get_Trail() { return m_pTrail;}
+	
 
 public:
 	virtual HRESULT Initialize_Prototype(LEVEL eLevel);
@@ -44,8 +46,12 @@ public:
 private:
 	CCollider*			m_pColliderCom = { nullptr };
 	CCollider*			m_pColliders[6] = {};
+	CModel*				m_pBloodyModelCom = { nullptr };
 	
 	CEffect_Trail*		m_pTrail = { nullptr };
+	CEffect_Trail*		m_pBloodyTrail = { nullptr };
+
+	_bool				m_bBloodyMode = false;
 public:
 	/* 원형객체를 생성한다. */
 	static CPlayerPart_Weapon* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel);

@@ -119,6 +119,7 @@ HRESULT CBoss_EN131::Initialize(void* pArg)
 
 	Init_Status(2000.f, 30.f);
 
+	m_bPartDie = true;
 	//if (FAILED(__super::Initialize_UI()))
 	//	return E_FAIL;
 	return S_OK;
@@ -239,7 +240,7 @@ HRESULT CBoss_EN131::Render()
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
 
-		m_pShaderCom->Begin(0); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
+		m_pShaderCom->Begin(m_iPassIndex);
 
 		m_pModelCom->Render(i);
 	}
@@ -257,20 +258,18 @@ HRESULT CBoss_EN131::Render_Shadow()
 {
 	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
 		return E_FAIL;
-	//#몬스터모델렌더
+
 	_float4x4		ViewMatrix, ProjMatrix;
 
-	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(XMVectorSet(-20.f, 100.f, -20.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
-	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 600.f));
+	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(XMVectorSet(-20.f, 20.f, -20.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
+	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 3000.f));
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &ViewMatrix)))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &ProjMatrix)))
 		return E_FAIL;
 
-	//TODO 클라에서 모델의 메시 개수를 받아와서 순회하면서 셰이더 바인딩해주자.
-
-	_uint	iNumMeshes = m_pModelCom->Get_NumMeshes();
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
 	for (size_t i = 0; i < iNumMeshes; i++)
 	{
@@ -278,12 +277,12 @@ HRESULT CBoss_EN131::Render_Shadow()
 
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
 
-		m_pShaderCom->Begin(2); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
+		m_pShaderCom->Begin(2);
 
 		m_pModelCom->Render(i);
 	}
-
 
 	return S_OK;
 }
@@ -423,6 +422,11 @@ HRESULT CBoss_EN131::Ready_Components()
 	m_pRigidBodyCom->Set_OwnerNavigation(m_pNavigationCom);
 	m_pRigidBodyCom->Clear_NetPower();
 	m_pRigidBodyCom->Set_UseGravity(true);
+
+	//! For.Com_Texture
+	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Texture_BossFireNoise"),
+		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissoveTexture))))
+		return E_FAIL;
 	
 	return S_OK;
 }
@@ -624,7 +628,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 				if(11.f < fCurrentTrackPosition && false == pBlackboard->getBool("Play_WalkSound1") && m_pModelCom->Get_CurrentAnimationIndex() == 1)
 				{
-					m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossPasos.wav", SOUND_EFFECT2, 2.5f);
+					m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossPasos.wav", SOUND_BOSSEFFECT, 2.5f);
 					pBlackboard->setBool("Play_WalkSound1", true);
 					pBlackboard->setBool("Play_WalkSound2", false);
 
@@ -635,7 +639,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 				if (40.f < fCurrentTrackPosition && false == pBlackboard->getBool("Play_WalkSound2") && m_pModelCom->Get_CurrentAnimationIndex() == 1)
 				{
-					m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossPasos.wav", SOUND_EFFECT3, 2.5f);
+					m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossPasos.wav", SOUND_BOSSEFFECT2, 2.5f);
 					pBlackboard->setBool("Play_WalkSound2", true);
 					pBlackboard->setBool("Play_WalkSound1", false);
 
@@ -700,7 +704,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 					{
 						CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
 						pTargetCamera->On_Shake(0.5f, 3.f);
-						m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossPear2.wav", SOUND_EFFECT3, 2.5f);
+						m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossPear2.wav", SOUND_BOSS, 2.5f);
 						pBlackboard->setBool("Is_Pear", true);
 					}
 					else if (true == pBlackboard->getBool("Is_Pear"))
@@ -851,8 +855,15 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		Transition(34);
 		m_pModelCom->Set_Loop(false);
 
+		if (m_bPlaySound == false)
+		{
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossDead.wav", SOUND_BOSS, 1.5f);
+			m_bPlaySound = true;
+		}
+
 		 if(m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
+			 m_bPlaySound = false;
 			 return BT_STATUS::Success;
 		 }
 		 else
@@ -862,7 +873,8 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 	FUNCTION_NODE Task_IsDead2
 		 = FUNCTION_NODE_MAKE
 	 {
-			Die(5.f);
+			Die(1.8f);
+			Dead_Action(fTimeDelta, 1.0f);
 			return BT_STATUS::Running;
 	 };
 
@@ -895,9 +907,18 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		   m_pModelCom->Root_MotionStart();
 		   Set_Move(true);
 
+		   if (m_bPlaySound == false)
+		   {
+			   m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossJump.wav", SOUND_BOSSEFFECT2, 1.5f);
+			  m_bPlaySound = true;
+		   }
+
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
 			 
+			 m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossLand.wav", SOUND_BOSSEFFECT2, 1.5f);
+			 m_bPlaySound = false;
+
 			 m_pModelCom->Root_MotionEnd();
 			 m_pModelCom->Set_Loop(true);
 			 Set_Move(false);
@@ -919,8 +940,17 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		 m_pTransformCom->TurnToTarget(vTargetPos, fTimeDelta);
 		 Set_Move(true);
 
+		 if (m_bPlaySound == false)
+		 {
+			 m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossJump.wav", SOUND_BOSSEFFECT2, 1.5f);
+			 m_bPlaySound = true;
+		 }
+
 		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		 {
+
+			 m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossLand.wav", SOUND_BOSSEFFECT2, 1.5f);
+			 m_bPlaySound = false;
 	
 			 m_pModelCom->Root_MotionEnd();
 			 m_pModelCom->Set_Loop(true);
@@ -944,8 +974,17 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		  Set_Move(true);
 
-		 if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
-		 {
+		  if (m_bPlaySound == false)
+		  {
+			  m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossJump.wav", SOUND_BOSSEFFECT2, 1.5f);
+			  m_bPlaySound = true;
+		  }
+
+		  if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
+		  {
+
+			  m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossLand.wav", SOUND_BOSSEFFECT2, 1.5f);
+			  m_bPlaySound = false;
 
 			 m_pModelCom->Root_MotionEnd();
 			 m_pModelCom->Set_Loop(true);
@@ -978,6 +1017,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 				Transition(iRandomHitIndex, 1.7f);
 				pBlackboard->setBool("Is_OneTick", false);
 				
+				m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"Boss_Hurt.wav", SOUND_BOSS, 1.1f);
 			}
 
 			 if (true == m_pModelCom->Get_CurrentAnimation()->Get_Finished())
@@ -1066,7 +1106,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (48.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Create_Dusting"))
 		{
-			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"Ground_Hit.wav", SOUND_EFFECT3, 0.75f);
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"Ground_Hit.wav", SOUND_BOSSEFFECT, 0.75f);
 			Create_TailStingEffect();
 			
 			pBlackboard->setBool("Create_Dusting", true);
@@ -1109,7 +1149,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (31.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Create_Dusting"))
 		{
-			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"Ground_Hit.wav", SOUND_EFFECT3, 0.75f);
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"Ground_Hit.wav", SOUND_BOSSEFFECT2, 0.75f);
 			Create_TailStingEffect();
 			pBlackboard->setBool("Create_Dusting", true);
 
@@ -1146,7 +1186,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (54.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Create_Dusting"))
 		{
-			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"Ground_Hit.wav", SOUND_EFFECT3, 0.75f);
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"Ground_Hit.wav", SOUND_BOSSEFFECT3, 0.75f);
 			Create_TailStingEffect();
 
 			pBlackboard->setBool("Create_Dusting", true);
@@ -1195,7 +1235,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (116.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Swing"))
 		{
-			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"TailSwing_02.wav", SOUND_EFFECT3, 2.75f);
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"TailSwing_04.wav", SOUND_BOSSEFFECT, 2.75f);
 			CCamera_Target* pTargetCamera = dynamic_cast<CCamera_Target*>(m_pGameInstance->Find_Layer(m_eCurrentLevelID, TEXT("Layer_Camera"))->Get_ObjectList().back());
 
 			pTargetCamera->On_Shake(0.3f, 1.f);
@@ -1229,7 +1269,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 			wstring strSturnTag = TEXT("PlayerState_Sturn");
 			pPlayer->Transition(CStateMachine::STATETYPE::STATE_GROUND, strSturnTag);
 			pBlackboard->setBool("Is_Howling", true);
-			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossPear2.wav", SOUND_EFFECT3, 2.f);
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossPear2.wav", SOUND_BOSSEFFECT, 2.f);
 		}
 
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
@@ -1255,14 +1295,14 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		{
 			Get_HeadCollider(RIGHT)->OnCollider();
 			pBlackboard->setBool("Is_Bite", true);
-			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_EFFECT3, 2.f);
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_BOSSEFFECT, 2.f);
 		}
 
 		if (m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 		{
 			Get_HeadCollider(RIGHT)->OffCollider();
 			Get_HeadCollider(CENTER)->OnCollider();
-			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_EFFECT3, 2.f);
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_BOSSEFFECT2, 2.f);
 			m_pModelCom->Set_Loop(true);
 			 return BT_STATUS::Success;
 		}
@@ -1301,7 +1341,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (18.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Bite"))
 		{
-			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_EFFECT3, 2.f);
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_BOSSEFFECT3, 2.f);
 			Get_HeadCollider(LEFT)->OnCollider();
 			pBlackboard->setBool("Is_Bite", true);
 		}
@@ -1329,7 +1369,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (115.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Bite"))
 		{
-			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_EFFECT3, 2.f);
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_BOSSEFFECT, 2.f);
 			Get_HeadCollider(LEFT)->OnCollider();
 			Get_HeadCollider(CENTER)->OnCollider();
 			Get_HeadCollider(RIGHT)->OnCollider();
@@ -1372,8 +1412,8 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 
 		if (71.f < pBlackboard->getFloat("CurrentTrackPosition") && false == pBlackboard->getBool("Is_Bite"))
 		{
+			 m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_BOSSEFFECT, 2.f);
 			 Get_HeadCollider(LEFT)->OnCollider();
-			 m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossBite.wav", SOUND_EFFECT3, 2.f);
 			 Get_HeadCollider(CENTER)->OnCollider();
 			 Get_HeadCollider(RIGHT)->OnCollider();
 			 pBlackboard->setBool("Is_Bite", true);
@@ -1430,7 +1470,7 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 		{
 			pBlackboard->setBool("Is_Breath", true);
 
-			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"Breath1.wav", SOUND_EFFECT3, 2.f);
+			m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"Breath1.wav", SOUND_BOSSEFFECT, 2.f);
 
 			CBossPart_EN131_Weapon* pLeftHead = dynamic_cast<CBossPart_EN131_Weapon*>(Find_PartObject(TEXT("Part_Weapon1")));
 			CBossPart_EN131_Weapon* pCenterHead = dynamic_cast<CBossPart_EN131_Weapon*>(Find_PartObject(TEXT("Part_Weapon2")));
@@ -1535,9 +1575,16 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 				Set_Move(true);
 				m_bChase = true;
 			
+				if (m_bPlaySound == false)
+				{
+					m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossJump.wav", SOUND_BOSSEFFECT2, 1.5f);
+					m_bPlaySound = true;
+				}
 
 			if (true == m_pModelCom->Get_CurrentAnimation()->Get_Finished())
 			{
+				m_pGameInstance->Play_Sound(L"BOSS_EFFECT", L"BossLand.wav", SOUND_BOSSEFFECT2, 1.5f);
+				m_bPlaySound = false;
 				m_pModelCom->Root_MotionEnd();
 				m_pModelCom->Set_Loop(true);
 				m_bChase = false;
@@ -1668,10 +1715,10 @@ HRESULT CBoss_EN131::Ready_BehaviorTree_V2()
 							.leaf<FunctionNode>(Control_IsPhase3)
 								.composite<Selector>()
 									.composite<Sequence>()
-										//.leaf<FunctionNode>(Control_RandomTry)
-										//.leaf<FunctionNode>(Task_TailSwingAttack)
-										//.leaf<FunctionNode>(Task_BackEvasion)
-										//.leaf<FunctionNode>(Control_RandomTry)
+										.leaf<FunctionNode>(Control_RandomTry)
+										.leaf<FunctionNode>(Task_TailSwingAttack)
+										.leaf<FunctionNode>(Task_BackEvasion)
+										.leaf<FunctionNode>(Control_RandomTry)
 										.leaf<FunctionNode>(Task_Breath1)
 										.leaf<FunctionNode>(Task_Breath2)
 										.leaf<FunctionNode>(Task_Breath3)

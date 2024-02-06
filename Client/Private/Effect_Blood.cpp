@@ -90,7 +90,7 @@ void CEffect_Blood::Tick(_float fTimeDelta)
 			{
 				m_iCurrentVer = m_tEffectDesc.iStartVer;
 				m_pGameInstance->Stop_Sound(SOUND_EFFECT3);
-				Die(0.1f);
+				No_DissoveDie(0.1f);
 			}
 		}
 
@@ -98,6 +98,8 @@ void CEffect_Blood::Tick(_float fTimeDelta)
 	}
 
 	m_pRigidBodyCom->Tick(fTimeDelta);
+
+	
 }
 
 void CEffect_Blood::Late_Tick(_float fTimeDelta)

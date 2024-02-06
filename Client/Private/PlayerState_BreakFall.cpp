@@ -29,6 +29,7 @@ HRESULT CPlayerState_BreakFall::StartState()
 	m_pOwnerModelCom->Set_Animation(52);
 	m_pOwnerModelCom->Set_Loop(false);
 	m_pOwnerModelCom->Root_MotionEnd();
+	m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"Swing_Kick.wav", SOUND_PLAYER_HIT, 1.5f);
 	return S_OK;
 }
 

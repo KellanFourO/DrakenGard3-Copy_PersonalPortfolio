@@ -50,6 +50,12 @@ private:
 	void			On_Trail();
 	void			Off_Trail();
 
+	
+private:
+	_bool			m_bPlaySound = false;
+	_float			m_fDashTimeAcc = 0.f;
+	_float			m_fDashSoundTick = 0.3f;
+
 public:
 	/* 원형객체를 생성한다. */
 	static CMonster_EN70* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel);

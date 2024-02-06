@@ -29,3 +29,17 @@
 #include "PlayerState_UpperHit.h"
 #include "PlayerState_DownHit.h"
 #include "PlayerState_Depress.h"
+
+
+
+#include "PlayerState_BloodyMode.h"
+#include "PlayerState_BloodyMode_Idle.h"
+#include "PlayerState_BloodyMode_Run.h"
+#include "PlayerState_BloodyMode_Attack1.h"
+#include "PlayerState_BloodyMode_Attack2.h"
+#include "PlayerState_BloodyMode_Attack3.h"
+#include "PlayerState_BloodyMode_Attack4.h"
+#include "PlayerState_BloodyMode_Attack5.h"
+#include "PlayerState_BloodyMode_Attack6.h"
+#include "PlayerState_BloodyMode_Attack7.h"
+#include "PlayerState_BloodyMode_Attack8.h"

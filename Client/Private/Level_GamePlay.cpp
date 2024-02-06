@@ -52,8 +52,11 @@ HRESULT CLevel_GamePlay::Initialize()
 	m_pGameInstance->Play_BGM(L"BGM", L"StageBGM2.wav", 1.f);
 
 	
+	for (_int i = 0; i < 5; ++i)
+	{
+		m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_Blood"), &Desc);
+	}
 
-	m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_Blood"), &Desc);
 
 	return S_OK;
 }

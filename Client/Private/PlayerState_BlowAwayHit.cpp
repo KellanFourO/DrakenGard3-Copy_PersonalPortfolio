@@ -32,7 +32,8 @@ HRESULT CPlayerState_BlowAwayHit::StartState()
 	
 	m_pOwnerStateCom->Set_Hit(false);
 
-
+	m_pGameInstance->Play_Sound(L"PLAYER_EFFECT", L"PlayerHitVoice7.wav", SOUND_PLAYER_HIT, 1.5f);
+	
 
 	return S_OK;
 }

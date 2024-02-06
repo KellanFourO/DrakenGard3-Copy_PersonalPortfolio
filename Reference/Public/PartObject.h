@@ -8,6 +8,7 @@ class CBone;
 class CModel;
 class CShader;
 class CNavigation;
+class CTexture;
 
 class ENGINE_DLL CPartObject abstract : public CGameObject
 {
@@ -43,6 +44,8 @@ protected:
 	HRESULT		Ready_Components(_uint iLevelIndex, const wstring& strShaderTag, const wstring& strModelTag);
 	HRESULT		Bind_ShaderResources();
 
+	void		Dead_Action(_float fTimeDelta, _float fLifeTime);
+
 protected:
 	string				m_strName = "";
 	_float4x4			m_WorldMatrix = {};
@@ -54,6 +57,7 @@ protected:
 	class CModel*		m_pModelCom				= { nullptr };
 	class CShader*		m_pShaderCom			= { nullptr };
 	class CBone*		m_pSocketBone			= { nullptr };
+	class CTexture*		m_pDissoveTexture = { nullptr };
 	STATUS_DESC							m_tStatus = {};
 	STATUS_DESC							m_tOriginStatus = {};
 	PART_DESC			m_pPartDesc = {};

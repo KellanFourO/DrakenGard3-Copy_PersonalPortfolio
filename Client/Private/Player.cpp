@@ -106,6 +106,12 @@ void CPlayer::Tick(_float fTimeDelta)
 			Pair.second->Tick(fTimeDelta);
 	}
 
+	if (false == Get_BloodyMode() && false == m_bOneTransition)
+	{
+		m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_Idle"));
+		m_bOneTransition = true;
+	}
+
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
 	m_pRigidBodyCom->Tick(fTimeDelta);
 	
@@ -162,7 +168,6 @@ HRESULT CPlayer::Render()
 }
 
 
-
 void CPlayer::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
 {
 	//! 내 바디와 상대 바디 끼리 충돌했을 경우
@@ -190,12 +195,7 @@ void CPlayer::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstr
 
 			if (STATUS_DESC::ATTACKTYPE::NORMAL_ATTACK == eHitType)
 			{
-				if (fDmg <= 15.f)
-				{
-					m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreMoreWeakHit"));
-				}
-				else
-					m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreWeakHit"));
+				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreMoreWeakHit"));
 			}
 			else if (STATUS_DESC::ATTACKTYPE::CHARGE_ATTACK == eHitType)
 			{
@@ -281,12 +281,7 @@ void CPlayer::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag,
 
 			if (STATUS_DESC::ATTACKTYPE::NORMAL_ATTACK == eHitType)
 			{
-				if (fDmg <= 15.f)
-				{
-					m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreMoreWeakHit"));
-				}
-				else
-					m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreWeakHit"));
+				m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_MoreMoreWeakHit"));
 			}
 			else if (STATUS_DESC::ATTACKTYPE::CHARGE_ATTACK == eHitType)
 			{
@@ -399,6 +394,39 @@ CEffect_Trail* CPlayer::Get_Trail()
 	CPlayerPart_Weapon* pWeapon = dynamic_cast<CPlayerPart_Weapon*>(Find_PartObject(TEXT("Part_Weapon")));
 
 	return pWeapon->Get_Trail();
+}
+
+void CPlayer::Add_BloodCount()
+{
+	CPlayerPart_Body* pBody = dynamic_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
+
+	pBody->Add_BloodCount();
+}
+
+void CPlayer::Set_BloodyMode(_bool bBloodyMode)
+{
+	if (bBloodyMode == true)
+	{
+		m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_BloodyMode"));
+		m_bOneTransition = false;
+	}
+	else
+	{
+		m_pStateCom->Transition(CStateMachine::STATE_GROUND, TEXT("PlayerState_Idle"));
+	}
+
+	CPlayerPart_Body* pBody = dynamic_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
+	CPlayerPart_Weapon* pWeapon = dynamic_cast<CPlayerPart_Weapon*>(Find_PartObject(TEXT("Part_Weapon")));
+
+	pBody->Set_BloodyMode(bBloodyMode);
+	pWeapon->Set_BloodyMode(bBloodyMode);
+}
+
+_bool CPlayer::Get_BloodyMode()
+{
+	CPlayerPart_Body* pBody = dynamic_cast<CPlayerPart_Body*>(Find_PartObject(TEXT("Part_Body")));
+
+	return pBody->Get_BloodyMode();
 }
 
 HRESULT CPlayer::Ready_Components()
@@ -564,6 +592,40 @@ HRESULT CPlayer::Ready_States()
 
 	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_Depress"), CPlayerState_Depress::Create(this))))
 		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_BloodyMode"), CPlayerState_BloodyMode::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_BloodyMode_Idle"), CPlayerState_BloodyMode_Idle::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_BloodyMode_Run"), CPlayerState_BloodyMode_Run::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_BloodyMode_Attack1"), CPlayerState_BloodyMode_Attack1::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_BloodyMode_Attack2"), CPlayerState_BloodyMode_Attack2::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_BloodyMode_Attack3"), CPlayerState_BloodyMode_Attack3::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_BloodyMode_Attack4"), CPlayerState_BloodyMode_Attack4::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_BloodyMode_Attack5"), CPlayerState_BloodyMode_Attack5::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_BloodyMode_Attack6"), CPlayerState_BloodyMode_Attack6::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_BloodyMode_Attack7"), CPlayerState_BloodyMode_Attack7::Create(this))))
+		return E_FAIL;
+
+	if (FAILED(m_pStateCom->Add_State(TEXT("PlayerState_BloodyMode_Attack8"), CPlayerState_BloodyMode_Attack8::Create(this))))
+		return E_FAIL;
+
 	
 	m_pStateCom->Set_InitState(TEXT("PlayerState_Idle"));
 	
@@ -618,6 +680,19 @@ HRESULT CPlayer::Add_PartObject(const wstring& strPrototypeTag, const wstring& s
 
 void CPlayer::Key_Input(const _float fTimeDelta)
 {
+
+	if (m_pGameInstance->Key_Down(DIK_T))
+	{
+		Set_BloodyMode(true);
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_Y))
+	{
+		Set_BloodyMode(false);
+	}
+
+
+
 	if (m_pGameInstance->Key_Down(DIK_TAB))
 		m_bAdmin = !m_bAdmin;
 

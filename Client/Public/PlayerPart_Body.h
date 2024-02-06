@@ -2,6 +2,10 @@
 #include "Client_Defines.h"
 #include "PartObject.h"
 
+BEGIN(Engine)
+class CTexture;
+END
+
 BEGIN(Client)
 
 class CPlayerPart_Body final : public CPartObject
@@ -14,8 +18,9 @@ private:
 
 public:
 	void	Set_Loop(_bool bLoop) { m_bLoop = bLoop; }
-	
-	
+	void	Add_BloodCount() { if(m_iBloodCount < 5)m_iBloodCount++; }
+	void	Set_BloodyMode(_bool bBloodyMode) { m_bBloodyMode = bBloodyMode;}
+	_bool	Get_BloodyMode() { return m_bBloodyMode;}
 
 
 public:
@@ -35,8 +40,13 @@ public:
 
 private:
 	_bool			m_bLoop = true;
-	
-	
+	_bool			m_bBloodyMode = false;
+	_float4			m_vBloodyColor = {};
+	CTexture*		m_pBodyBloodTexture = { nullptr };
+	_int			m_iBloodCount = 0;
+
+	_float			m_fBloodyAcc = 0.f;
+	_float			m_fBloodyTime = 30.f;
 
 
 public:

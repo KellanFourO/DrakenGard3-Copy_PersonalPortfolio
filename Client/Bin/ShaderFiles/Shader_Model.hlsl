@@ -7,6 +7,11 @@ texture2D       g_NoiseTexture;
 texture2D       g_RGBTexture;
 float2          g_vAddUVPos;
 
+
+texture2D       g_DissolveTexture;
+float           g_fDissolveWeight;
+float4          g_vDissolveColor = { 1.0f, 0.5f, 1.0f, 1.f };
+
 bool            g_bCustomColor = false;
 float4          g_vColor;
 
@@ -131,7 +136,7 @@ PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN In)
 {
     PS_OUT_SHADOW Out = (PS_OUT_SHADOW) 0;
 
-    Out.vLightDepth = In.vProjPos.w / 600.0f;
+    Out.vLightDepth = In.vProjPos.w / 1000.0f;
 	
     return Out;
 }
@@ -159,9 +164,69 @@ PS_OUT PS_MAIN_CUSTOM_COLOR(PS_IN In)
 
     return Out;
 
+
 }
 
+PS_OUT PS_DISSOLVE_MAIN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
 
+    vector vDissolve = g_DissolveTexture.Sample(ClampSampler, In.vTexcoord);
+
+    if (vDissolve.r <= g_fDissolveWeight)
+        discard;
+
+    if ((vDissolve.r - g_fDissolveWeight) < 0.1f)
+        Out.vDiffuse = g_vDissolveColor;
+    else
+        Out.vDiffuse = g_DiffuseTexture.Sample(ClampSampler, In.vTexcoord);
+   
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.0f, 0.0f, 0.0f);
+    
+    if (0 == Out.vDiffuse.a)
+        discard;
+
+    return Out;
+    
+}
+
+PS_OUT PS_DISSOLVE_PLUS(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float4 vColor = g_DiffuseTexture.Sample(ClampSampler, In.vTexcoord);
+    float4 vDissolve = g_DissolveTexture.Sample(ClampSampler, In.vTexcoord);
+
+    float sinTime = sin(g_fDissolveWeight);
+    
+    if (vColor.a == 0.f)
+        clip(-1);
+
+    if (vDissolve.r >= sinTime)
+        vColor.a = 1;
+    else
+        vColor.a = 0;
+
+    if (vDissolve.r >= sinTime - 0.05 && vDissolve.r <= sinTime + 0.05)
+        vColor = float4(1, 0, 0, 1); // »¡
+    else;
+
+    if (vDissolve.r >= sinTime - 0.03 && vDissolve.r <= sinTime + 0.03)
+        vColor = float4(1, 1, 0, 1); // ³ë
+    else;
+
+    if (vDissolve.r >= sinTime - 0.025 && vDissolve.r <= sinTime + 0.025)
+        vColor = float4(1, 1, 1, 1); // Èò
+    else;
+
+    Out.vDiffuse = vColor;
+    
+    if (0 == Out.vDiffuse.a)
+        discard;
+   
+    return Out;
+};
 
 technique11 DefaultTechnique
 {
@@ -261,5 +326,31 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_CUSTOM_COLOR();
+    }
+
+    pass DissolveBasic // 8
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_DISSOLVE_MAIN();
+    }
+
+    pass DissolvePlus // 9
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_DISSOLVE_PLUS();
     }
 }

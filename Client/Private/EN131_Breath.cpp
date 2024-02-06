@@ -89,7 +89,8 @@ void CEN131_Breath::Tick(_float fTimeDelta)
 	if (m_fTimeAcc >= m_fLifeTime)
 	{
 		m_fLifeTime = 0.2f;
-		Die(m_fLifeTime);
+		No_DissoveDie(m_fLifeTime);
+		
 	}
 
 	if (m_bCreateEffect == false)
