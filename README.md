@@ -13,7 +13,7 @@
 <br/>
 
 <!--프로젝트 대문 -->
-[![Video Label](https://ifh.cc/g/mTRklo.jpg)](https://youtu.be/E9E7zZkeh3M?t=652)
+[![Video Label](https://ifh.cc/g/ZHX6Zh.jpg)](https://youtu.be/CPz-IsGwc6A?t=17)
 
 # 개발 기간 및 참여 인원
    
