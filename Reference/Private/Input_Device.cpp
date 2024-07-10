@@ -8,6 +8,8 @@ CInput_Device::CInput_Device()
 HRESULT CInput_Device::Initialize(HINSTANCE hInst, HWND hWnd)
 {
     FAILED_CHECK(Ready_InputDev(hInst, hWnd));
+
+    m_Hwnd = hWnd;
        
     ZeroMemory(m_byKeyData, sizeof(m_byKeyData));
 
@@ -120,6 +122,18 @@ _bool CInput_Device::Mouse_Up(MOUSEKEYSTATE eMouse)
     }
 
     return false;
+}
+
+void CInput_Device::Mouse_Fix()
+{
+    RECT Rect;
+    GetClientRect(m_Hwnd, &Rect);
+    
+    POINT ptMouseCenter = { (Rect.left + Rect.right) / 2, (Rect.top + Rect.bottom) / 2 };
+
+    ClientToScreen(m_Hwnd, &ptMouseCenter);
+    SetCursorPos(ptMouseCenter.x, ptMouseCenter.y);
+
 }
 
 HRESULT Engine::CInput_Device::Ready_InputDev(HINSTANCE hInst, HWND hWnd)

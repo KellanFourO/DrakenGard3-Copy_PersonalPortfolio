@@ -4,6 +4,7 @@
 #include "Imgui_Manager.h"
 #include "GameInstance.h"
 #include "Camera_Dynamic.h"
+#include "Field.h"
 
 CLevel_Tool::CLevel_Tool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -12,8 +13,16 @@ CLevel_Tool::CLevel_Tool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 HRESULT CLevel_Tool::Initialize()
 {
-	//if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
-	//	return E_FAIL;
+	
+	
+	//m_pGameInstance->Add_LayerTag(TEXT("Layer_Camera"));
+
+	m_pGameInstance->Add_LayerTag(TEXT("Layer_Player"));
+	m_pGameInstance->Add_LayerTag(TEXT("Layer_Monster"));
+	m_pGameInstance->Add_LayerTag(TEXT("Layer_Boss"));
+	m_pGameInstance->Add_LayerTag(TEXT("Layer_Effect"));
+	m_pGameInstance->Add_LayerTag(TEXT("Layer_BackGround"));
+
 
 	if (FAILED(Ready_Imgui()))
 	{
@@ -23,8 +32,25 @@ HRESULT CLevel_Tool::Initialize()
 		return E_FAIL;
 	}
 
+	LIGHT_DESC			LightDesc{};
+
+	LightDesc.eType = LIGHT_DESC::TYPE_DIRECTIONAL;
+	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	LightDesc.vDiffuse = _float4(0.6f, 0.6f, 0.6f, 1.f);
+	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+
+	if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+		return E_FAIL;
+
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
+
+	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
+		return E_FAIL;
+
+	//if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))
+	//	return E_FAIL;
 }
 
 void CLevel_Tool::Tick(_float fTimeDelta)
@@ -100,13 +126,21 @@ HRESULT CLevel_Tool::Ready_Layer_Camera(const wstring& strLayerTag)
 
 HRESULT CLevel_Tool::Ready_Layer_BackGround(const wstring& strLayerTag)
 {
-	if(FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, strLayerTag, TEXT("Prototype_GameObject_Terrain"))))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, strLayerTag, TEXT("Prototype_GameObject_ForkLift"))))
+	if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, strLayerTag, TEXT("Prototype_GameObject_SkyBox"))))
 		return E_FAIL;
 
 
+	return S_OK;
+}
+
+HRESULT CLevel_Tool::Ready_Layer_Effect(const wstring& strLayerTag)
+{
+	//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Particle_Blue"))))
+	//	return E_FAIL;
+	//
+	//if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, strLayerTag, TEXT("Prototype_GameObject_Particle_Red"))))
+	//	return E_FAIL;
+	
 	return S_OK;
 }
 

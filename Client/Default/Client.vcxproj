@@ -30,6 +30,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableUnitySupport>true</EnableUnitySupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -108,7 +109,8 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>../../Reference/Imgui/;../../Reference/Librarys/;../../Reference/Private/;../../Reference/Public/;../Public/;../Default/</AdditionalIncludeDirectories>
-      <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/std:c++17 /bigobj %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,6 +156,8 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>../../Reference/Imgui/; ../../Reference/Librarys/;../../Reference/Public/;../Public/;../Default/</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/std:c++17 /bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -191,17 +195,100 @@
     <ClInclude Include="..\..\Reference\Imgui\imstb_textedit.h" />
     <ClInclude Include="..\..\Reference\Imgui\imstb_truetype.h" />
     <ClInclude Include="..\..\Reference\Imgui\ImZoomSlider.h" />
+    <ClInclude Include="..\Public\AIControl_Base.h" />
+    <ClInclude Include="..\public\AIState_Base.h" />
+    <ClInclude Include="..\public\AITask_Base.h" />
     <ClInclude Include="..\public\AnimObject.h" />
     <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\BackGround_Loading.h" />
+    <ClInclude Include="..\Public\BackGround_LoadingUI.h" />
+    <ClInclude Include="..\Public\BossPart_EN131_SwingTail.h" />
+    <ClInclude Include="..\Public\BossPart_EN131_Weapon.h" />
+    <ClInclude Include="..\Public\Boss_EN131.h" />
+    <ClInclude Include="..\Public\Bullet.h" />
     <ClInclude Include="..\public\Camera_Dynamic.h" />
     <ClInclude Include="..\Public\Camera_MapTool.h" />
+    <ClInclude Include="..\Public\Camera_Target.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
-    <ClInclude Include="..\Public\CustomFont.h" />
+    <ClInclude Include="..\Public\CustomDialogFont.h" />
     <ClInclude Include="..\public\Dynamic_Terrain.h" />
-    <ClInclude Include="..\Public\ForkLift.h" />
+    <ClInclude Include="..\Public\Effect_Blood.h" />
+    <ClInclude Include="..\Public\Effect_BornFire.h" />
+    <ClInclude Include="..\Public\Effect_BossBreath.h" />
+    <ClInclude Include="..\Public\Effect_BossPear.h" />
+    <ClInclude Include="..\Public\Effect_DashRing.h" />
+    <ClInclude Include="..\Public\Effect_Dust.h" />
+    <ClInclude Include="..\Public\Effect_Explosion.h" />
+    <ClInclude Include="..\Public\Effect_Hanabira.h" />
+    <ClInclude Include="..\Public\Effect_RunSmoke.h" />
+    <ClInclude Include="..\Public\Effect_Trail.h" />
+    <ClInclude Include="..\public\EN01_Arrow.h" />
+    <ClInclude Include="..\Public\EN131_Breath.h" />
+    <ClInclude Include="..\Public\Environment_Barricade.h" />
+    <ClInclude Include="..\Public\Environment_BornFire.h" />
+    <ClInclude Include="..\Public\Environment_BrokenBarricade.h" />
+    <ClInclude Include="..\public\Environment_Object.h" />
+    <ClInclude Include="..\Public\Event_Boss1Apeear.h" />
+    <ClInclude Include="..\Public\Field.h" />
     <ClInclude Include="..\Public\Imgui_Manager.h" />
+    <ClInclude Include="..\Public\MeshEffect.h" />
+    <ClInclude Include="..\Public\MonsterPart_EN00_Weapon.h" />
+    <ClInclude Include="..\Public\MonsterPart_EN01_Weapon.h" />
+    <ClInclude Include="..\Public\MonsterPart_EN70_Weapon.h" />
+    <ClInclude Include="..\Public\Monster_EN00.h" />
+    <ClInclude Include="..\Public\Monster_EN01.h" />
+    <ClInclude Include="..\Public\Monster_EN70.h" />
+    <ClInclude Include="..\Public\Particle_Blue.h" />
+    <ClInclude Include="..\Public\Particle_BossBreath.h" />
+    <ClInclude Include="..\Public\Particle_Object.h" />
+    <ClInclude Include="..\Public\Particle_Red.h" />
     <ClInclude Include="..\Public\Player.h" />
-    <ClInclude Include="..\Public\TestTree.h" />
+    <ClInclude Include="..\Public\PlayerGroundStates.h" />
+    <ClInclude Include="..\Public\PlayerPart_Body.h" />
+    <ClInclude Include="..\Public\PlayerPart_Weapon.h" />
+    <ClInclude Include="..\Public\PlayerState_Attack1.h" />
+    <ClInclude Include="..\Public\PlayerState_Attack2.h" />
+    <ClInclude Include="..\Public\PlayerState_Attack3.h" />
+    <ClInclude Include="..\Public\PlayerState_Attack4.h" />
+    <ClInclude Include="..\Public\PlayerState_Attack5.h" />
+    <ClInclude Include="..\Public\PlayerState_Attack6.h" />
+    <ClInclude Include="..\Public\PlayerState_Attack7.h" />
+    <ClInclude Include="..\Public\PlayerState_Attack8.h" />
+    <ClInclude Include="..\public\PlayerState_Base.h" />
+    <ClInclude Include="..\Public\PlayerState_BloodyMode.h" />
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack1.h" />
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack2.h" />
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack3.h" />
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack4.h" />
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack5.h" />
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack6.h" />
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack7.h" />
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack8.h" />
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Idle.h" />
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Run.h" />
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Walk.h" />
+    <ClInclude Include="..\Public\PlayerState_BlowAwayHit.h" />
+    <ClInclude Include="..\Public\PlayerState_BreakFall.h" />
+    <ClInclude Include="..\Public\PlayerState_DashBack.h" />
+    <ClInclude Include="..\Public\PlayerState_DashFront.h" />
+    <ClInclude Include="..\Public\PlayerState_DashLeft.h" />
+    <ClInclude Include="..\Public\PlayerState_DashRight.h" />
+    <ClInclude Include="..\Public\PlayerState_Dead.h" />
+    <ClInclude Include="..\Public\PlayerState_Depress.h" />
+    <ClInclude Include="..\Public\PlayerState_DownHit.h" />
+    <ClInclude Include="..\Public\PlayerState_Idle.h" />
+    <ClInclude Include="..\Public\PlayerState_Jump.h" />
+    <ClInclude Include="..\Public\PlayerState_MoreMoreWeakHit.h" />
+    <ClInclude Include="..\Public\PlayerState_MoreWeakHit.h" />
+    <ClInclude Include="..\Public\PlayerState_NormalAttackBase.h" />
+    <ClInclude Include="..\Public\PlayerState_Run.h" />
+    <ClInclude Include="..\Public\PlayerState_Sturn.h" />
+    <ClInclude Include="..\Public\PlayerState_UpperHit.h" />
+    <ClInclude Include="..\Public\PlayerState_Walk.h" />
+    <ClInclude Include="..\Public\PlayerState_WeakHit.h" />
+    <ClInclude Include="..\public\SkyBox.h" />
+    <ClInclude Include="..\Public\SkyDome.h" />
+    <ClInclude Include="..\Public\Stage1Map_1.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
     <ClInclude Include="..\Public\Level_Logo.h" />
@@ -211,9 +298,17 @@
     <ClInclude Include="..\public\Monster.h" />
     <ClInclude Include="..\public\NonAnimObject.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\Public\UI_Blood.h" />
+    <ClInclude Include="..\Public\UI_MonsterTag.h" />
+    <ClInclude Include="..\Public\UI_MonsterTagFrame.h" />
+    <ClInclude Include="..\Public\UI_MonsterHP.h" />
+    <ClInclude Include="..\Public\UI_MonsterHPFrame.h" />
+    <ClInclude Include="..\Public\UI_MonsterPortrait.h" />
     <ClInclude Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialog.h" />
     <ClInclude Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialogConfig.h" />
+    <ClInclude Include="AnimObjects.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="NonAnimObjects.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -227,16 +322,98 @@
     <ClCompile Include="..\..\Reference\Imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="..\..\Reference\Imgui\imgui_tables.cpp" />
     <ClCompile Include="..\..\Reference\Imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\private\AIControl_Base.cpp" />
+    <ClCompile Include="..\Private\AIState_Base.cpp" />
+    <ClCompile Include="..\Private\AITask_Base.cpp" />
     <ClCompile Include="..\Private\AnimObject.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\BackGround_Loading.cpp" />
+    <ClCompile Include="..\Private\BackGround_LoadingUI.cpp" />
+    <ClCompile Include="..\Private\BossPart_EN131_SwingTail.cpp" />
+    <ClCompile Include="..\Private\BossPart_EN131_Weapon.cpp" />
+    <ClCompile Include="..\Private\Boss_EN131.cpp" />
+    <ClCompile Include="..\Private\Bullet.cpp" />
     <ClCompile Include="..\Private\Camera_Dynamic.cpp" />
     <ClCompile Include="..\Private\Camera_MapTool.cpp" />
-    <ClCompile Include="..\Private\CustomFont.cpp" />
+    <ClCompile Include="..\Private\Camera_Target.cpp" />
+    <ClCompile Include="..\Private\CustomDialogFont.cpp" />
     <ClCompile Include="..\Private\Dynamic_Terrain.cpp" />
-    <ClCompile Include="..\Private\ForkLift.cpp" />
+    <ClCompile Include="..\Private\Effect_Blood.cpp" />
+    <ClCompile Include="..\Private\Effect_BornFire.cpp" />
+    <ClCompile Include="..\Private\Effect_BossBreath.cpp" />
+    <ClCompile Include="..\Private\Effect_BossPear.cpp" />
+    <ClCompile Include="..\Private\Effect_DashRing.cpp" />
+    <ClCompile Include="..\Private\Effect_Dust.cpp" />
+    <ClCompile Include="..\Private\Effect_Explosion.cpp" />
+    <ClCompile Include="..\Private\Effect_Hanabira.cpp" />
+    <ClCompile Include="..\Private\Effect_RunSmoke.cpp" />
+    <ClCompile Include="..\Private\Effect_Trail.cpp" />
+    <ClCompile Include="..\Private\EN01_Arrow.cpp" />
+    <ClCompile Include="..\Private\EN131_Breath.cpp" />
+    <ClCompile Include="..\Private\Environment_Barricade.cpp" />
+    <ClCompile Include="..\Private\Environment_BornFire.cpp" />
+    <ClCompile Include="..\Private\Environment_BrokenBarricade.cpp" />
+    <ClCompile Include="..\private\Environment_Object.cpp" />
+    <ClCompile Include="..\Private\Event_Boss1Apeear.cpp" />
+    <ClCompile Include="..\Private\Field.cpp" />
     <ClCompile Include="..\Private\Imgui_Manager.cpp" />
+    <ClCompile Include="..\Private\MeshEffect.cpp" />
+    <ClCompile Include="..\Private\MonsterPart_EN00_Weapon.cpp" />
+    <ClCompile Include="..\Private\MonsterPart_EN01_Weapon.cpp" />
+    <ClCompile Include="..\Private\MonsterPart_EN70_Weapon.cpp" />
+    <ClCompile Include="..\Private\Monster_EN00.cpp" />
+    <ClCompile Include="..\Private\Monster_EN01.cpp" />
+    <ClCompile Include="..\Private\Monster_EN70.cpp" />
+    <ClCompile Include="..\Private\Particle_Blue.cpp" />
+    <ClCompile Include="..\Private\Particle_BossBreath.cpp" />
+    <ClCompile Include="..\Private\Particle_Object.cpp" />
+    <ClCompile Include="..\Private\Particle_Red.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
-    <ClCompile Include="..\Private\TestTree.cpp" />
+    <ClCompile Include="..\Private\PlayerPart_Body.cpp" />
+    <ClCompile Include="..\Private\PlayerPart_Weapon.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Attack1.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Attack2.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Attack3.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Attack4.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Attack5.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Attack6.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Attack7.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Attack8.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Base.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BloodyMode.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack1.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack2.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack3.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack4.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack5.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack6.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack7.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack8.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Idle.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Run.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Walk.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BlowAwayHit.cpp" />
+    <ClCompile Include="..\Private\PlayerState_BreakFall.cpp" />
+    <ClCompile Include="..\Private\PlayerState_DashBack.cpp" />
+    <ClCompile Include="..\Private\PlayerState_DashFront.cpp" />
+    <ClCompile Include="..\Private\PlayerState_DashLeft.cpp" />
+    <ClCompile Include="..\Private\PlayerState_DashRight.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Dead.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Depress.cpp" />
+    <ClCompile Include="..\Private\PlayerState_DownHit.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Jump.cpp" />
+    <ClCompile Include="..\Private\PlayerState_MoreMoreWeakHit.cpp" />
+    <ClCompile Include="..\Private\PlayerState_MoreWeakHit.cpp" />
+    <ClCompile Include="..\Private\PlayerState_NormalAttackBase.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Run.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Sturn.cpp" />
+    <ClCompile Include="..\Private\PlayerState_UpperHit.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Walk.cpp" />
+    <ClCompile Include="..\Private\PlayerState_WeakHit.cpp" />
+    <ClCompile Include="..\private\SkyBox.cpp" />
+    <ClCompile Include="..\Private\SkyDome.cpp" />
+    <ClCompile Include="..\Private\Stage1Map_1.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
     <ClCompile Include="..\Private\Level_Logo.cpp" />
@@ -246,6 +423,12 @@
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\Private\NonAnimObject.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\Private\UI_Blood.cpp" />
+    <ClCompile Include="..\Private\UI_MonsterTag.cpp" />
+    <ClCompile Include="..\Private\UI_MonsterTagFrame.cpp" />
+    <ClCompile Include="..\Private\UI_MonsterHP.cpp" />
+    <ClCompile Include="..\Private\UI_MonsterHPFrame.cpp" />
+    <ClCompile Include="..\Private\UI_MonsterPortrait.cpp" />
     <ClCompile Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialog.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -263,10 +446,55 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimModel.hlsl" />
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_Model.hlsl" />
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimModel.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_EffectMesh.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Model.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Particle_Point.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Particle_Rect.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCube.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxField.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

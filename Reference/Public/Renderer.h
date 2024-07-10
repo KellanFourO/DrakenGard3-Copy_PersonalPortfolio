@@ -9,7 +9,7 @@ BEGIN(Engine)
 class CRenderer final : public CBase
 {
 public:
-	enum RENDERGROUP { RENDER_PRIORITY, RENDER_NONLIGHT, RENDER_NONBLEND, RENDER_BLEND, RENDER_UI, RENDER_END };
+	enum RENDERGROUP { RENDER_PRIORITY, RENDER_SHADOW, RENDER_NONLIGHT, RENDER_NONBLEND, RENDER_BLEND, RENDER_UI, RENDER_END };
 	
 
 private:
@@ -19,19 +19,44 @@ private:
 public:
 	HRESULT Initialize();
 	HRESULT Add_RenderGroup(RENDERGROUP eGroupID, class CGameObject* pGameObject);
+	HRESULT Add_DebugRender(class CComponent* pDebugCom);
 	HRESULT Draw_RenderGroup();
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
 	ID3D11DeviceContext*		m_pContext = { nullptr };
+	class CGameInstance*		m_pGameInstance = { nullptr };
 	list<class CGameObject*>	m_RenderObjects[RENDER_END]; //! 가장 아래에서 자료구조
+
+#ifdef _DEBUG
+	list<class CComponent*>					m_DebugComponent;
+#endif
+
+private:
+	class CShader*							m_pShader = { nullptr };
+	class CVIBuffer_Rect*					m_pVIBuffer = { nullptr };
+
+	_float4x4								m_WorldMatrix;
+	_float4x4								m_ViewMatrix, m_ProjMatrix;
+
+	ID3D11DepthStencilView* m_pLightDepthDSV = { nullptr };
 
 private:
 	HRESULT Render_Priority();
+	HRESULT Render_Shadow();
 	HRESULT Render_NonLight();
 	HRESULT Render_NonBlend();
 	HRESULT Render_Blend();
 	HRESULT Render_UI();
+
+	HRESULT Render_LightAcc();
+	HRESULT Render_Deferred();
+	HRESULT Render_Bloom();
+
+#ifdef _DEBUG
+private:
+	HRESULT Render_Debug();
+#endif	
 
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -59,10 +84,10 @@ END
 /*
 	논블렌드 그룹은 불투명하게 그릴 객체들을 모아놓는 개념, 당연히 블렌드그룹은 반대되는 개념. 블렌드 그룹은 알파소팅을 수행한다.
 	불투명하게 그릴 객체들을 먼저 그려서 블렌드그룹에있는 애들과 픽셀의색상값을 잘 섞어주게 만들어주기 위해서다.
-*/
+*/ 
 
 //! 알파블렌딩을 하는 그룹이 알파소팅을 수행하는 이유
-/*
+/* p
 	알파블렌딩은 말 그대로 먼저 그려진 픽셀과 색상을 섞는다는 행위를 하는 것인데,
 	여기서 먼저 그려진 픽셀의 개념을 주기위해서 알파소팅을 수행하는 것이다.
 */

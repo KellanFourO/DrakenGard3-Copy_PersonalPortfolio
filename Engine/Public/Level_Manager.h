@@ -18,6 +18,9 @@ private:
 	virtual ~CLevel_Manager() = default;
 
 public:
+	_uint	Get_CurrentLevelIndex() { return m_iCurrentLevelIndex; }
+
+public:
 	HRESULT Initialize();
 	void	Tick(_float fTimeDelta);
 	HRESULT Render();

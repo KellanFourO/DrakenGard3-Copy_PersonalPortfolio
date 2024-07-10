@@ -1,19 +1,39 @@
 #pragma once
-
-#define   ZEROMEMORY(_ptr)            ZeroMemory(_ptr, sizeof *_ptr)
-
 #include "stdafx.h"
 
 #include "Tool_Define.h"
 #include "Imgui_Manager.h"
 #include "GameInstance.h"
 #include "Dynamic_Terrain.h"
+#include "Field.h"
 #include "Camera_MapTool.h"
+#include "Bone.h"
+#include "Model.h"
+#include "MonsterPart_EN00_Weapon.h"
+#include "Monster_EN00.h"
+#include "Boss_EN131.h"
+#include "BossPart_EN131_Weapon.h"
+
+#include "BoundingBox_AABB.h"
+#include "Layer.h"
+
+#include "Navigation.h"
+#include "Cell.h"
+
+
+
 
 #include <regex>
 #include <codecvt>
 #include <filesystem>
-
+#include <iostream>
+#include <fstream>
+//#include "NonAnimObject.h"
+#include "Environment_Object.h"
+#include "Environment_BornFire.h"
+#include "Particle_Object.h"
+#include "MeshEffect.h"
+#include "../../Reference/Public/Delaunator/delaunator.hpp"
 
 ImGuiIO g_io;
 static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
@@ -21,6 +41,8 @@ static ImGuizmo::MODE	   mCurrentGizmoMode(ImGuizmo::WORLD);
 static bool useSnap(false);
 
 IMPLEMENT_SINGLETON(CImgui_Manager);
+
+ImGuiFileDialog* m_pFileDialog;
 
 CImgui_Manager::CImgui_Manager()
 	: m_bReady(true)
@@ -47,7 +69,11 @@ HRESULT CImgui_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 	ImGuizmo_Initialize();			//! ImGui 즈모 초기화
 	ImGuiFileDialog_Intialize();	//! Imgui 파일다이얼로그 초기화
 
-	Ready_ProtoTagList();			//! 오브젝트 프로토태그 리스트 준비
+	Ready_ProtoTagList();			//! 오브젝트 프로토태그 리스트 준
+	Ready_EffectTagList();
+	//m_pNavigation = dynamic_cast<CNavigation*>(m_pGameInstance->Clone_Component(LEVEL_TOOL, TEXT("Prototype_Component_Navigation"), nullptr));
+
+	
 
 	return S_OK;
 }
@@ -67,6 +93,11 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		ImGui_MapToolTick();
 
 		ImGui_ObjectToolTick();
+
+		ImGui_NaviToolTick();
+
+		Imgui_EffectToolTick();
+
 
 		ShowDialog(m_eToolID);
 
@@ -145,8 +176,8 @@ void CImgui_Manager::ImGuiFileDialog_Intialize()
 	ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeFile | IGFD_FileStyleByContainedInFullName, ".git", ImVec4(0.5f, 0.8f, 0.5f, 0.9f), ICON_IGFD_SAVE);
 
 	ImGuiFileDialog::Instance()->AddBookmark("Bin", "../Bin/");
-	ImGuiFileDialog::Instance()->AddBookmark("MapData", "../Bin/DataFiles/Map/");
-	ImGuiFileDialog::Instance()->AddBookmark("ObjectData", "../Bin/DataFiles/Object/");
+	ImGuiFileDialog::Instance()->AddBookmark("FBX", "C:/Users/PC/Desktop/ExportFBX/");
+
 }
 
 void CImgui_Manager::ImGui_MainTick()
@@ -176,27 +207,37 @@ void CImgui_Manager::ImGui_MapToolTick()
 
 		if (ImGui::Button(u8"생성"))
 		{
-			if (nullptr != m_pDynamic_Terrain)
+			if (nullptr != m_pField)
 			{
-				m_pDynamic_Terrain->Delete_Component(TEXT("Com_VIBuffer"));
+				m_pField->Delete_Component(TEXT("Com_VIBuffer"));
 			}
 
-			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
+
+			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Field"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pField))))
 				return;
+
+			//!if (nullptr != m_pDynamic_Terrain)
+			//!{
+			//!	m_pDynamic_Terrain->Delete_Component(TEXT("Com_VIBuffer"));
+			//!}
+
+			//!if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_Dynamic_Terrain"), &m_tMapInfo, reinterpret_cast<CGameObject**>(&m_pDynamic_Terrain))))
+			//!	return;
+			
 		}
 
-		if (nullptr != m_pDynamic_Terrain)
+		if (nullptr != m_pField)
 		{
 			ImGui::Checkbox(u8"픽킹모드", &m_bMapToolPickMode);
 
 			if (m_bMapToolPickMode)
 			{
-				ImGui::Text(u8"마우스 X : %f", m_pDynamic_Terrain->GetMousePos().x);
-				ImGui::Text(u8"마우스 Y : %f", m_pDynamic_Terrain->GetMousePos().y);
-				ImGui::Text(u8"마우스 Z : %f", m_pDynamic_Terrain->GetMousePos().z);
+				ImGui::Text(u8"마우스 X : %f", m_pField->GetMousePos().x);
+				ImGui::Text(u8"마우스 Y : %f", m_pField->GetMousePos().y);
+				ImGui::Text(u8"마우스 Z : %f", m_pField->GetMousePos().z);
 
-				if (ImGui::InputInt(u8"브러시 범위", &m_iBrushRange)) { m_pDynamic_Terrain->SetRadious(m_iBrushRange); }
-				if (ImGui::InputInt(u8"브러시 힘", &m_iBrushPower)) { m_pDynamic_Terrain->SetPower(m_iBrushPower); }
+				if (ImGui::InputInt(u8"브러시 범위", &m_iBrushRange)) { m_pField->SetRadious(m_iBrushRange); }
+				if (ImGui::InputInt(u8"브러시 힘", &m_iBrushPower)) { m_pField->SetPower(m_iBrushPower); }
 
 				ImGui::NewLine(); //! 브러시 모드 라디오
 
@@ -227,6 +268,48 @@ void CImgui_Manager::ImGui_MapToolTick()
 			}
 		}
 
+// 		if (nullptr != m_pDynamic_Terrain)
+// 		{
+// 			ImGui::Checkbox(u8"픽킹모드", &m_bMapToolPickMode);
+// 
+// 			if (m_bMapToolPickMode)
+// 			{
+// 				ImGui::Text(u8"마우스 X : %f", m_pDynamic_Terrain->GetMousePos().x);
+// 				ImGui::Text(u8"마우스 Y : %f", m_pDynamic_Terrain->GetMousePos().y);
+// 				ImGui::Text(u8"마우스 Z : %f", m_pDynamic_Terrain->GetMousePos().z);
+// 
+// 				if (ImGui::InputInt(u8"브러시 범위", &m_iBrushRange)) { m_pDynamic_Terrain->SetRadious(m_iBrushRange); }
+// 				if (ImGui::InputInt(u8"브러시 힘", &m_iBrushPower)) { m_pDynamic_Terrain->SetPower(m_iBrushPower); }
+// 
+// 				ImGui::NewLine(); //! 브러시 모드 라디오
+// 
+// 				static int BrushIndex = 0;
+// 				const char* BrushModeName[3] = { u8"다운", u8"업", u8"프레싱" };
+// 
+// 				for (_uint i = 0; i < IM_ARRAYSIZE(BrushModeName); ++i)
+// 				{
+// 					if (i > 0) { ImGui::SameLine(); }
+// 					ImGui::RadioButton(BrushModeName[i], &BrushIndex, i);
+// 				}
+// 
+// 				m_eBrushMode = BRUSHMODE(BrushIndex);
+// 
+// 				ImGui::NewLine(); //! 지형 픽킹 모드 라디오
+// 
+// 				const char* TileModeName[4] = { u8"뾰족", u8"둥글게", u8"사각", u8"필터" };
+// 
+// 				for (_uint i = 0; i < IM_ARRAYSIZE(TileModeName); ++i)
+// 				{
+// 					if (i > 0) { ImGui::SameLine(); }
+// 					ImGui::RadioButton(TileModeName[i], &m_iTileMode, i);
+// 				}
+// 
+// 				if (ImGui_MouseInCheck())
+// 					PickingTerrain(m_eBrushMode);
+// 
+// 			}
+// 		}
+
 		ImGui::EndTabItem();
 	}
 }
@@ -244,6 +327,7 @@ void CImgui_Manager::ImGui_ObjectToolTick()
 
 		if (iObjectToolMode == 0)
 		{
+
 			ObjectModeTick();
 		}
 
@@ -395,18 +479,28 @@ void CImgui_Manager::OpenDialog(TOOLID eToolID)
 	{
 	case Client::CImgui_Manager::TOOL_MAP:
 		strKey = "MapToolDialog";
-		strTitle = u8"맵 다이얼로그" + strAdd;
-		strPath = "../Bin/DafaFiles/Map/";
+		strTitle = u8"맵 " + strAdd;
+		strPath = "../Bin/DataFiles/Map/";
 
 		break;
 	case Client::CImgui_Manager::TOOL_OBJECT:
 		strKey = "ObjectToolDialog";
-		strTitle = u8"오브젝트 다이얼로그" + strAdd;
-		strPath = "../Bin/DafaFiles/Object/";
+		strTitle = u8"오브젝트 " + strAdd;
+		strPath = "../Bin/DataFiles/";
 		break;
+
+	case Client::CImgui_Manager::TOOL_NAVI:
+		strKey = "NaviToolDialog";
+		strTitle = u8"내비게이션 " + strAdd;
+		strPath = "../Bin/DataFiles/";
+		break;
+
 	case Client::CImgui_Manager::TOOL_CAMERA:
 		break;
 	case Client::CImgui_Manager::TOOL_EFFECT:
+		strKey = "EffectToolDialog";
+		strTitle = u8"이펙트 " + strAdd;
+		strPath = "../Bin/DataFiles/";
 		break;
 	}
 
@@ -426,6 +520,15 @@ void CImgui_Manager::ShowDialog(TOOLID eToolID)
 	else if (eToolID == CImgui_Manager::TOOL_OBJECT)
 	{
 		DialogKey = "ObjectToolDialog";
+	}
+
+	else if (eToolID == CImgui_Manager::TOOL_NAVI)
+	{
+		DialogKey = "NaviToolDialog";
+	}
+	else if (eToolID == CImgui_Manager::TOOL_NAVI)
+	{
+		DialogKey = "EffectToolDialog";
 	}
 
 	if (m_pFileDialog->Display(DialogKey))
@@ -449,7 +552,26 @@ void CImgui_Manager::ShowDialog(TOOLID eToolID)
 					SaveMap(filePathName, fileName);
 
 				else if (m_eToolID == CImgui_Manager::TOOL_OBJECT)
-					SaveObject(filePathName);
+					SaveObject(filePath, fileName);
+
+				else if(m_eToolID == CImgui_Manager::TOOL_NAVI)
+					SaveNavi(filePathName);
+				else if (eToolID == CImgui_Manager::TOOL_EFFECT)
+				{
+					if (0 == m_iEffectCreateMode) //! 메쉬이펙트
+					{
+						SaveMeshEffect(filePath, fileName);
+					}
+					else if (1 == m_iEffectCreateMode) //! 텍스처 이펙트
+					{
+						SaveTextureEffect(filePath, fileName);
+					}
+					else if (2 == m_iEffectCreateMode) //! 파티클 이펙트
+					{
+						SaveParticleEffect(filePath, fileName);
+					}
+				}
+
 				break;
 			}
 
@@ -460,7 +582,36 @@ void CImgui_Manager::ShowDialog(TOOLID eToolID)
 					LoadMap(filePathName, fileName);
 
 				else if (m_eToolID == CImgui_Manager::TOOL_OBJECT)
-					LoadObject(filePathName);
+				{
+					if (fileName.find("NonAnim") != string::npos)
+					{
+						LoadNonAnimObject(filePath, fileName);
+					}
+					else if (fileName.find("Anim") != string::npos)
+					{
+						LoadAnimObject(filePath, fileName);
+					}
+				}
+
+				else if (m_eToolID == CImgui_Manager::TOOL_NAVI)
+						LoadNavi(filePathName);
+
+				else if (eToolID == CImgui_Manager::TOOL_EFFECT)
+				{
+					if (0 == m_iEffectCreateMode) //! 메쉬이펙트
+					{
+						LoadMeshEffect(filePath, fileName);
+					}
+					else if (1 == m_iEffectCreateMode) //! 텍스처 이펙트
+					{
+						LoadTextureEffect(filePath, fileName);
+					}
+					else if (2 == m_iEffectCreateMode) //! 파티클 이펙트
+					{
+						LoadParticleEffect(filePath, fileName);
+					}
+				}
+
 				break;
 			}
 			}
@@ -527,7 +678,7 @@ void CImgui_Manager::PickingTerrain(BRUSHMODE eBrushMode)
 	{
 		if (m_pGameInstance->Mouse_Down(DIM_LB))
 		{
-			m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)m_iTileMode);
+			m_pField->Picking_Terrain((CField::EDIT_MODE)m_iTileMode);
 		}
 
 		break;
@@ -537,7 +688,7 @@ void CImgui_Manager::PickingTerrain(BRUSHMODE eBrushMode)
 	{
 		if (m_pGameInstance->Mouse_Up(DIM_LB))
 		{
-			m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)m_iTileMode);
+			m_pField->Picking_Terrain((CField::EDIT_MODE)m_iTileMode);
 		}
 
 		break;
@@ -547,7 +698,7 @@ void CImgui_Manager::PickingTerrain(BRUSHMODE eBrushMode)
 	{
 		if (m_pGameInstance->Mouse_Pressing(DIM_LB))
 		{
-			m_pDynamic_Terrain->Picking_Terrain((CDynamic_Terrain::EDIT_MODE)m_iTileMode);
+			m_pField->Picking_Terrain((CField::EDIT_MODE)m_iTileMode);
 		}
 
 		break;
@@ -575,7 +726,7 @@ void CImgui_Manager::SaveMap(string strFilePath, string strFileName)
 		sub = strFileName.substr(index, current - index);
 	}
 
-	m_pDynamic_Terrain->Write_Json(OutJson, ConvertStrToWstr(sub));
+	m_pField->Write_Json(OutJson);
 
 	if (FAILED(CJson_Utility::Save_Json(strFilePath.c_str(), OutJson)))
 	{
@@ -620,22 +771,41 @@ void CImgui_Manager::LoadMap(string strFilePath, string strFileName)
 	}
 }
 
-HRESULT CImgui_Manager::Add_PrototypeTag(const wstring& strPrototypeTag)
+HRESULT CImgui_Manager::Add_PrototypeTag(const wstring& strPrototypeTag, _bool bModelType)
 {
 	string pTag = ConvertWstrToStr(strPrototypeTag);
 
-	m_vecObjectProtoTags.push_back(pTag);
+	if (true == bModelType)
+		m_vecAnimObjectTags.push_back(pTag);
+	else
+		m_vecNonAnimObjectTags.push_back(pTag);
+
 
 	return S_OK;
 }
 
 HRESULT CImgui_Manager::Ready_ProtoTagList()
 {
-	vector<wstring> vecTags = m_pGameInstance->Get_VecTags();
+	vector<wstring> LayerTags = m_pGameInstance->Get_LayerTags();
 
-	for (auto& strTag : vecTags)
+	for (auto& strLayerTag : LayerTags)
 	{
-		Add_PrototypeTag(strTag);
+		m_vecLayerTags.push_back(ConvertWstrToStr(strLayerTag));
+	}
+
+	
+	map<const wstring, _bool> ObjectTags = m_pGameInstance->Get_ObjectTags();
+
+	for (auto& wstrTag : ObjectTags)
+	{
+		Add_PrototypeTag(wstrTag.first, wstrTag.second);
+	}
+
+	vector<wstring> ModelTags = m_pGameInstance->Get_ModelTags();
+
+	for (auto& strModelTag : ModelTags)
+	{
+		m_vecModelTags.push_back(ConvertWstrToStr(strModelTag));
 	}
 
 	return S_OK;
@@ -664,19 +834,25 @@ void CImgui_Manager::BinaryModeTick()
 
 void CImgui_Manager::ObjectModeTick()
 {
+
 	if (ImGui::Button(u8"저장하기")) { m_eDialogMode = CImgui_Manager::DIALOG_SAVE; OpenDialog(m_eToolID); } ImGui::SameLine(); if (ImGui::Button(u8"불러오기")) { m_eDialogMode = CImgui_Manager::DIALOG_LOAD; OpenDialog(m_eToolID); }
 
-	if (nullptr != m_pDynamic_Terrain)
+	if (nullptr != m_pField)
 	{
-		ImGui::Text(u8"마우스 X : %f", m_pDynamic_Terrain->GetMousePos().x);
-		ImGui::Text(u8"마우스 Y : %f", m_pDynamic_Terrain->GetMousePos().y);
-		ImGui::Text(u8"마우스 Z : %f", m_pDynamic_Terrain->GetMousePos().z);
+		ImGui::Text(u8"마우스 X : %f", m_pField->GetMousePos().x);
+		ImGui::Text(u8"마우스 Y : %f", m_pField->GetMousePos().y);
+		ImGui::Text(u8"마우스 Z : %f", m_pField->GetMousePos().z);
+
 
 		ImGui::Checkbox(u8"픽킹모드", &m_bObjectToolPickMode);
+		
+		
 
 		if (true == m_bObjectToolPickMode)
 		{
-			ImGui::RadioButton(u8"Create", &m_iObjectMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"Select", &m_iObjectMode, 1);
+			ImGui::RadioButton(u8"Create", &m_iObjectMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"Select", &m_iObjectMode, 1); ImGui::SameLine(); ImGui::RadioButton(u8"Delete", &m_iObjectMode, 2);
+
+			ImGui::RadioButton(u8"AnimModel", &m_iModelType, 0); ImGui::SameLine(); ImGui::RadioButton(u8"NonAnimModel", &m_iModelType, 1);
 
 			if (0 == m_iObjectMode)
 			{
@@ -687,59 +863,263 @@ void CImgui_Manager::ObjectModeTick()
 			{
 				SelectObjectFunction();
 			}
+
+			else if (2 == m_iObjectMode)
+			{
+				DeleteObjectFunction();
+			}
 		}
 	}
 }
 
 void CImgui_Manager::CreateObjectFunction()
 {
-	_int iObjectTagSize = m_vecObjectProtoTags.size();
 
-	if (ImGui::BeginListBox(u8"태그 리스트"))
+	_int iObjectTagSize = 0, iLayerTagSize = 0;
+
+	
+	if (m_bOpenLayerTags == true)
 	{
-		for (_uint i = 0; i < iObjectTagSize; ++i)
+		iLayerTagSize = m_vecLayerTags.size();
+
+		if (ImGui::BeginListBox(u8"레이어 태그 리스트"))
 		{
-			const _bool isSelected = (m_iSelectTagIndex == i);
-
-			if (ImGui::Selectable(m_vecObjectProtoTags[i].c_str(), isSelected))
+			for (_uint i = 0; i < iLayerTagSize; ++i)
 			{
-				m_iSelectTagIndex = i;
+				const _bool isSelected = (m_iSelectLayerTagIndex == i);
 
-				if (isSelected)
-					ImGui::SetItemDefaultFocus();
+				if (ImGui::Selectable(m_vecLayerTags[i].c_str(), isSelected))
+				{
+					m_iSelectLayerTagIndex = i;
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndListBox();
+		}
+	}
+
+	ImGui::Checkbox(u8"모델픽킹", &m_bModelPicking);
+
+	if(m_iSelectLayerTagIndex != -1)
+		m_bOpenLayerTags = false;
+
+	if (m_bOpenLayerTags == false) //! 레이어 태그를 선택 했다면.
+	{
+
+		if (0 == m_iModelType)
+		{
+			iObjectTagSize = m_vecAnimObjectTags.size();
+
+
+			if (ImGui::BeginListBox(u8"애니메이션 모델 태그 리스트"))
+			{
+				for (_uint i = 0; i < iObjectTagSize; ++i)
+				{
+					const _bool isSelected = (m_iSelectTagIndex == i);
+
+					if (ImGui::Selectable(m_vecAnimObjectTags[i].c_str(), isSelected))
+					{
+						m_iSelectTagIndex = i;
+
+						if (isSelected)
+							ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndListBox();
 			}
 		}
-		ImGui::EndListBox();
+		else
+		{
+			//iObjectTagSize = m_vecNonAnimObjectTags.size();
+			iObjectTagSize = m_vecModelTags.size();
+
+
+			if (ImGui::BeginListBox(u8"환경 모델 태그 리스트"))
+			{
+				for (_uint i = 0; i < iObjectTagSize; ++i)
+				{
+					const _bool isSelected = (m_iSelectTagIndex == i);
+					
+					if (ImGui::Selectable(m_vecModelTags[i].c_str(), isSelected))
+					{
+						m_iSelectTagIndex = i;
+					
+						if (isSelected)
+							ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndListBox();
+			}
+		}
+
+		if (ImGui::Button(u8"취소"))
+		{
+			m_bOpenLayerTags = true;
+			m_iSelectLayerTagIndex = -1;
+		}
 	}
+
 
 	if (m_pGameInstance->Mouse_Down(DIM_LB))
 	{
-		if (nullptr != m_pDynamic_Terrain)
-			m_fPickingPos = m_pDynamic_Terrain->GetMousePos(); //! 마우스 클릭한 지점의 월드 좌표 받기
+		if (nullptr != m_pField)
+			m_fPickingPos = m_pField->GetMousePos(); //! 마우스 클릭한 지점의 월드 좌표 받기
 		else
 		{
-			MSG_BOX("터레인부터 생성해");
+			MSG_BOX("필드부터 생성해");
 			return;
 		}
 
-		if (m_pDynamic_Terrain->MouseOnTerrain() && ImGui_MouseInCheck())
+
+		if (true == m_bModelPicking)
+		{
+			_int iNonAnimObjectSize = m_vecNonAnimObjects.size();
+
+			CGameObject* pHighestObject = nullptr;
+
+			_int	iIndex = 0;
+			_float fHighestYValue = -FLT_MAX;
+			_float3 vHighestPickesPos = {};
+			_bool	bIsPicking = false;
+
+			for (_int i = 0; i < iNonAnimObjectSize; ++i)
+			{
+				_float3 vPickedPos = {};
+
+				if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos) && true == ImGui_MouseInCheck())
+				{
+					
+					_float3 vDestPos;
+					XMStoreFloat3(&vDestPos, m_vecNonAnimObjects[i]->Get_Transform()->Get_State(CTransform::STATE_POSITION));
+
+					if (vDestPos.y > fHighestYValue)
+					{
+						fHighestYValue = vDestPos.y;
+						iIndex = i;
+						vHighestPickesPos = vPickedPos;
+						bIsPicking = true;
+					}
+				}
+			}
+
+			if (true == bIsPicking)
+			{
+				CGameObject* pGameObject = nullptr;
+
+				wstring wstr;
+				string SliceTag = "";
+				string IndexTag;
+
+				if (0 == m_iModelType)
+				{
+					CGameObject::GAMEOBJECT_DESC pDesc;
+
+					pDesc.iLevelIndex = LEVEL_TOOL;
+
+					wstr = ConvertStrToWstr(m_vecAnimObjectTags[m_iSelectTagIndex]);
+
+
+
+					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pGameObject))))
+						return;
+
+					SliceTag = ConvertWstrToStr(wstr);
+					IndexTag = "@" + to_string(m_vecAnimObjects.size() + 1);
+					SliceTag = SliceTag + IndexTag;
+
+					m_vecCreateAnimObjectTags.push_back(SliceTag);
+					m_vecCreateAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
+					m_vecAnimObjects.push_back(pGameObject);
+
+					pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(vHighestPickesPos.x, vHighestPickesPos.y, vHighestPickesPos.z, 1.f));
+					_int iCellIndex = m_pNavigation->Get_SelectRangeCellIndex(pGameObject);
+
+					pGameObject->Set_CellIndex(iCellIndex);
+					
+				}
+
+				else
+				{
+					CEnvironment_Object::ENVIRONMENT_DESC Desc;
+					Desc.iLevelIndex = LEVEL_TOOL;
+					Desc.strModelTag = ConvertStrToWstr(m_vecModelTags[m_iSelectTagIndex]);
+					XMStoreFloat4x4(&Desc.WorldMatrix, XMMatrixIdentity());
+					
+					wstr = TEXT("Prototype_GameObject_Environment");
+
+					if (Desc.strModelTag == TEXT("Prototype_Component_Model_Environment_BornFire"))
+					{
+						wstr = TEXT("Prototype_GameObject_Environment_BornFire");
+					}
+
+					
+
+					if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &Desc, reinterpret_cast<CGameObject**>(&pGameObject))))
+						return;
+
+					SliceTag = m_vecModelTags[m_iSelectTagIndex];
+					IndexTag = "@" + to_string(m_vecNonAnimObjects.size() + 1);
+					SliceTag = SliceTag + IndexTag;
+
+					m_vecCreateNonAnimObjectTags.push_back(SliceTag);
+					m_vecCreateNonAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
+					m_vecNonAnimObjects.push_back(pGameObject);
+				}
+
+				
+
+				pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(vHighestPickesPos.x, vHighestPickesPos.y, vHighestPickesPos.z, 1.f));
+			}
+			
+		}
+		else if (m_pField->MouseOnTerrain() && ImGui_MouseInCheck())
 		{
 			CGameObject* pGameObject = nullptr;
 
-			wstring wstr = ConvertStrToWstr(m_vecObjectProtoTags[m_iSelectTagIndex]);
+			wstring wstr;
+			string SliceTag = "";
+			string IndexTag = "";
 
-			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, TEXT("Layer_BackGround"), wstr, nullptr, reinterpret_cast<CGameObject**>(&pGameObject))))
-				return;
+			if (0 == m_iModelType)
+			{
+				CGameObject::GAMEOBJECT_DESC pDesc;
+				pDesc.iLevelIndex = LEVEL_TOOL;
 
+				wstr = ConvertStrToWstr(m_vecAnimObjectTags[m_iSelectTagIndex]);
 
+				if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &pDesc, reinterpret_cast<CGameObject**>(&pGameObject))))
+					return;
 
-			string SliceTag = ConvertWstrToStr(wstr);
-			string IndexTag = to_string(m_vecObjects.size() + 1);
-			SliceTag = SliceTag + IndexTag;
+				SliceTag = ConvertWstrToStr(wstr);
+				IndexTag = "@" + to_string(m_vecAnimObjects.size() + 1);
+				SliceTag = SliceTag + IndexTag;
 
-			m_vecCreateObjectTag.push_back(SliceTag);
+				m_vecCreateAnimObjectTags.push_back(SliceTag);
+				m_vecCreateAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
+				m_vecAnimObjects.push_back(pGameObject);
+			}
+			else
+			{
+				CEnvironment_Object::ENVIRONMENT_DESC Desc;
+				Desc.iLevelIndex = LEVEL_TOOL;
+				Desc.strModelTag = ConvertStrToWstr(m_vecModelTags[m_iSelectTagIndex]);
 
-			m_vecObjects.push_back(pGameObject);
+				wstr = TEXT("Prototype_GameObject_Environment");
+
+				if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecLayerTags[m_iSelectLayerTagIndex]), wstr, &Desc, reinterpret_cast<CGameObject**>(&pGameObject))))
+					return;
+
+				SliceTag = m_vecModelTags[m_iSelectTagIndex];
+				IndexTag = "@" + to_string(m_vecNonAnimObjects.size() + 1);
+				SliceTag = SliceTag + IndexTag;
+
+				m_vecCreateNonAnimObjectTags.push_back(SliceTag);
+				m_vecCreateNonAnimObjectLayerTag.push_back(m_vecLayerTags[m_iSelectLayerTagIndex]);
+				m_vecNonAnimObjects.push_back(pGameObject);
+			}
+
 			pGameObject->Get_Transform()->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPickingPos.x, m_fPickingPos.y, m_fPickingPos.z, 1.f));
 		}
 
@@ -751,61 +1131,512 @@ void CImgui_Manager::SelectObjectFunction()
 {
 	Set_GuizmoCamView(); //! 기즈모 뷰 투영 셋팅해주기.
 	Set_GuizmoCamProj();	//! 기즈모 뷰 투영 셋팅해주기.
+	
+
+	static bool bPartDebug = false;
+
+	ImGui::Text(u8"현재 EN00파츠");
+	ImGui::Checkbox(u8"테스트", &bPartDebug);
+	
 
 	if (nullptr != m_PickingObject)
+	{
 		Set_Guizmo();
 
-	//_int iObjectListSize = m_vecCreateObjectTag.size();
-	_int iObjectListSize = m_vecCreateObjectTag.size();
-	if (ImGui::BeginListBox(u8""))
-	{
-		for (_int i = 0; i < iObjectListSize; ++i)
+		if (true == bPartDebug)
 		{
-			const _bool isSelected = (m_iPickingObjectIndex == i);
+			static _float TestInput[3];
+			static _float TestCenter[3];
 
-			if (ImGui::Selectable(m_vecCreateObjectTag[i].c_str(), isSelected))
-			{
-				m_PickingObject = m_vecObjects[i];
-				m_iPickingObjectIndex = i;
+			m_PartObject = dynamic_cast<CBoss_EN131*>(m_PickingObject)->Find_PartObject(TEXT("Part_Weapon1"));
 
-				if (isSelected)
-					ImGui::SetItemDefaultFocus();
-			}
+
+			ImGui::InputFloat3(u8"테스트Extents", TestInput);
+			ImGui::InputFloat3(u8"테스트Center", TestCenter);
+
+			CBoundParent* pBound = dynamic_cast<CBossPart_EN131_Weapon*>(m_PartObject)->Get_Collider()->Get_Bounding();
+
+			CBoundingBox_OBB* pOBBBox = dynamic_cast<CBoundingBox_OBB*>(pBound);
+
+			
+
+			_float3 vTest = { TestInput[0],TestInput[1], TestInput[2] };
+			_float3 vTestCenter = { TestCenter[0], TestCenter[1], TestCenter[2] };
+
+			BoundingOrientedBox* pBox = pOBBBox->Get_Bounding();
+
+			pBox->Extents = vTest;
+			pBox->Center = vTestCenter;
+			
+
 		}
-
-		ImGui::EndListBox();
 	}
+
+	_int iObjectListSize;
+
+	if (0 == m_iModelType)
+		iObjectListSize = m_vecCreateAnimObjectTags.size();
+	else 
+		iObjectListSize = m_vecCreateNonAnimObjectTags.size();
+
+
+	if (0 == m_iModelType)
+	{
+		if (ImGui::BeginListBox(u8""))
+		{
+			for (_int i = 0; i < iObjectListSize; ++i)
+			{
+				const _bool isSelected = (m_iPickingObjectIndex == i);
+
+				if (ImGui::Selectable(m_vecCreateAnimObjectTags[i].c_str(), isSelected))
+				{
+					m_PickingObject = m_vecAnimObjects[i];
+					m_iPickingObjectIndex = i;
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndListBox();
+		}
+	}
+	else
+	{
+		if (ImGui::BeginListBox(u8""))
+		{
+			for (_int i = 0; i < iObjectListSize; ++i)
+			{
+				const _bool isSelected = (m_iPickingObjectIndex == i);
+
+				if (ImGui::Selectable(m_vecCreateNonAnimObjectTags[i].c_str(), isSelected))
+				{
+					m_PickingObject = m_vecNonAnimObjects[i];
+					m_iPickingObjectIndex = i;
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndListBox();
+		}
+	}
+	
 
 	ImGui::NewLine();
 
 	ImGui::Checkbox(u8"픽킹모드", &m_bObjectToolPickMode);
 
-	if (nullptr != m_pDynamic_Terrain && false == m_bObjectToolPickMode)
+	if (nullptr != m_pField && false == m_bObjectToolPickMode)
 		return;
 
-	m_fPickingPos = m_pDynamic_Terrain->GetMousePos();
+	m_fPickingPos = m_pField->GetMousePos();
 
-	if (m_pGameInstance->Mouse_Down(DIM_LB))
+	if (nullptr != m_PickingObject)
 	{
-		_int iObjectSize = m_vecObjects.size();
+		if(m_pGameInstance->Mouse_Down(DIM_RB))
+			m_PickingObject = nullptr;
+	}
+	
+
+	if (m_pGameInstance->Mouse_Down(DIM_LB) && nullptr == m_PickingObject)
+	{
+		_int iObjectSize;
+
+		if (0 == m_iModelType)
+		{
+			iObjectSize = m_vecAnimObjects.size();
+		}
+		else 
+			iObjectSize = m_vecNonAnimObjects.size();
+		
+		
 
 		for (_uint i = 0; i < iObjectSize; ++i)
 		{
-			if (m_vecObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecObjects[i]->Find_Component(TEXT("Com_Model")))))
+			_float3 vPickedPos = {};
+			
+			if (0 == m_iModelType)
 			{
-				m_PickingObject = m_vecObjects[i];
-				m_iPickingObjectIndex = i;
+				if (m_vecAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos))
+				{
+					m_PickingObject = m_vecAnimObjects[i];
+					m_iPickingObjectIndex = i;
+				}
 			}
+			else
+			{
+				if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos))
+				{
+					m_PickingObject = m_vecNonAnimObjects[i];
+					m_iPickingObjectIndex = i;
+				}
+			}
+			
 		}
 	}
+	
+
+	
 }
 
-void CImgui_Manager::SaveObject(string strFilePath)
+void CImgui_Manager::DeleteObjectFunction()
 {
+	ImGui::NewLine();
+	
+
+	ImGui::InputInt(u8"삭제할 오브젝트의 인덱스 : ", &m_iPickingObjectIndex);
+
+	_int iObjectListSize;
+
+	if (0 == m_iModelType)
+	{
+		iObjectListSize = m_vecAnimObjects.size();
+
+		if (ImGui::BeginListBox(u8""))
+		{
+			for (_int i = 0; i < iObjectListSize; ++i)
+			{
+				const _bool isSelected = (m_iPickingObjectIndex == i);
+
+				if (ImGui::Selectable(m_vecCreateAnimObjectTags[i].c_str(), isSelected))
+				{
+					m_PickingObject = m_vecAnimObjects[i];
+					m_iPickingObjectIndex = i;
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndListBox();
+		}
+	}
+	else
+	{
+		iObjectListSize = m_vecNonAnimObjects.size();
+
+		if (ImGui::BeginListBox(u8""))
+		{
+			for (_int i = 0; i < iObjectListSize; ++i)
+			{
+				const _bool isSelected = (m_iPickingObjectIndex == i);
+
+				if (ImGui::Selectable(m_vecCreateNonAnimObjectTags[i].c_str(), isSelected))
+				{
+					m_PickingObject = m_vecNonAnimObjects[i];
+					m_iPickingObjectIndex = i;
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndListBox();
+		}
+	}
+
+	
+		if (ImGui::Button(u8"삭제") && m_iPickingObjectIndex >= 0)
+		{
+			// 범위 체크 필요
+			if (0 == m_iModelType)
+			{
+				if (m_iPickingObjectIndex < static_cast<int>(m_vecCreateAnimObjectTags.size()) && m_iPickingObjectIndex < static_cast<int>(m_vecAnimObjects.size()))
+				{
+					// 해당 인덱스의 요소를 동시에 삭제
+					m_vecCreateAnimObjectTags.erase(m_vecCreateAnimObjectTags.begin() + m_iPickingObjectIndex);
+					m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecCreateAnimObjectLayerTag[m_iPickingObjectIndex]), m_vecAnimObjects[m_iPickingObjectIndex]);
+					m_vecCreateAnimObjectLayerTag.erase(m_vecCreateAnimObjectLayerTag.begin() + m_iPickingObjectIndex);
+					m_vecAnimObjects.erase(m_vecAnimObjects.begin() + m_iPickingObjectIndex);
+				}
+				else
+				{
+					// 인덱스가 범위를 벗어날 경우 처리
+					ImGui::Text(u8"인덱스가 범위를 벗어납니다.");
+				}
+			}
+			else
+			{
+				if (m_iPickingObjectIndex < static_cast<int>(m_vecCreateNonAnimObjectTags.size()) && m_iPickingObjectIndex < static_cast<int>(m_vecNonAnimObjects.size()))
+				{
+					// 해당 인덱스의 요소를 동시에 삭제
+					m_vecCreateNonAnimObjectTags.erase(m_vecCreateNonAnimObjectTags.begin() + m_iPickingObjectIndex);
+					m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecCreateNonAnimObjectLayerTag[m_iPickingObjectIndex]), m_vecNonAnimObjects[m_iPickingObjectIndex]);
+					m_vecCreateNonAnimObjectLayerTag.erase(m_vecCreateNonAnimObjectLayerTag.begin() + m_iPickingObjectIndex);
+					m_vecNonAnimObjects.erase(m_vecNonAnimObjects.begin() + m_iPickingObjectIndex);
+				}
+				else
+				{
+					// 인덱스가 범위를 벗어날 경우 처리
+					ImGui::Text(u8"인덱스가 범위를 벗어납니다.");
+				}
+			}
+			
+			m_PickingObject = nullptr;
+			m_iPickingObjectIndex = 0;
+		}
+		else
+		{
+			// 음수일 경우 처리
+			ImGui::Text(u8"올바른 인덱스 값을 입력하세요.");
+		}
+
+	//! 오브젝트 태그는 지울 필요가 없다.
+	
+	//! CreateAnimObjectTags를 지워야한다.
+	//! m_vecCreateAnimObjectTag와 m_vecAnimObject의 인덱스는 동일하다.
+	
+
 }
 
-void CImgui_Manager::LoadObject(string strFilePath)
+void CImgui_Manager::SaveObject(string strPath, string strFileName)
 {
+	
+	_int iAnimObjectSize = m_vecAnimObjects.size();
+	_int iNonAnimObjectSize = m_vecNonAnimObjects.size();
+	json AnimationJson;
+	json NonAnimationJson;
+	
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
+
+	string strAnimPath = strPath + "/" + strNoExtFileName + "_Anim.json";
+	string strNonAnimPATH = strPath + "/" + strNoExtFileName + "_NonAnim.json";
+
+
+	for (auto& tag : m_vecCreateAnimObjectTags) {
+		// 문자열에서 '@' 문자 이후의 부분을 지움
+		size_t atIndex = tag.find('@');
+		if (atIndex != std::string::npos) {
+			tag.erase(atIndex); // '@' 이후의 문자열을 모두 제거
+		}
+
+		// 결과 출력
+		std::cout << tag << std::endl;
+	}
+
+	for (_int i = 0; i < iAnimObjectSize; i++)
+	{
+		AnimationJson[i].emplace("Index", i);
+		AnimationJson[i].emplace("LayerTag", m_vecCreateAnimObjectLayerTag[i]);
+		AnimationJson[i].emplace("ObjectTag", m_vecCreateAnimObjectTags[i]);
+		_int iCellIndex = m_pNavigation->Get_SelectRangeCellIndex(m_vecAnimObjects[i]);
+		m_vecAnimObjects[i]->Set_CellIndex(iCellIndex);
+		m_vecAnimObjects[i]->Write_Json(AnimationJson[i]);
+	}
+	
+	
+
+	for (auto& tag : m_vecCreateNonAnimObjectTags) {
+		// 문자열에서 '@' 문자 이후의 부분을 지움
+		size_t atIndex = tag.find('@');
+		if (atIndex != std::string::npos) {
+			tag.erase(atIndex); // '@' 이후의 문자열을 모두 제거
+		}
+
+		// 결과 출력
+		std::cout << tag << std::endl;
+	}
+
+	for (_int i = 0; i < iNonAnimObjectSize; i++)
+	{
+		
+		NonAnimationJson[i].emplace("Index" , i);
+		NonAnimationJson[i].emplace("LayerTag", m_vecCreateNonAnimObjectLayerTag[i]);
+		NonAnimationJson[i].emplace("ObjectTag", m_vecCreateNonAnimObjectTags[i]);
+		m_vecNonAnimObjects[i]->Write_Json(NonAnimationJson[i]);
+	}
+
+	if (FAILED(CJson_Utility::Save_Json(strAnimPath.c_str(), AnimationJson)))
+	{
+		MSG_BOX("애니메이션 모델 세이브 실패");
+	}
+	else
+	{
+		MSG_BOX("애니메이션 모델 저장 성공");
+	}
+
+	if (FAILED(CJson_Utility::Save_Json(strNonAnimPATH.c_str(), NonAnimationJson)))
+	{
+		MSG_BOX("논 애니메이션 모델 세이브 실패");
+	}
+	else
+	{
+		MSG_BOX("논 애니메이션 모델 저장 성공");
+	}
+
+}
+
+void CImgui_Manager::LoadAnimObject(string strPath, string strFileName)
+{
+	json LoadJson;
+
+	string strFullPath = strPath + "/" + strFileName;
+
+	CJson_Utility::Load_Json(strFullPath.c_str(), LoadJson);
+
+	_int JsonSize = LoadJson.size();
+	m_PickingObject = nullptr;
+
+	ClearAnimObjects();
+	
+	for (_int i = 0; i < JsonSize; i++)
+	{
+		m_vecCreateAnimObjectLayerTag.push_back(LoadJson[i]["LayerTag"]);
+		m_vecCreateAnimObjectTags.push_back(LoadJson[i]["ObjectTag"]);
+
+		CGameObject* pGameObject = nullptr;
+
+		CGameObject::GAMEOBJECT_DESC Desc;
+
+		Desc.iLevelIndex = LEVEL_TOOL;
+
+		wstring wstrLayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
+		wstring wstrObjectTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
+		
+		
+
+		m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObjectTag, &Desc, &pGameObject);
+		pGameObject->Set_CellIndex(LoadJson[i]["CellIndex"]);
+
+		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
+
+		_float4x4 WorldMatrix;
+
+		for (_int i = 0; i < 4; ++i)
+		{
+			for (_int j = 0; j < 4; ++j)
+			{
+				WorldMatrix.m[i][j] = TransformJson[i][j];
+			}
+		}
+
+
+		pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
+
+		m_vecAnimObjects.push_back(pGameObject);
+
+	}
+	
+	
+	
+
+}
+	
+void CImgui_Manager::LoadNonAnimObject(string strPath, string strFileName)
+{
+	json LoadJson;
+
+	string strFullPath = strPath + "/" + strFileName;
+
+	CJson_Utility::Load_Json(strFullPath.c_str(), LoadJson);
+
+	_int JsonSize = LoadJson.size();
+	m_PickingObject = nullptr;
+
+	ClearNonAnimObjects();
+
+	for (_int i = 0; i < JsonSize; i++)
+	{
+		string IndexTag = "@" + to_string(i);
+		string pushObjectTag = string(LoadJson[i]["ObjectTag"]) + IndexTag;
+
+		m_vecCreateNonAnimObjectLayerTag.push_back(LoadJson[i]["LayerTag"]);
+		m_vecCreateNonAnimObjectTags.push_back(pushObjectTag);
+
+		CGameObject* pGameObject = nullptr;
+
+
+
+		CEnvironment_Object::ENVIRONMENT_DESC Desc;
+
+		const json& TransformJson = LoadJson[i]["Component"]["Transform"];
+		_float4x4 WorldMatrix;
+
+		for (_int i = 0; i < 4; ++i)
+		{
+			for (_int j = 0; j < 4; ++j)
+			{
+				WorldMatrix.m[i][j] = TransformJson[i][j];
+			}
+		}
+
+		Desc.iLevelIndex = LEVEL_TOOL;
+		Desc.strModelTag = ConvertStrToWstr(LoadJson[i]["ObjectTag"]);
+		XMStoreFloat4(&Desc.vPos, XMLoadFloat4x4(&WorldMatrix).r[3]);
+		Desc.WorldMatrix = WorldMatrix;
+		
+		
+
+		wstring wstr = TEXT("Prototype_GameObject_Environment");
+		if (Desc.strModelTag == TEXT("Prototype_Component_Model_Environment_BornFire"))
+		{
+			wstr = TEXT("Prototype_GameObject_Environment_BornFire");
+		}
+
+		wstring wstrLayerTag = ConvertStrToWstr(LoadJson[i]["LayerTag"]);
+		
+
+		m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstr, &Desc, &pGameObject);
+
+		//const json& TransformJson = LoadJson[i]["Component"]["Transform"];
+
+		//_float4x4 WorldMatrix;
+		//
+		//for (_int i = 0; i < 4; ++i)
+		//{
+		//	for (_int j = 0; j < 4; ++j)
+		//	{
+		//		WorldMatrix.m[i][j] = TransformJson[i][j];
+		//	}
+		//}
+		//
+		//
+		//pGameObject->Get_Transform()->Set_WorldFloat4x4(WorldMatrix);
+
+		m_vecNonAnimObjects.push_back(pGameObject);
+	}
+
+	m_pNaviTargetObject = m_vecNonAnimObjects[0];
+	m_iTargetIndex = 0;
+
+
+	m_pNavigation = dynamic_cast<CEnvironment_Object*>(m_pNaviTargetObject)->Get_NaviCom();
+	LoadCells();
+}
+
+void CImgui_Manager::ClearAnimObjects()
+{
+	_int iAnimObjectsSize = m_vecAnimObjects.size();
+	
+
+	for (_int i = 0; i < iAnimObjectsSize; ++i)
+	{
+		m_vecCreateAnimObjectTags.erase(m_vecCreateAnimObjectTags.begin() + i);
+		m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecCreateAnimObjectLayerTag[i]), m_vecAnimObjects[i]);
+		m_vecCreateAnimObjectLayerTag.erase(m_vecCreateAnimObjectLayerTag.begin() + i);
+		m_vecAnimObjects.erase(m_vecAnimObjects.begin() + i);
+	}
+
+	
+}
+
+void CImgui_Manager::ClearNonAnimObjects()
+{
+	_int iNonAnimObjectsSize = m_vecNonAnimObjects.size();
+
+	for (_int i = 0; i < iNonAnimObjectsSize; ++i)
+	{
+		
+		m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, ConvertStrToWstr(m_vecCreateNonAnimObjectLayerTag[i]), m_vecNonAnimObjects[i]);
+		m_vecNonAnimObjects.erase(m_vecNonAnimObjects.begin() + i);
+	}
+
+	m_vecCreateNonAnimObjectTags.clear();
+	m_vecCreateNonAnimObjectLayerTag.clear();
+
+	
 }
 
 HRESULT CImgui_Manager::StartBakeBinary()
@@ -848,6 +1679,14 @@ HRESULT CImgui_Manager::BinaryConvert(string strFileName, string strFilePath, co
 		if (FAILED(Write_AnimationData(strFileName)))
 			return E_FAIL;
 	}
+
+	if(FAILED(CreateModelInfo(eModelType, strFileName)))
+		return E_FAIL;
+	
+	m_vecBones.clear();
+	m_vecMesh.clear();
+	m_vecMaterial.clear();
+	m_vecAnimation.clear();
 
 	return S_OK;
 }
@@ -904,12 +1743,15 @@ HRESULT CImgui_Manager::Read_BoneData(aiNode* pAINode, _int iIndex, _int iParent
 
 HRESULT CImgui_Manager::Write_BoneData(string strFileName)
 {
-	string strFilePath = "../Bin/DataFiles/Model/";
-	string strEXT = ".bone";
 
-	string strFileName1 = filesystem::path(strFileName).stem().string();
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
+	string strEXT = ".Bone";
+	
+	string strCreatePath = CheckOrCreatePath(strNoExtFileName) + "\\";
+	
 
-	string strFullPath = strFilePath + strFileName1 + strEXT;
+	string strFullPath = strCreatePath + strNoExtFileName + strEXT;
+	
 
 	HANDLE	hFile;
 
@@ -927,13 +1769,14 @@ HRESULT CImgui_Manager::Write_BoneData(string strFileName)
 		size_t strLength = pBone->strName.size();
 		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
 		WriteFile(hFile, pBone->strName.c_str(), strLength, &dwByte, nullptr);
-
 		WriteFile(hFile, &pBone->matTransformation, sizeof(XMFLOAT4X4), &dwByte, nullptr);
 		WriteFile(hFile, &pBone->matOffset, sizeof(XMFLOAT4X4), &dwByte, nullptr);
 		WriteFile(hFile, &pBone->iIndex, sizeof(_int), &dwByte, nullptr);
 		WriteFile(hFile, &pBone->iParent, sizeof(_int), &dwByte, nullptr);
 		WriteFile(hFile, &pBone->iDepth, sizeof(_uint), &dwByte, nullptr);
 	}
+
+	
 
 	CloseHandle(hFile);
 
@@ -949,7 +1792,7 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 	for (_uint i = 0; i < m_pAiScene->mNumMeshes; ++i)
 	{
 		aiMesh* pAIMesh = m_pAiScene->mMeshes[i];
-
+		
 
 		asMesh* pMeshData = new asMesh;
 		//ZEROMEMORY(pMeshData);
@@ -959,6 +1802,7 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 
 		if (eModelType == MODEL_TYPE::TYPE_NONANIM)
 		{
+			pMeshData->iNumFace = pAIMesh->mNumFaces;
 			pMeshData->isAnim = (UINT)eModelType;
 
 			pMeshData->vecNonAnims.reserve(pAIMesh->mNumVertices);
@@ -969,7 +1813,7 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 			{
 				memcpy(&vertex.vPosition, &pAIMesh->mVertices[j], sizeof(_float3));
 				memcpy(&vertex.vNormal, &pAIMesh->mNormals[j], sizeof(_float3));
-				memcpy(&vertex.vTexcoord, &pAIMesh->mTextureCoords[j], sizeof(_float2));
+				memcpy(&vertex.vTexcoord, &pAIMesh->mTextureCoords[0][j], sizeof(_float2));
 				memcpy(&vertex.vTangent, &pAIMesh->mTangents[j], sizeof(_float3));
 
 				pMeshData->vecNonAnims.push_back(vertex);
@@ -979,8 +1823,9 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 		else if (eModelType == MODEL_TYPE::TYPE_ANIM)
 		{
 			pMeshData->isAnim = (UINT)eModelType;
-
+			pMeshData->iNumFace = pAIMesh->mNumFaces;
 			pMeshData->vecAnims.reserve(pAIMesh->mNumVertices);
+			
 
 			for (size_t j = 0; j < pAIMesh->mNumVertices; j++)
 				pMeshData->vecAnims.push_back(VTXANIMMESH{});
@@ -1001,7 +1846,7 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 				for (_uint k = 0; k < pAIBone->mNumWeights; ++k)
 				{
 					_uint		iVertexIndex = pAIBone->mWeights[k].mVertexId;
-					
+											   pAIBone->mWeights[j].mVertexId;
 					if (0.0f == pMeshData->vecAnims[iVertexIndex].vBlendWeights.x)
 					{
 						pMeshData->vecAnims[iVertexIndex].vBlendIndices.x = j;
@@ -1029,22 +1874,15 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 			}
 		}
 
-		pMeshData->vecIndices.reserve(pAIMesh->mNumFaces);
+		pMeshData->vecIndices.resize(pAIMesh->mNumFaces);
 
 		_uint iNumIndice = { 0 };
 
 		for (_uint j = 0; j < pAIMesh->mNumFaces; ++j)
 		{
 			aiFace& AIFace = pAIMesh->mFaces[j];
-
-			pMeshData->vecIndices[iNumIndice] = AIFace.mIndices[0];
-			pMeshData->vecIndices[iNumIndice] = AIFace.mIndices[1];
-			pMeshData->vecIndices[iNumIndice] = AIFace.mIndices[2];
-
-			for (_uint k = 0; k < 3; ++k)
-			{
-				pMeshData->vecIndices.push_back(AIFace.mIndices[k]);
-			}
+			
+			pMeshData->vecIndices[j] = { AIFace.mIndices[0], AIFace.mIndices[1], AIFace.mIndices[2] };
 		}
 
 		pMeshData->iMaterialIndex = pAIMesh->mMaterialIndex;
@@ -1075,12 +1913,12 @@ HRESULT CImgui_Manager::Read_MeshData(const MODEL_TYPE& eModelType)
 
 HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 {
-	string strFilePath = "../Bin/DataFiles/Model/";
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
 	string strEXT = ".mesh";
 
-	string strFileName1 = filesystem::path(strFileName).stem().string();
+	string strCreatePath = CheckOrCreatePath(strNoExtFileName) + "\\";
 
-	string strFullPath = strFilePath + strFileName1 + strEXT;
+	string strFullPath = strCreatePath + strNoExtFileName + strEXT;
 
 	HANDLE	hFile;
 
@@ -1129,12 +1967,13 @@ HRESULT CImgui_Manager::Write_MeshData(string strFileName)
 
 		size_t vecIndicesSize = m_vecMesh[i]->vecIndices.size();
 		WriteFile(hFile, &vecIndicesSize, sizeof(size_t), &dwByte, nullptr);
-		for (_int& index : m_vecMesh[i]->vecIndices)
+		for (FACEINDICES32& index : m_vecMesh[i]->vecIndices)
 		{
-			WriteFile(hFile, &index, sizeof(_int), &dwByte, nullptr);
+			WriteFile(hFile, &index, sizeof(FACEINDICES32), &dwByte, nullptr);
 		}
 
 		WriteFile(hFile, &m_vecMesh[i]->iMaterialIndex, sizeof(_uint), &dwByte, nullptr);
+		WriteFile(hFile, &m_vecMesh[i]->iNumFace, sizeof(_int), &dwByte, nullptr);
 
 		size_t vecBoneIndicesSize = m_vecMesh[i]->vecBoneIndices.size();
 		WriteFile(hFile, &vecBoneIndicesSize, sizeof(size_t), &dwByte, nullptr);
@@ -1171,23 +2010,16 @@ HRESULT CImgui_Manager::Read_MaterialData()
 		aiString aifile;
 		string strName;
 
-		if (FAILED(pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aifile)))
-			return E_FAIL; //!Continue
+		for(size_t j = 1; j < AI_TEXTURE_TYPE_MAX; j++)
+		{
+			if (FAILED(pMaterial->GetTexture(aiTextureType(j), 0, &aifile)))
+					continue;
 
-		strName = aifile.data;
-		pMaterialData->strDiffuseFilePath = filesystem::path(strName).filename().string();
+			strName = aifile.data;
 
-		if (FAILED(pMaterial->GetTexture(aiTextureType_SPECULAR, 0, &aifile)))
-			return E_FAIL; //!Continue
-
-		strName = aifile.data;
-		pMaterialData->strSpecularFilePath = filesystem::path(strName).filename().string();
-
-		if (FAILED(pMaterial->GetTexture(aiTextureType_NORMALS, 0, &aifile)))
-			return E_FAIL; //!Continue
-
-		strName = aifile.data;
-		pMaterialData->strNormalFilePath = filesystem::path(strName).filename().string();
+			pMaterialData->strTextureFilePath[j] = filesystem::path(strName).filename().string();
+			//pMaterialData->
+		}
 
 		m_vecMaterial.push_back(pMaterialData);
 	}
@@ -1197,13 +2029,12 @@ HRESULT CImgui_Manager::Read_MaterialData()
 
 HRESULT CImgui_Manager::Write_MaterialData(string strFileName)
 {
-
-	string strFilePath = "../Bin/DataFiles/Model/";
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
 	string strEXT = ".mat";
 
-	string strFileName1 = filesystem::path(strFileName).stem().string();
+	string strCreatePath = CheckOrCreatePath(strNoExtFileName) + "\\";
 
-	string strFullPath = strFilePath + strFileName1 + strEXT;
+	string strFullPath = strCreatePath + strNoExtFileName + strEXT;
 
 	HANDLE	hFile;
 
@@ -1220,23 +2051,15 @@ HRESULT CImgui_Manager::Write_MaterialData(string strFileName)
 
 	for (asMaterial* pMaterialData : m_vecMaterial)
 	{
-		size_t strLength = pMaterialData->strDiffuseFilePath.size();
-		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
-		WriteFile(hFile, pMaterialData->strDiffuseFilePath.c_str(), strLength, &dwByte, nullptr);
-
-		strLength = pMaterialData->strSpecularFilePath.size();
-		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
-		WriteFile(hFile, pMaterialData->strSpecularFilePath.c_str(), strLength, &dwByte, nullptr);
-
-		strLength = pMaterialData->strNormalFilePath.size();
-		WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
-		WriteFile(hFile, pMaterialData->strNormalFilePath.c_str(), strLength, &dwByte, nullptr);
+		for (string strPath : pMaterialData->strTextureFilePath)
+		{
+			size_t strLength = strPath.size();
+			WriteFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr);
+			WriteFile(hFile, strPath.c_str(), strLength, &dwByte, nullptr);
+		}
 	}
 
-
 	CloseHandle(hFile);
-
-	//!WriteFile(hFile, &m_vecMesh[i]->strName, sizeof(m_vecMesh[i]->strName), &dwByte, nullptr);
 
 	return S_OK;
 }
@@ -1313,12 +2136,12 @@ HRESULT CImgui_Manager::Read_AnimationData()
 
 HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 {
-	string strFilePath = "../Bin/DataFiles/Model/";
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
 	string strEXT = ".anim";
 
-	string strFileName1 = filesystem::path(strFileName).stem().string();
+	string strCreatePath = CheckOrCreatePath(strNoExtFileName) + "\\";
 
-	string strFullPath = strFilePath + strFileName1 + strEXT;
+	string strFullPath = strCreatePath + strNoExtFileName + strEXT;
 
 	HANDLE	hFile;
 
@@ -1362,38 +2185,103 @@ HRESULT CImgui_Manager::Write_AnimationData(string strFileName)
 	}
 
 	CloseHandle(hFile);
-	m_vecBones.clear();
-	m_vecMesh.clear();
-	m_vecMaterial.clear();
-	m_vecAnimation.clear();
 
 	return S_OK;
 }
 
-HRESULT CImgui_Manager::Bake_Character()
+HRESULT CImgui_Manager::CreateModelInfo(const MODEL_TYPE& eModelType, string strFileName)
 {
-	return S_OK;
-}
+	
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
+	
+	string strBone = "_INFO_Bone.txt";
+	string strMesh = "_INFO_Mesh.txt";
+	string strAnimation = "_INFO_Animation.txt";
+	string strMaterial = "_INFO_Material.txt";
 
-HRESULT CImgui_Manager::Bake_Env_NonAnim()
-{
-	return S_OK;
-}
+	string strCreatePath = CheckOrCreatePath(strNoExtFileName + "\\Info") + "\\";
+	string strTest;
 
-HRESULT CImgui_Manager::Bake_Env_Anim()
-{
-	return S_OK;
-}
-
-HRESULT CImgui_Manager::Bake_Weapon()
-{
-	return S_OK;
-}
-
-HRESULT CImgui_Manager::Bake_Select(string strFilePath, const MODEL_TYPE& eModelType)
-{
+	string strBoneInfoPath = strCreatePath + strNoExtFileName + strBone;
+	string strMeshInfoPath = strCreatePath + strNoExtFileName + strMesh;
+	string strAnimationInfoPath = strCreatePath + strNoExtFileName + strAnimation;
+	string strMaterialInfoPath = strCreatePath + strNoExtFileName + strMaterial;
 
 
+	ofstream OutBoneFile(strBoneInfoPath.c_str());
+	ofstream OutMeshFile(strMeshInfoPath.c_str());
+	ofstream OutAnimationFile(strAnimationInfoPath.c_str());
+	ofstream OutMaterialFile(strMaterialInfoPath.c_str());
+
+	if (OutBoneFile.is_open())
+	{
+		OutBoneFile << " =========== " << strNoExtFileName << " 정보 " << " =========== " << endl;
+
+		OutBoneFile << " ----------- " << " 뼈 " << " 정보 " << " ----------- " << endl;
+		
+		for (auto& pAsBone : m_vecBones)
+		{
+			OutBoneFile << " 이름 : " << pAsBone->strName << endl;
+			OutBoneFile << " 부모 인덱스 : " << pAsBone->iParent << endl;
+			OutBoneFile << " 자신 인덱스 : " << pAsBone->iIndex  << endl;
+
+			OutBoneFile << endl << endl;
+		}
+
+		OutBoneFile.close();
+	}
+
+	if (OutMeshFile.is_open())
+	{
+		OutMeshFile << " ----------- " << " 메쉬 " << " 정보 " << " ----------- " << endl;
+
+		for (auto& pAsMesh : m_vecMesh)
+		{
+			OutMeshFile << " 이름 : " << pAsMesh->strName << endl;
+
+			//!m_iIndexStride == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+			string strType = pAsMesh->isAnim == 0 ? " 논 애님 " : " 애님 ";
+
+
+			OutMeshFile << " 타입 " << strType << endl;
+
+			OutMeshFile << " ============== 구분선 ============== " << endl;
+		}
+
+		OutMeshFile.close();
+	}
+
+	if (OutAnimationFile.is_open() && eModelType == TYPE_ANIM)
+	{
+		OutAnimationFile << " ----------- " << " 애니메이션 " << " 정보 " << " ----------- " << endl;
+
+		_int iIndex = 0;
+
+		for (auto& pAsAnimation : m_vecAnimation)
+		{
+			OutAnimationFile << " 이름 : " << pAsAnimation->strName << endl;
+			OutAnimationFile << " 인덱스 : " << iIndex << endl;
+			OutAnimationFile << " 틱 : " << pAsAnimation->fTicksPerSecond << endl;
+			OutAnimationFile << " 총 재생 길이 : " << pAsAnimation->fDuration << endl;
+
+			++iIndex;
+		}
+
+		OutAnimationFile.close();
+	}
+
+	if (OutMaterialFile.is_open())
+	{
+		OutMaterialFile << " ----------- " << " 머터리얼 " << " 정보 " << " ----------- " << endl;
+
+		for (auto& pAsMaterial : m_vecMaterial)
+		{
+			OutMaterialFile << " 파일 경로 : " << pAsMaterial->strTextureFilePath << endl << endl;
+		}
+
+		OutMaterialFile.close();
+	}
+		
 	return S_OK;
 }
 
@@ -1408,18 +2296,1412 @@ _uint CImgui_Manager::Get_BoneIndex(const char* szName)
 	return 0;
 }
 
-string CImgui_Manager::ConvertWstrToStr(const wstring& str)
+//string CImgui_Manager::m_pGameInstance->ConvertWstrToStr(const wstring& str)
+//{
+//	wstring_convert<codecvt_utf8<_tchar>> converter;
+//	string ChangeStr = converter.to_bytes(str);
+//	return ChangeStr;
+//}
+//
+//wstring CImgui_Manager::m_pGameInstance->ConvertStrToWstr(const string& str)
+//{
+//	wstring_convert<codecvt_utf8<wchar_t>> converter;
+//	wstring wideStr = converter.from_bytes(str);
+//	return wideStr;
+//}
+
+void CImgui_Manager::ImGui_NaviToolTick()
 {
-	wstring_convert<codecvt_utf8<_tchar>> converter;
-	string ChangeStr = converter.to_bytes(str);
-	return ChangeStr;
+	if (ImGui::BeginTabItem(u8"내비게이션"))
+	{
+		m_eToolID = CImgui_Manager::TOOL_NAVI;
+
+		if (ImGui::Button(u8"저장하기")) { m_eDialogMode = CImgui_Manager::DIALOG_SAVE; OpenDialog(m_eToolID); } ImGui::SameLine(); if (ImGui::Button(u8"불러오기")) { m_eDialogMode = CImgui_Manager::DIALOG_LOAD; OpenDialog(m_eToolID); }
+
+		ImGui::RadioButton(u8"만들기", &m_iNaviToolMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"선택", &m_iNaviToolMode, 1);  ImGui::SameLine(); ImGui::RadioButton(u8"삭제", &m_iNaviToolMode, 2);
+
+		ImGui::Text(u8"마우스 X : %f", m_fNaviPickingPos.x);
+		ImGui::Text(u8"마우스 Y : %f", m_fNaviPickingPos.y);
+		ImGui::Text(u8"마우스 Z : %f", m_fNaviPickingPos.z);
+
+		if (m_iNaviToolMode == 0)
+		{
+			Create_Navi_Mode_Tick();
+		}
+
+		else if (m_iNaviToolMode == 1)
+		{
+			Select_Navi_CellModeTick();
+		}
+
+		else if (m_iNaviToolMode == 2)
+		{
+			Delete_Navi_Mode_Tick();
+		}
+
+#ifdef _DEBUG
+		if(nullptr != m_pNavigation)
+		m_pNavigation->Render();
+#endif
+
+		ImGui::EndTabItem();
+	}
 }
 
-wstring CImgui_Manager::ConvertStrToWstr(const string& str)
+void CImgui_Manager::Create_Navi_Mode_Tick()
 {
-	wstring_convert<codecvt_utf8<wchar_t>> converter;
-	wstring wideStr = converter.from_bytes(str);
-	return wideStr;
+	_int iObjectListSize = m_vecCreateNonAnimObjectTags.size();
+
+	if (nullptr == m_pNaviTargetObject)
+	{
+		if (ImGui::BeginListBox(u8""))
+		{
+			for (_int i = 0; i < iObjectListSize; ++i)
+			{
+				const _bool isSelected = (m_iTargetIndex == i);
+
+				if (ImGui::Selectable(m_vecCreateNonAnimObjectTags[i].c_str(), isSelected))
+				{
+					m_pNaviTargetObject = m_vecNonAnimObjects[i];
+					m_iTargetIndex = i;
+					m_pNavigation = dynamic_cast<CEnvironment_Object*>(m_pNaviTargetObject)->Get_NaviCom();
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndListBox();
+		}
+	}	
+
+	else
+	{
+		
+		_int iPickedSize = m_vecPickingListBox.size();
+
+		static _int iPickingIndex = 0;
+
+		if (!m_vecPickedPoints.empty())
+		{
+			if (ImGui::BeginListBox(u8""))
+			{
+				for (_int i = 0; i < iPickedSize; ++i)
+				{
+					const _bool isSelected = (m_iNaviListBoxIndex == i);
+
+					if (ImGui::Selectable(m_vecPickingListBox[i].c_str(), isSelected))
+					{
+						m_iNaviListBoxIndex = i;
+
+						if (isSelected)
+							ImGui::SetItemDefaultFocus();
+					}
+				}
+
+				ImGui::EndListBox();
+			}
+
+			if (m_iNaviListBoxIndex != -1)
+			{
+				ImGui::Text(u8"픽킹 X : %f", m_vecPickedPoints[m_iNaviListBoxIndex].x);
+				ImGui::Text(u8"픽킹 Y : %f", m_vecPickedPoints[m_iNaviListBoxIndex].y);
+				ImGui::Text(u8"픽킹 Z : %f", m_vecPickedPoints[m_iNaviListBoxIndex].z);
+
+				_float vPoints[3] = { m_vecPickedPoints[m_iNaviListBoxIndex].x, m_vecPickedPoints[m_iNaviListBoxIndex].y, m_vecPickedPoints[m_iNaviListBoxIndex].z };
+				
+				if (ImGui::InputFloat3(u8"포인트값변경", vPoints))
+				{
+					m_vecPickedPoints[m_iNaviListBoxIndex].x = vPoints[0];
+					m_vecPickedPoints[m_iNaviListBoxIndex].y = vPoints[1];
+					m_vecPickedPoints[m_iNaviListBoxIndex].z = vPoints[2];
+				}
+
+				
+				
+			}
+
+			if (ImGui::Button(u8"픽킹인덱스 삭제"))
+			{
+				if (m_iNaviListBoxIndex < m_vecPickedPoints.size()) {
+					m_vecPickedPoints.erase(m_vecPickedPoints.begin() + m_iNaviListBoxIndex);
+					m_vecPickingListBox.erase(m_vecPickingListBox.begin() + m_iNaviListBoxIndex);
+					
+					if(m_vecPickingListBox.size() == 0)
+						m_iNaviListBoxIndex = -1;
+					else
+						m_iNaviListBoxIndex = m_vecPickingListBox.size() - 1;
+					
+				}
+			}
+		}
+		
+		
+		
+
+		if (ImGui::Button(u8"생성") )
+		{
+			if (3 > m_iCurrentPickingIndex)
+				return;
+
+			
+
+			vector<double> fPoints; 
+			//fPoints.reserve(iPickedSize * 2);
+
+			for (_int i = 0; i < iPickedSize; ++i)
+			{
+				fPoints.push_back(m_vecPickedPoints[i].x);
+				
+				fPoints.push_back(m_vecPickedPoints[i].z);
+			}
+
+			
+			delaunator::Delaunator d(fPoints);
+
+
+			for (size_t i = 0; i < d.triangles.size(); i += 3)
+			{
+				//"Triangle points: [[%f, %f], [%f, %f], [%f, %f]]\n",
+				//	d.coords[2 * d.triangles[i]],        //tx0            
+				//	d.coords[2 * d.triangles[i] + 1],    //ty0
+				//	d.coords[2 * d.triangles[i + 1]],    //tx1
+				//	d.coords[2 * d.triangles[i + 1] + 1],//ty1
+				//	d.coords[2 * d.triangles[i + 2]],    //tx2
+				//	d.coords[2 * d.triangles[i + 2] + 1] //ty2
+				_float3 points[3] = { m_vecPickedPoints[d.triangles[i]], m_vecPickedPoints[d.triangles[i + 1]], m_vecPickedPoints[d.triangles[i + 2]] };
+
+				Set_CCW(points);
+
+				CCell* pCell = CCell::Create(m_pDevice, m_pContext, points, m_iNaviIndex++);
+
+				m_pNavigation->AddCell(pCell);
+			}
+
+			Reset_NaviPicking();
+		}
+
+		ImGui::Checkbox(u8"픽킹모드", &m_bPickingNaviMode);
+		
+
+		if (m_pGameInstance->Mouse_Down(DIM_LB) && true == ImGui_MouseInCheck() && true == m_bPickingNaviMode)
+		{
+			_int index = 0;
+			
+			_float3 fPickedPos = { 0.f, 0.f, 0.f };
+
+			if (m_pNaviTargetObject->Picking(_float3(), dynamic_cast<CModel*>(m_pNaviTargetObject->Find_Component(TEXT("Com_Model"))), &fPickedPos))
+			{
+				Find_NearPointPos(&fPickedPos);
+				m_vecPickedPoints.push_back(fPickedPos);
+				m_vecPickingListBox.push_back(to_string(m_iNaviPickingIndex));
+				++m_iCurrentPickingIndex;
+				++m_iNaviPickingIndex;
+				m_fNaviPickingPos = fPickedPos;
+			}
+// 			_int	iNonAnimObjectSize = m_vecNonAnimObjects.size();
+// 
+// 			_int	iIndex = 0;
+// 			_float fHighestYValue = -FLT_MAX;
+// 			_float3 vHighestPickesPos = {};
+// 			_bool	bIsPicking = false;
+// 			
+// 			for (_int i = 0; i < iNonAnimObjectSize; ++i)
+// 			{
+// 				_float3 vPickedPos = {};
+// 
+// 				if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos) && true == ImGui_MouseInCheck())
+// 				{
+// 					_float3 vDestPos;
+// 					XMStoreFloat3(&vDestPos, m_vecNonAnimObjects[i]->Get_Transform()->Get_State(CTransform::STATE_POSITION));
+// 
+// 					if (vDestPos.y > fHighestYValue) //! 객체의 y값이  이전 객체의  y값보다 크다면
+// 					{
+// 						fHighestYValue = vDestPos.y; //! 이전객체의 y값은 현재 객체의 y값이 된다.
+// 						iIndex = i;
+// 						vHighestPickesPos = vPickedPos;
+// 						bIsPicking = true;
+// 					}
+// 				}
+// 			}
+// 
+// 			if (true == bIsPicking)
+// 			{
+// 				//! 반복문이 끝난 후 가장 y값이 높은 객체의 픽킹 위치를 기준으로
+// 				
+// 				Find_NearPointPos(&vHighestPickesPos);
+// 				m_vecPickedPoints.push_back(vHighestPickesPos);
+// 				++m_iCurrentPickingIndex;
+// 
+// 				m_fNaviPickingPos = vHighestPickesPos;
+// 			}
+		}
+
+		ImGui::NewLine();
+		
+		if (ImGui::Button(u8"타겟해제"))
+		{
+			m_pNaviTargetObject = nullptr;
+			m_pNavigation = nullptr;
+		}
+	}
+}
+
+void CImgui_Manager::Delete_Navi_Mode_Tick()
+{
+	vector<CCell*> vecCells = m_pNavigation->Get_Cells();
+	_int iCellSize = vecCells.size();
+
+	if (m_pGameInstance->Mouse_Down(DIM_LB) && true == ImGui_MouseInCheck())
+	{
+		_int index = 0;
+
+		_float3 fPickedPos = { 0.f, 0.f, 0.f };
+
+		_int	iNonAnimObjectSize = m_vecNonAnimObjects.size();
+
+		_int	iIndex = 0;
+		_float fHighestYValue = -FLT_MAX;
+		_float3 vHighestPickesPos = {};
+		_bool	bIsPicking = false;
+
+		//for (_int i = 0; i < iNonAnimObjectSize; ++i)
+		//{
+		//	_float3 vPickedPos = {};
+		//
+		//	if (m_vecNonAnimObjects[i]->Picking(m_fPickingPos, dynamic_cast<CModel*>(m_vecNonAnimObjects[i]->Find_Component(TEXT("Com_Model"))), &vPickedPos) && true == ImGui_MouseInCheck())
+		//	{
+		//		_float3 vDestPos;
+		//		XMStoreFloat3(&vDestPos, m_vecNonAnimObjects[i]->Get_Transform()->Get_State(CTransform::STATE_POSITION));
+		//
+		//		if (vDestPos.y > fHighestYValue)
+		//		{
+		//			fHighestYValue = vDestPos.y;
+		//			iIndex = i;
+		//			vHighestPickesPos = vPickedPos;
+		//			bIsPicking = true;
+		//		}
+		//	}
+		//}
+
+		if (m_pNaviTargetObject->Picking(_float3(), dynamic_cast<CModel*>(m_pNaviTargetObject->Find_Component(TEXT("Com_Model"))), &fPickedPos))
+		{
+			Find_NearPointPos(&fPickedPos);
+
+			m_fNaviPickingPos = fPickedPos;
+			bIsPicking = true;
+		}
+
+		if (true == bIsPicking)
+		{
+			CCell* pTargetCell = Find_NearCell(fPickedPos);
+
+			if(nullptr == pTargetCell)
+				return;
+
+			m_pNavigation->Delete_Cell(pTargetCell->Get_Index());
+		}
+	}
+	
+}
+
+void CImgui_Manager::Select_Navi_CellModeTick()
+{
+
+	if (m_pGameInstance->Mouse_Down(DIM_LB) && true == ImGui_MouseInCheck())
+	{
+		_bool bIsPicking = false;
+		_float3 fPickedPos = {};
+
+		if (m_pNaviTargetObject->Picking(_float3(), dynamic_cast<CModel*>(m_pNaviTargetObject->Find_Component(TEXT("Com_Model"))), &fPickedPos))
+		{
+			Find_NearPointPos(&fPickedPos);
+
+			m_fNaviPickingPos = fPickedPos;
+			bIsPicking = true;
+		}
+
+		if (true == bIsPicking)
+		{
+			CCell* pTargetCell = Find_NearCell(fPickedPos);
+
+			if (nullptr == pTargetCell)
+				return;
+
+			m_iCellIndex = pTargetCell->Get_Index();
+			m_vecCells[m_iCellIndex]->Set_Picking(true);
+		}
+	}
+	
+
+	_int iCellSize = m_vecCellIndexs.size();
+
+	if (nullptr != m_pNaviTargetObject)
+	{
+		if (ImGui::BeginListBox(u8""))
+		{
+			for (_int i = 0; i < iCellSize; ++i)
+			{
+				const _bool isSelected = (m_iCellIndex == i);
+
+				if (ImGui::Selectable(m_vecCellIndexs[i].c_str(), isSelected))
+				{
+					
+					m_iCellIndex = i;
+
+					m_vecCells[m_iCellIndex]->Set_Picking(true);
+					
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+
+				if(i == m_iCellIndex)
+					continue;
+				else
+					m_vecCells[i]->Set_Picking(false);
+			
+				
+			}
+
+			ImGui::EndListBox();
+		}
+
+		ImGui::RadioButton(u8"포인트 A", &m_iPointIndex, 0); ImGui::SameLine(); ImGui::RadioButton(u8"포인트 B", &m_iPointIndex, 1);  ImGui::SameLine(); ImGui::RadioButton(u8"포인트 C", &m_iPointIndex, 2);
+
+		ImGui::NewLine();
+		
+		_float3 vPoint = *m_vecCells[m_iCellIndex]->Get_Point((CCell::POINT)m_iPointIndex);
+
+		_float vPoints[3] = { vPoint.x, vPoint.y, vPoint.z };
+
+		if (ImGui::DragFloat3(u8"포인트값변경", vPoints, 0.1f))
+		{
+			_float3 vPassPoint = { vPoints[0], vPoints[1], vPoints[2] };
+
+			//m_vecCells[m_iCellIndex]->Set_Point(CCell::POINT_A, vPassPoint);
+			//m_vecCells[m_iCellIndex]->Set_Point((CCell::POINT)m_iPointIndex, vPassPoint);
+
+			m_pNavigation->InRangeCellChange(m_vecCells[m_iCellIndex], m_iPointIndex, vPassPoint);
+		}
+
+	}
+
+	
+
+}
+
+void CImgui_Manager::Set_CCW(_float3* vPoint)
+{
+	_vector vPositionFromVector[3];
+	for (int i(0); i < 3; i++)
+		vPositionFromVector[i] = XMLoadFloat3(&(vPoint[i]));
+
+	_vector vAtoB(vPositionFromVector[1] - vPositionFromVector[0]);
+	_vector vAtoC(vPositionFromVector[2] - vPositionFromVector[0]);
+
+	_vector vAtoB2D, vAtoC2D, vAtoB2DCross;
+	vAtoB2D = vAtoC2D = vAtoB2DCross = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+	vAtoB2D = XMVectorSetX(vAtoB2D, XMVectorGetX(vAtoB));
+	vAtoB2D = XMVectorSetY(vAtoB2D, XMVectorGetZ(vAtoB));
+	vAtoC2D = XMVectorSetX(vAtoC2D, XMVectorGetX(vAtoC));
+	vAtoC2D = XMVectorSetY(vAtoC2D, XMVectorGetZ(vAtoC));
+	vAtoB2DCross = XMVectorSetX(vAtoB2DCross, -1.f * XMVectorGetY(vAtoB2D));
+	vAtoB2DCross = XMVectorSetY(vAtoB2DCross, XMVectorGetX(vAtoB2D));
+	_float fDot(XMVectorGetX(XMVector2Dot(vAtoB2DCross, vAtoC2D)));
+	if (0.f < fDot)
+	{
+		XMStoreFloat3(&vPoint[1], vPositionFromVector[2]);
+		XMStoreFloat3(&vPoint[2], vPositionFromVector[1]);
+	}
+}
+
+void CImgui_Manager::Reset_NaviPicking()
+{
+	m_iCurrentPickingIndex = 0;
+	m_vecPickedPoints.clear();
+	m_vecPickingListBox.clear();
+
+	m_iNaviListBoxIndex = 0;
+	m_iNaviPickingIndex = 0;
+}
+
+void CImgui_Manager::Find_NearPointPos(_float3* fPickedPos)
+{
+	vector<CCell*> vecCells = m_pNavigation->Get_Cells();
+	_int iCellSize = vecCells.size();
+	_float fMinDistance = FLT_MAX;
+	
+	_float3 vPickedPos = *fPickedPos;
+
+
+
+	for (_int i = 0; i < iCellSize; ++i)
+	{
+		_float3 vPointA = *vecCells[i]->Get_Point(CCell::POINT_A);
+		_float3 vPointB = *vecCells[i]->Get_Point(CCell::POINT_B);
+		_float3 vPointC = *vecCells[i]->Get_Point(CCell::POINT_C);
+
+		_float distanceA = (_float)sqrt(pow(vPickedPos.x - vPointA.x, 2) +
+			pow(vPickedPos.y - vPointA.y, 2) +
+			pow(vPickedPos.z - vPointA.z, 2));
+
+		_float distanceB = (_float)sqrt(pow(vPickedPos.x - vPointB.x, 2) +
+			pow(vPickedPos.y - vPointB.y, 2) +
+			pow(vPickedPos.z - vPointB.z, 2));
+
+		_float distanceC = (_float)sqrt(pow(vPickedPos.x - vPointC.x, 2) +
+			pow(vPickedPos.y - vPointC.y, 2) +
+			pow(vPickedPos.z - vPointC.z, 2));
+
+		if (distanceA < fMinDistance && distanceA < m_fCombinationRange)
+		{
+			fMinDistance = distanceA;
+			*fPickedPos = vPointA;
+		}
+
+		if (distanceB < fMinDistance && distanceB < m_fCombinationRange)
+		{
+			fMinDistance = distanceB;
+			*fPickedPos = vPointB;
+		}
+
+		if (distanceC < fMinDistance && distanceC < m_fCombinationRange)
+		{
+			fMinDistance = distanceC;
+			*fPickedPos = vPointC;
+		}
+
+
+	}
+
+}
+
+CCell* CImgui_Manager::Find_NearCell(_float3 fPickedPos)
+{
+	vector<CCell*> vecCells = m_pNavigation->Get_Cells();
+	_int iCellSize = vecCells.size();
+	_float fMinDistance = FLT_MAX;
+
+	_float3 vPickedPos = fPickedPos;
+
+	for (_int i = 0; i < iCellSize; ++i)
+	{
+		_float3 vPointA = *vecCells[i]->Get_Point(CCell::POINT_A);
+		_float3 vPointB = *vecCells[i]->Get_Point(CCell::POINT_B);
+		_float3 vPointC = *vecCells[i]->Get_Point(CCell::POINT_C);
+
+		_float distanceA = (_float)sqrt(pow(vPickedPos.x - vPointA.x, 2) +
+			pow(vPickedPos.y - vPointA.y, 2) +
+			pow(vPickedPos.z - vPointA.z, 2));
+
+		_float distanceB = (_float)sqrt(pow(vPickedPos.x - vPointB.x, 2) +
+			pow(vPickedPos.y - vPointB.y, 2) +
+			pow(vPickedPos.z - vPointB.z, 2));
+
+		_float distanceC = (_float)sqrt(pow(vPickedPos.x - vPointC.x, 2) +
+			pow(vPickedPos.y - vPointC.y, 2) +
+			pow(vPickedPos.z - vPointC.z, 2));
+
+		if (distanceA < fMinDistance && distanceA < m_fCombinationRange)
+		{
+			fMinDistance = distanceA;
+			return vecCells[i];
+		}
+
+		if (distanceB < fMinDistance && distanceB < m_fCombinationRange)
+		{
+			fMinDistance = distanceB;
+			return vecCells[i];
+		}
+
+		if (distanceC < fMinDistance && distanceC < m_fCombinationRange)
+		{
+			fMinDistance = distanceC;
+			return vecCells[i];
+		}
+
+	}
+
+	return nullptr;
+}
+
+void CImgui_Manager::SaveNavi(string strFullPath)
+{
+	m_pNavigation->SaveData(ConvertStrToWstr(strFullPath));
+}
+
+void CImgui_Manager::LoadNavi(string strFullPath)
+{
+}
+
+void CImgui_Manager::LoadCells()
+{
+	vector<CCell*> vecCells = m_pNavigation->Get_Cells();
+
+	_int iCellSize = vecCells.size();
+
+	for (_int i = 0; i < iCellSize; ++i)
+	{
+		m_vecCells.push_back(vecCells[i]);
+		m_vecCellIndexs.push_back(to_string(m_vecCells[i]->Get_Index()));
+	}
+
+}
+
+HRESULT CImgui_Manager::Ready_EffectTagList()
+{
+	vector<wstring> ParticleTags = m_pGameInstance->Get_ParticleTags();
+
+	for (auto& strParticleTag : ParticleTags)
+	{
+		m_vecParticleTags.push_back(ConvertWstrToStr(strParticleTag));
+	}
+
+	vector<wstring> EffectTags = m_pGameInstance->Get_EffectTags();
+
+	for (auto& strEffectTag : EffectTags)
+	{
+		m_vecTextureEffectTags.push_back(ConvertWstrToStr(strEffectTag));
+	}
+
+
+	vector<wstring> EffectMeshTags = m_pGameInstance->Get_EffectMeshTags();
+
+	for (auto& strMeshTag : EffectMeshTags)
+	{
+		m_vecMeshEffectTags.push_back(ConvertWstrToStr(strMeshTag));
+	}
+
+	return S_OK;
+}
+
+void CImgui_Manager::Imgui_EffectToolTick()
+{
+	if (ImGui::BeginTabItem(u8"이펙트"))
+	{
+		m_eToolID = CImgui_Manager::TOOL_EFFECT;
+
+		string strCurrentSaveMode = "";
+		string strCurrentLoadMode = "";
+
+		if (m_iEffectCreateMode == 0)
+		{
+			strCurrentSaveMode = u8"메쉬 이펙트 저장하기";
+			strCurrentLoadMode = u8"메쉬 이펙트 불러오기";
+		}
+		else if (m_iEffectCreateMode == 1)
+		{
+			strCurrentSaveMode = u8"텍스처 이펙트 저장하기";
+			strCurrentLoadMode = u8"텍스처 이펙트 불러오기";
+		}
+		else if (m_iEffectCreateMode == 2)
+		{
+			strCurrentSaveMode = u8"파티클 이펙트 저장하기";
+			strCurrentLoadMode = u8"파티클 이펙트 불러오기";
+		}
+
+		if (ImGui::Button(strCurrentSaveMode.c_str())) { m_eDialogMode = CImgui_Manager::DIALOG_SAVE; OpenDialog(m_eToolID); } ImGui::SameLine(); if (ImGui::Button(strCurrentLoadMode.c_str())) { m_eDialogMode = CImgui_Manager::DIALOG_LOAD; OpenDialog(m_eToolID); }
+
+		ImGui::RadioButton(u8"만들기", &m_iEffectToolMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"선택", &m_iEffectToolMode, 1);  ImGui::SameLine(); ImGui::RadioButton(u8"삭제", &m_iEffectToolMode, 2);
+
+
+		if (m_iEffectToolMode == 0)
+		{
+			Create_Effect_Mode_Tick();
+		}
+
+		else if (m_iEffectToolMode == 1)
+		{
+			Select_Effect_ModeTick();
+		}
+
+		else if (m_iEffectToolMode == 2)
+		{
+			Delete_Effect_Mode_Tick();
+		}
+
+		ImGui::EndTabItem();
+	}
+}
+
+void CImgui_Manager::Create_Effect_Mode_Tick()
+{
+	ImGui::RadioButton(u8"메쉬", &m_iEffectCreateMode, 0); ImGui::SameLine(); ImGui::RadioButton(u8"렉트", &m_iEffectCreateMode, 1); ImGui::SameLine(); ImGui::RadioButton(u8"파티클", &m_iEffectCreateMode, 2);
+	
+	ImGui::NewLine();
+
+	ImGui::Checkbox(u8"리스트 숨기기", &m_bEffectShowListBox);
+
+	ImGui::Separator();
+	if (m_iEffectCreateMode == 0)
+		Mesh_Effect_Mode_Tick();
+	else if(m_iEffectCreateMode == 1)
+		Texture_Effect_Mode_Tick();
+	else if(m_iEffectCreateMode == 2)
+		Particle_Mode_Tick();
+
+	
+	
+
+
+	
+}
+
+void CImgui_Manager::Mesh_Effect_Mode_Tick()
+{
+	if (true == m_bEffectShowListBox)
+	{
+		_int iMeshTagSize = m_vecMeshEffectTags.size();
+
+		if (ImGui::BeginListBox(u8"메쉬 이펙트 태그 리스트"))
+		{
+			for (_uint i = 0; i < iMeshTagSize; ++i)
+			{
+				const _bool isSelected = (m_iSelectMeshEffectTagIndex == i);
+
+				if (ImGui::Selectable(m_vecMeshEffectTags[i].c_str(), isSelected))
+				{
+					m_iSelectMeshEffectTagIndex = i;
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndListBox();
+		}
+	}
+
+	//! 이펙트메쉬에게 필요한 것은 무엇일까. 우선 인스턴싱이 필요할 걳것 같다.
+
+	//ImGui::InputInt(u8"CreateNumber", &m_iParticleCreateNum);
+	ImGui::InputInt(u8"ShaderPass", &m_iParticleShaderPathIndex);
+	ImGui::InputFloat(u8"Range", &m_fParticleRange);
+	ImGui::InputFloat3(u8"Center", m_vParticleCenter);
+	ImGui::InputFloat2(u8"Speed", m_vParticleSpeed);
+	ImGui::InputFloat2(u8"Scale", m_vParticleScale);
+	ImGui::InputFloat3(u8"Rotation", m_vParticleRotation);
+	ImGui::InputFloat4(u8"Color", m_vParticleColor);
+	ImGui::InputFloat2(u8"LifeTime", m_vParticleLifeTime);
+
+	ImGui::InputFloat(u8"HorSpacing", &m_fHorSpacing);
+	ImGui::InputFloat(u8"VerSpacing", &m_fVerSpacing);
+	ImGui::InputInt(u8"HorCreateNum", &m_iHorCreateNum);
+	ImGui::InputInt(u8"VerCreateNum", &m_iVerCreateNum);
+
+
+	
+
+	if (ImGui::Button(u8"생성"))
+	{
+
+		CMeshEffect::MESH_EFFECTDESC MeshEffectDesc;
+
+		MeshEffectDesc.iShaderPassIndex = m_iParticleShaderPathIndex;
+		MeshEffectDesc.fRange = m_fParticleRange;
+		MeshEffectDesc.vCenter = { m_vParticleCenter[0], m_vParticleCenter[1], m_vParticleCenter[2] };
+		MeshEffectDesc.vSpeed = { m_vParticleSpeed[0], m_vParticleSpeed[1] };
+		MeshEffectDesc.vScale = { m_vParticleScale[0], m_vParticleScale[1] };
+		MeshEffectDesc.vRotation = { m_vParticleRotation[0], m_vParticleRotation[1], m_vParticleRotation[2] };
+		MeshEffectDesc.vColor = { m_vParticleColor[0], m_vParticleColor[1], m_vParticleColor[2], m_vParticleColor[3] };
+		MeshEffectDesc.vLifeTime = { m_vParticleLifeTime[0], m_vParticleLifeTime[1] };
+
+		MeshEffectDesc.strModelTag = ConvertStrToWstr(m_vecMeshEffectTags[m_iSelectMeshEffectTagIndex]);
+
+		wstring wstrObejctTag = TEXT("Prototype_GameObject_MeshEffect");
+		wstring wstrLayerTag = TEXT("Layer_Effect");
+
+		_int iCenter = m_vParticleCenter[0];
+		
+		_int iVerDevide = m_iVerCreateNum / 2;
+		_int iHorDevide = m_iHorCreateNum / 2;
+		_float fHorSpacing = m_fHorSpacing;
+
+		vector<_float> vLeftPoint;
+		vector<_float> vRightPoint;
+
+		for (_int i = 0; i < iVerDevide; ++i)
+		{
+			vLeftPoint.push_back(iCenter - fHorSpacing);
+			vRightPoint.push_back(iCenter + fHorSpacing);
+			fHorSpacing += fHorSpacing;
+		}
+
+		for (_int i = 0; i < iVerDevide; ++i)
+		{
+			MeshEffectDesc.vCenter.x = vLeftPoint[i];
+
+			CGameObject* pGameObject = { nullptr };
+
+			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObejctTag, &MeshEffectDesc, &pGameObject)))
+				MSG_BOX("이펙트 생성 실패");
+
+			m_vecCreateMeshEffects.push_back(pGameObject);
+
+
+			string wstrSliceObjTag = ConvertWstrToStr(SliceObjectTag(wstrObejctTag)) + to_string(m_vecCreateMeshEffectTags.size() + 1);
+
+			m_vecCreateMeshEffectTags.push_back(wstrSliceObjTag);
+			m_pMeshEffectSelectObject = pGameObject;
+
+			MeshEffectDesc.vCenter.x = vRightPoint[i];
+
+			pGameObject = { nullptr };
+
+			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObejctTag, &MeshEffectDesc, &pGameObject)))
+				MSG_BOX("이펙트 생성 실패");
+
+			m_vecCreateMeshEffects.push_back(pGameObject);
+
+
+			wstrSliceObjTag = ConvertWstrToStr(SliceObjectTag(wstrObejctTag)) + to_string(m_vecCreateMeshEffectTags.size() + 1);
+
+			m_vecCreateMeshEffectTags.push_back(wstrSliceObjTag);
+			m_pMeshEffectSelectObject = pGameObject;
+		}
+// 		for (_int i = 0; i < m_iParticleCreateNum; ++i)
+// 		{
+// 			
+// 
+// 			MeshEffectDesc.strModelTag = ConvertStrToWstr(m_vecMeshEffectTags[m_iSelectMeshEffectTagIndex]);
+// 
+// 			wstring wstrObejctTag = TEXT("Prototype_GameObject_MeshEffect");
+// 			wstring wstrLayerTag = TEXT("Layer_Effect");
+// 
+// 			CGameObject* pGameObject = { nullptr };
+// 
+// 			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObejctTag, &MeshEffectDesc, &pGameObject)))
+// 				MSG_BOX("이펙트 생성 실패");
+// 
+// 			m_vecCreateMeshEffects.push_back(pGameObject);
+// 
+// 
+// 			string wstrSliceObjTag = ConvertWstrToStr(SliceObjectTag(wstrObejctTag)) + to_string(m_vecCreateMeshEffectTags.size() + 1);
+// 
+// 			m_vecCreateMeshEffectTags.push_back(wstrSliceObjTag);
+// 			m_pMeshEffectSelectObject = pGameObject;
+// 		}
+	}
+}
+
+void CImgui_Manager::Texture_Effect_Mode_Tick()
+{
+	if (true == m_bEffectShowListBox)
+	{
+		_int iTextureEffectTagSize = m_vecTextureEffectTags.size();
+
+		if (ImGui::BeginListBox(u8"텍스처 이펙트 태그 리스트"))
+		{
+			for (_uint i = 0; i < iTextureEffectTagSize; ++i)
+			{
+				const _bool isSelected = (m_iSelectTextureEffectTagIndex == i);
+
+				if (ImGui::Selectable(m_vecTextureEffectTags[i].c_str(), isSelected))
+				{
+					m_iSelectTextureEffectTagIndex = i;
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndListBox();
+		}
+	}
+
+	//! 이펙트메쉬에게 필요한 것은 무엇일까. 우선 인스턴싱이 필요할 걳것 같다.
+
+	ImGui::InputInt(u8"CreateNumber", &m_iParticleCreateNum);
+	ImGui::InputInt(u8"ShaderPass", &m_iParticleShaderPathIndex);
+	ImGui::InputFloat(u8"Range", &m_fParticleRange);
+	ImGui::InputFloat3(u8"Center", m_vParticleCenter);
+	ImGui::InputFloat2(u8"Speed", m_vParticleSpeed);
+	ImGui::InputFloat2(u8"Scale", m_vParticleScale);
+	ImGui::InputFloat3(u8"Rotation", m_vParticleRotation);
+	ImGui::InputFloat4(u8"Color", m_vParticleColor);
+	ImGui::InputFloat2(u8"LifeTime", m_vParticleLifeTime);
+
+
+
+
+	if (ImGui::Button(u8"생성"))
+	{
+		for (_int i = 0; i < m_iParticleCreateNum; ++i)
+		{
+			CMeshEffect::MESH_EFFECTDESC MeshEffectDesc;
+
+			MeshEffectDesc.iShaderPassIndex = m_iParticleShaderPathIndex;
+			MeshEffectDesc.fRange = m_fParticleRange;
+			MeshEffectDesc.vCenter = { m_vParticleCenter[0], m_vParticleCenter[1], m_vParticleCenter[2] };
+			MeshEffectDesc.vSpeed = { m_vParticleSpeed[0], m_vParticleSpeed[1] };
+			MeshEffectDesc.vScale = { m_vParticleScale[0], m_vParticleScale[1] };
+			MeshEffectDesc.vRotation = { m_vParticleRotation[0], m_vParticleRotation[1], m_vParticleRotation[2] };
+			MeshEffectDesc.vColor = { m_vParticleColor[0], m_vParticleColor[1], m_vParticleColor[2], m_vParticleColor[3] };
+			MeshEffectDesc.vLifeTime = { m_vParticleLifeTime[0], m_vParticleLifeTime[1] };
+
+			MeshEffectDesc.strModelTag = ConvertStrToWstr(m_vecMeshEffectTags[m_iSelectMeshEffectTagIndex]);
+
+			wstring wstrObejctTag = TEXT("Prototype_GameObject_MeshEffect");
+			wstring wstrLayerTag = TEXT("Layer_Effect");
+
+			CGameObject* pGameObject = { nullptr };
+
+			if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObejctTag, &MeshEffectDesc, &pGameObject)))
+				MSG_BOX("이펙트 생성 실패");
+
+			m_vecCreateMeshEffects.push_back(pGameObject);
+
+
+			string wstrSliceObjTag = ConvertWstrToStr(SliceObjectTag(wstrObejctTag)) + to_string(m_vecCreateMeshEffectTags.size() + 1);
+
+			m_vecCreateMeshEffectTags.push_back(wstrSliceObjTag);
+			m_pMeshEffectSelectObject = pGameObject;
+		}
+	}
+}
+
+void CImgui_Manager::Particle_Mode_Tick()
+{
+	if (true == m_bEffectShowListBox)
+	{
+		_int iParticleTagSize = m_vecParticleTags.size();
+
+		if (ImGui::BeginListBox(u8"파티클 태그 리스트"))
+		{
+			for (_uint i = 0; i < iParticleTagSize; ++i)
+			{
+				const _bool isSelected = (m_iSelectParticleTagIndex == i);
+
+				if (ImGui::Selectable(m_vecParticleTags[i].c_str(), isSelected))
+				{
+					m_iSelectParticleTagIndex = i;
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndListBox();
+		}
+	}
+
+	
+	ImGui::NewLine();
+	ImGui::Checkbox(u8"랜덤파티클", &m_bParticleRandom); ImGui::SameLine(); ImGui::Checkbox(u8"멀티스프라이트", &m_bParticleMultiSprite);
+	ImGui::NewLine();
+
+	ImGui::InputInt(u8"CreateNumber", &m_iParticleCreateNum);
+	ImGui::InputInt(u8"ShaderPass", &m_iParticleShaderPathIndex);
+	if (true == m_bParticleMultiSprite)
+	{
+		ImGui::InputFloat(u8"MultiSpriteCount", &m_fSpriteFrameCount);
+		ImGui::InputFloat(u8"SpriteSpeed", &m_fSpriteSpeed);
+	}
+	ImGui::InputFloat(u8"Range", &m_fParticleRange);
+	ImGui::InputFloat3(u8"Center", m_vParticleCenter);
+	ImGui::InputFloat2(u8"Speed", m_vParticleSpeed);
+	ImGui::InputFloat2(u8"Scale", m_vParticleScale);
+	
+	if (true == m_bParticleRandom)
+	{
+		ImGui::InputFloat2(u8"RandomRotation", m_vParticleRandomRotation);
+	}
+	else
+	{
+		ImGui::InputFloat3(u8"Rotation", m_vParticleRotation);
+	}
+
+	
+
+	ImGui::InputFloat3(u8"Interval", m_vParticleInterval);
+	ImGui::InputFloat3(u8"Dir", m_vParticleDir);
+	ImGui::InputFloat4(u8"Color", m_vParticleColor);
+	ImGui::InputFloat2(u8"LifeTime", m_vParticleLifeTime);
+
+	
+	
+
+		if (ImGui::Button(u8"생성"))
+		{
+				CParticle_Object::PARTICLE_DESC PaticleDesc;
+
+				PaticleDesc.bRandom = m_bParticleRandom;
+				PaticleDesc.bMultiSpriteAnim = m_bParticleMultiSprite;
+				PaticleDesc.fMultiSpriteCount = m_fSpriteFrameCount;
+				PaticleDesc.fSpriteSpeed = m_fSpriteSpeed;
+				PaticleDesc.iNumInstance = m_iParticleCreateNum;
+				PaticleDesc.iShaderPathIndex = m_iParticleShaderPathIndex;
+				PaticleDesc.fRange = m_fParticleRange;
+				PaticleDesc.vCenter = { m_vParticleCenter[0], m_vParticleCenter[1], m_vParticleCenter[2] };
+				PaticleDesc.vSpeed = { m_vParticleSpeed[0], m_vParticleSpeed[1] };
+				PaticleDesc.vScale = { m_vParticleScale[0], m_vParticleScale[1] };
+				PaticleDesc.vRotation = { m_vParticleRotation[0], m_vParticleRotation[1], m_vParticleRotation[2] };
+				PaticleDesc.vRandomRotation = { m_vParticleRandomRotation[0], m_vParticleRandomRotation[1]};
+				PaticleDesc.vInterval = { m_vParticleInterval[0], m_vParticleInterval[1], m_vParticleInterval[2] };
+				PaticleDesc.vDir = { m_vParticleDir[0], m_vParticleDir[1], m_vParticleDir[2], 0.f };
+				PaticleDesc.vColor = { m_vParticleColor[0], m_vParticleColor[1], m_vParticleColor[2], m_vParticleColor[3] };
+				PaticleDesc.vLifeTime = { m_vParticleLifeTime[0], m_vParticleLifeTime[1] };
+
+				PaticleDesc.strTextureTag = ConvertStrToWstr(m_vecParticleTags[m_iSelectParticleTagIndex]);
+
+				wstring wstrObejctTag = TEXT("Prototype_GameObject_Particle_Object");
+				wstring wstrLayerTag = TEXT("Layer_Effect");
+
+				CGameObject* pGameObject = { nullptr };
+
+				if (FAILED(m_pGameInstance->Add_CloneObject(LEVEL_TOOL, wstrLayerTag, wstrObejctTag, &PaticleDesc, &pGameObject)))
+					MSG_BOX("이펙트 생성 실패");
+
+				m_vecCreateParticles.push_back(pGameObject);
+
+				string wstrSliceObjTag = ConvertWstrToStr(SliceObjectTag(wstrObejctTag)) + to_string(m_vecCreateParticleTags.size() + 1);
+
+				m_vecCreateParticleTags.push_back(wstrSliceObjTag);
+				m_pParticleSelectObject = pGameObject;
+		}
+}
+
+void CImgui_Manager::Delete_Effect_Mode_Tick()
+{
+	if (m_iEffectCreateMode == 0)
+	{
+		Mesh_Effect_Delete_Tick();
+	}
+	else if (m_iEffectCreateMode == 1)
+	{
+		Texture_Effect_Delete_Tick();
+	}
+	else
+	{
+		Particle_Delete_Tick();
+	}
+	
+
+}
+
+void CImgui_Manager::Mesh_Effect_Delete_Tick()
+{
+
+	ImGui::InputInt(u8"삭제할 메쉬이펙트 인덱스 : ", &m_iSelectMeshEffectIndex);
+	
+	_int iMeshEffectListSize = m_vecCreateMeshEffects.size();
+	
+		if (ImGui::BeginListBox(u8""))
+		{
+			for (_int i = 0; i < iMeshEffectListSize; ++i)
+			{
+				const _bool isSelected = (m_iSelectMeshEffectTagIndex == i);
+	
+				if (ImGui::Selectable(m_vecCreateMeshEffectTags[i].c_str(), isSelected))
+				{
+					m_pMeshEffectSelectObject = m_vecCreateMeshEffects[i];
+					m_iSelectMeshEffectIndex = i;
+	
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+	
+			ImGui::EndListBox();
+		}
+	
+		if (ImGui::Button(u8"삭제") && m_iSelectMeshEffectIndex >= 0)
+		{
+	
+				if (m_iSelectMeshEffectIndex < static_cast<int>(m_vecCreateMeshEffectTags.size()) && m_iSelectMeshEffectIndex < static_cast<int>(m_vecCreateMeshEffects.size()))
+				{
+					// 해당 인덱스의 요소를 동시에 삭제
+					m_vecCreateMeshEffectTags.erase(m_vecCreateMeshEffectTags.begin() + m_iSelectMeshEffectIndex);
+					m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, TEXT("Layer_Effect"), m_vecCreateMeshEffects[m_iSelectMeshEffectIndex]);
+					m_vecCreateMeshEffects.erase(m_vecCreateMeshEffects.begin() + m_iSelectMeshEffectIndex);
+				}
+				else
+				{
+					// 인덱스가 범위를 벗어날 경우 처리
+					ImGui::Text(u8"인덱스가 범위를 벗어납니다.");
+				}
+	
+				m_pMeshEffectSelectObject = nullptr;
+				m_iSelectMeshEffectIndex = 0;
+				m_iSelectMeshEffectTagIndex = 0;
+		}
+		else
+		{
+			// 음수일 경우 처리
+			ImGui::Text(u8"올바른 인덱스 값을 입력하세요.");
+		}
+}
+
+void CImgui_Manager::Texture_Effect_Delete_Tick()
+{
+	ImGui::InputInt(u8"삭제할 텍스처이펙트 인덱스 : ", &m_iSelectTextureEffectIndex);
+
+	_int iTextureEffectListSize = m_vecCreateTextureEffects.size();
+
+	if (ImGui::BeginListBox(u8""))
+	{
+		for (_int i = 0; i < iTextureEffectListSize; ++i)
+		{
+			const _bool isSelected = (m_iSelectTextureEffectTagIndex == i);
+
+			if (ImGui::Selectable(m_vecCreateTextureEffectTags[i].c_str(), isSelected))
+			{
+				m_pTextureEffectSelectObject = m_vecCreateTextureEffects[i];
+				m_iSelectTextureEffectIndex = i;
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+		}
+
+		ImGui::EndListBox();
+	}
+
+	if (ImGui::Button(u8"삭제") && m_iSelectTextureEffectIndex >= 0)
+	{
+
+		if (m_iSelectTextureEffectIndex < static_cast<int>(m_vecCreateTextureEffectTags.size()) && m_iSelectTextureEffectIndex < static_cast<int>(m_vecCreateTextureEffects.size()))
+		{
+			// 해당 인덱스의 요소를 동시에 삭제
+			m_vecCreateTextureEffectTags.erase(m_vecCreateTextureEffectTags.begin() + m_iSelectTextureEffectIndex);
+			m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, TEXT("Layer_Effect"), m_vecCreateTextureEffects[m_iSelectTextureEffectIndex]);
+			m_vecCreateTextureEffects.erase(m_vecCreateTextureEffects.begin() + m_iSelectTextureEffectIndex);
+		}
+		else
+		{
+			// 인덱스가 범위를 벗어날 경우 처리
+			ImGui::Text(u8"인덱스가 범위를 벗어납니다.");
+		}
+
+		m_pTextureEffectSelectObject = nullptr;
+		m_iSelectTextureEffectIndex = 0;
+		m_iSelectTextureEffectTagIndex = 0;
+	}
+	else
+	{
+		// 음수일 경우 처리
+		ImGui::Text(u8"올바른 인덱스 값을 입력하세요.");
+	}
+}
+
+void CImgui_Manager::Particle_Delete_Tick()
+{
+	ImGui::InputInt(u8"삭제할 파티클이펙트 인덱스 : ", &m_iSelectParticleIndex);
+
+	_int iParticleEffectListSize = m_vecCreateParticles.size();
+
+	if (ImGui::BeginListBox(u8""))
+	{
+		for (_int i = 0; i < iParticleEffectListSize; ++i)
+		{
+			const _bool isSelected = (m_iSelectParticleTagIndex == i);
+
+			if (ImGui::Selectable(m_vecCreateParticleTags[i].c_str(), isSelected))
+			{
+				m_pParticleSelectObject = m_vecCreateParticles[i];
+				m_iSelectParticleIndex = i;
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+		}
+
+		ImGui::EndListBox();
+	}
+
+	if (ImGui::Button(u8"삭제") && m_iSelectParticleIndex >= 0)
+	{
+		if (m_iSelectParticleIndex < static_cast<int>(m_vecCreateParticleTags.size()) && m_iSelectParticleIndex < static_cast<int>(m_vecCreateParticles.size()))
+		{
+			// 해당 인덱스의 요소를 동시에 삭제
+			m_vecCreateParticleTags.erase(m_vecCreateParticleTags.begin() + m_iSelectParticleIndex);
+			m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, TEXT("Layer_Effect"), m_vecCreateParticles[m_iSelectParticleIndex]);
+			m_vecCreateParticles.erase(m_vecCreateParticles.begin() + m_iSelectParticleIndex);
+		}
+		else
+		{
+			// 인덱스가 범위를 벗어날 경우 처리
+			ImGui::Text(u8"인덱스가 범위를 벗어납니다.");
+		}
+
+		m_pParticleSelectObject = nullptr;
+		m_iSelectParticleIndex = 0;
+		m_iSelectParticleTagIndex = 0;
+	}
+	else
+	{
+		// 음수일 경우 처리
+		ImGui::Text(u8"올바른 인덱스 값을 입력하세요.");
+	}
+}
+
+void CImgui_Manager::Select_Effect_ModeTick()
+{
+	if (m_iEffectCreateMode == 0)
+	{
+		Mesh_Effect_Select_Tick();
+	}
+	else if (m_iEffectCreateMode == 1)
+	{
+		Texture_Effect_Select_Tick();
+	}
+	else
+	{
+		Particle_Select_Tick();
+	}
+
+	
+}
+
+void CImgui_Manager::Mesh_Effect_Select_Tick()
+{
+	ImGui::InputInt(u8"선택할 메쉬이펙트 인덱스 : ", &m_iSelectMeshEffectIndex);
+		
+		_int iMeshEffectListSize = m_vecCreateMeshEffects.size();
+		
+		if (ImGui::BeginListBox(u8""))
+		{
+			for (_int i = 0; i < iMeshEffectListSize; ++i)
+			{
+				const _bool isSelected = (m_iSelectMeshEffectIndex == i);
+		
+			if (ImGui::Selectable(m_vecCreateMeshEffectTags[i].c_str(), isSelected))
+				{
+					m_pMeshEffectSelectObject = m_vecCreateMeshEffects[i];
+					m_iSelectMeshEffectTagIndex = i;
+		
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+			}
+		
+			ImGui::EndListBox();
+		}
+}
+
+void CImgui_Manager::Texture_Effect_Select_Tick()
+{
+	ImGui::InputInt(u8"선택할 텍스쳐이펙트 인덱스 : ", &m_iSelectTextureEffectTagIndex);
+
+	_int iTextureEffectListSize = m_vecCreateTextureEffects.size();
+
+	if (ImGui::BeginListBox(u8""))
+	{
+		for (_int i = 0; i < iTextureEffectListSize; ++i)
+		{
+			const _bool isSelected = (m_iSelectTextureEffectTagIndex == i);
+
+			if (ImGui::Selectable(m_vecCreateTextureEffectTags[i].c_str(), isSelected))
+			{
+				m_pTextureEffectSelectObject = m_vecCreateTextureEffects[i];
+				m_iSelectTextureEffectTagIndex = i;
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+		}
+
+		ImGui::EndListBox();
+	}
+}
+
+void CImgui_Manager::Particle_Select_Tick()
+{
+	ImGui::InputInt(u8"선택할 파티클이펙트 인덱스 : ", &m_iSelectParticleTagIndex);
+
+	_int iParticleEffectListSize = m_vecCreateParticles.size();
+
+	if (ImGui::BeginListBox(u8""))
+	{
+		for (_int i = 0; i < iParticleEffectListSize; ++i)
+		{
+			const _bool isSelected = (m_iSelectParticleTagIndex == i);
+
+			if (ImGui::Selectable(m_vecCreateParticleTags[i].c_str(), isSelected))
+			{
+				m_pParticleSelectObject = m_vecCreateParticles[i];
+				m_iSelectParticleTagIndex = i;
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+		}
+
+		ImGui::EndListBox();
+	}
+}
+
+void CImgui_Manager::SaveMeshEffect(string strPath, string strFileName)
+{
+	_int iMeshEffectSize = m_vecCreateMeshEffects.size();
+	json MeshEffectJson;
+	
+
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
+
+	string strMeshEffectPath = strPath + "/" + strNoExtFileName + "_MeshEffect.json";
+
+	for (auto& tag : m_vecCreateMeshEffectTags) {
+		// 문자열에서 '@' 문자 이후의 부분을 지움
+		size_t atIndex = tag.find('@');
+		if (atIndex != std::string::npos) {
+			tag.erase(atIndex); // '@' 이후의 문자열을 모두 제거
+		}
+
+		// 결과 출력
+		std::cout << tag << std::endl;
+	}
+
+	for (_int i = 0; i < iMeshEffectSize; i++)
+	{
+		MeshEffectJson[i].emplace("Index", i);
+		MeshEffectJson[i].emplace("LayerTag", TEXT("Layer_Effect"));
+		MeshEffectJson[i].emplace("ObjectTag", m_vecCreateMeshEffectTags[i]);
+		
+		//m_vecAnimObjects[i]->Write_Json(AnimationJson[i]);
+	}
+
+	if (FAILED(CJson_Utility::Save_Json(strMeshEffectPath.c_str(), MeshEffectJson)))
+	{
+		MSG_BOX("메쉬 이펙트 세이브 실패");
+	}
+	else
+	{
+		MSG_BOX("메쉬 이펙트 저장 성공");
+	}
+}
+
+void CImgui_Manager::SaveTextureEffect(string strPath, string strFileName)
+{
+	_int iTextureEffectSize = m_vecCreateTextureEffects.size();
+	json TextureEffectJson;
+
+
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
+
+	string strTextureEffectPath = strPath + "/" + strNoExtFileName + "_TextureEffect.json";
+
+	for (auto& tag : m_vecCreateTextureEffectTags) {
+		// 문자열에서 '@' 문자 이후의 부분을 지움
+		size_t atIndex = tag.find('@');
+		if (atIndex != std::string::npos) {
+			tag.erase(atIndex); // '@' 이후의 문자열을 모두 제거
+		}
+
+		// 결과 출력
+		std::cout << tag << std::endl;
+	}
+
+	for (_int i = 0; i < iTextureEffectSize; i++)
+	{
+		TextureEffectJson[i].emplace("Index", i);
+		TextureEffectJson[i].emplace("LayerTag", TEXT("Layer_Effect"));
+		TextureEffectJson[i].emplace("ObjectTag", m_vecCreateTextureEffectTags[i]);
+
+		//m_vecAnimObjects[i]->Write_Json(AnimationJson[i]);
+	}
+
+	if (FAILED(CJson_Utility::Save_Json(strTextureEffectPath.c_str(), TextureEffectJson)))
+	{
+		MSG_BOX("텍스처 이펙트 세이브 실패");
+	}
+	else
+	{
+		MSG_BOX("텍스처 이펙트 저장 성공");
+	}
+}
+
+void CImgui_Manager::SaveParticleEffect(string strPath, string strFileName)
+{
+	_int iParticleEffectSize = m_vecCreateParticles.size();
+	json ParticleEffectJson;
+
+
+	string strNoExtFileName = filesystem::path(strFileName).stem().string();
+
+	string strParticlePath = strPath + "/" + strNoExtFileName + "_ParticleEffect.json";
+
+	for (auto& tag : m_vecCreateParticleTags) {
+		// 문자열에서 '@' 문자 이후의 부분을 지움
+		size_t atIndex = tag.find('@');
+		if (atIndex != std::string::npos) {
+			tag.erase(atIndex); // '@' 이후의 문자열을 모두 제거
+		}
+
+		// 결과 출력
+		std::cout << tag << std::endl;
+	}
+
+	for (_int i = 0; i < iParticleEffectSize; i++)
+	{
+		ParticleEffectJson[i].emplace("Index", i);
+		ParticleEffectJson[i].emplace("LayerTag", TEXT("Layer_Effect"));
+		ParticleEffectJson[i].emplace("ObjectTag", m_vecCreateParticleTags[i]);
+
+		//m_vecAnimObjects[i]->Write_Json(AnimationJson[i]);
+	}
+
+	if (FAILED(CJson_Utility::Save_Json(strParticlePath.c_str(), ParticleEffectJson)))
+	{
+		MSG_BOX("파티클 이펙트 세이브 실패");
+	}
+	else
+	{
+		MSG_BOX("파티클 이펙트 저장 성공");
+	}
+}
+
+void CImgui_Manager::LoadMeshEffect(string strPath, string strFileName)
+{
+	
+
+}
+
+void CImgui_Manager::LoadTextureEffect(string strPath, string strFileName)
+{
+}
+
+void CImgui_Manager::LoadParticleEffect(string strPath, string strFileName)
+{
+}
+
+void CImgui_Manager::ClearMeshEffect()
+{
+	_int iMeshEffectSize = m_vecCreateMeshEffectTags.size();
+
+
+	for (_int i = 0; i < iMeshEffectSize; ++i)
+	{
+		m_vecCreateMeshEffectTags.erase(m_vecCreateMeshEffectTags.begin() + i);
+		m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, TEXT("Layer_Effect"), m_vecCreateMeshEffects[i]);
+		
+		m_vecCreateMeshEffects.erase(m_vecCreateMeshEffects.begin() + i);
+	}
+}
+
+void CImgui_Manager::ClearTextureEffect()
+{
+	_int iTextureEffectSize = m_vecCreateTextureEffectTags.size();
+
+
+	for (_int i = 0; i < iTextureEffectSize; ++i)
+	{
+		m_vecCreateTextureEffectTags.erase(m_vecCreateTextureEffectTags.begin() + i);
+		m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, TEXT("Layer_Effect"), m_vecCreateTextureEffects[i]);
+
+		m_vecCreateTextureEffects.erase(m_vecCreateTextureEffects.begin() + i);
+	}
+}
+
+void CImgui_Manager::ClearParticleEffect()
+{
+	_int iParticleEffectSize = m_vecCreateParticles.size();
+
+
+	for (_int i = 0; i < iParticleEffectSize; ++i)
+	{
+		m_vecCreateParticleTags.erase(m_vecCreateParticleTags.begin() + i);
+		m_pGameInstance->Erase_CloneObject(LEVEL_TOOL, TEXT("Layer_Effect"), m_vecCreateParticles[i]);
+
+		m_vecCreateParticles.erase(m_vecCreateParticles.begin() + i);
+	}
 }
 
 wstring CImgui_Manager::SliceObjectTag(const wstring& strObjectTag)
@@ -1466,15 +3748,37 @@ vector<string> CImgui_Manager::Get_AllFolderNames(const string& strDirPath)
 	return folderNames;
 }
 
-void CImgui_Manager::CheckOrCreatePath(const string& strPath)
+string CImgui_Manager::CheckOrCreatePath(const string& strfileName)
 {
-	auto p = filesystem::path(strPath);
-	filesystem::create_directory(p.parent_path().parent_path());
-	filesystem::create_directory(p.parent_path());
+	string strFilePath = "../Bin/Resources/Models/";
+
+	string strCreateDirPath = filesystem::absolute(strFilePath).string() + strfileName;
+	if (!filesystem::exists(strCreateDirPath))
+		filesystem::create_directory(strCreateDirPath);
+
+		return strCreateDirPath;
+	
+}
+
+string CImgui_Manager::ConvertWstrToStr(const wstring& wstr)
+{
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), nullptr, 0, nullptr, nullptr);
+	string str(size_needed, 0);
+	WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), &str[0], size_needed, nullptr, nullptr);
+	return str;
+}
+
+wstring CImgui_Manager::ConvertStrToWstr(const string& str)
+{
+	int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), nullptr, 0);
+	wstring wstr(size_needed, 0);
+	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), &wstr[0], size_needed);
+	return wstr;
 }
 
 void CImgui_Manager::Free()
 {
+	
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
@@ -1484,9 +3788,20 @@ void CImgui_Manager::Free()
 
 	m_vecBones.clear();
 
+	m_vecLayerTags.clear();
 
-	m_vecObjectProtoTags.clear();
-	m_vecCreateObjectTag.clear();
+	m_vecAnimObjectTags.clear();
+	m_vecCreateAnimObjectTags.clear();
+
+	m_vecNonAnimObjectTags.clear();
+	m_vecCreateNonAnimObjectTags.clear();
+
+
+	//for(auto& pAnimObject : m_vecAnimObjects)
+	//	Safe_Release(pAnimObject);
+	//
+	//for (auto& pNonAnimObject : m_vecNonAnimObjects)
+	//	Safe_Release(pNonAnimObject);
 
 	m_pFileDialog->Close();
 

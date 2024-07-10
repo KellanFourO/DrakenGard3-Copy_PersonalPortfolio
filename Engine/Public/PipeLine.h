@@ -32,6 +32,8 @@ public:
 	RAY		Get_Ray(_uint& In_ViewPortWidth, const _uint& In_ViewPortHeight);
 
 	_float4 Get_CamPosition();
+	_float4 Get_CamDir() { return m_vCamDir; }
+	_float	Get_CamLength(_fvector vPos);
 
 public:
 	HRESULT Initialize();
@@ -54,6 +56,7 @@ private:
 
 	//! 나중에 빛 연산을 하게되면 카메라의 월드 위치를 요구하는 상황이 많이 생긴다. 그때 카메라의 역행렬(카메라의 월드)의 4행(월드위치)를 넘겨주기 위해 마찬가지로 저장해준다.
 	_float4			m_vCamPosition;
+	_float4			m_vCamDir;
 
 public:
 	static CPipeLine*	Create();

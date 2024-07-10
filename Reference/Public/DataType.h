@@ -41,11 +41,11 @@ namespace Engine
 		string				strName;
 		_bool				isAnim;
 		_uint				iMaterialIndex;
-		
+		_int				iNumFace;
 
-		vector<VTXMESH>		vecNonAnims;
-		vector<VTXANIMMESH>	vecAnims;
-		vector<_int>		vecIndices;
+		vector<VTXMESH>			vecNonAnims;
+		vector<VTXANIMMESH>		vecAnims;
+		vector<FACEINDICES32>	vecIndices;
 		
 		vector<_int>		vecBoneIndices;
 		vector<XMFLOAT4X4>	vecOffsetMatrix;
@@ -53,9 +53,7 @@ namespace Engine
 	
 	struct asMaterial
 	{
-		string				strDiffuseFilePath;
-		string				strSpecularFilePath;
-		string				strNormalFilePath;
+		string			strTextureFilePath[AI_TEXTURE_TYPE_MAX];
 	};
 	
 	

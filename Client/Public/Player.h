@@ -4,47 +4,104 @@
 #include "AnimObject.h"
 
 BEGIN(Engine)
+class CCollider;
 class CNavigation;
-class CShader;
-class CModel;
+class CRigidBody;
+class CStateMachine;
+class CStateBase;
+class CPartObject;
 END
 
 BEGIN(Client)
 
+class CCamera_Target;
+class CPlayerPart_Body;
+class CEffect_Trail;
+
+
+
 class CPlayer final : public CAnimObject
 {
-public:
-	typedef struct tagPlayerDesc : public GAMEOBJECT_DESC
-	{
-		int a;
-	}PLAYER_DESC;
+
 private:
 	CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CPlayer(const CPlayer& rhs);
 	virtual ~CPlayer() = default;
 
+
+
 public:
-	virtual HRESULT Initialize_Prototype() override;
+	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg) override;
-	virtual void Priority_Tick(_float fTimeDelta) override;
-	virtual void Tick(_float fTimeDelta) override;
-	virtual void Late_Tick(_float fTimeDelta) override;
+	virtual void	Priority_Tick(_float fTimeDelta) override;
+	virtual void	Tick(_float fTimeDelta) override;
+	virtual void	Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+public:
+	virtual void On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit) override; // call on collising
+	virtual void On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit) override;
+	virtual void On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit) override;
+
+public:
+	
+	CCamera_Target*			Get_Cam() { return m_pCamera; }
+	void					Set_Cam(class CCamera_Target* pCam);
+	CPartObject*			Find_PartObject(const wstring& strPartTag);
+	LEVEL					Get_LevelID() { return m_eCurrentLevelID; }
+		_float				Get_Dmg() { return m_tStatus.fDmg; }
+	STATUS_DESC::ATTACKTYPE Get_AttackType() { return m_tStatus.eAttackType; }
+	void					Init_Status(_float fMaxHp, _float fDmg);
+	void					Transition(CStateMachine::STATETYPE eStateType, wstring& strStateTag);
+	
+public:
+	void					On_SwordTrail();
+	void					Off_SwordTrail();
+	CEffect_Trail*			Get_Trail();
+	void					Add_BloodCount();
+	void					Set_BloodyMode(_bool bBloodyMode);
+	_bool					Get_BloodyMode();
+
+private:
+	HRESULT			Ready_Components();
+	HRESULT			Ready_PartObjects();
+	HRESULT			Ready_States();
+	HRESULT			Ready_Camera();
+	HRESULT			Add_PartObject(const wstring& strPrototypeTag, const wstring& strPartTag, void* pArg);
+	void			Key_Input(const _float fTimeDelta);
+
+	
+
+	string			ConvertWstrToStrTest(const wstring& wstr);
 private:
 	CNavigation*		m_pNavigationCom = { nullptr };
-	CShader*			m_pShaderCom = { nullptr };	
-	CModel*				m_pModelCom = { nullptr };
+	CCollider*			m_pColliderCom	 = { nullptr };
+	
+	CRigidBody*			m_pRigidBodyCom  = { nullptr };
+	CStateMachine*		m_pStateCom		 = { nullptr };
+
+	CCamera_Target*		m_pCamera		= { nullptr };
+private:
+	_bool				m_bAdmin = false;
+	_bool				m_bSturn = false;
+	_bool				m_bOneTransition = false;
+	
+	_float				m_fAccTime = 0.f;
+
+	STATUS_DESC							m_tStatus = {};
+	STATUS_DESC							m_tOriginStatus = {};
+	_bool				m_bTest = true;
+
+	
+
+	
 
 private:
-	HRESULT Ready_Components();
-	HRESULT Bind_ShaderResources();
-
+	//map<const wstring, class CPartObject*>			m_PartObjects;
 
 public:
 	/* 원형객체를 생성한다. */
 	static CPlayer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-
 	/* 사본객체를 생성한다. */
 	virtual CGameObject* Clone(void* pArg) override;
 

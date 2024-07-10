@@ -1,6 +1,8 @@
 #include "Component_Manager.h"
+#include "GameInstance.h"
 
 CComponent_Manager::CComponent_Manager()
+	: m_pGameInstance(CGameInstance::GetInstance())
 {
 }
 
@@ -13,12 +15,17 @@ HRESULT CComponent_Manager::Initialize(_uint iNumLevels)
 	return S_OK;
 }
 
-HRESULT CComponent_Manager::Add_Prototype(_uint iLevelIndex, const wstring& strPrototypeTag, CComponent* pPrototype)
+HRESULT CComponent_Manager::Add_Prototype(_uint iLevelIndex, const wstring& strPrototypeTag, CComponent* pPrototype, _bool bModelCom)
 {
 	if(nullptr == pPrototype || iLevelIndex >= m_iNumLevels
 	  || nullptr != Find_Prototype(iLevelIndex,strPrototypeTag))
 	  return E_FAIL;
 	
+	if (true == bModelCom)
+	{
+		m_pGameInstance->Add_ModelTag(strPrototypeTag);
+	}
+
 	m_pPrototypes[iLevelIndex].emplace(strPrototypeTag,pPrototype);
 
 	return S_OK;

@@ -56,22 +56,22 @@ void CCamera_MapTool::Late_Tick(_float fTimeDelta)
 
 void CCamera_MapTool::KeyInput(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Pressing(DIK_A))
+	if (m_pGameInstance->Key_Pressing(DIK_LEFTARROW))
 	{
 		m_pTransformCom->Go_Left(fTimeDelta);
 	}
 
-	if (m_pGameInstance->Key_Pressing(DIK_D))
+	if (m_pGameInstance->Key_Pressing(DIK_RIGHTARROW))
 	{
 		m_pTransformCom->Go_Right(fTimeDelta);
 	}
 
-	if (m_pGameInstance->Key_Pressing(DIK_W))
+	if (m_pGameInstance->Key_Pressing(DIK_UPARROW))
 	{
 		m_pTransformCom->Go_Straight(fTimeDelta);
 	}
 
-	if (m_pGameInstance->Key_Pressing(DIK_S))
+	if (m_pGameInstance->Key_Pressing(DIK_DOWNARROW))
 	{
 		m_pTransformCom->Go_Backward(fTimeDelta);
 	}

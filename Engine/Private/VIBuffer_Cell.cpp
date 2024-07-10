@@ -35,9 +35,9 @@ HRESULT CVIBuffer_Cell::Initialize_Prototype(const _float3* pPoint)
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc); //! 초기화
 
 	m_BufferDesc.ByteWidth = m_iStride * m_iNumVertices; //! 할당할 크기를 말한다.
-	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT /*D3D11_USAGE_DYNAMIC*/; //! 정적 버퍼를 사용한다
+	m_BufferDesc.Usage = D3D11_USAGE_DYNAMIC /*D3D11_USAGE_DYNAMIC*/; //! 정적 버퍼를 사용한다
 	m_BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; //! 정점버퍼 정보 채울 거다
-	m_BufferDesc.CPUAccessFlags = 0; //! 동적 버퍼일 경우에만 유효한 값이다. 정적버퍼니 0으로 채운다
+	m_BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; //! 동적 버퍼일 경우에만 유효한 값이다. 정적버퍼니 0으로 채운다
 	m_BufferDesc.MiscFlags = 0; //! 위와 같다
 
 	//todo StructureByteStride : 덩어리로 할당된 공간의 데이터를 읽을때 어떤 단위로 읽을 것이냐
@@ -86,9 +86,9 @@ HRESULT CVIBuffer_Cell::Initialize_Prototype(const _float3* pPoint)
 //TODO 인덱스 버퍼의 대한 정보를 넣어주는 행위 끝
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
 	m_BufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
-	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT /*D3D11_USAGE_DYNAMIC*/;
+	m_BufferDesc.Usage = D3D11_USAGE_DYNAMIC /*D3D11_USAGE_DYNAMIC*/;
 	m_BufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER; //! 인덱스 버퍼 정보 채울꺼야
-	m_BufferDesc.CPUAccessFlags = 0;
+	m_BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = 0;
 
@@ -119,6 +119,17 @@ HRESULT CVIBuffer_Cell::Initialize_Prototype(const _float3* pPoint)
 HRESULT CVIBuffer_Cell::Initialize(void* pArg)
 {
 	return S_OK;
+}
+
+void CVIBuffer_Cell::Update(const _float3* pPoint)
+{
+	D3D11_MAPPED_SUBRESOURCE SubResource;
+
+	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
+
+	((VTXPOS*)SubResource.pData)->vPosition = *pPoint;
+
+	m_pContext->Unmap(m_pVB, 0);
 }
 
 CVIBuffer_Cell* CVIBuffer_Cell::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _float3* pPoint)

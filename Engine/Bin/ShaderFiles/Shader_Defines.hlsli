@@ -1,8 +1,61 @@
+sampler LinearSampler = sampler_state
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = wrap;
+    AddressV = wrap;
+};
+
+sampler ClampSampler = sampler_state
+{
+    filter = min_mag_mip_linear;
+    AddressU = clamp;
+    AddressV = clamp;
+};
+
+
+sampler BorderSampler = sampler_state
+{
+    filter = min_mag_mip_linear;
+    AddressU = border;
+    AddressV = border;
+};
+
+sampler PointSampler = sampler_state
+{
+    filter = min_mag_mip_Point;
+    AddressU = wrap;
+    AddressV = wrap;
+};
+
+sampler PointClampSampler = sampler_state
+{
+    filter = min_mag_mip_point;
+    AddressU = clamp;
+    AddressV = clamp;
+};
+
+sampler sRGBSampler
+{
+    filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Clamp;
+    AddressV = Clamp;
+    AddressW = Clamp;
+    MaxAnisotropy = 16;
+    BorderColor = float4(0, 0, 0, 0);
+};
+
 
 RasterizerState RS_Default
 {
     FillMode = Solid;
     CullMode = Back;
+    FrontCounterClockWise = false;
+};
+
+RasterizerState RS_Cull_None
+{
+    FillMode = Solid;
+    CullMode = None;
     FrontCounterClockWise = false;
 };
 
@@ -24,6 +77,21 @@ DepthStencilState DSS_None
 {
     DepthEnable = false; // 깊이테스트 수행 안 할 것.
     DepthWriteMask = Zero; // 깊이기록 수행 안 할 것.
+    DepthFunc = Less_Equal;
+};
+
+DepthStencilState DSS_OnlyStencil
+{ //스텐실 테스트는 깊이 테스트를 활성화 해야 됨
+    DepthEnable = true;
+    DepthWriteMask = zero;
+    DepthFunc = always;
+
+    StencilEnable = true;
+    StencilWriteMask = 0xff;
+
+    BackFaceStencilFunc = always;
+    BackFaceStencilPass = replace;
+    BackFaceStencilFail = keep;
 };
 
 BlendState BS_Default
@@ -34,8 +102,17 @@ BlendState BS_Default
 BlendState BS_AlphaBlend_Add
 {
     BlendEnable[0] = true;
-
+    BlendOp = Add;
     SrcBlend = SRC_ALPHA;
     DestBlend = Inv_Src_Alpha;
-    BlendOp = Add;
+};
+
+BlendState BS_Blend_Add
+{
+    BlendEnable[0] = true;
+    BlendEnable[1] = true;
+
+    SrcBlend = one;
+    DestBlend = one;
+    BlendOp = add;
 };

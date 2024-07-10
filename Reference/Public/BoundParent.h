@@ -1,0 +1,44 @@
+#pragma once
+
+#include "Base.h"
+
+BEGIN(Engine)
+
+class CBoundParent abstract : public CBase
+{
+public:
+	enum PARTTYPE_BOUND { PART_BODY, PART_WEAPON, PARTTYPE_END };
+
+public:
+	typedef struct
+	{
+		_float3		vCenter;
+		PARTTYPE_BOUND ePartType;
+		_int		iNumCollider;
+
+	}BOUNDING_DESC;
+
+protected:
+	CBoundParent(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	virtual ~CBoundParent() = default;
+
+public:
+	virtual void Update(_fmatrix TransformMatrix) = 0;
+	virtual _bool Collision(class CCollider* pTargetCollider, _bool* pisCollision) = 0;
+
+#ifdef _DEBUG
+public:
+	virtual HRESULT Render(PrimitiveBatch<VertexPositionColor>* pBatch, _vector vColor) = 0;
+#endif
+
+
+protected:
+	ID3D11Device*				m_pDevice = { nullptr };
+	ID3D11DeviceContext*		m_pContext = { nullptr };
+
+
+public:	
+	virtual void Free() override;
+};
+
+END

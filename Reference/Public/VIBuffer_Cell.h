@@ -19,6 +19,9 @@ public:
 	virtual HRESULT Initialize(void* pArg) override;
 
 public:
+	void			Update(const _float3 * pPoint);
+
+public:
 	static CVIBuffer_Cell* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _float3 * pPoint);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;

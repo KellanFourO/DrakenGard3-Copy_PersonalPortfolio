@@ -25,6 +25,18 @@ HRESULT CCamera::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+
+	//!Desc.fMouseSensitivity = 0.05f;
+	//!Desc.vEye = _float4(0.f, 20.f, -15.f, 1.f);
+	//!Desc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
+	//!Desc.fFovY = XMConvertToRadians(60.0f);
+	//!Desc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+	//!Desc.fNear = 0.1f;
+	//!Desc.fFar = 1000.f;
+	//!Desc.fSpeedPerSec = 20.f;
+	//!Desc.fRotationPerSec = XMConvertToRadians(180.0f);
+	//!Desc.pTarget = m_pGameInstance->Get_Player(LEVEL_GAMEPLAY);
+
 	CAMERA_DESC*	pCameraDesc = (CAMERA_DESC*)pArg;
 
 	//! 위에서 만든 트랜스폼은 항등상태일 것이다. 내가 셋팅하고자 하는 카메라의 상태로 동기화시켜주자.

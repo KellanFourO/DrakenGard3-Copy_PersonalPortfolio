@@ -1,6 +1,18 @@
 #include "stdafx.h"
 #include "Monster.h"
 #include "GameInstance.h"
+#include "Player.h"
+#include "Model.h"
+#include "Animation.h"
+#include "PartObject.h"
+#include "UI_MonsterHP.h"
+#include "UI_MonsterHPFrame.h"
+#include "Effect_Trail.h"
+#include "UI_MonsterTag.h"
+#include "UI_MonsterTagFrame.h"
+#include "UI_MonsterPortrait.h"
+#include "Texture.h"
+#include "MyUI.h"
 
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CAnimObject(pDevice,pContext)
@@ -21,15 +33,119 @@ HRESULT CMonster::Initialize_Prototype(LEVEL eLevel)
 
 HRESULT CMonster::Initialize(void* pArg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if(FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Components()))
+	return S_OK;
+}
+
+HRESULT CMonster::Initialize_UI(MONSTERTYPE eType)
+{
+	CUI_MonsterHP::MONSTER_HP HP_Desc;
+
+	if (m_isBoss == true)
+	{
+		HP_Desc.bWorldUI = false;
+		HP_Desc.eMonsterType = CUI_MonsterHP::BOSS;
+		HP_Desc.fSizeX = 1024.f;
+		HP_Desc.fSizeY = 16.f;
+		HP_Desc.fX = g_iWinSizeX / 2;
+		HP_Desc.fY = 60.f;
+		HP_Desc.bEnable = true;
+
+	}
+	else
+	{
+		HP_Desc.bWorldUI = true;
+		HP_Desc.eMonsterType = CUI_MonsterHP::COMMON;
+	}
+
+	//!주석 걸린 값들은 디폴트 인자. 변경 필요할시 값 변경
+	//HP_Desc.fCrntHPUV = 1.f;
+	//HP_Desc.fPrevHPUV = 1.f;
+	//HP_Desc.fPosOffset = 0.5f;
+	//HP_Desc.fOffsetX
+	HP_Desc.pOwnerStatus = &m_tStatus;
+	HP_Desc.pOwnerTransform = m_pTransformCom;
+	
+	if (m_isBoss == true)
+	{
+		CUI_MonsterHP::MONSTER_HP BOSS_FrameDesc;
+		
+		BOSS_FrameDesc = HP_Desc;
+		BOSS_FrameDesc.fSizeY = 32.f;
+
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterHPFrame"), &BOSS_FrameDesc)))
+			return E_FAIL;
+	}
+
+
+	if (m_isBoss == true)
+	{
+		CUI_MonsterTag::MONSTER_TAG MonsterTagDesc;
+		MonsterTagDesc.bWorldUI = false;
+		MonsterTagDesc.eMonsterType = (CUI_MonsterTag::MONSTERTYPE)eType;
+		MonsterTagDesc.pOwnerStatus = &m_tStatus;
+		MonsterTagDesc.pOwnerTransform = m_pTransformCom;
+		MonsterTagDesc.fSizeX = 300.f;
+		MonsterTagDesc.fSizeY = 37.5f;
+		MonsterTagDesc.fX = 340.f;
+		MonsterTagDesc.fY = 25.f;
+		MonsterTagDesc.bEnable = true;
+
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterNameTag"), &MonsterTagDesc)))
+			return E_FAIL;
+
+		CUI_MonsterPortrait::MONSTER_PORTRAIT MonsterPortraitDesc;
+		MonsterPortraitDesc.bWorldUI = false;
+		MonsterPortraitDesc.eMonsterType = (CUI_MonsterPortrait::MONSTERTYPE)eType;
+		MonsterPortraitDesc.pOwnerStatus = &m_tStatus;
+		MonsterPortraitDesc.pOwnerTransform = m_pTransformCom;
+		MonsterPortraitDesc.fSizeX = 200.f;
+		MonsterPortraitDesc.fSizeY = 200.f;
+		MonsterPortraitDesc.fX = 100.f;
+		MonsterPortraitDesc.fY = 60.f;
+		MonsterPortraitDesc.bEnable = true;
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterPortrait"), &MonsterPortraitDesc)))
+			return E_FAIL;
+	}
+	else
+	{
+		CUI_MonsterTag::MONSTER_TAG MonsterTagDesc;
+		MonsterTagDesc.bWorldUI = true;
+		MonsterTagDesc.eMonsterType = (CUI_MonsterTag::MONSTERTYPE)eType;
+		MonsterTagDesc.pOwnerStatus = &m_tStatus;
+		MonsterTagDesc.pOwnerTransform = m_pTransformCom;
+
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterNameTag"), &MonsterTagDesc)))
+			return E_FAIL;
+
+		CUI_MonsterPortrait::MONSTER_PORTRAIT MonsterPortraitDesc;
+		MonsterPortraitDesc.bWorldUI = true;
+		MonsterPortraitDesc.eMonsterType = (CUI_MonsterPortrait::MONSTERTYPE)eType;
+		MonsterPortraitDesc.pOwnerStatus = &m_tStatus;
+		MonsterPortraitDesc.pOwnerTransform = m_pTransformCom;
+
+		if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterPortrait"), &MonsterPortraitDesc)))
+			return E_FAIL;
+
+	}
+		
+
+
+	
+	
+	if (FAILED(m_pGameInstance->Add_CloneObject(m_eCurrentLevelID, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_MonsterHP"), &HP_Desc)))
 		return E_FAIL;
+	
+		
 
-	m_pModelCom->Set_Animation(rand() % 20);
 
-	// 클라 테스트용 m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 20, 3.f, rand() % 20, 1.f));
+	
 
 	return S_OK;
 }
@@ -40,142 +156,224 @@ void CMonster::Priority_Tick(_float fTimeDelta)
 
 void CMonster::Tick(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta, true);
 }
 
 void CMonster::Late_Tick(_float fTimeDelta)
 {
-	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
-		return;
 }
 
 HRESULT CMonster::Render()
 {
-	//#몬스터모델렌더
-
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
-
-	//TODO 클라에서 모델의 메시 개수를 받아와서 순회하면서 셰이더 바인딩해주자.
-
-	_uint	iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-	for (size_t i = 0; i < iNumMeshes; i++)
-	{
-		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
-
-		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-
-		m_pShaderCom->Begin(0); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
-
-		m_pModelCom->Render(i);
-	}
-
+	
 	return S_OK;
 }
 
 void CMonster::Write_Json(json& Out_Json)
 {
 	__super::Write_Json(Out_Json);
-	
-	//Out_Json["MonsterDesc"]["MonsterType"] =		m_tLinkStateDesc.eMonType;
-	//Out_Json["MonsterDesc"]["IdleType_Monster"] =	m_tLinkStateDesc.eNorMonIdleType;
-	//Out_Json["MonsterDesc"]["IdleType_Boss"] =		m_tLinkStateDesc.eBossStartType;
-	//Out_Json["MonsterDesc"]["Patrol"] =				m_tLinkStateDesc.bPatrol;
-	//Out_Json["MonsterDesc"]["SectionIndex"] =		m_tLinkStateDesc.iSectionIndex;
 
-	auto iter = Out_Json["Component"].find("Model");
-	Out_Json["Component"].erase(iter);
+
+
+
 }
 
 void CMonster::Load_FromJson(const json& In_Json)
 {
 	__super::Load_FromJson(In_Json);
-
-	//m_tLinkStateDesc.Reset();
-	//
-	//m_tLinkStateDesc.eMonType = In_Json["MonsterDesc"]["MonsterType"];
-	//m_tLinkStateDesc.eNorMonIdleType = In_Json["MonsterDesc"]["IdleType_Monster"];
-	//m_tLinkStateDesc.eBossStartType = In_Json["MonsterDesc"]["IdleType_Boss"];
-	//
-	//if (In_Json["MonsterDesc"].end() != In_Json["MonsterDesc"].find("Patrol"))
-	//	m_tLinkStateDesc.bPatrol = In_Json["MonsterDesc"]["Patrol"];
-	//
-	//if (In_Json["MonsterDesc"].end() != In_Json["MonsterDesc"].find("SectionIndex"))
-	//	m_tLinkStateDesc.iSectionIndex = In_Json["MonsterDesc"]["SectionIndex"];
-	//
-	//XMStoreFloat4(&m_tLinkStateDesc.m_fStartPositon, m_pTransformCom.lock()->Get_State(CTransform::STATE_TRANSLATION));
-	//
-	//GET_SINGLE(CGameManager)->Registration_Section(m_tLinkStateDesc.iSectionIndex, Weak_Cast<CGameObject>(m_this));
-	//
-	//Init_Desc();
 }
 
 void CMonster::Init_Desc()
 {
-	//m_pStatus.lock()->Init_Status(&m_tLinkStateDesc);
 }
 
-HRESULT CMonster::Ready_Components()
+void CMonster::Init_Status(_float fMaxHp, _float fDmg)
 {
-	/* For.Com_Shader */ //#모델셰이더는_Prototype_Component_Shader_Model
-	//Prototype_Component_Shader_AnimModel
-	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Shader_AnimModel"),
-		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
-		return E_FAIL;
+	m_tStatus.fCurrentHp = fMaxHp;
+	m_tStatus.fMaxHp = fMaxHp;
+	m_tStatus.fDmg = fDmg;
+	m_tStatus.eAttackType = tagStatusDesc::ATTACKTYPE_END;
+	m_tOriginStatus = m_tStatus;
 
-	/* For.Com_Model */ //#피오나_ReadyComponent
-	if (FAILED(__super::Add_Component(m_eCurrentLevelID, TEXT("Prototype_Component_Model_Fiona"),
-		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
-		return E_FAIL;
-
-	return S_OK;
 }
 
-HRESULT CMonster::Bind_ShaderResources()
+
+_float4 CMonster::Create_RandomPosition(_float3 vCurrentPosition, _float fMinDistance, _float fMaxDistance)
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_pGameInstance->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
-		return E_FAIL;
+	std::mt19937 generator(static_cast<unsigned int>(std::time(0))); // 난수 생성기 초기화
+	std::uniform_real_distribution<float> distribution(0.0f, 1.0f); // 0.0에서 1.0 사이의 균일 분포
+
+	// 랜덤한 방향과 거리 생성
+	float randomAngle = 2.0f * XM_PI * distribution(generator); // 0에서 2*pi 사이의 랜덤한 각도
+	float randomDistance = fMinDistance + (fMaxDistance - fMinDistance) * distribution(generator);
+	float randomZ = fMinDistance + (fMaxDistance - fMinDistance) * distribution(generator); 
+
+	// 랜덤한 위치 생성
+	XMFLOAT4 randomPosition;
+	randomPosition.x = vCurrentPosition.x + randomDistance * cosf(randomAngle);
+	randomPosition.y = vCurrentPosition.y;
+	randomPosition.z = vCurrentPosition.z + randomZ;
+	randomPosition.w = 1.f;
+
+	return randomPosition;
 	
+}
+
+_bool CMonster::Is_CurrentAnimEnd()
+{
+	return m_pModelCom->Get_CurrentAnimation()->Get_Finished();
+	
+}
+
+void CMonster::Set_AnimSpeed(_float fSpeed)
+{
+	m_pModelCom->Set_AnimationSpeed(fSpeed);
+}
+
+CCollider* CMonster::Get_WeaponCollider()
+{
+	return dynamic_cast<CCollider*>(Find_PartObject(TEXT("Part_Weapon"))->Find_Component(TEXT("Com_Collider")));
+}
+
+void CMonster::Set_WeaponAttackType(STATUS_DESC::ATTACKTYPE eAttackType)
+{
+	Find_PartObject(TEXT("Part_Weapon"))->Get_Status()->eAttackType = eAttackType;
+}
+
+void CMonster::Set_PartAttackType(wstring& strPartTag, STATUS_DESC::ATTACKTYPE eAttackType)
+{
+	Find_PartObject(strPartTag)->Get_Status()->eAttackType = eAttackType;
+}
+
+void CMonster::Dead_Action(_float fTimeDelta, _float fLifeTime)
+{
+	if (true == m_bDissove)
+	{
+		if (false == m_bPartDie)
+		{
+			CPartObject* pWeapon = Find_PartObject(TEXT("Part_Weapon"));
+			pWeapon->Die(1.8f);
+			m_bPartDie = true;
+
+
+			m_pGameInstance->Play_Sound(L"Dissolve", L"Dissolve.wav", SOUND_SYSTEM_EFFECT, 1.f);
+		}
+		
+
+		m_fDissoveWeight += fTimeDelta * 0.5f;
+
+		if (m_fDissoveWeight > fLifeTime)
+		{
+			Set_Dead();
+		}
+		m_iPassIndex = 4;
+
+		m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fDissoveWeight, sizeof(_float));
+		m_pDissoveTexture->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture");
+	}
+
+	
+
+	
+}
+
+
+
+void CMonster::On_Collision(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
+{
+	
+}
+
+void CMonster::On_CollisionEnter(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _float3& vCollisionPos, _bool bType, _bool bHit)
+{
+	if (bType == false)
+	{
+		m_bMove = false;
+	}
+	else if(bHit == true)
+	{
+		if (typeid(*pCollisionObject) == typeid(CPlayer))
+		{
+			
+			Blackboard::Ptr pBlackBoard = m_pBehaviorTree->getBlackboard();
+			
+			_float fCurrentHp = pBlackBoard->getFloat("Current_HP");
+			_float fCalcHp = fCurrentHp - 50.f;
+
+
+			if (fCalcHp <= 0)
+			{
+				pBlackBoard->setBool("Is_Dead", true);
+			}
+			else
+				pBlackBoard->setBool("Is_Hit", true);
+				
+			m_tStatus.fCurrentHp = fCalcHp;
+			pBlackBoard->setFloat("Current_HP", fCalcHp);
+
+			CMyUI::UI_DESC Desc;
+
+			Desc.bWorldUI = false;
+			Desc.bEnable = true;
+
+			dynamic_cast<CPlayer*>(pCollisionObject)->Add_BloodCount();
+			m_pGameInstance->Add_CloneObject(LEVEL_GAMEPLAY, TEXT("Layer_UI"), TEXT("Prototype_GameObject_UI_Blood"), &Desc);
+		}
+	}
+
+	
+	
+
+	wcout << LeftTag.c_str() << TEXT(" On_CollisionExit is ") << RightTag.c_str() << endl;
+}
+
+void CMonster::On_CollisionExit(CGameObject* pCollisionObject, wstring& LeftTag, wstring& RightTag, _bool bType, _bool bHit)
+{
+	if (bType == false)
+	{
+		m_bMove = true;
+	}
+	//else if(bHit == true)
+	//{
+	//	if (typeid(*pCollisionObject) == typeid(CPlayer))
+	//	{
+	//		m_pBehaviorTree->getBlackboard()->setBool("Is_Hit", false);
+	//		
+	//	}
+	//}
+	
+
+	wcout << LeftTag.c_str() << TEXT(" On_CollisionExit is ") << RightTag.c_str() << endl;
+}
+
+void CMonster::Transition(_int iAnimIndex, _float fSpeed)
+{
+	if (iAnimIndex != m_pModelCom->Get_CurrentAnimationIndex())
+	{
+		
+		m_pModelCom->Set_Animation(iAnimIndex);
+		m_pModelCom->Get_CurrentAnimation()->Reset_Animation();
+		m_pModelCom->Set_AnimationSpeed(fSpeed);
+	}
+}
+
+
+HRESULT CMonster::Ready_BehaviorTree()
+{
 	return S_OK;
 }
 
-CMonster* CMonster::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel)
+HRESULT CMonster::Ready_BehaviorTree_V2()
 {
-	CMonster* pInstance = new CMonster(pDevice, pContext);
-
-	/* 원형객체를 초기화한다.  */
-	if (FAILED(pInstance->Initialize_Prototype(eLevel)))
-	{
-		MSG_BOX("Failed to Created : CMonster");
-		Safe_Release(pInstance);
-	}
-	return pInstance;
-}
-
-CGameObject* CMonster::Clone(void* pArg)
-{
-	CMonster* pInstance = new CMonster(*this);
-
-	/* 원형객체를 초기화한다.  */
-	if (FAILED(pInstance->Initialize(pArg)))
-	{
-		MSG_BOX("Failed to Cloned : CMonster");
-		Safe_Release(pInstance);
-	}
-	return pInstance;
+	return S_OK;
 }
 
 void CMonster::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pColliderCom);
+	Safe_Release(m_pRigidBodyCom);
+	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);
 }

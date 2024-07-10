@@ -13,12 +13,21 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	, m_Channels(rhs.m_Channels)
 	, m_isFinished(rhs.m_isFinished)
 	, m_CurrentKeyFrames(rhs.m_CurrentKeyFrames)
+	, m_fAnimRatio(rhs.m_fAnimRatio)
+	, m_iMaxKeyFrame(rhs.m_iMaxKeyFrame)
+	, m_iPrevChannelIndex(rhs.m_iPrevChannelIndex)
 {
 	strcpy_s(m_szName, rhs.m_szName);
 
 	//! 채널은 포인터형태로 가지고있기에 레퍼런스 카운터를 올려줘야한다. 디폴트 생성자를 사용하지않고 애니메이션클래스는 본 클래스와 다르게 따로 복사생성자를  둔 이유이기도 하다.
 	for(auto& pChannel : m_Channels)
 		Safe_AddRef(pChannel);
+}
+
+
+_uint CAnimation::Get_CurrentChannelKeyIndex() const
+{
+	return (_uint)(m_fTrackPosition / (m_fDuration / m_iMaxKeyFrame));
 }
 
 HRESULT CAnimation::Initialize(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName)
@@ -38,44 +47,80 @@ HRESULT CAnimation::Initialize(const _float& fDuration, const _float& fTickPerSe
 
 	m_Channels.reserve(Channels.size());
 	for (auto& iter : Channels)
-		m_Channels.push_back(iter);
+	{
+		if(m_iMaxKeyFrame < iter->Get_NumKeyFrames())
+			m_iMaxKeyFrame = iter->Get_NumKeyFrames();
 
+		m_Channels.push_back(iter);
+	}
+
+	
 	return S_OK;
 }
 
-void CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones)
+void CAnimation::Blend_TransformationMatrix(_float fMaxBlendTime, _float fRatio, const CModel::BONES& Bones)
 {
-	m_fTrackPosition += m_fTicksPerSecond * fTimeDelta;
+	m_fAnimRatio = 0.f;
+
+	for (_uint i = 0; i < m_iNumChannels; ++i)
+		m_Channels[i]->Blend_TransformationMatrix(fMaxBlendTime, fRatio, Bones);
+	
+}
+
+void CAnimation::Reset_Animation()
+{
+	/* 재생할 애니메이션 초기화 */
+	m_fAnimRatio = 0.f;
+	m_fTrackPosition = 0.f;
+	m_iPrevChannelIndex = -1;
+
+	m_isFinished = false;
+	
+
+	for (_uint i = 0; i < m_iNumChannels; ++i)
+		m_Channels[i]->Reset_KeyFrame();
+}
 
 
-	//! 트랙포지션이 듀레이션(애니메이션의 총 길이)보다 커졌다는 것은 애니메이션이 끝났다는 것과 같아.
-	//!  인자값으로 들어온 isLoop의 값에 땨따라 루프를 돌릴지 멈출지 처리할거야.
-	if(m_fTrackPosition >= m_fDuration)
+
+_bool CAnimation::Invalidate_TransformationMatrix(_bool isLoop, _float fTimeDelta, const CModel::BONES& Bones, _float fAnimSpeed)
+{
+	
+	/* 애니메이션 지속증가 */
+	m_fTrackPosition += m_fTicksPerSecond * fTimeDelta * fAnimSpeed;
+	m_fAnimRatio = m_fTrackPosition / m_fDuration;
+
+	if (m_fTrackPosition >= m_fDuration)
 	{
-		m_isFinished = true; //! 끝났다는 것을 알리기위한 불변수야.
-		m_fTrackPosition = m_fDuration; //! isLoop가 False였다면 루프를 돌리지 않겠다는 거지. 총 길이의 마지막으로 유지시켜주자.
+		for (_uint i = 0; i < m_iNumChannels; ++i)
+		{
+			m_Channels[i]->Reset_KeyFrame();
+		}
 
 		if (true == isLoop)
 		{
-			m_fTrackPosition = 0.0f;
 			m_isFinished = false;
+			m_fTrackPosition = 0.f;
+		}
+		else if (false == isLoop)
+		{	
+			m_isFinished = true;
+			m_fTrackPosition = m_fDuration;
 		}
 	}
 
-	//! 근데! 애니메이션의 프레임마다 속도가 재생속도가 달라야 하는 경우가 있어 .  틱스퍼세컨드를 말하는거겠지?
-	//! 예를 들자면, 바위를 드는게 0 프레임, 던지는게 1프레임이라고 쳤을 때. 드는 속도는 느리더라도 던지는건 빠른 경우도 있다는 거지.
-	//! 이렇게 속도가 달리 정의되면 애니메이션의 퀄리티를 높일 수 있어.
-	//! 그리고 트랙포지션을 듀레이션에 맞춰놓고 마이너스로 감산하면 역재생도 가능하겠지?
-	//! 역재생을 이용하면 뒤로 걷기 같은것도 할 수 있어.
+	for (_uint i = 0; i < m_iNumChannels; ++i)
+		m_Channels[i]->Invalidate_TransformationMatrix(m_fTrackPosition, Bones);
 
-	//! 위에서 현재 애니메이션이 재생되고있는 위치가 누적되면서 갱신되니까.
-	//! 내 애니메이션이 이용하는 전체 뼈의 상태를 갱신된 위치에 맞는 상태로 바꿔주자
-	
-	//! 애니메이션이 사용하는 전체뼈의 상태를 갱신하자며? 사용하는 전체 뼈 갯수 루프 돌아야지
-	for (size_t i = 0; i < m_iNumChannels; i++)
+	_int iCurrentKey = (_int)Get_CurrentChannelKeyIndex();
+
+	if (iCurrentKey != m_iPrevChannelIndex)
 	{
-		m_Channels[i]->Invalidate_TransformationMatrix(m_fTrackPosition, Bones, &m_CurrentKeyFrames[i]);
+		for (_uint i = m_iPrevChannelIndex + 1; i <= (_uint)iCurrentKey; ++i)
+			m_iPrevChannelIndex = iCurrentKey;
 	}
+
+	return m_isFinished;
 }
 
 CAnimation* CAnimation::Create(const _float& fDuration, const _float& fTickPerSecond, vector<class CChannel*>& Channels, const string& strName)
@@ -83,7 +128,7 @@ CAnimation* CAnimation::Create(const _float& fDuration, const _float& fTickPerSe
 	CAnimation* pInstance = new CAnimation();
 
 	/* 원형객체를 초기화한다.  */
-	if (FAILED(pInstance->Initialize(fDuration,fTickPerSecond,Channels,strName)))
+	if (FAILED(pInstance->Initialize(fDuration, fTickPerSecond, Channels, strName)))
 	{
 		MSG_BOX("Failed to Created : CAnimation");
 		Safe_Release(pInstance);

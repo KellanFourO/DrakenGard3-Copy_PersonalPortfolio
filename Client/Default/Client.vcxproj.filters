@@ -52,14 +52,8 @@
     <Filter Include="96. Tool\00. Camera">
       <UniqueIdentifier>{136c76e3-85ab-4107-b8a6-79d1101a825f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\03. Monster">
-      <UniqueIdentifier>{fbc59e0b-f0ac-4d8e-aebc-9ddfff558ab6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\01. Terrain\00. Dynamic">
       <UniqueIdentifier>{7161916a-d47f-4bbc-813a-b125f734fb18}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\04. TestTree">
-      <UniqueIdentifier>{3886dd1f-d1d8-4c40-aef6-c29591ca3780}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\98. NonAnimObject">
       <UniqueIdentifier>{df94b58a-430c-4d3c-b363-7e67629d8787}</UniqueIdentifier>
@@ -67,11 +61,275 @@
     <Filter Include="02. GameObjects\99. AnimModelObject">
       <UniqueIdentifier>{07b8b8d7-2612-4c0c-bd87-ce9fa43a95f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\05. ForkLift">
-      <UniqueIdentifier>{784e7824-784c-40c2-987e-037a767f0172}</UniqueIdentifier>
+    <Filter Include="02. GameObjects\02. Camera\Target">
+      <UniqueIdentifier>{f52a89cb-a66a-433e-bd0c-c4d4789f5bac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\06. Player">
+    <Filter Include="96. Tool\01. Field">
+      <UniqueIdentifier>{50e8fee4-a339-490f-820f-e49add5e08f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player">
       <UniqueIdentifier>{fcad7db1-bfa0-4bd6-8780-e7e6f6bceb78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\00. Body">
+      <UniqueIdentifier>{ce5bfef5-cc7d-406e-910b-5ad5e725eed1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\01. Weapon">
+      <UniqueIdentifier>{75bc0754-d80f-4d51-9264-ce1835c3f679}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States">
+      <UniqueIdentifier>{7c36e6bb-ad3f-4a5b-bd5f-431563f7b19a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground">
+      <UniqueIdentifier>{8119e7d1-dbe9-4a50-a7c5-917e76947ea7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\02. Run">
+      <UniqueIdentifier>{2dc1b869-c23d-425f-8f0a-b5643b706970}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\01. Walk">
+      <UniqueIdentifier>{196dd11c-220b-44fe-9bb7-4a3f0283cdc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\00. Idle">
+      <UniqueIdentifier>{893a29b7-eef4-4fef-8029-0afd549de15d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack">
+      <UniqueIdentifier>{acee4c7a-4f18-4c9c-a501-24456e15e354}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack">
+      <UniqueIdentifier>{5aaac1eb-aa62-42f4-aebc-c0df1f680a04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1">
+      <UniqueIdentifier>{31841d56-8617-49fb-9046-6873df4d2473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2">
+      <UniqueIdentifier>{9352a632-64a2-492d-8388-a52eef89b721}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3">
+      <UniqueIdentifier>{d93d0331-8b3e-4e33-a7c3-d44d632f38a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4">
+      <UniqueIdentifier>{f64a63e0-7d5b-4d15-a9fc-463410c33455}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\04. Attack5">
+      <UniqueIdentifier>{2c14b647-6041-4e36-b7cb-6b126bb16716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\05. Attack6">
+      <UniqueIdentifier>{d8f0d604-6c81-4f91-98c5-7c4544f915b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\06. Attack7">
+      <UniqueIdentifier>{56f98632-ca43-4d26-aa5b-0371e517a7b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8">
+      <UniqueIdentifier>{89521753-c263-4bd2-a1ba-ab0fbfd5bc51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Air">
+      <UniqueIdentifier>{8d25e29b-0a8e-4376-b248-fb40f3f1ed46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Air\00. Jump">
+      <UniqueIdentifier>{e581d527-8655-4324-8606-a8ec9109036d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster">
+      <UniqueIdentifier>{fbc59e0b-f0ac-4d8e-aebc-9ddfff558ab6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00">
+      <UniqueIdentifier>{ac78bc3c-8daf-4dbf-b6fd-9c4355bf83c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\01. Weapon">
+      <UniqueIdentifier>{7e3eb02d-aa44-4cb1-995a-e598e2b1c3ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. SkyBox">
+      <UniqueIdentifier>{37545faa-2817-411b-ae58-6edd100cdf2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\00. Map">
+      <UniqueIdentifier>{52f6ea65-eaad-4354-a8e5-ec50b03fac44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\00. Map\Stage1">
+      <UniqueIdentifier>{51ba8aeb-cc67-4971-8d64-76fd62774625}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\00. Map\Stage1\Map1">
+      <UniqueIdentifier>{43a7999b-10aa-46b7-9ddc-bfbc61211d8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\05. Barricade">
+      <UniqueIdentifier>{bf5c7d1a-5bf0-4684-9129-bbc6193470bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\05. Barricade\Broken">
+      <UniqueIdentifier>{cdc1ed2f-a42d-4a1a-bdf3-a2ec61e6b2f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\99. EnvironmentObject">
+      <UniqueIdentifier>{203f6293-1a54-49e6-bfc0-9780067891ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\04. SkyDome">
+      <UniqueIdentifier>{a58e2906-de3f-4288-91fc-29bfe77fc500}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects">
+      <UniqueIdentifier>{d6f3bc27-28ee-4805-8fb2-8f76871241b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Particles">
+      <UniqueIdentifier>{c3303b44-6d50-4ae9-a9fc-347744853c2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Particles\Blue">
+      <UniqueIdentifier>{f143126c-bc3c-46b8-9036-13511a79211f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Particles\Red">
+      <UniqueIdentifier>{55049603-f789-48d4-9a73-a0c3aa9b793d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Explosion">
+      <UniqueIdentifier>{b8d05546-3dd4-4a95-9a5c-b2159c909f43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash">
+      <UniqueIdentifier>{6cde0625-5f53-4b11-987b-ee1444f4bd3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\99. AIState">
+      <UniqueIdentifier>{f2106f62-feee-4e6d-92ff-72dbe6d5b4b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\99. AIState\00. Control">
+      <UniqueIdentifier>{35022697-288f-48e8-8101-57889c20b2a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\99. AIState\01. Task">
+      <UniqueIdentifier>{25e47424-5c35-4db9-88b8-c09749a9a9a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\02. EN70">
+      <UniqueIdentifier>{f9577f29-18a9-4896-aa42-f2c4378b81b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\01. Monster\01. EN01">
+      <UniqueIdentifier>{b2e96c03-f4d8-4d68-a44b-17584cb10e76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Bullets">
+      <UniqueIdentifier>{99b41ced-dff5-4b5e-b0ec-e66e61a8eee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Bullets\00. EN01_Arrow">
+      <UniqueIdentifier>{5b392ff1-6cb6-4ef7-9ad6-21e0546a8167}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\02. Boss">
+      <UniqueIdentifier>{411e0535-389d-4fc3-b83f-14094cd4b0cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit">
+      <UniqueIdentifier>{fcb6a86b-aa58-4665-8cee-f20634fadd2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\06. BreakFall">
+      <UniqueIdentifier>{ffb3be40-d600-4902-a5b7-caac05618d2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\WeakHit">
+      <UniqueIdentifier>{92ad488d-1172-46a7-874c-d67ed783d2fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\MoreWeakHit">
+      <UniqueIdentifier>{83c48bbb-cc2c-4c8d-b83f-f443b7ec488f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\MoreMoreWeakHit">
+      <UniqueIdentifier>{c3eaace2-6dc6-48d6-8142-512c558c59fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\Sturn">
+      <UniqueIdentifier>{00035af0-8197-47f7-a123-42565d048658}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\07. Dead">
+      <UniqueIdentifier>{4dba9e3a-d70e-4e9a-a34b-a3e5fc0dbc8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\BlowAwayHit">
+      <UniqueIdentifier>{de50f48d-da97-4bbd-a927-90fd4d2dfdb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\UpperHit">
+      <UniqueIdentifier>{684798bd-ac1c-4877-be67-4bf9c4f88e7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\DownHit">
+      <UniqueIdentifier>{7f741fc4-2629-4d9c-8456-368a2bc3dba2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Events">
+      <UniqueIdentifier>{c42fdd2f-cb26-41c2-9851-95eff8017e2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\08. Depress">
+      <UniqueIdentifier>{2200bc61-8d1a-4017-87cf-953dc7bbf871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\98. NonAnimObject\01. BornFire">
+      <UniqueIdentifier>{3d33932e-efda-4f40-9b31-d1c4daa77b25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\MeshEffect">
+      <UniqueIdentifier>{08068fcf-356f-46fd-aef3-d8de766dd44f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Player">
+      <UniqueIdentifier>{9840f30b-6ee0-4d9b-9b14-af9c263f8920}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Player\Hanabira">
+      <UniqueIdentifier>{66e41856-a6f0-4439-97a2-181fdeac3dea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Boss">
+      <UniqueIdentifier>{28076e7d-455e-44a5-98e2-a9aa081f7bfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Particles\BossBreath">
+      <UniqueIdentifier>{5f7a6f07-e6c9-47ba-8bd2-70bde99351a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Blood">
+      <UniqueIdentifier>{89d17fb6-ebf5-4c06-a8e6-886e65efe915}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Trail">
+      <UniqueIdentifier>{faf84eb6-9db4-4f7b-93ad-0249dc071599}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\97. UI">
+      <UniqueIdentifier>{252e704e-d39e-4e6b-b9f7-d5fcdde8902f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\97. UI\MonsterHP">
+      <UniqueIdentifier>{29bd3261-04d0-4840-8961-47d5cfeca9d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\97. UI\MonsterHP\Frame">
+      <UniqueIdentifier>{8308d783-99f7-4201-b746-5756510f7526}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Player\DashRing">
+      <UniqueIdentifier>{cf7f5dd3-e0ff-4395-9da6-20b774d37785}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\RunSmoke">
+      <UniqueIdentifier>{d6b69a18-5f93-4998-a5b3-4550fff4224b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\97. UI\BossTag">
+      <UniqueIdentifier>{b86d6e4e-0c13-4ad9-8c61-32e273f8756b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\97. UI\MonsterPortrait">
+      <UniqueIdentifier>{eb95b3fb-10a7-48f4-8478-df916e55d5cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\BossPear">
+      <UniqueIdentifier>{0cccafeb-bef2-473e-ba2a-540fff51988b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Effects\Dust">
+      <UniqueIdentifier>{66c0d0be-586f-47ec-ad02-4093030e5eeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\97. UI\Blood">
+      <UniqueIdentifier>{4b062cbb-2e5e-4818-9564-1fcff235ecef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode">
+      <UniqueIdentifier>{aee78160-a414-440f-b380-3e174cd3f025}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Idle">
+      <UniqueIdentifier>{96d109b4-d440-4dab-8203-b5fb4ec268ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Run">
+      <UniqueIdentifier>{8b3121f5-97e8-499f-8735-a66340ac91d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Walk">
+      <UniqueIdentifier>{a6c50dbb-bd66-4b10-8be7-a90db39bff30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack">
+      <UniqueIdentifier>{b5255aae-3a33-49bc-9c84-95e50df5b42d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack1">
+      <UniqueIdentifier>{d90514cf-1676-4177-ae7c-aeb35a3a43de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack2">
+      <UniqueIdentifier>{babe95e2-46c1-4d96-83ac-97abdb455476}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack3">
+      <UniqueIdentifier>{63712a2b-488a-4c68-b062-b5d0a7b6bae6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack4">
+      <UniqueIdentifier>{68bb3fb4-42d7-4037-83c2-b7a9a43521f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack5">
+      <UniqueIdentifier>{885a3ff7-52a8-41bc-bfa1-267d8847686f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack6">
+      <UniqueIdentifier>{06c7c294-a416-44f0-84b1-c0210aed7d8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack7">
+      <UniqueIdentifier>{2a4573a9-a94d-4088-a286-77b8e654eb09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack8">
+      <UniqueIdentifier>{b24f2e5f-7084-407b-a722-ed8618e327e3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -142,10 +400,7 @@
       <Filter>96. Tool\00. Camera</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Monster.h">
-      <Filter>02. GameObjects\03. Monster</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\TestTree.h">
-      <Filter>02. GameObjects\04. TestTree</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Dynamic_Terrain.h">
       <Filter>02. GameObjects\01. Terrain\00. Dynamic</Filter>
@@ -155,9 +410,6 @@
     </ClInclude>
     <ClInclude Include="..\public\AnimObject.h">
       <Filter>02. GameObjects\99. AnimModelObject</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\ForkLift.h">
-      <Filter>02. GameObjects\05. ForkLift</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Reference\Imgui\ImGuizmo.h">
       <Filter>96. Tool\99. Default</Filter>
@@ -189,11 +441,290 @@
     <ClInclude Include="..\Public\Imgui_Manager.h">
       <Filter>96. Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\CustomFont.h">
+    <ClInclude Include="..\Public\CustomDialogFont.h">
       <Filter>99. Defines</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Player.h">
-      <Filter>02. GameObjects\06. Player</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\SkyBox.h">
+      <Filter>02. GameObjects\03. SkyBox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerPart_Body.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\00. Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerPart_Weapon.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\01. Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\PlayerState_Base.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Idle.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\00. Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Walk.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\01. Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Run.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\02. Run</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Jump.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Air\00. Jump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack1.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack2.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack3.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack4.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Monster_EN00.h">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AIState_Base.h">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\99. AIState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MonsterPart_EN00_Weapon.h">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\01. Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerGroundStates.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_NormalAttackBase.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack5.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\04. Attack5</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack6.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\05. Attack6</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack7.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\06. Attack7</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Attack8.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AIControl_Base.h">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\99. AIState\00. Control</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AITask_Base.h">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\99. AIState\01. Task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Target.h">
+      <Filter>02. GameObjects\02. Camera\Target</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Stage1Map_1.h">
+      <Filter>02. GameObjects\98. NonAnimObject\00. Map\Stage1\Map1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Field.h">
+      <Filter>96. Tool\01. Field</Filter>
+    </ClInclude>
+    <ClInclude Include="NonAnimObjects.h">
+      <Filter>02. GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimObjects.h">
+      <Filter>02. GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Environment_Barricade.h">
+      <Filter>02. GameObjects\98. NonAnimObject\05. Barricade</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Environment_BrokenBarricade.h">
+      <Filter>02. GameObjects\98. NonAnimObject\05. Barricade\Broken</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Environment_Object.h">
+      <Filter>02. GameObjects\98. NonAnimObject\99. EnvironmentObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SkyDome.h">
+      <Filter>02. GameObjects\04. SkyDome</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Particle_Blue.h">
+      <Filter>02. GameObjects\05. Effects\Particles\Blue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Particle_Red.h">
+      <Filter>02. GameObjects\05. Effects\Particles\Red</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Explosion.h">
+      <Filter>02. GameObjects\05. Effects\Explosion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_DashLeft.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_DashBack.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_DashFront.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_DashRight.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Monster_EN70.h">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\02. EN70</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MonsterPart_EN70_Weapon.h">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\02. EN70</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MonsterPart_EN01_Weapon.h">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. EN01</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Monster_EN01.h">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. EN01</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Bullet.h">
+      <Filter>02. GameObjects\06. Bullets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\EN01_Arrow.h">
+      <Filter>02. GameObjects\06. Bullets\00. EN01_Arrow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Boss_EN131.h">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BossPart_EN131_Weapon.h">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EN131_Breath.h">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Dead.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\07. Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_MoreMoreWeakHit.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\MoreMoreWeakHit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_WeakHit.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\WeakHit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_MoreWeakHit.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\MoreWeakHit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Sturn.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\Sturn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BreakFall.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\06. BreakFall</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BlowAwayHit.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\BlowAwayHit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_UpperHit.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\UpperHit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_DownHit.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\DownHit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BossPart_EN131_SwingTail.h">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Event_Boss1Apeear.h">
+      <Filter>03. Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Depress.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\08. Depress</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Environment_BornFire.h">
+      <Filter>02. GameObjects\98. NonAnimObject\01. BornFire</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_BornFire.h">
+      <Filter>02. GameObjects\05. Effects\Explosion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Particle_Object.h">
+      <Filter>02. GameObjects\05. Effects\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MeshEffect.h">
+      <Filter>02. GameObjects\05. Effects\MeshEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Hanabira.h">
+      <Filter>02. GameObjects\05. Effects\Player\Hanabira</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_BossBreath.h">
+      <Filter>02. GameObjects\05. Effects\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Particle_BossBreath.h">
+      <Filter>02. GameObjects\05. Effects\Particles\BossBreath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Blood.h">
+      <Filter>02. GameObjects\05. Effects\Blood</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Trail.h">
+      <Filter>02. GameObjects\05. Effects\Trail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BackGround_Loading.h">
+      <Filter>02. GameObjects\00. BackGround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BackGround_LoadingUI.h">
+      <Filter>02. GameObjects\00. BackGround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_MonsterHP.h">
+      <Filter>02. GameObjects\97. UI\MonsterHP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_MonsterHPFrame.h">
+      <Filter>02. GameObjects\97. UI\MonsterHP\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_DashRing.h">
+      <Filter>02. GameObjects\05. Effects\Player\DashRing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_RunSmoke.h">
+      <Filter>02. GameObjects\05. Effects\RunSmoke</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_MonsterTag.h">
+      <Filter>02. GameObjects\97. UI\BossTag</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_MonsterPortrait.h">
+      <Filter>02. GameObjects\97. UI\MonsterPortrait</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_MonsterTagFrame.h">
+      <Filter>02. GameObjects\97. UI\BossTag</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_BossPear.h">
+      <Filter>02. GameObjects\05. Effects\BossPear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Dust.h">
+      <Filter>02. GameObjects\05. Effects\Dust</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Blood.h">
+      <Filter>02. GameObjects\97. UI\Blood</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack1.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack2.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack3.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack5.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack5</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack6.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack6</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack8.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Idle.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack4.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Attack7.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack7</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Walk.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_BloodyMode_Run.h">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Run</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -255,10 +786,7 @@
       <Filter>96. Tool\00. Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Monster.cpp">
-      <Filter>02. GameObjects\03. Monster</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\TestTree.cpp">
-      <Filter>02. GameObjects\04. TestTree</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Dynamic_Terrain.cpp">
       <Filter>02. GameObjects\01. Terrain\00. Dynamic</Filter>
@@ -269,20 +797,287 @@
     <ClCompile Include="..\Private\NonAnimObject.cpp">
       <Filter>02. GameObjects\98. NonAnimObject</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\ForkLift.cpp">
-      <Filter>02. GameObjects\05. ForkLift</Filter>
-    </ClCompile>
     <ClCompile Include="..\ThirdPartyLib\ImGuiFileDialog\ImGuiFileDialog.cpp">
       <Filter>96. Tool\99. Default</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Imgui_Manager.cpp">
       <Filter>96. Tool</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\CustomFont.cpp">
+    <ClCompile Include="..\Private\CustomDialogFont.cpp">
       <Filter>99. Defines</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Player.cpp">
-      <Filter>02. GameObjects\06. Player</Filter>
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SkyBox.cpp">
+      <Filter>02. GameObjects\03. SkyBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerPart_Body.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\00. Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerPart_Weapon.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\01. Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Base.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Idle.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\00. Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Walk.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\01. Walk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Run.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\02. Run</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Jump.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Air\00. Jump</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack1.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\00. Attack1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack2.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\01. Attack2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack3.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\02. Attack3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack4.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\03. Attack4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster_EN00.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AIState_Base.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\99. AIState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MonsterPart_EN00_Weapon.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\00. EN00\01. Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_NormalAttackBase.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack5.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\04. Attack5</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack6.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\05. Attack6</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack7.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\06. Attack7</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Attack8.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\03. Attack\00. NormalAttack\07. Attack8</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AIControl_Base.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\99. AIState\00. Control</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AITask_Base.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\99. AIState\01. Task</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Target.cpp">
+      <Filter>02. GameObjects\02. Camera\Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Stage1Map_1.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\00. Map\Stage1\Map1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Field.cpp">
+      <Filter>96. Tool\01. Field</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_BrokenBarricade.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\05. Barricade\Broken</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_Barricade.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\05. Barricade</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Environment_Object.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\99. EnvironmentObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SkyDome.cpp">
+      <Filter>02. GameObjects\04. SkyDome</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Particle_Blue.cpp">
+      <Filter>02. GameObjects\05. Effects\Particles\Blue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Particle_Red.cpp">
+      <Filter>02. GameObjects\05. Effects\Particles\Red</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Explosion.cpp">
+      <Filter>02. GameObjects\05. Effects\Explosion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_DashBack.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_DashFront.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_DashLeft.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_DashRight.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\04. Dash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster_EN70.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\02. EN70</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MonsterPart_EN70_Weapon.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\02. EN70</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster_EN01.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. EN01</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MonsterPart_EN01_Weapon.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\01. Monster\01. EN01</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Bullet.cpp">
+      <Filter>02. GameObjects\06. Bullets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN01_Arrow.cpp">
+      <Filter>02. GameObjects\06. Bullets\00. EN01_Arrow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Boss_EN131.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BossPart_EN131_Weapon.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EN131_Breath.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_MoreMoreWeakHit.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\MoreMoreWeakHit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_MoreWeakHit.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\MoreWeakHit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_WeakHit.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\WeakHit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Sturn.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\Sturn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BlowAwayHit.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\BlowAwayHit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Dead.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\07. Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BreakFall.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\06. BreakFall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_UpperHit.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\UpperHit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_DownHit.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\05. Hit\DownHit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BossPart_EN131_SwingTail.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\02. Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Event_Boss1Apeear.cpp">
+      <Filter>03. Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Depress.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\08. Depress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_BornFire.cpp">
+      <Filter>02. GameObjects\98. NonAnimObject\01. BornFire</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_BornFire.cpp">
+      <Filter>02. GameObjects\05. Effects\Explosion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Particle_Object.cpp">
+      <Filter>02. GameObjects\05. Effects\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MeshEffect.cpp">
+      <Filter>02. GameObjects\05. Effects\MeshEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Hanabira.cpp">
+      <Filter>02. GameObjects\05. Effects\Player\Hanabira</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_BossBreath.cpp">
+      <Filter>02. GameObjects\05. Effects\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Particle_BossBreath.cpp">
+      <Filter>02. GameObjects\05. Effects\Particles\BossBreath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Blood.cpp">
+      <Filter>02. GameObjects\05. Effects\Blood</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Trail.cpp">
+      <Filter>02. GameObjects\05. Effects\Trail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BackGround_Loading.cpp">
+      <Filter>02. GameObjects\00. BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BackGround_LoadingUI.cpp">
+      <Filter>02. GameObjects\00. BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_MonsterHP.cpp">
+      <Filter>02. GameObjects\97. UI\MonsterHP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_MonsterHPFrame.cpp">
+      <Filter>02. GameObjects\97. UI\MonsterHP\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_DashRing.cpp">
+      <Filter>02. GameObjects\05. Effects\Player\DashRing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_RunSmoke.cpp">
+      <Filter>02. GameObjects\05. Effects\RunSmoke</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_MonsterTag.cpp">
+      <Filter>02. GameObjects\97. UI\BossTag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_MonsterPortrait.cpp">
+      <Filter>02. GameObjects\97. UI\MonsterPortrait</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_MonsterTagFrame.cpp">
+      <Filter>02. GameObjects\97. UI\BossTag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_BossPear.cpp">
+      <Filter>02. GameObjects\05. Effects\BossPear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Dust.cpp">
+      <Filter>02. GameObjects\05. Effects\Dust</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Blood.cpp">
+      <Filter>02. GameObjects\97. UI\Blood</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Idle.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack1.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack2.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack3.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack5.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack5</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack4.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack6.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack6</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack8.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack8</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Attack7.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Attack\Attack7</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Run.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Run</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_BloodyMode_Walk.cpp">
+      <Filter>02. GameObjects\99. AnimModelObject\00. Player\02. States\Ground\09. BloodyMode\Walk</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -314,6 +1109,21 @@
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimModel.hlsl">
+      <Filter>97. ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCube.hlsl">
+      <Filter>97. ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Particle_Rect.hlsl">
+      <Filter>97. ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxField.hlsl">
+      <Filter>97. ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Particle_Point.hlsl">
+      <Filter>97. ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_EffectMesh.hlsl">
       <Filter>97. ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

@@ -18,6 +18,13 @@ public:
 	HRESULT Bind_ShaderResource(class CShader* pShader, const _char* pConstantName, _uint iTextureIndex = 0);
 	HRESULT Bind_ShaderResourceArray(class CShader* pShader, const _char* pConstantName);
 
+public:
+	virtual void Write_Json(json & Out_Json) override;
+	virtual void Load_FromJson(const json & In_Json) override;
+
+public:
+	HRESULT Get_TextureSize(_uint* iWidth, _uint* iHeight, _uint iTextureIndex = 0);
+
 private:
 	_uint							  m_iNumTextures = { 0 };
 	vector<ID3D11ShaderResourceView*> m_SRVs;

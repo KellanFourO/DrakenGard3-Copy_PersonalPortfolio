@@ -1,16 +1,17 @@
 #pragma once
 
-
-
 #include "Model.h"
 #include "Mesh.h"
 #include "Texture.h"
 #include "Bone.h"
 #include "Animation.h"
 #include "Channel.h"
+#include "Transform.h"
 
+#include "GameInstance.h"
 #include <regex>
 #include <codecvt>
+#include <filesystem>
 
 CModel::CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice,pContext)
@@ -28,6 +29,7 @@ CModel::CModel(const CModel& rhs)
 	//! 깊은복제로 뺄 것이다. , m_Bones(rhs.m_Bones)
 	//! 마찬가지 , m_Animations(rhs.m_Animations)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
+	, m_tDataFilePath(rhs.m_tDataFilePath)	
 {
 	//! 애니메이션도 공유되버리면서 m_fTrackposition의 값이 누적되버리면서 속도가 점점 빨라지는 것이다. 깊은 복제 빼버리자.
 	for (auto& pProtoAnimation : rhs.m_Animations)
@@ -51,33 +53,173 @@ CModel::CModel(const CModel& rhs)
 	}
 }
 
-HRESULT CModel::Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix)
-{
-	//TODO m_Importer 객체가 가지고있는 ReadFile 함수를 호출한다
-	
-	//! ReadFile 함수는 모델의 정보를 담고있는 AiScene*을 리턴해준다.
-	//! 추후 설명 : aiProcess_PreTransformVertices | aiProcess_GlobalScale
-	
-	//! aiProcess_PreTransformVertices == 정점을 미리 변환시키겠다. 이거 사용하면 애니메이션 정보날아간다. 반드시 애님모델이 아닌경우에만 사용하자
-	//! 원래는 최초 로컬 좌표상태에서 뼈가 움직일때마다 스워드 메시에게 행렬을 곱해주는 게맞다. 위 옵션을 주면 애니정보가 날아가서 처리하기가 까다로워진다.
-	//! 애님모델인 경우에는 위 옵션을 주지않고 우리가 직접 작업해주자. 열거체로 구분해줄것이다.
-	
-	//! aiProcess_GlobalScale == 기존에 로드했던 모델이 작은 상태에서 스케일을 많이 키우다보면 재질이 이상해진다. 
-	//! 그래서 디자이너 분들이 애초에 100배 스케일링 해놓은 상태로 넘겨준다. 이미 큰 스케일을 작게 만드는게 좀 더 낫기 때문인가보다.
-	//! GlobalScale을 주게된다면 로드할때부터 0.01 스케일링을 해주는데, 혹시 100배 스케일링이 안되있는 상태의 모델도 있을수 있기 때문에 추천하지 않는다.
 
-	//! aiProcess_ConvertToLeftHanded == 왼손좌표계를 사용할께
-	//! aiProcessPreset_TargetRealtime_Fast == 퀄리티는 조금 떨어지더라도 가장 빠른 방식을 선택해서 읽어들일게
+CBone* CModel::Get_BonePtr(const _char* pBoneName) const
+{
+	auto	iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone)
+		{
+			if (!strcmp(pBone->Get_Name(), pBoneName))
+				return true;
+			return false;
+		});
+
+	if (iter == m_Bones.end())
+		return nullptr;
+
+	return *iter;
+}
+
+CBone* CModel::Get_BonePtr(const _int& iIndex)
+{
+	/* 인덱스에 해당하는 Bone 찾기 */
+
+	if (m_Bones.size() < iIndex || iIndex < 0)
+		return nullptr;
+
+	return m_Bones[iIndex];
+}
+
+
+CAnimation* CModel::Get_CurrentAnimation(const _int& iIndex)
+{
+	if (iIndex >= m_Animations.size() ||
+		iIndex < 0)
+		return nullptr;
+
+	return m_Animations[iIndex];
+}
+
+_uint CModel::Get_CurrentAnimationKeyIndex() const
+{
+	/* TrackPosition단위로 애니메이션을 조정할때 사용 */
+	return m_Animations[m_iCurrentAnimIndex]->Get_CurrentChannelKeyIndex();
+}
+
+_int CModel::Get_IndexFromAnimName(const _char* In_szAnimName)
+{
+	for (_uint i(0); i < m_iNumAnimations; ++i)
+	{
+		if (strcmp(m_Animations[i]->Get_Name(), In_szAnimName) == 0)
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+void CModel::Set_Animation(_uint iAnimIndex, _uint iStartKeyIndex, _float fBlendTime)
+{
+	if (iAnimIndex >= m_Animations.size())
+		return;
+
+	if (m_iPrevAnimIndex != -1)
+	{
+		m_Animations[iAnimIndex]->Reset_Animation();
+	}
+
+	/* 재생중이던 애니메이션 = Pre, 새로 재생할 애니메이션 = Curr*/
+	m_iPrevAnimIndex = m_iCurrentAnimIndex;
+	m_iCurrentAnimIndex = iAnimIndex;
+
+	/* StartKey로 트렉포지션 설정 = 중간 애니메이션으로 재생하는것 */
+	m_Animations[m_iCurrentAnimIndex]->Set_StartAnimationKey(iStartKeyIndex);
+
+	/* 애니메이션 재생할 TrackPosition 가져오기 */
+	m_fStartBlendTime = m_Animations[m_iCurrentAnimIndex]->Get_TrackPosition();
+
+	/* 중간애니메이션으로 넣는다면 앞에 더미시간 넣어서 초기시작시간 다르게 셋팅 */
+	m_fMaxBlendTime = fBlendTime + m_fStartBlendTime;
+	m_fCurrentBlendTime = m_fStartBlendTime;
+
+	m_isBlend = true;
+
+	/* 이전키프레임 저장 */
+	for (size_t i = 0; i < m_Bones.size(); i++)
+	{
+		m_Bones[i]->Setup_PreKeyFrame();
+	}
+}
+
+void CModel::Set_AnimationSpeed(_float fAnimationSpeed)
+{
+	m_fAnimationSpeed = fAnimationSpeed;
+}
+
+// void CModel::Root_Motion(CTransform* pTransform)
+// {
+// 	
+// 
+// 	if (false == m_isBlend)
+// 	{
+// 		//TODO 위치가 갱신되나 다시 이전 위치로 돌아가는 현상.
+// 			//! 현재 루트 본의 위치를 구하자
+// 		_float3 vCurrentRootPosition;
+// 		XMStoreFloat3(&vCurrentRootPosition, m_pRootTranslateBone->Get_CombinedTransformationMatrix().r[3]);
+// 
+// 		//! 현재 루트본의 위치와 이전 루트본의 위치를 이용해서 감산값을 구하자
+// 		_float3 vDeltaPosition;
+// 		XMStoreFloat3(&vDeltaPosition, (XMLoadFloat3(&vCurrentRootPosition) - XMLoadFloat3(&m_vPrevRootPosition)));
+// 
+// 		//!기존에 월드 위치를 구해주자
+// 		_float3 vCurrentWorldPosition;
+// 		XMStoreFloat3(&vCurrentWorldPosition, pTransform->Get_State(CTransform::STATE_POSITION));
+// 
+// 
+// 		_float3 vTargetLook;
+// 		XMStoreFloat3(&vTargetLook, pTransform->Get_State(CTransform::STATE_LOOK));
+// 
+// 		//! 기존에 객체가 바라보고있던	방향으로 이동량을 더할 수있게 이동량에다가 기존 바라보고있던 방향을 곱해주자
+// 		_float3 vMoveDirection;
+// 		XMStoreFloat3(&vMoveDirection, (XMLoadFloat3(&vDeltaPosition) * XMLoadFloat3(&vTargetLook)));
+// 
+// 		//! 위에서 구한 방향 이동량으로 갱신해주자
+// 
+// 		XMStoreFloat3(&vCurrentWorldPosition, (XMLoadFloat3(&vCurrentWorldPosition) + XMLoadFloat3(&vMoveDirection)));
+// 
+// 
+// 		//! 기존 월드 행렬에 이동량이 더해진 월드위치로 바꿔주자
+// 		_float4x4 vCurrentWorldMatrix;
+// 
+// 		XMStoreFloat4x4(&vCurrentWorldMatrix, pTransform->Get_WorldMatrix());
+// 
+// 
+// 		vCurrentWorldMatrix._41 = vCurrentWorldPosition.x;
+// 		vCurrentWorldMatrix._42 = vCurrentWorldPosition.y;
+// 		vCurrentWorldMatrix._43 = vCurrentWorldPosition.z;
+// 
+// 		pTransform->Set_WorldFloat4x4(vCurrentWorldMatrix);
+// 
+// 		//! 이전 위치는 현재 위치가 된다.
+// 		m_vPrevRootPosition = vCurrentRootPosition;
+// 
+// // 		_float3 vZeroPosition = { 0.f, 0.f, 0.f };
+// // 		m_pRootTranslateBone->Set_Position(vZeroPosition);
+// 	}
+// 		
+// 		
+// 	//}
+// 	//else 
+// 	//	return;
+// }
+
+//void CModel::Reset_RootMotion()
+//{
+//	m_vPrevRootPosition = {};
+//	m_bRootMotionStart = false;
+//	m_isRootAnim = false;
+//
+//	
+//	
+//}
+
+
+HRESULT CModel::Initialize_Prototype(TYPE eType, MODELDATA& tDataFilePath, _fmatrix PivotMatrix)
+{
 	
 	m_eModelType = eType;
 	m_tDataFilePath = tDataFilePath;
 
-	//!  엵애니메이션이 없는모델이면 PreTransformVertices 더 해주자
-
-	//#PivotMatrix
-	//! 피봇매트리스는 디자이너들이 보통 우리의 환경에 맞게 완벽하게 셋팅해주지않는다. 그래서 180도 돌아가있는 상태로 로드시키면 룩과 다르게 모델이 반대를 바라보는 참사가 일어난다.
-	//! 로드 이후는 이미 정점이 끝까지 변환된것과 마찬가지이니 로드할때부터 180도 돌려놓고 시작하기 위해 주는 행렬
-	
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 
 	if (FAILED(Read_BoneData(m_tDataFilePath.strBoneDataPath))) //! 최초 노드는 당연히 루트노드일거고, 최상위 부모이기에 부모인덱스는 없으니 -1로 채워주자
@@ -90,8 +232,19 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, ModelData& tDataFilePath, _fmat
 	if(FAILED(Read_MaterialData(m_tDataFilePath.strMaterialDataPath)))
 		return E_FAIL;
 
-	if (FAILED(Read_AnimationData(m_tDataFilePath.strAnimationDataPath)))
-		return E_FAIL;
+	if (eType == CModel::TYPE_ANIM)
+	{
+		if (FAILED(Read_AnimationData(m_tDataFilePath.strAnimationDataPath)))
+			return E_FAIL;
+
+		if (!m_tDataFilePath.strHitAnimationDataPath.empty()) //! HitAnimationPath가 공백이 아니었다면
+		{
+			if (FAILED(Read_AnimationData(m_tDataFilePath.strHitAnimationDataPath)))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 
 	return S_OK;
 }
@@ -137,21 +290,60 @@ HRESULT CModel::Render(_uint iMeshIndex)
 	return S_OK;
 }
 
-void CModel::Play_Animation(_float fTimeDelta, _bool isLoop)
+void CModel::Play_Animation(_float fTimeDelta, _float3& vRootOutPos)
 {
-	if(m_iCurrentAnimIndex >= m_iNumAnimations)
+	if (m_iCurrentAnimIndex >= m_iNumAnimations)
 		return;
 
-	//! 현재 애니메이션이 사용하고 있는 뼈들의 TransformationMatrix를 갱신해준다.
-	m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(isLoop, fTimeDelta, m_Bones);
-	
-	//! 화면의 최종적인 상태로 그려내기위해서는 반드시, 뼈들의 CombindTransformationMatrix가 갱신된 이후여야 한다.
-	//! 모든 뼈들을 다 갱신하며 부모로부터 자식까지 순회하여 CombindTransformationMatrix를 갱신해주자.
-	
-	for (auto& pBone : m_Bones)
+	if (m_isBlend)
 	{
-		pBone->Invalidate_CombinedTransformationMatrix(m_Bones, XMLoadFloat4x4(&m_PivotMatrix));
+		/* 애니메이션 끝까지 재생함 */
+		if (m_fMaxBlendTime < DBL_EPSILON || m_fCurrentBlendTime >= m_fMaxBlendTime)
+		{
+			/* DBL_EPSILON : 부동 소수점 연산에서 표현 가능한 가장 작은 양의 값 (거의 0 근사) || 애니메이션이 한번 수행함 */
+
+			
+			m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(m_isLoop, fTimeDelta, m_Bones, m_fAnimationSpeed);
+			m_isBlend = false;
+			m_Animations[m_iCurrentAnimIndex]->Set_TrackPosition(m_fCurrentBlendTime);
+		}
+
+		else
+		{
+			/* 선형보간 수행 */
+			_float fRatio = (m_fCurrentBlendTime - m_fStartBlendTime) / (m_fMaxBlendTime - m_fStartBlendTime);
+
+			m_Animations[m_iCurrentAnimIndex]->Blend_TransformationMatrix(m_fMaxBlendTime, fRatio, m_Bones);
+
+			m_fCurrentBlendTime += fTimeDelta;
+		}
 	}
+	else
+	{
+		
+		m_Animations[m_iCurrentAnimIndex]->Invalidate_TransformationMatrix(m_isLoop, fTimeDelta, m_Bones, m_fAnimationSpeed);
+	}
+
+
+	_float3 vPos = {};
+
+	for (auto& pBone : m_Bones)
+		pBone->Invalidate_CombinedTransformationMatrix(m_Bones, XMLoadFloat4x4(&m_PivotMatrix), vPos);
+
+	if (true == m_bRootMotionStart && false == m_isBlend && false == Get_CurrentAnimation()->Get_Finished())
+	{
+		_float3 vCalcPos;
+		XMStoreFloat3(&vCalcPos, (XMLoadFloat3(&vPos) - XMLoadFloat3(&m_vPrevRootPosition)));
+		
+
+		vRootOutPos = vCalcPos;
+	}
+	
+
+	m_vPrevRootPosition = vPos;
+	
+
+	
 }
 
 HRESULT CModel::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, _uint iMeshIndex)
@@ -165,17 +357,20 @@ HRESULT CModel::Bind_ShaderResource(CShader* pShader, const _char* pConstantName
 	if(iMaterialIndex >= m_iNumMaterials)
 		return E_FAIL;
 
-	return m_Materials[iMaterialIndex].pMtrlTextures[eTextureType]->Bind_ShaderResource(pShader,pConstantName); //! 우리는 어처피 1장이다. textureIndex는 따로 줄 필요없다.
+	if(nullptr != m_Materials[iMaterialIndex].pMtrlTextures[eTextureType])
+		return m_Materials[iMaterialIndex].pMtrlTextures[eTextureType]->Bind_ShaderResource(pShader,pConstantName); //! 우리는 어처피 1장이다. textureIndex는 따로 줄 필요없다.
+
 }
 
-_bool CModel::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix)
+
+_bool CModel::Compute_MousePos(RAY _Ray, _matrix _WorldMatrix, _float3* pOut)
 {
 	if (m_Meshes.empty()) // 메쉬가 비었는지 체크
 		return false;
 
 	for (auto& iter : m_Meshes)
 	{
-		if (iter->Compute_MousePos(_Ray, _WorldMatrix))
+		if (iter->Compute_MousePos(_Ray, _WorldMatrix, pOut))
 			return true;
 	}
 
@@ -286,8 +481,9 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 
 		vector<VTXMESH>			StaticVertices;
 		vector<VTXANIMMESH>		AnimVertices;
-		vector<_int>			Indiecs;
+		vector<FACEINDICES32>	Indiecs;
 		_uint					iMaterialIndex;
+		_int					iNumFace;
 		vector<_int>			BoneIndices;
 
 		/* Vertices */
@@ -331,10 +527,13 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 
 				if (!ReadFile(hFile, &vertex.vPosition, sizeof(_float3), &dwByte, nullptr))
 					return E_FAIL;
+
 				if (!ReadFile(hFile, &vertex.vNormal, sizeof(_float3), &dwByte, nullptr))
 					return E_FAIL;
+
 				if (!ReadFile(hFile, &vertex.vTexcoord, sizeof(_float2), &dwByte, nullptr))
 					return E_FAIL;
+
 				if (!ReadFile(hFile, &vertex.vTangent, sizeof(_float3), &dwByte, nullptr))
 					return E_FAIL;
 
@@ -349,9 +548,9 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 
 		for (size_t j = 0; j < iNumIndices; j++)
 		{
-			_int index;
+			FACEINDICES32 index;
 
-			if (!ReadFile(hFile, &index, sizeof(_int), &dwByte, nullptr))
+			if (!ReadFile(hFile, &index, sizeof(FACEINDICES32), &dwByte, nullptr))
 				return E_FAIL;
 
 			Indiecs.push_back(index);
@@ -360,6 +559,9 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 
 		/* Material Index */
 		if (!ReadFile(hFile, &iMaterialIndex, sizeof(_uint), &dwByte, nullptr))
+			return E_FAIL;
+
+		if (!ReadFile(hFile, &iNumFace, sizeof(_uint), &dwByte, nullptr))
 			return E_FAIL;
 
 		/* Bone Indices*/
@@ -394,12 +596,12 @@ HRESULT CModel::Read_MeshData(const wstring& strPath, _fmatrix PivotMatrix)
 		}
 			
 
-		/* Create Mesh */
+		
 		CMesh* pMesh = nullptr;
 		{
-			pMesh = (bAnim) ? CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, AnimVertices, Indiecs, iMaterialIndex, BoneIndices, vecOffsetMatrix, m_Bones) :
-				CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, StaticVertices, Indiecs, iMaterialIndex, BoneIndices, vecOffsetMatrix, PivotMatrix);
-
+			pMesh = (bAnim) ? CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, iNumFace, AnimVertices, Indiecs, iMaterialIndex, BoneIndices, vecOffsetMatrix, m_Bones) :
+				CMesh::Create(m_pDevice, m_pContext, m_eModelType, strName, iNumFace, StaticVertices, Indiecs, iMaterialIndex, BoneIndices, vecOffsetMatrix, PivotMatrix);
+		
 			if (nullptr == pMesh)
 				return E_FAIL;
 		}
@@ -424,79 +626,43 @@ HRESULT CModel::Read_MaterialData(wstring& strPath)
 	ReadFile(hFile, &iNumMaterials, sizeof(size_t), &dwByte, nullptr);
 	m_Materials.reserve(iNumMaterials);
 	m_iNumMaterials = iNumMaterials;
+
 	for (size_t i = 0; i < iNumMaterials; i++)
 	{
 		MATERIAL_DESC		MaterialDesc;
 		ZeroMemory(&MaterialDesc, sizeof(MATERIAL_DESC));
 		
+		for (size_t j = 0; j < AI_TEXTURE_TYPE_MAX; j++)
+		{
 			string path;
-
-			// Read string length
 			size_t strLength;
 			if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
 				return E_FAIL;
 
-			// Read string content
-			string strDiffuseName(strLength, '\0');
-			if (!ReadFile(hFile, &strDiffuseName[0], strLength, &dwByte, nullptr))
+			string strPathName(strLength, '\0');
+			if (!ReadFile(hFile, &strPathName[0], strLength, &dwByte, nullptr))
 				return E_FAIL;
 
-			// Ensure null-termination
-			strDiffuseName.resize(strLength);
-
-			string newExtension = "dds";
-			string ddsFileName = ReplaceExtension(strDiffuseName, newExtension);
-			if (!strDiffuseName.empty())
+			if (strPathName != "")
 			{
-				path = ConvertWstrToStr(strPath) + "/" + ddsFileName;
-				string modifyPath = ModifyPath(path);
-				MaterialDesc.pMtrlTextures[aiTextureType_DIFFUSE] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(modifyPath));
+				strPathName.resize(strLength);
+				string strNewExtension = "dds";
+				string strNewFileName = ReplaceExtension(strPathName, strNewExtension);
+
+
+				path = ModifyPath(ConvertWstrToStrModel(strPath)) + strNewFileName;
+				MaterialDesc.pMtrlTextures[aiTextureType(j)] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstrModel(path));
 			}
-
-			if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
-				return E_FAIL;
-
-			// Read string content
-			string strSpecularName(strLength, '\0');
-			if (!ReadFile(hFile, &strSpecularName[0], strLength, &dwByte, nullptr))
-				return E_FAIL;
-
-			// Ensure null-termination
-			strSpecularName.resize(strLength);
-
-			 ddsFileName = ReplaceExtension(strSpecularName, newExtension);
-			if (!strSpecularName.empty())
-			{
-				path = ConvertWstrToStr(strPath) + "/" + ddsFileName;
-				string modifyPath = ModifyPath(path);
-				MaterialDesc.pMtrlTextures[aiTextureType_SPECULAR] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(modifyPath));
-			}
-
-			if (!ReadFile(hFile, &strLength, sizeof(size_t), &dwByte, nullptr))
-				return E_FAIL;
-
-			// Read string content
-			string strNormalName(strLength, '\0');
-			if (!ReadFile(hFile, &strNormalName[0], strLength, &dwByte, nullptr))
-				return E_FAIL;
-
-			// Ensure null-termination
-			strNormalName.resize(strLength);
-
-			ddsFileName = ReplaceExtension(strNormalName, newExtension);
-			if (!strNormalName.empty())
-			{
-				path = ConvertWstrToStr(strPath) + "/" + ddsFileName;
-				string modifyPath = ModifyPath(path);
-				MaterialDesc.pMtrlTextures[aiTextureType_NORMALS] = CTexture::Create(m_pDevice, m_pContext, ConvertStrToWstr(modifyPath));
-			}
-		
+			else{ continue;}
+		}
+			
 		m_Materials.push_back(MaterialDesc);
 	}
 	
 	return S_OK;
 }
 
+ 
 HRESULT CModel::Read_AnimationData(const wstring& strPath)
 {
 	/* 모든 애니메이션 순회 */
@@ -598,37 +764,16 @@ _uint CModel::Get_BoneIndex(const char* szName)
 	return 0;
 }
 
-string CModel::ConvertWstrToStr(const wstring& wstr)
-{
-	int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), nullptr, 0, nullptr, nullptr);
-	std::string str(size_needed, 0);
-	WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), &str[0], size_needed, nullptr, nullptr);
-	return str;
-}
-
-wstring CModel::ConvertStrToWstr(const string& str)
-{
-	int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), nullptr, 0);
-	std::wstring wstr(size_needed, 0);
-	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), &wstr[0], size_needed);
-	return wstr;
-}
 
 string CModel::ModifyPath(const string& originalPath)
 {
-	// Find the position of "mat/" in the string
-	size_t matPos = originalPath.find(".mat/");
+	filesystem::path pathObj = originalPath;
 
-	// If "mat/" is found, remove it
-	if (matPos != std::string::npos)
-	{
-		std::string modifiedPath = originalPath;
-		modifiedPath.erase(matPos, 4); // Remove "mat/"
-		return modifiedPath;
-	}
+	filesystem::path directoryPath = pathObj.parent_path();
+	
+	filesystem::path modifiedPath = directoryPath;
 
-	// If "mat/" is not found, return the original path
-	return originalPath;
+	return modifiedPath.string() + "/";
 }
 
 string CModel::ReplaceExtension(const string& originalPath, const string& newExtension)
@@ -646,9 +791,94 @@ string CModel::ReplaceExtension(const string& originalPath, const string& newExt
 	return originalPath;
 }
 
+string CModel::ConvertWstrToStrModel(const wstring& wstr)
+{
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), nullptr, 0, nullptr, nullptr);
+	string str(size_needed, 0);
+	WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), &str[0], size_needed, nullptr, nullptr);
+	return str;
+}
 
+wstring CModel::ConvertStrToWstrModel(const string& str)
+{
+	int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), nullptr, 0);
+	wstring wstr(size_needed, 0);
+	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), &wstr[0], size_needed);
+	return wstr;
+}
 
-CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, ModelData& tDataFilePath, _fmatrix PivotMatrix)
+_float3 CModel::QuaternionToEuler(const _float4& quaternion)
+{
+	XMFLOAT3 euler;
+
+	// Roll (X-axis rotation)
+	float sinr_cosp = +2.0f * (quaternion.w * quaternion.x + quaternion.y * quaternion.z);
+	float cosr_cosp = +1.0f - 2.0f * (quaternion.x * quaternion.x + quaternion.y * quaternion.y);
+	euler.x = std::atan2(sinr_cosp, cosr_cosp);
+
+	// Pitch (Y-axis rotation)
+	float sinp = +2.0f * (quaternion.w * quaternion.y - quaternion.z * quaternion.x);
+	if (std::abs(sinp) >= 1)
+		euler.y = std::copysign(XM_PIDIV2, sinp); // use 90 degrees if out of range
+	else
+		euler.y = std::asin(sinp);
+
+	// Yaw (Z-axis rotation)
+	float siny_cosp = +2.0f * (quaternion.w * quaternion.z + quaternion.x * quaternion.y);
+	float cosy_cosp = +1.0f - 2.0f * (quaternion.y * quaternion.y + quaternion.z * quaternion.z);
+	euler.z = std::atan2(siny_cosp, cosy_cosp);
+
+	return euler;
+}
+
+void CModel::Write_Json(json& Out_Json)
+{
+	Out_Json.emplace("BoneDataPath", ConvertWstrToStrModel(m_tDataFilePath.strBoneDataPath));
+	Out_Json.emplace("MeshDataPath", ConvertWstrToStrModel(m_tDataFilePath.strMeshDataPath));
+	Out_Json.emplace("MaterialDataPath", ConvertWstrToStrModel(m_tDataFilePath.strMaterialDataPath));
+	Out_Json.emplace("AnimationDataPath", ConvertWstrToStrModel(m_tDataFilePath.strAnimationDataPath));
+	Out_Json.emplace("HitAnimationDataPath", ConvertWstrToStrModel(m_tDataFilePath.strHitAnimationDataPath));
+	
+	Out_Json.emplace("ModelType", m_eModelType);
+	
+	Out_Json.emplace("PivotMatrix", m_PivotMatrix.m);
+
+		
+}
+
+void CModel::Load_FromJson(const json& In_Json)
+{
+	if(In_Json.end() == In_Json.find("Model"))
+		return;
+	
+	m_tDataFilePath.strBoneDataPath = ConvertStrToWstrModel(In_Json["BoneDataPath"]);
+	m_tDataFilePath.strMeshDataPath = ConvertStrToWstrModel(In_Json["MeshDataPath"]);
+	m_tDataFilePath.strMaterialDataPath = ConvertStrToWstrModel(In_Json["MaterialDataPath"]);
+	m_tDataFilePath.strAnimationDataPath = ConvertStrToWstrModel(In_Json["AnimationDataPath"]);
+	m_tDataFilePath.strHitAnimationDataPath = ConvertStrToWstrModel(In_Json["HitAnimationDataPath"]);
+	
+	m_eModelType = In_Json["ModelType"];
+	
+	for (_int i = 0; i < 4; i++)
+	{
+		for (_int j = 0; j < 4; j++)
+		{
+			m_PivotMatrix.m[i][j] = In_Json["PivotMatrix"][i][j];
+		}
+	}
+	
+	////m_PivotMatrix._11 = In_Json["_11"]; m_PivotMatrix._12 = In_Json["_12"]; m_PivotMatrix._13 = In_Json["_13"]; m_PivotMatrix._14 = In_Json["_14"];
+	////m_PivotMatrix._21 = In_Json["_21"]; m_PivotMatrix._22 = In_Json["_22"]; m_PivotMatrix._23 = In_Json["_23"]; m_PivotMatrix._24 = In_Json["_24"];
+	////m_PivotMatrix._31 = In_Json["_31"]; m_PivotMatrix._32 = In_Json["_32"]; m_PivotMatrix._33 = In_Json["_33"]; m_PivotMatrix._34 = In_Json["_34"];
+	////m_PivotMatrix._41 = In_Json["_41"]; m_PivotMatrix._42 = In_Json["_42"]; m_PivotMatrix._43 = In_Json["_43"]; m_PivotMatrix._44 = In_Json["_44"];
+	//
+	if(FAILED(Initialize_Prototype(m_eModelType, m_tDataFilePath, XMLoadFloat4x4(&m_PivotMatrix))))
+		MSG_BOX("모델 로드 실패");
+	
+
+}
+
+CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, MODELDATA& tDataFilePath, _fmatrix PivotMatrix)
 {
 	CModel* pInstance = new CModel(pDevice, pContext);
 
@@ -676,6 +906,7 @@ void CModel::Free()
 {
 	__super::Free();
 
+
 	for(auto& pAnimation : m_Animations)
 		Safe_Release(pAnimation);
 
@@ -702,8 +933,8 @@ void CModel::Free()
 
 	m_Meshes.clear();
 
-	if(false == m_isCloned)
-		m_Importer.FreeScene(); //! 원형객체일때만 임포터에 프리신 호출해서 정리해주자
+	//if(false == m_isCloned)
+	//	m_Importer.FreeScene(); //! 원형객체일때만 임포터에 프리신 호출해서 정리해주자
 
 	
 }

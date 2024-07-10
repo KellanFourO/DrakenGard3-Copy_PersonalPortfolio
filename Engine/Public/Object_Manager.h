@@ -14,10 +14,19 @@ private:
 	virtual ~CObject_Manager() = default;
 
 public:
+	class CComponent* Get_Component(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex);
+	class CComponent* Get_PartComponent(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex, const wstring& strPartTag);
+
+public:
 	HRESULT Initialize(_uint iNumLevels);
-	HRESULT Add_Prototype(const wstring& strProtoTypeTag, class CGameObject* pPrototype, _bool bAddData = false);
+	HRESULT Add_Prototype(const wstring& strProtoTypeTag, class CGameObject* pPrototype, _bool bAddData = false, _bool bModelType = false);
 	HRESULT Add_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr, _Inout_ class CGameObject** ppOut = nullptr);
+	class CGameObject* Get_CloneObject(const wstring& strProtoTypeTag, void* pArg = nullptr);
 	HRESULT	Remove_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg);
+	HRESULT Erase_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, class CGameObject* pEraseObject);
+
+	class CGameObject* Get_Player(_uint iLevelIndex);
+	class CLayer* Find_Layer(_uint iLevelIndex, const wstring& strLayerTag);
 
 public:
 	void	Priority_Tick(_float fTimeDelta);
@@ -28,6 +37,7 @@ public:
 
 private:
 	_uint m_iNumLevels = { 0 };
+	
 
 private:
 	map<const wstring, class CGameObject*>		m_Prototypes;
@@ -36,7 +46,7 @@ private:
 
 private:
 	class CGameObject*	Find_Prototype(const wstring& strPrototypeTag);
-	class CLayer*		Find_Layer(_uint iLevelIndex, const wstring& strLayerTag);
+	
 
 public:
 	static CObject_Manager*	Create(_uint iNumLevels);

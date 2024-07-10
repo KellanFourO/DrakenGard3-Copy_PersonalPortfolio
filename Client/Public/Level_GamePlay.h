@@ -17,10 +17,17 @@ public:
 	virtual HRESULT Render() override;
 
 private:
+	HRESULT Ready_LightDesc();
 	HRESULT Ready_Layer_Camera(const wstring& strLayerTag);
 	HRESULT Ready_Layer_Player(const wstring& strLayerTag);
+	HRESULT Ready_Layer_Effect(const wstring& strLayerTag);
 	HRESULT	Ready_Layer_Monster(const wstring& strLayerTag);
 	HRESULT Ready_Layer_BackGround(const wstring& strLayerTag);
+	HRESULT Ready_Layer_Collider();
+	HRESULT Ready_Layer_Event();
+
+private:
+	wstring ConvertStrToWstr(const string& str);
 
 public:
 	static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

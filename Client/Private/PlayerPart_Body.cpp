@@ -1,0 +1,256 @@
+#include "stdafx.h"
+#include "..\Public\PlayerPart_Body.h"
+#include "GameInstance.h"
+#include "Bone.h"
+#include "Texture.h"
+
+CPlayerPart_Body::CPlayerPart_Body(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+	: CPartObject(pDevice,pContext)
+{
+}
+
+CPlayerPart_Body::CPlayerPart_Body(const CPlayerPart_Body& rhs)
+	: CPartObject(rhs)
+{
+}
+
+HRESULT CPlayerPart_Body::Initialize_Prototype(LEVEL eLevel)
+{
+	m_strName = "CPlayerPart_Body";
+
+	m_eCurrentLevelIndex = eLevel;
+
+	return S_OK;
+}
+
+HRESULT CPlayerPart_Body::Initialize(void* pArg)
+{
+	
+
+	m_pParentTransformCom = ((PART_DESC*)pArg)->m_pParentTransform;
+	m_pParentNavigationCom = ((PART_DESC*)pArg)->m_pParentNavigation;
+
+	if (FAILED(AddRefIfNotNull(m_pParentTransformCom)))
+		return E_FAIL;
+
+	if (FAILED(AddRefIfNotNull(m_pParentNavigationCom)))
+		return E_FAIL;
+
+	if (FAILED(__super::Initialize(pArg)))
+		return E_FAIL;
+
+	if (FAILED(__super::Ready_Components(m_eCurrentLevelIndex, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Prototype_Component_Model_Player"))))
+		return E_FAIL;
+
+	
+	/* For.Com_Texture */
+	if (FAILED(__super::Add_Component(m_eCurrentLevelIndex, TEXT("Prototype_Component_Texture_Player_DamageBODY"),
+		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pBodyBloodTexture))))
+		return E_FAIL;
+
+	m_pModelCom->Root_MotionStart();
+
+	return S_OK;
+}
+
+void CPlayerPart_Body::Priority_Tick(_float fTimeDelta)
+{
+}
+
+void CPlayerPart_Body::Tick(_float fTimeDelta)
+{
+	_float3 vPos = { 0.f, 0.f, 0.f };
+
+	
+	if (true == m_bBloodyMode)
+	{
+		m_fBloodyAcc += fTimeDelta;
+		
+		if (m_fBloodyAcc > m_fBloodyTime)
+		{
+			m_bBloodyMode = false;
+			m_fBloodyAcc = 0.f;
+		}
+	}
+
+	m_pModelCom->Play_Animation(fTimeDelta, vPos);
+
+
+	_float3 vTest = vPos;
+	_int i = 0;
+
+	_vector vRealPos = m_pParentTransformCom->Get_State(CTransform::STATE_POSITION);
+
+	vRealPos.m128_f32[0] += vPos.x;
+	vRealPos.m128_f32[1] += vPos.y;
+	vRealPos.m128_f32[2] += vPos.z;
+	vRealPos.m128_f32[3] = 1.f;
+
+	if(true == m_pParentNavigationCom->isMove(vRealPos) && true == m_bMove)
+		m_pParentTransformCom->Add_LookPos(vPos);
+}
+
+void CPlayerPart_Body::Late_Tick(_float fTimeDelta)
+{
+	XMStoreFloat4x4(&m_WorldMatrix, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+
+	if (false == m_bBloodyMode)
+	{
+		if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
+			return;
+	}
+	else
+	{
+		if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this)))
+			return;
+	}
+		
+	
+
+	if (FAILED(m_pGameInstance->Add_RenderGroup(CRenderer::RENDER_SHADOW, this)))
+		return;
+}
+
+HRESULT CPlayerPart_Body::Render()
+{
+	//#몬스터모델렌더XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 1000.f));
+	if (FAILED(__super::Bind_ShaderResources()))
+		return E_FAIL;
+
+	//TODO 클라에서 모델의 메시 개수를 받아와서 순회하면서 셰이더 바인딩해주자.
+
+	_uint	iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+
+	m_pShaderCom->Bind_RawValue("g_bCustomColor", &m_bBloodyMode, sizeof(_bool));
+	_float4 vColor = _float4(1.0, 0.8, 0.8, 1.f);
+	m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4));
+
+	for (size_t i = 0; i < iNumMeshes; i++)
+	{
+		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
+		
+		//m_pBodyBloodTexture->Bind_ShaderResource(m_pShaderCom, "g_BloodTexture");
+		//m_pShaderCom->Bind_RawValue("g_iBloodCount", &m_iBloodCount, sizeof(_int));
+			
+
+		m_pShaderCom->Begin(5); //! 셰이더에 던져주고 비긴 호출하는 걸 잊지말자
+
+ 		m_pModelCom->Render(i);
+	}
+
+
+	return S_OK;
+}
+
+HRESULT CPlayerPart_Body::Render_Shadow()
+{
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+		return E_FAIL;
+
+	_float4x4		ViewMatrix, ProjMatrix;
+
+	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(XMVectorSet(-20.f, 20.f, -20.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
+	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), g_iWinSizeX / (float)g_iWinSizeY, 0.1f, 3000.f));
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &ProjMatrix)))
+		return E_FAIL;
+
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+	for (size_t i = 0; i < iNumMeshes; i++)
+	{
+		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS);
+		m_pModelCom->Bind_ShaderResource(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR);
+
+		m_pShaderCom->Begin(2);
+
+		m_pModelCom->Render(i);
+	}
+
+	return S_OK;
+}
+
+void CPlayerPart_Body::Write_Json(json& Out_Json)
+{
+	__super::Write_Json(Out_Json);
+	
+	//Out_Json["MonsterDesc"]["MonsterType"] =		m_tLinkStateDesc.eMonType;
+	//Out_Json["MonsterDesc"]["IdleType_Monster"] =	m_tLinkStateDesc.eNorMonIdleType;
+	//Out_Json["MonsterDesc"]["IdleType_Boss"] =		m_tLinkStateDesc.eBossStartType;
+	//Out_Json["MonsterDesc"]["Patrol"] =				m_tLinkStateDesc.bPatrol;
+	//Out_Json["MonsterDesc"]["SectionIndex"] =		m_tLinkStateDesc.iSectionIndex;
+
+	auto iter = Out_Json["Component"].find("Model");
+	Out_Json["Component"].erase(iter);
+}
+
+void CPlayerPart_Body::Load_FromJson(const json& In_Json)
+{
+	__super::Load_FromJson(In_Json);
+
+	//m_tLinkStateDesc.Reset();
+	//
+	//m_tLinkStateDesc.eMonType = In_Json["MonsterDesc"]["MonsterType"];
+	//m_tLinkStateDesc.eNorMonIdleType = In_Json["MonsterDesc"]["IdleType_Monster"];
+	//m_tLinkStateDesc.eBossStartType = In_Json["MonsterDesc"]["IdleType_Boss"];
+	//
+	//if (In_Json["MonsterDesc"].end() != In_Json["MonsterDesc"].find("Patrol"))
+	//	m_tLinkStateDesc.bPatrol = In_Json["MonsterDesc"]["Patrol"];
+	//
+	//if (In_Json["MonsterDesc"].end() != In_Json["MonsterDesc"].find("SectionIndex"))
+	//	m_tLinkStateDesc.iSectionIndex = In_Json["MonsterDesc"]["SectionIndex"];
+	//
+	//XMStoreFloat4(&m_tLinkStateDesc.m_fStartPositon, m_pTransformCom.lock()->Get_State(CTransform::STATE_TRANSLATION));
+	//
+	//GET_SINGLE(CGameManager)->Registration_Section(m_tLinkStateDesc.iSectionIndex, Weak_Cast<CGameObject>(m_this));
+	//
+	//Init_Desc();
+}
+
+void CPlayerPart_Body::Init_Desc()
+{
+	//m_pStatus.lock()->Init_Status(&m_tLinkStateDesc);
+}
+
+
+CPlayerPart_Body* CPlayerPart_Body::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel)
+{
+	CPlayerPart_Body* pInstance = new CPlayerPart_Body(pDevice, pContext);
+
+	/* 원형객체를 초기화한다.  */
+	if (FAILED(pInstance->Initialize_Prototype(eLevel)))
+	{
+		MSG_BOX("Failed to Created : CPlayerPart_Body");
+		Safe_Release(pInstance);
+	}
+	return pInstance;
+}
+
+CGameObject* CPlayerPart_Body::Clone(void* pArg)
+{
+	CPlayerPart_Body* pInstance = new CPlayerPart_Body(*this);
+
+	/* 원형객체를 초기화한다.  */
+	if (FAILED(pInstance->Initialize(pArg)))
+	{
+		MSG_BOX("Failed to Cloned : CPlayerPart_Body");
+		Safe_Release(pInstance);
+	}
+	return pInstance;
+}
+
+void CPlayerPart_Body::Free()
+{
+	__super::Free();
+
+
+}

@@ -9,6 +9,19 @@
 #include <string>
 #include <unordered_map>
 #include <cassert>
+#include "Engine_Defines.h"
+
+BEGIN(Engine)
+class CModel;
+class CShader;
+class CCollider;
+class CTransform;
+class CRigidBody;
+class CGameObject;
+class CGameInstance;
+class CNavigation;
+END
+
 
 namespace BrainTree
 {
@@ -37,12 +50,20 @@ public:
     bool hasInt(std::string key) const  { return ints.find(key) != ints.end(); }
 
     void setFloat(std::string key, float value)  { floats[key] = value; }
+    void setFloat3(std::string key, _float3 value) { float3s[key] = value; }
     float getFloat(std::string key)
     {
         if (floats.find(key) == floats.end()) {
             floats[key] = 0.0f;
         }
         return floats[key];
+    }
+    _float3 getFloat3(std::string key)
+    {
+        if (float3s.find(key) == float3s.end()) {
+            float3s[key] = {};
+        }
+        return float3s[key];
     }
     bool hasFloat(std::string key) const  { return floats.find(key) != floats.end(); }
 
@@ -66,14 +87,58 @@ public:
     }
     bool hasString(std::string key) const  { return strings.find(key) != strings.end(); }
 
+    //TODO 추가
+    float&      GetTimeDelta() { return fTimeDelta;}
+
+    
+    Engine::CModel* GetModel() { return pModel; }
+    Engine::CShader* GetShader() { return pShader; }
+    Engine::CGameObject* GetTarget() { return pTarget; }
+    Engine::CGameObject* GetOwner() { return pOwner; }
+    Engine::CCollider* GetCollider() { return pCollider; }
+    Engine::CTransform* GetTransform() { return pTransform; }
+    Engine::CRigidBody* GetRigidBody() { return pRigidBody; }
+    Engine::CNavigation* GetNavigation() { return pNavigation; }
+    Engine::CGameInstance* GetGameInstance() { return pGameInstance; }
+
+    void setTimeDelta(float& _fTimeDelta) { fTimeDelta = _fTimeDelta; }
+
+    void setModel(Engine::CModel* _pModel) { pModel = _pModel;}
+    void setShader(Engine::CShader* _pShader) { pShader = _pShader; }
+    void setTarget(Engine::CGameObject* _pTarget) { pTarget = _pTarget;}
+    void setOwner(Engine::CGameObject* _pOwner) { pOwner = _pOwner; }
+    void setCollider(Engine::CCollider* _pCollider) { pCollider = _pCollider; }
+    void setTransform(Engine::CTransform* _pTransform) { pTransform = _pTransform; }
+    void setRigidBody(Engine::CRigidBody* _pRigidBody) { pRigidBody = _pRigidBody; }
+    void setNavigation(Engine::CNavigation* _pNavigation) { pNavigation = _pNavigation; }
+    void setGameInstance(Engine::CGameInstance* _pGameInstance) { pGameInstance = _pGameInstance; }
+
     using Ptr = std::shared_ptr<Blackboard>;
 
 protected:
     std::unordered_map<std::string, bool> bools;
     std::unordered_map<std::string, int> ints;
     std::unordered_map<std::string, float> floats;
+    std::unordered_map<std::string, _float3> float3s;
     std::unordered_map<std::string, double> doubles;
     std::unordered_map<std::string, std::string> strings;
+
+
+    //TODO 추가
+    //!std::unordered_map<std::string, class CModel*> pModel;
+    float                   fTimeDelta = { 0.f };
+
+    
+    Engine::CModel*           pModel = { nullptr };
+    Engine::CGameObject*      pTarget = { nullptr };
+    Engine::CGameObject*      pOwner = { nullptr };
+    Engine::CShader*          pShader = { nullptr };
+    Engine::CCollider*        pCollider = { nullptr };
+    Engine::CTransform*       pTransform = { nullptr };
+    Engine::CRigidBody*       pRigidBody = { nullptr };
+    Engine::CNavigation*      pNavigation = { nullptr };
+    Engine::CGameInstance*    pGameInstance = { nullptr };
+    //std::unordered_map<std::string, Engine::CPartObject*> pParts;
 };
 
 class Node
@@ -93,17 +158,17 @@ public:
     }
     Blackboard::Ptr getBlackboard() const { return blackboard; }
 
-    virtual Status update() = 0;
+    virtual Status update(_float fTimeDelta) = 0;
     virtual void initialize() {}
     virtual void terminate(Status s) {}
 
-    Status tick()
+    Status tick(_float fTimeDelta)
     {
         if (status != Status::Running) {
             initialize();
         }
 
-        status = update();
+        status = update(fTimeDelta);
 
         if (status != Status::Running) {
             terminate(status);
@@ -172,7 +237,7 @@ public:
     }
     BehaviorTree(const Node::Ptr &rootNode) : BehaviorTree() { root = rootNode; }
     
-    Status update() { return root->tick(); }
+    Status update(_float fTimeDelta) { return root->tick(fTimeDelta); }
     
     void setRoot(const Node::Ptr &node) { root = node; }
     
@@ -272,8 +337,10 @@ private:
 class Builder
 {
 public:
-    Builder() {
+    Builder(Blackboard::Ptr& blackboard)
+    {
         tree = std::make_shared<BehaviorTree>();
+        tree->setBlackboard(blackboard);
     }
     template <class NodeType, typename... Args>
     Builder leaf(Args... args)
@@ -323,12 +390,12 @@ public:
         it = children.begin();
     }
 
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         assert(hasChildren() && "Composite has no children");
 
         while (it != children.end()) {
-            auto status = (*it)->tick();
+            auto status = (*it)->tick(fTimeDelta);
 
             if (status != Status::Failure) {
                 return status;
@@ -353,12 +420,12 @@ public:
         it = children.begin();
     }
 
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         assert(hasChildren() && "Composite has no children");
 
         while (it != children.end()) {
-            auto status = (*it)->tick();
+            auto status = (*it)->tick(fTimeDelta);
 
             if (status != Status::Success) {
                 return status;
@@ -378,12 +445,12 @@ public:
 class StatefulSelector : public Composite
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         assert(hasChildren() && "Composite has no children");
 
         while (it != children.end()) {
-            auto status = (*it)->tick();
+            auto status = (*it)->tick(fTimeDelta);
 
             if (status != Status::Failure) {
                 return status;
@@ -404,12 +471,12 @@ public:
 class StatefulSequence : public Composite
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         assert(hasChildren() && "Composite has no children");
 
         while (it != children.end()) {
-            auto status = (*it)->tick();
+            auto status = (*it)->tick(fTimeDelta);
 
             if (status != Status::Success) {
                 return status;
@@ -429,7 +496,7 @@ public:
     ParallelSequence(bool successOnAll = true, bool failOnAll = true) : useSuccessFailPolicy(true), successOnAll(successOnAll), failOnAll(failOnAll) {}
     ParallelSequence(int minSuccess, int minFail) : minSuccess(minSuccess), minFail(minFail) {}
 
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         assert(hasChildren() && "Composite has no children");
 
@@ -456,7 +523,7 @@ public:
         int total_fail = 0;
 
         for (auto &child : children) {
-            auto status = child->tick();
+            auto status = child->tick(fTimeDelta);
             if (status == Status::Success) {
                 total_success++;
             }
@@ -487,9 +554,9 @@ private:
 class Succeeder : public Decorator
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
-        child->tick();
+        child->tick(fTimeDelta);
         return Status::Success;
     }
 };
@@ -498,9 +565,9 @@ public:
 class Failer : public Decorator
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
-        child->tick();
+        child->tick(fTimeDelta);
         return Status::Failure;
     }
 };
@@ -510,9 +577,9 @@ public:
 class Inverter : public Decorator
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
-        auto s = child->tick();
+        auto s = child->tick(fTimeDelta);
 
         if (s == Status::Success) {
             return Status::Failure;
@@ -536,9 +603,9 @@ public:
         counter = 0;
     }
 
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
-        child->tick();
+        child->tick(fTimeDelta);
 
         if (limit > 0 && ++counter == limit) {
             return Status::Success;
@@ -556,10 +623,10 @@ protected:
 class UntilSuccess : public Decorator
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         while (1) {
-            auto status = child->tick();
+            auto status = child->tick(fTimeDelta);
 
             if (status == Status::Success) {
                 return Status::Success;
@@ -572,10 +639,10 @@ public:
 class UntilFailure : public Decorator
 {
 public:
-    Status update() override
+    Status update(_float fTimeDelta) override
     {
         while (1) {
-            auto status = child->tick();
+            auto status = child->tick(fTimeDelta);
 
             if (status == Status::Failure) {
                 return Status::Success;
@@ -583,5 +650,28 @@ public:
         }
     }
 };
+
+
+
+
+class FunctionNode final : public Node
+{
+public:
+    FunctionNode(function<Status(BrainTree::Blackboard::Ptr pBlackboard, _float fTimeDelta)> function) { m_Function = function; };
+    FunctionNode() {};
+
+    Status update(_float fTimeDelta) override
+    {
+        return m_Function(blackboard, fTimeDelta);
+    }
+
+private:
+    function<Status(Blackboard::Ptr pBlackboard, _float fTimeDelta)> m_Function = { nullptr };
+};
+
+typedef function<Node::Status(Blackboard::Ptr pBlackboard, _float fTimeDelta)> FUNCTION_NODE;
+#define FUNCTION_NODE_MAKE [&,this](Blackboard::Ptr pBlackboard, _float fTimeDelta)->Node::Status
+#define BT_STATUS Node::Status
+
 
 } // namespace BrainTree

@@ -6,6 +6,8 @@ BEGIN(Engine)
 
 class ENGINE_DLL CComponent abstract : public CBase
 {
+
+
 protected:
 	CComponent(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CComponent(const CComponent& rhs);
@@ -14,6 +16,13 @@ protected:
 public:
 	virtual HRESULT Initialize_Prototype(); //! 프로토타입 패턴을 사용한다는 것을 알 수 있다
 	virtual HRESULT Initialize(void* pArg);
+
+#ifdef _DEBUG
+	virtual HRESULT Render() {
+		return S_OK;
+	}
+#endif
+
 	virtual void	Priority_Tick(_float fTimeDelta) {};
 	virtual void	Tick(_float fTimeDelta) {};
 	virtual void	Late_Tick(_float fTimeDelta) {};

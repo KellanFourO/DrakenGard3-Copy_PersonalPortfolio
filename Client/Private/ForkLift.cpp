@@ -28,6 +28,9 @@ HRESULT CForkLift::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(15.f, 6.f, 30.f, 1.f));
+
 	return S_OK;
 }
 
@@ -123,7 +126,4 @@ CGameObject* CForkLift::Clone(void* pArg)
 void CForkLift::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pShaderCom);
 }

@@ -18,6 +18,10 @@ public:
 	virtual ~CTransform() = default;
 
 public:
+	_float	Get_Speed() { return m_fSpeedPerSec; }
+	_float  Get_RotationSpeed() { return m_fRotationPerSec; }
+
+
 	//! 행렬 행 정보 교체
 	void Set_State(STATE eState, const _float4& vState)
 	{
@@ -65,10 +69,15 @@ public:
 		);
 	}
 
+	_float3	Get_TranslatePos() { return m_vTranslatePos; }
+
 	_matrix Get_WorldMatrix()
 	{
 		return XMLoadFloat4x4(&m_WorldMatrix);
 	}
+
+	_float3 Get_RotateDir(_float3& vBaseDir, _float fAngle);
+	_float4 Get_RotateDir(_fvector& vBaseDir, _float fAngle);
 
 	void	Set_WorldFloat4x4(_float4x4 mat4x4)
 	{
@@ -95,19 +104,61 @@ public:
 
 	void Set_Scaling(_float fScaleX, _float fScaleY, _float fScaleZ);
 
-public:
-	void	Go_Straight(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
-	void	Go_Left(_float fTimeDelta);
-	void	Go_Right(_float fTimeDelta);
-	void	Go_Backward(_float fTimeDelta);
-	void	Go_Up(_float fTimeDelta);
-	void	Go_Down(_float fTimeDelta);
+	void Set_SpeedPerSec(_float fSpeedPerSec) { m_fSpeedPerSec = fSpeedPerSec; }
+	void Set_RotationPerSec(_float fRotationPerSec) { m_fRotationPerSec = fRotationPerSec; }
 
+	void    Add_LookPos(_float3& _vAddPos);
+	_float3 Get_MoveAxisPos(_float fDistance, STATE eState, _bool bAddType, _float3 vCamLook);
+	_float4	Get_RandomPositionAroundCenter(_fvector& vCenter, _float fRadius);
+
+public:
+	void	Go_Player_Straight(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
+	void	Go_Player_Left(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
+	void	Go_Player_Right(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
+	void	Go_Player_Backward(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
+	void	Go_Player_Up(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
+	void	Go_Player_Down(_float fTimeDelta, _float3 vCamLook, class CNavigation* pNavigation = nullptr);
+
+	void	Go_Straight(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
+	void	Go_Left(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
+	void	Go_Right(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
+	void	KeepEye(_float fTimeDelta, _bool bRight = false, class CNavigation* pNavigation = nullptr);
+	void	Go_Backward(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
+	void	Go_Up(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
+	void	Go_Down(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
+	
+	
+	_bool	Is_Ground() { return m_isGround; }
 	void	Turn(_fvector vAxis, _float fTimeDelta);
+	_bool	AreVectorsAligned(const _fvector& v1, const _fvector& v2, _float fTolerance = 0.001f);
 	void	Rotation(_fvector vAxis, _float fRadian);
+	void	RotationOfCameraDir(_fvector vCamLook, _float fRadian);
+	void	RotationAroundPoint(const _float3& vCenter, const _float3& vAxis, _float fAngle);
+	_bool	TurnToTarget(const _fvector& vTargetPosition, _float fTimeDelta);
+	
+	
+	void	Set_Point_Gravity_Velocity(_float3 vTargetPosition, _float3 vPrevPosition, _float fMaxHeight, _float fMaxTime, _Out_ _float3* vOutVelocity, _Out_ _float* fOutGravity);
+	void	Point_Parabola(_float3 vTargetPos, _float3 vPrevPos, _float3 vVelocity, _float fTimeAcc, _float fGravity);
+
 	void	Go_Target(_fvector vTargetPos, _float fTimeDelta, _float fSpare = 0.1f);
+	void	Go_Target_Speed(_fvector vTargetPos, _float fTimeDelta, _float fSpeed, _float fSpare = 0.1f);
+	void	Go_Target_Navi(_fvector vTargetPos, _float fTimeDelta, class CNavigation* pNavigation, _float fSpare = 0.1f);
+
 	void	Look_At(_fvector vTargetPos);
+	void	Look_At_CamLook(_float3 vCamLook);
+	void	Look_At_Dir(_vector _vLook);
+	void	Look_At_Dir(_float3 _vLook);
 	void	Look_At_OnLand(_fvector vTargetPos);
+	_bool	HasArrived(const DirectX::XMFLOAT3& _vCurrentPos, const DirectX::XMFLOAT3& _vTargetPos, _float fArrivalThreshold);
+
+	//TODO Translate
+	void	Translate(const _float3& vTranslation, class CNavigation* pNavigation, _bool bNotAgent = FALSE);
+
+	void	Translate(const _float4& vTranslation, class CNavigation* pNavigation, _bool bNotAgent = FALSE)
+	{ 	
+		Translate(_float3(vTranslation.x, vTranslation.y, vTranslation.z), pNavigation, bNotAgent);
+	}
+	
 
 public:
 	virtual void Write_Json(json& Out_Json) override;
@@ -122,8 +173,14 @@ public:
 private:
 	_float				m_fSpeedPerSec = { 0.0f };
 	_float				m_fRotationPerSec = { 0.0f };
+	
+	_float3				m_vTranslatePos = {};
+	
+	_bool				m_isGround = true;
 
 	_float4x4			m_WorldMatrix;
+
+	
 
 public:
 	static	CTransform* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _float fSpeedPerSec, _float fRotationPerSec);

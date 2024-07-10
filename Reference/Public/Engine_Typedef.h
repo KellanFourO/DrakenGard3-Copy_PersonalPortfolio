@@ -66,7 +66,7 @@ namespace Engine
 
 	typedef struct tagFaceIndices16
 	{
-		_ulong _1, _2, _3;
+		unsigned short _1, _2, _3;
 	}FACEINDICES16;
 }
 

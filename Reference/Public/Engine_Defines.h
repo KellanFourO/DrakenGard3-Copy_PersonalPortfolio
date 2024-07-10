@@ -6,26 +6,62 @@ namespace Engine
 {
 	enum MOUSEKEYSTATE { DIM_LB, DIM_RB, DIM_MB, DIM_END };
 	enum MOUSEMOVESTATE { DIMS_X, DIMS_Y, DIMS_Z, DIMS_END };
+
+
 }
+
+enum CHANNELID {
+    SOUND_BGM, SOUND_ENVIRONMENT,
+    SOUND_PLAYER, SOUND_PLAYER_HIT,
+    SOUND_Monster,
+    SOUND_BOSS, SOUND_BOSSEFFECT, SOUND_BOSSEFFECT2, SOUND_BOSSEFFECT3,
+    SOUND_EN00, SOUND_EN00EFFECT1, SOUND_EN00EFFECT2,
+    SOUND_EN01, SOUND_EN01EFFECT1, SOUND_EN01EFFECT2,
+    SOUND_EN70, SOUND_EN70EFFECT1, SOUND_EN70EFFECT2,
+    SOUND_EFFECT, SOUND_EFFECT2, SOUND_EFFECT3,
+    SOUND_UI,
+    SOUND_SYSTEM_EFFECT, /* Bierce Announce */
+    SOUND_SYSTEM_EFFECT2,
+    MAXCHANNEL
+};
+
+enum CHANNEL_GROUP_ID { BGM_GROUP, SND1_GROUP, SND2_GROUP, MAX_CHANNEL_GROUP };
 
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include <DirectXCollision.h>
+
+#define DIRECTINPUT_VERSION 0x0800
+#include <dinput.h>
+
 #include "Effects11/d3dx11effect.h"
 #include "DirectXTK/DDSTextureLoader.h" //TODO DDS 텍스처 로드전용
 #include "DirectXTK/WICTextureLoader.h" //TODO 윈도우 텍스처 로드전용 ( bmp, jpg, png 등등 )
 #include "DirectXTK/ScreenGrab.h"
-#include <DirectXCollision.h>
+#include "DirectXTK/VertexTypes.h"
+#include "DirectXTK/PrimitiveBatch.h"
+#include "DirectXTK/Effects.h"
+#include "DirectXTK/SpriteBatch.h"
+#include "DirectXTK/SpriteFont.h"
 
 #include "Assimp\scene.h"
 #include "Assimp\postprocess.h"
 #include "Assimp\Importer.hpp"
 
-#define DIRECTINPUT_VERSION 0x0800
-#include <dinput.h>
+#include "Fmod/core/fmod.h"
+#include "Fmod/core/fmod.hpp"
+#include "Fmod/core/fmod_errors.h"
+#include "Fmod/studio/fmod_studio.h"
+#include "Fmod/studio/fmod_studio.hpp"
+#include "Fmod/core/fmod_common.h"
+
+
+
 
 #include <d3dcompiler.h> //TODO 셰이더 컴파일용
 
 using namespace DirectX; //! XMFLOAT등등의 자료형을 사용하기위함.
+
 
 #define  RAPIDJSON_HAS_STDSTRING 1
 #include "rapidjson/document.h"
@@ -33,11 +69,6 @@ using namespace DirectX; //! XMFLOAT등등의 자료형을 사용하기위함.
 #include "rapidjson/stringbuffer.h"
 using namespace rapidjson;
 
-#include "BrainTree/BrainTree.h"
-
-namespace BT = BrainTree;
-
-using namespace BT;
 
 #include <unordered_map>
 #include <algorithm>
@@ -46,6 +77,7 @@ using namespace BT;
 #include <map>
 #include <fstream>
 #include <typeinfo>
+#include <random>
 
 using namespace std;
 

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Camera_Dynamic.h"
 #include "GameInstance.h"
+#include "GameObject.h"
 
 CCamera_Dynamic::CCamera_Dynamic(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CCamera(pDevice,pContext)
@@ -39,8 +40,15 @@ void CCamera_Dynamic::Priority_Tick(_float fTimeDelta)
 
 void CCamera_Dynamic::Tick(_float fTimeDelta)
 {
-	KeyInput(fTimeDelta);
-	MouseInput(fTimeDelta);
+	//if (m_pGameInstance->Key_Down(DIK_TAB))
+	//	m_bAdmin = !m_bAdmin;
+	
+
+	if (!m_bAdmin)
+	{
+		KeyInput(fTimeDelta);
+		MouseInput(fTimeDelta);
+	}
 
 	//TODO 부모의 Tick함수를 호출해줘야 뷰투영행렬을 파이프라인 객체에게 던져준다.
 	__super::Tick(fTimeDelta);

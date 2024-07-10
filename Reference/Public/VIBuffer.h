@@ -19,13 +19,23 @@ protected:
 	virtual ~CVIBuffer() = default;
 
 public:
+	ID3D11Buffer* Get_VertexBuffer() { return m_pVB; }
+	ID3D11Buffer* Get_IndexBuffer() { return m_pIB; }
+
+	_uint		  Get_NumIndices() { return m_iNumIndices; }
+	_uint		  Get_Stride() { return m_iStride;}
+
+	DXGI_FORMAT&  Get_IndexFormat() { return m_eIndexFormat; }
+	D3D11_PRIMITIVE_TOPOLOGY& Get_Topology() { return m_eTopology; }
+
+public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual HRESULT Render();
 
 public:
 	//TODO 정점, 인덱스, 인스턴스 버퍼들을 생성한다.
-	HRESULT Bind_VIBuffers();
+	virtual HRESULT Bind_VIBuffers();
 	HRESULT Create_Buffer(_Inout_ ID3D11Buffer * *ppBuffer);
 	//! 아래 주석에서 설명하듯 버퍼타입이 동일하기에 Create_Buffer 함수 하나로 한번에 처리가 가능해진다.
 

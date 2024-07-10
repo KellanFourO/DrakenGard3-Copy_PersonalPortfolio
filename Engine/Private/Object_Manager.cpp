@@ -7,6 +7,30 @@ CObject_Manager::CObject_Manager()
 {
 }
 
+CComponent* CObject_Manager::Get_Component(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex)
+{
+	CLayer* pLayer = Find_Layer(iLevelIndex, strLayerTag);
+
+	if (nullptr == pLayer)
+		return nullptr;
+
+	return pLayer->Get_Component(strComponentTag, iIndex);
+
+	return nullptr;
+}
+
+CComponent* CObject_Manager::Get_PartComponent(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex, const wstring& strPartTag)
+{
+	CLayer* pLayer = Find_Layer(iLevelIndex, strLayerTag);
+
+	if (nullptr == pLayer)
+		return nullptr;
+
+	return pLayer->Get_PartComponent(strComponentTag, iIndex, strPartTag);
+
+	return nullptr;
+}
+
 HRESULT CObject_Manager::Initialize(_uint iNumLevels)
 {
 	if (nullptr != m_pLayers)
@@ -19,13 +43,13 @@ HRESULT CObject_Manager::Initialize(_uint iNumLevels)
 	return S_OK;
 }
 
-HRESULT CObject_Manager::Add_Prototype(const wstring& strPrototypeTag, CGameObject* pPrototype, _bool bAddData)
+HRESULT CObject_Manager::Add_Prototype(const wstring& strPrototypeTag, CGameObject* pPrototype, _bool bAddData, _bool bModelType)
 {
 	if (nullptr == pPrototype || nullptr != Find_Prototype(strPrototypeTag)) //todo || 문을 사용할때는 반드시 좀 더 간단한 조건을 앞에 놓아서 효율적으로
 			return E_FAIL;
 
 	if(bAddData)
-	CGameInstance::GetInstance()->Add_PrototypeTag(strPrototypeTag);
+	CGameInstance::GetInstance()->Add_PrototypeTag(strPrototypeTag, bModelType);
 
 	m_Prototypes.emplace(strPrototypeTag, pPrototype); //! 원형객체 추가.
 	
@@ -68,11 +92,51 @@ HRESULT CObject_Manager::Add_CloneObject(_uint iLevelIndex, const wstring& strLa
 	return S_OK;
 }
 
+CGameObject* CObject_Manager::Get_CloneObject(const wstring& strProtoTypeTag, void* pArg)
+{
+	CGameObject* pGameObject = Find_Prototype(strProtoTypeTag);
+
+	if(nullptr == pGameObject)
+		return nullptr;
+
+	CGameObject* pCloneObject = pGameObject->Clone(pArg);
+	
+	if(nullptr == pCloneObject)
+		return nullptr;
+
+	return pCloneObject;		
+}
+
 HRESULT CObject_Manager::Remove_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strPrototypeTag, void* pArg)
 {
 	//Find_Layer(iLevelIndex,strLayerTag)->
 
 	return S_OK;
+}
+
+HRESULT CObject_Manager::Erase_CloneObject(_uint iLevelIndex, const wstring& strLayerTag, CGameObject* pEraseObject)
+{
+	CLayer* pLayer = Find_Layer(iLevelIndex, strLayerTag);
+
+	if(nullptr == pLayer)
+		return E_FAIL;
+
+	return pLayer->Erase_GameObject(pEraseObject);
+	
+}
+
+CGameObject* CObject_Manager::Get_Player(_uint iLevelIndex)
+{
+	CLayer* pLayer = Find_Layer(iLevelIndex, TEXT("Layer_Player"));
+
+	CGameObject* pPlayer = pLayer->Get_Player();
+
+	if(nullptr != pPlayer)
+		return pPlayer;
+
+	return nullptr;
+	
+	
 }
 
 
@@ -92,6 +156,7 @@ void CObject_Manager::Priority_Tick(_float fTimeDelta)
 
 void CObject_Manager::Tick(_float fTimeDelta)
 {
+
 	for (size_t i = 0; i < m_iNumLevels; ++i)
 	{
 		for (auto& Pair : m_pLayers[i])
@@ -99,6 +164,8 @@ void CObject_Manager::Tick(_float fTimeDelta)
 			Pair.second->Tick(fTimeDelta);
 		}
 	}
+
+	
 }
 
 void CObject_Manager::Late_Tick(_float fTimeDelta)
